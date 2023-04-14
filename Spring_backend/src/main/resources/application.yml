@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/movie?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: Movie_Manager
+    password: 1234
+  redis:
+    host: localhost
+    port: 6379
+  cors:
+    origins: http://localhost:3000
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+
+logging:
+  level:
+    root: info
+
+
+# HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+# Secret 값은 특정 문자열을 Base64 로 인코딩한 값 사용 (아래 명령어를 터미널에 쳐보면 그대로 나옴)
+# $ echo 'spring-boot-security-jwt-tutorial-bj-spring-boot-security-jwt-tutorial' | base64
+# cfg => 전역 변수 관리 statement에 키값 넣어두기
+jwt:
+  secret: c3ByaW5nLWJvb3Qtc2VjdXJpdHktand0LXR1dG9yaWFsLWJqLXNwcmluZy1ib290LXNlY3VyaXR5LWp3dC10dXRvcmlhbAo=
+
+payment:
+  api: 6318322442646815
+  apiSecret: 9DmPIhwndq4OWlmvqn6OidLyeKAFzgvaH2lanPqPeNO4eRiYs6LndTU54IidSgRto5JDJpwcPGzcMAY5

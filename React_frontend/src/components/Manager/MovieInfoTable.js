@@ -291,7 +291,13 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
   // 모달창 극장 교체할 때
 	const handleTheaterChangeModal = useCallback((value) => {
 		setselectTheaterModal(value);
-    setselectCinemaModal(MOVIEINFO_CINEMA_LIST.filter(cinema => cinema.tid === value)[0].cid);
+
+		if (MOVIEINFO_CINEMA_LIST.filter(cinema => cinema.tid === value).length !== 0) {
+			setselectCinemaModal(MOVIEINFO_CINEMA_LIST.filter(cinema => cinema.tid === value)[0].cid);
+		}
+		else {
+			setselectCinemaModal(null);
+		}
 	}, [MOVIEINFO_CINEMA_LIST]);
 
   // 모달창 상영관 교체할 때
@@ -315,6 +321,12 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
       alert('상영시작시간을 확인해주십시오.');
       return;
     }
+
+		// 상영관이 없는 영화관을 선택할경우 예외처리
+		if (selectCinemaModal === null) {
+			alert('모든 정보를 입력해주세요.');
+			return;
+		}
 
     // 상영정보를 추가할 때
     if (delState) {
@@ -529,38 +541,36 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
       setIsModalOpen(false);
       setdelState(true);
 
-      var start = null;
-      var end = null;
-      if (days) {
-        start = date.DateToString(days[0].$d);
-        end = date.DateToString(days[1].$d)
-      }
-
       var area = null;
-      if (selectArea === 'seoul') {
+      if (selectAreaModal === 'seoul') {
         area = '서울';
       }
-      else if (selectArea === 'gyeonggi') {
+      else if (selectAreaModal === 'gyeonggi') {
         area = '경기';
       }
-      else if (selectArea === 'incheon') {
+      else if (selectAreaModal === 'incheon') {
         area = '인천';
       }
-      else if (selectArea === 'busan') {
+      else if (selectAreaModal === 'busan') {
         area = '부산';
       }
+
+      setselectMovie(selectMovieModal);
+      setselectArea(selectAreaModal);
+      setselectTheater(selectTheaterModal);
+      setDays(null);
 
       // 상영정보를 새롭게 요청
       dispatch({
         type: MANAGER_MOVIEINFO_LIST_REQUEST,
         data: {
-          mid: selectMovie,
+          mid: selectMovieModal,
           tarea: area,
-          tid: selectTheater,
-          startDay: start,
-          endDay: end,
-          page: MOVIEINFO_LIST.number,
-          size: MOVIEINFO_LIST.size
+          tid: selectTheaterModal,
+          startDay: null,
+          endDay: null,
+          page: 0,
+          size: 10
         }
       });
     }
@@ -572,7 +582,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
         type: MANAGER_MOVIEINFO_UPDATE_RESET
       });
     }
-  }, [MOVIEINFO_UPDATE_state, days, selectArea, selectMovie, selectTheater, MOVIEINFO_LIST, dispatch]);
+  }, [MOVIEINFO_UPDATE_state, selectMovieModal, selectAreaModal, selectTheaterModal, setselectMovie, setselectArea, setselectTheater, setDays, dispatch]);
 
 	return (
 		<>

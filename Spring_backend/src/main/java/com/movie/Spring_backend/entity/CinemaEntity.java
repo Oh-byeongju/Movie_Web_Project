@@ -3,6 +3,7 @@ package com.movie.Spring_backend.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,14 +31,19 @@ public class CinemaEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="tid")
     private TheaterEntity theater;
+
+    // 상영관이 지정된 상영정보 개수
+    @Formula("(SELECT COUNT(*) FROM movie_information mi WHERE mi.cid = cid)")
+    private Integer cntMovieInfo;
     
     @Builder
-    public CinemaEntity(Long cid, String cname, String ctype, Integer cseat ,TheaterEntity theater) {
+    public CinemaEntity(Long cid, String cname, String ctype, Integer cseat ,TheaterEntity theater, Integer cntMovieInfo) {
         this.cid = cid;
         this.cname = cname;
         this.ctype = ctype;
         this.cseat = cseat;
         this.theater = theater;
+        this.cntMovieInfo = cntMovieInfo;
     }
 }
 

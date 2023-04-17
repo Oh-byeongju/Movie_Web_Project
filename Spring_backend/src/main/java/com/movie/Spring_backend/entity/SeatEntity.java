@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 public class SeatEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sid;
@@ -18,15 +19,13 @@ public class SeatEntity {
     private String sname;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cid") //조인할 컬럼 이름
+    @JoinColumn(name="cid")
     private CinemaEntity cinema;
 
-
     @Builder
-    public SeatEntity(Long sid ,String sname,  CinemaEntity cinema) {
-        this.sid=sid;
-        this.sname=sname;
-        this.cinema=cinema;
-
+    public SeatEntity(Long sid, String sname, CinemaEntity cinema) {
+        this.sid = sid;
+        this.sname = sname;
+        this.cinema = cinema;
     }
 }

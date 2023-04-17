@@ -5,12 +5,14 @@
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
 	MANAGER_THEATER_REQUEST, MANAGER_THEATER_SUCCESS, MANAGER_THEATER_FAILURE,
-	MANAGER_CINEMA_REQUEST, MANAGER_CINEMA_SUCCESS, MANAGER_CINEMA_FAILURE,
 	MANAGER_THEATER_INSERT_REQUEST, MANAGER_THEATER_INSERT_SUCCESS, MANAGER_THEATER_INSERT_FAILURE,
 	MANAGER_THEATER_DELETE_REQUEST, MANAGER_THEATER_DELETE_SUCCESS, MANAGER_THEATER_DELETE_FAILURE,
+	MANAGER_THEATER_UPDATE_REQUEST, MANAGER_THEATER_UPDATE_SUCCESS, MANAGER_THEATER_UPDATE_FAILURE,
+	MANAGER_CINEMA_REQUEST, MANAGER_CINEMA_SUCCESS, MANAGER_CINEMA_FAILURE,
+	MANAGER_CINEMA_INSERT_REQUEST, MANAGER_CINEMA_INSERT_SUCCESS, MANAGER_CINEMA_INSERT_FAILURE,
+	MANAGER_CINEMA_DELETE_REQUEST, MANAGER_CINEMA_DELETE_SUCCESS, MANAGER_CINEMA_DELETE_FAILURE,
+	MANAGER_CINEMA_UPDATE_REQUEST, MANAGER_CINEMA_UPDATE_SUCCESS, MANAGER_CINEMA_UPDATE_FAILURE,
 
-
-    CINEMA_INSERT_LOADING,CINEMA_INSERT_DONE,CINEMA_INSERT_ERROR,
     MOVIES_REQUEST,MOVIES_SUCCESS,MOVIES_FAILURE,
     MOVIE_INSERT_LOADING,MOVIE_INSERT_DONE,MOVIE_INSERT_ERROR
  } from "../reducer/R_manager_theater";
@@ -86,9 +88,9 @@ function* DeleteTheater(action) {
 
 // 영화관 삭제 백엔드 호출
 async function callDeleteTheater(data) {
-  return await http.delete("/Manager/auth/deleteMovieInfo", {
+  return await http.delete("/Manager/auth/deleteTheater", {
     params: {
-      miid: data.miid
+      tid: data.tid
     }
   })
   .then((response) => {
@@ -99,11 +101,31 @@ async function callDeleteTheater(data) {
   });
 }
 
+// 영화관 수정 함수
+function* UpdateTheater(action) {
+  const result = yield call(callUpdateTheater, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: MANAGER_THEATER_UPDATE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: MANAGER_THEATER_UPDATE_FAILURE
+    });
+  }
+}
 
-
-
-
-
+// 영화관 수정 백엔드 호출
+async function callUpdateTheater(data) {
+  return await http.patch("/Manager/auth/updateTheater", data)
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
 // 상영관 조회 함수
 function* AllCinema() {
@@ -132,39 +154,92 @@ async function callAllCinema() {
   });
 }
 
+// 상영관 추가 함수
+function* InsertCinema(action) {
+  const result = yield call(callInsertCinema, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: MANAGER_CINEMA_INSERT_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: MANAGER_CINEMA_INSERT_FAILURE
+    });
+  }
+}
+
+// 상영관 추가 백엔드 호출
+async function callInsertCinema(data) {
+  return await http.post("/Manager/auth/insertCinema", data)
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+// 상영관 삭제 함수
+function* DeleteCinema(action) {
+  const result = yield call(callDeleteCinema, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: MANAGER_CINEMA_DELETE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: MANAGER_CINEMA_DELETE_FAILURE
+    });
+  }
+}
+
+// 상영관 삭제 백엔드 호출
+async function callDeleteCinema(data) {
+  return await http.delete("/Manager/auth/deleteCinema", {
+    params: {
+      cid: data.cid
+    }
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+// 상영관 수정 함수
+function* UpdateCinema(action) {
+  const result = yield call(callUpdateCinema, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: MANAGER_CINEMA_UPDATE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: MANAGER_CINEMA_UPDATE_FAILURE
+    });
+  }
+}
+
+// 상영관 수정 백엔드 호출
+async function callUpdateCinema(data) {
+  return await http.patch("/Manager/auth/updateCinema", data)
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
 
 
 // 아래로 수정
 //////###
-
-
-  //상영관 추가 
-function* cinemaInsert(action) {
-    const result = yield call(CinemaInsertApi, action.data);
-    if (result.status === 200) {
-      yield put({
-        type: CINEMA_INSERT_DONE,
-      });
-    } 
-    else {
-      yield put({
-              type: CINEMA_INSERT_ERROR,
-              data:result.error
-      });
-    }
-  }
-  
-  // 상영관 추가 백엔드 호출
-  async function CinemaInsertApi(data) {
-    return await http.post("/v2/normal/insertcinema",data)
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
-
 
   function* Movie(action) {
     const result = yield call(MovieApi, action.data);
@@ -239,19 +314,32 @@ function* THEATER_DELETE() {
 	yield takeLatest(MANAGER_THEATER_DELETE_REQUEST, DeleteTheater);
 }
 
+function* THEATER_UPDATE() {
+	yield takeLatest(MANAGER_THEATER_UPDATE_REQUEST, UpdateTheater);
+}
+
 function* CINEMA_LIST() {
 	yield takeLatest(MANAGER_CINEMA_REQUEST, AllCinema);
 }
 
+function* CINEMA_INSERT() {
+	yield takeLatest(MANAGER_CINEMA_INSERT_REQUEST, InsertCinema);
+}
+
+function* CINEMA_DELETE() {
+	yield takeLatest(MANAGER_CINEMA_DELETE_REQUEST, DeleteCinema);
+}
+
+function* CINEMA_UPDATE() {
+	yield takeLatest(MANAGER_CINEMA_UPDATE_REQUEST, UpdateCinema);
+}
 
 // 아래로 수정
 
 
 
 
-function* CINEMA_INSERT() {
-    yield takeLatest(CINEMA_INSERT_LOADING, cinemaInsert);
-  }
+
   function* MOVIE_UPLOAD() {
     yield takeLatest(MOVIES_REQUEST, Movie);
   }
@@ -263,9 +351,14 @@ export default function* S_manager_theater() {
   yield all([fork(THEATER_LIST),
 		fork(THEATER_INSERT),
 		fork(THEATER_DELETE),
+		fork(THEATER_UPDATE),
 		fork(CINEMA_LIST),
-		// 아래로 수정
 		fork(CINEMA_INSERT),
+		fork(CINEMA_DELETE),
+		fork(CINEMA_UPDATE),
+
+		// 아래로 수정
+
 		fork(MOVIE_UPLOAD),
 		fork(POST_MOVIE)]);
 }

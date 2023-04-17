@@ -19,7 +19,6 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
     @Query("SELECT mi From MovieInfoEntity as mi where mi.mistarttime >= function('addtime', now(), '0:30:00')  Group by mi.miday Order by mi.miday ASC")
     List<MovieInfoEntity> findAll();
 
-    public List<MovieInfoEntity> findByMovie(MovieEntity id);
 
     @Query("SELECT mi From MovieInfoEntity as mi, MovieEntity as m Where mi.movie.mid= (:mid) " +
             "and mi.mistarttime >= function('addtime', now(), '0:30:00') Group by mi.miday Order by mi.miday ASC ")
@@ -38,12 +37,6 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "info.cinema.cid in (select cinema.cid from CinemaEntity as cinema where cinema.theater.tid = :tid )")
     public List<MovieInfoEntity> findByCinemaCidInAndMovieMid(@Param("mid") Long mid, @Param("tid") Long tid);
 
-    public List<MovieInfoEntity> findByMiday(Date miday);
-
-    //mid를 구해야함
-    public List<MovieInfoEntity> findByMidayAndCinemaCidIn(Date miday, List<Long> cid);
-
-    public List<MovieInfoEntity> findByMidayAndMovieMid(Date miday, Long mid);
 
     //스케줄 검색
     @Query("select info from MovieInfoEntity as info where info.mistarttime >= function('addtime', now(), '0:30:00') and " +
@@ -51,10 +44,6 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "(select cinema.cid from CinemaEntity as cinema where cinema.theater.tid = :tid)")
     public List<MovieInfoEntity> findBySchedule(@Param("miday") Date miday, @Param("mid") Long mid, @Param("tid") Long tid);
 
-    // 특정 Movie id를 가지고 현재 예매가 가능한 영화 정보를 들고오는 메소드
-    @Query(value = "SELECT mi FROM MovieInfoEntity as mi WHERE mi.movie = :movie AND " +
-            "mi.mistarttime >= function('addtime', now(), '0:30:00')")
-    List<MovieInfoEntity> findMovieScreen(@Param("movie") MovieEntity movie);
 
     // 상영이 끝난 특정 영화 정보를 들고오는 메소드
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi " +
@@ -88,6 +77,9 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi LEFT OUTER JOIN mi.reservations rs " +
             "WHERE mi.miendtime <= NOW() AND rs.rstate = 1 AND rs.member = :member")
     List<MovieInfoEntity> findMemberPossible(@Param("member") MemberEntity member);
+
+    // 특정 상영관에 대한 상영정보를 가져오는 메소드
+    List<MovieInfoEntity> findByCinema(CinemaEntity cinema);
 
     // 관리자 페이지에서 상영정보를 가져오는 메소드
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +

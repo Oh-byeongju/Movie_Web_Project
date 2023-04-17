@@ -3,21 +3,37 @@
 */
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { Table, Input ,Button,Modal,Form,Select,Layout,message} from 'antd';
+import { Table, Input ,Button, Modal, Form, Select } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
-import { MANAGER_CINEMA_REQUEST,         CINEMA_INSERT_LOADING  } from '../../reducer/R_manager_theater';
+import { 
+	MANAGER_CINEMA_REQUEST,
+	MANAGER_CINEMA_INSERT_REQUEST,
+	MANAGER_CINEMA_INSERT_RESET,
+	MANAGER_CINEMA_DELETE_REQUEST, 
+	MANAGER_CINEMA_DELETE_RESET,
+	MANAGER_CINEMA_UPDATE_REQUEST, 
+	MANAGER_CINEMA_UPDATE_RESET
+} from '../../reducer/R_manager_theater';
 
 const Cinema = () =>{
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-  const { CINEMA_loading, CINEMA, LOGIN_STATUS_done, LOGIN_data } = useSelector(
+  const { THEATER, CINEMA_loading, CINEMA, CINEMA_INSERT_done, CINEMA_INSERT_error, CINEMA_DELETE_done, CINEMA_DELETE_error,
+		CINEMA_UPDATE_done, CINEMA_UPDATE_error, LOGIN_STATUS_done, LOGIN_data } = useSelector(
     state => ({
+			THEATER: state.R_manager_theater.THEATER,
       CINEMA_loading: state.R_manager_theater.CINEMA_loading,
       CINEMA: state.R_manager_theater.CINEMA,
+			CINEMA_INSERT_done: state.R_manager_theater.CINEMA_INSERT_done,
+			CINEMA_INSERT_error: state.R_manager_theater.CINEMA_INSERT_error,
+			CINEMA_DELETE_done: state.R_manager_theater.CINEMA_DELETE_done,
+			CINEMA_DELETE_error: state.R_manager_theater.CINEMA_DELETE_error,
+			CINEMA_UPDATE_done: state.R_manager_theater.CINEMA_UPDATE_done,
+			CINEMA_UPDATE_error: state.R_manager_theater.CINEMA_UPDATE_error,
 			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
       LOGIN_data: state.R_user_login.LOGIN_data
     }),
@@ -44,272 +60,351 @@ const Cinema = () =>{
 	const columns = [
 		{
 			title: '상영관번호',
-			width: 25,
+			width: 80,
 			dataIndex: 'cid',
+			sorter: (a, b) => a.cid - b.cid,
+			sortDirections: ['descend']
 		},
 		{
 			title: '영화관명',
-			width: 25,
+			width: 80,
 			dataIndex: 'tname',
 			sorter: (a, b) => a.tname.localeCompare(b.tname)
 		},
 		{
 			title: '상영관명',
-			width: 25,
+			width: 80,
 			dataIndex: 'cname'
 		},
 		{
 			title: '타입',
-			width: 25,
+			width: 80,
 			dataIndex: 'ctype'
 		},
 		{
 			title: '좌석수',
-			width: 25,
-			dataIndex: 'cseat'
-		}
+			width: 80,
+			render: (text, row) => <div> {row["cseat"]} 좌석 </div>
+		},
+		{
+			title: '보유상영정보',
+			width: 80,
+			render: (text, row) => <div> {row["cntMovieInfo"]} 개 </div>
+		},
+		{
+      title: '관리자',
+      width: 80,
+      render: (text, row) => <TableButton onClick={()=> ClickRowModify(row)}>modify</TableButton>
+    },
 	];  
 
-	// 상영관 변수
+	// 영화관명 변수
+	const [tname, setTname] = useState('');
+	const onChangeTname = (value) => {
+		setTname(value)
+	};
+
+	// 상영관명 변수
   const [name, setName] = useState('');
   const onChangeName = (e) =>{
     setName(e.target.value)
   }
 
-  // 영화관 타입 변수
+  // 상영관 타입 변수
   const [type, setType] = useState('');
   const onChangeAddr = (e) =>{
     setType(e.target.value)
   }
 
-  // 영화관 좌석수 변수
+  // 상영관 좌석수 변수
   const [seat, setSeat] = useState('');
-  const onChangeSeat = (e) =>{
-    setSeat(e.target.value)
+  const onChangeSeat = (value) => {
+    setSeat(value)
   }
 
+	// 모달에 사용되는 useState
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [CinemaId, setCinemaId] = useState();
+	const [delState, setdelState] = useState(true);
 
-	// 내일 왼쪽 버튼을 극장으로 오른쪽을 상영관으로 한다음
-	// 왼쪽 먼저 렌더링 되게 해서 극장을 불러오고 그걸 이 js에서도 써야함 (상영관 추가시)
-	// 그래서 왼쪽에서 극장을 추가하거나 삭제하면 리덕스에 상태를 갱신해줘야함
-	// 이거 구현하면 될듯
-	// 버튼 클릭할때 마다 디비 갱신해서 불러오면 되고
-
-	// 극장을 삭제할때는 상영관이 먼저 다 날라가있어야 삭제 가능
-	// 상영관을 삭제 할때는 6개월 이내에 상영정보가 없어야 삭제 가능
-	// cascade 해야함
-
-	// 아래로 수정
-
-
-	// 이거 어따 쓰는지 몰것음
-	const [messageApi, contextHolder] = message.useMessage();
-
- 
-    
-   
-  
-
-  // 영화관
-  const [area,setArea] = useState('');
-  const [tid ,setId]= useState('')
-
-  const handleChange = (value) => {
-  console.log(value); 
-  setArea(value)
-  setId(value)
-	};
-
-const handleChangeSeat = (value) => {
- setSeat(value)
-};
-
-  const [able, setAble] = useState(false);
-  const [cid , setCid] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  //수정
-  const [modify, setModify] = useState(false);
-  const showModal = (cname, type ,seat, tname,cid,tid) => {
-    setName(cname)
-    setType(type)
-    setSeat(seat)
-    setArea(tname)
-    setId(tid)
-    setCid(cid)
-    setAble(true)
-    setModify(true)
-    setInsert(false)
+	// + 버튼 누를때 실행되는 함수
+	const ClickRowInsert = useCallback(()=> {
     setIsModalOpen(true);
+		setdelState(true);
+  }, []);
+
+	// modify 버튼을 누를때 실행되는 함수
+	const ClickRowModify = useCallback((data) => {
+    if (data.cntMovieInfo !== 0) {
+      alert('보유 상영정보가 없는 상영관만 수정이 가능합니다.');
+      return;
+    }
+
+    // 삭제버튼 활성화 및 상영관 ID 설정
+    setdelState(false);
+    setCinemaId(data.cid);
     
-  };
-
-  //추가
-  const [insert, setInsert] = useState(false);
-  const showModall = () => {
-    setName('')
-    setType('')
-    setSeat('')
-    setArea('')
-    setId('')
-    setModify(false);
-    setInsert(true);
-    setAble(false);
+    // 모달창에 정보 입력
+		setTname(data.tid);
+		setName(data.cname);
+		setType(data.ctype);
+		setSeat(data.cseat);
     setIsModalOpen(true);
+	}, []);
 
- 
-  };
-  const handleOk = () => {
-   if(modify && !insert){
-    if(name!=="" && type !=="" && seat !=="" &&cid !==""){
-    dispatch({
-      type:CINEMA_INSERT_LOADING,
-      data:{
-        tname:"0",
-          cid:cid,
-          cname:name,
-          ctype:type,
-          cseat:seat,
-          state:"update"
+	// 추가 또는 수정 버튼을 누를때 실행되는 함수
+  const onInsertORUpdate = useCallback(()=> {
+		if (tname === '' || name === '' || type === '' || seat === '') {
+			alert('모든 정보를 입력해주세요.');
+			return;
+		}
+
+    // 상영관을 추가할 때
+    if (delState) {
+      if (!window.confirm('상영관을 추가하시겠습니까?')) {
+        return;
       }
-  })
-  setIsModalOpen(false);
+      dispatch({
+				type: MANAGER_CINEMA_INSERT_REQUEST,
+				data: {
+					tid: tname,
+					cname: name,
+					ctype: type,
+					cseat: seat
+				}
+			});
+    }
+    // 상영관을 수정할 때
+    else {
+      if (!window.confirm('상영관을 수정하시겠습니까?')) {
+        return;
+      }
+      dispatch({
+				type: MANAGER_CINEMA_UPDATE_REQUEST,
+				data: {
+					tid: tname,
+					cname: name,
+					ctype: type,
+					cseat: seat,
+					cid: CinemaId
+				}
+			});
+    }
+  }, [tname, name, type, seat, CinemaId, delState, dispatch]);
 
-}
-else{
-  messageApi.open({
-    type: 'warning',
-    content: '데이터를 전부 입력해야합니다.',
-  });
+	// 삭제 버튼 누를때 실행되는 함수
+  const onDelete = useCallback(()=> {
+    if (!window.confirm("상영관을 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다)")) {
+      return;
+    };
 
-}
-  
-   }
-   else if(!modify && insert){
-    if(
-      tid!=="" && name!=="" && type !=="" && seat !=="" 
-    ){
     dispatch({
-        type:CINEMA_INSERT_LOADING,
-        data:{
-          tname:tid,
-          cid:"0",
-          cname:name,
-          ctype:type,
-          cseat:seat,
-          state:"insert"
-        }
-    })
-    setIsModalOpen(false);
-
-  }
-  else{
-    messageApi.open({
-      type: 'warning',
-      content: '데이터를 전부 입력해야합니다.',
+      type: MANAGER_CINEMA_DELETE_REQUEST,
+      data: {
+        cid: CinemaId
+      }
     });
-  }
-  }
-  };
-  const handleCancel = () => {
-    setName('')
-    setType('')
-    setSeat('')
-    setArea('')
-    setId('')
-    setModify(false);
-    setInsert(false);
-    setAble(false);
-    setIsModalOpen(false);
-  };
 
-  const onDelete = () =>{
-    console.log(cid);
-    dispatch({
-      type:CINEMA_INSERT_LOADING,
-      data:{
-        tname:"0",
-        cid:cid,
-        cname:0,
-        ctype:0,
-        cseat:0,
-        state:"delete"
-      }
-  })
-  setIsModalOpen(false);
+  }, [CinemaId, dispatch]);
 
-  }
-      
+	// 상영관 추가 성공여부에 따른 useEffect
+  useEffect(()=> {
+    // 추가 성공
+    if (CINEMA_INSERT_done) {
+      alert('상영관이 추가되었습니다.');
+
+			// 모달 상태 초기화
+			setTname('');
+			setName('');
+			setType('');
+			setSeat('');
+			setIsModalOpen(false);
+
+      dispatch({
+        type: MANAGER_CINEMA_INSERT_RESET
+      });
+
+			dispatch({
+        type: MANAGER_CINEMA_REQUEST
+      });
+		}
+
+    // 추가 실패
+    if (CINEMA_INSERT_error) {
+      alert('상영관 추가에 실패했습니다.');
+      dispatch({
+        type: MANAGER_CINEMA_INSERT_RESET
+      });
+    }
+  }, [CINEMA_INSERT_done, CINEMA_INSERT_error, dispatch]);
+
+	// 상영관 삭제 성공여부에 따른 useEffect
+  useEffect(()=> {
+    // 삭제 성공
+    if (CINEMA_DELETE_done) {
+      alert('상영관이 삭제되었습니다.');
+
+			// 모달 상태 초기화
+			setTname('');
+			setName('');
+			setType('');
+			setSeat('');
+			setIsModalOpen(false);
+
+      dispatch({
+        type: MANAGER_CINEMA_DELETE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_CINEMA_REQUEST
+      });
+    }
+
+    // 삭제 실패
+    if (CINEMA_DELETE_error) {
+      alert('상영관 삭제에 실패했습니다.');
+
+			// 모달 상태 초기화
+			setTname('');
+			setName('');
+			setType('');
+			setSeat('');
+			setIsModalOpen(false);
+			
+			dispatch({
+        type: MANAGER_CINEMA_DELETE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_CINEMA_REQUEST
+      });
+    }
+  }, [CINEMA_DELETE_done, CINEMA_DELETE_error, dispatch]);
+
+	// 상영관 수정 성공여부에 따른 useEffect
+  useEffect(()=> {
+    // 수정 성공
+    if (CINEMA_UPDATE_done) {
+      alert('상영관이 수정되었습니다.');
+
+			// 모달 상태 초기화
+			setTname('');
+			setName('');
+			setType('');
+			setSeat('');
+			setIsModalOpen(false);
+
+      dispatch({
+        type: MANAGER_CINEMA_UPDATE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_CINEMA_REQUEST
+      });
+		}
+
+    // 수정 실패
+    if (CINEMA_UPDATE_error) {
+      alert('상영관 수정에 실패했습니다.');
+
+			// 모달 상태 초기화
+			setTname('');
+			setName('');
+			setType('');
+			setSeat('');
+			setIsModalOpen(false);
+
+      dispatch({
+        type: MANAGER_CINEMA_UPDATE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_CINEMA_REQUEST
+      });
+    }
+  }, [CINEMA_UPDATE_done, CINEMA_UPDATE_error, dispatch]);
+
+	// 모달창 닫을 시 초기화
+	const handleCancel = useCallback(() => {
+		setTname('');
+		setName('');
+		setType('');
+		setSeat('');
+		setIsModalOpen(false);
+	}, []);
+
 	return(
 		<>
-			{/* {contextHolder}  이게 오류 메시지인듯?*/}
 			<div className="search">
 				<p>
-					{CINEMA.length}개의 상영관이 검색되었습니다. (더블 클릭시 수정가능)
+					{CINEMA.length}개의 상영관이 검색되었습니다.
 				</p>
 				<div className="search_button">
-					<Button type="primary" shape="circle" icon={<PlusOutlined/>} 
-					size={"20"} onClick={showModall}/>
+					<Button type="primary" shape="circle" icon={<PlusOutlined/>} size={"20"} onClick={ClickRowInsert}/>
 				</div>
 			</div>
 			<TableWrap rowKey="cid"
 				columns={columns}
 				loading={CINEMA_loading}
 				dataSource={CINEMA}
-				onRow={(record, rowIndex) => {
-					return {
-						onDoubleClick: event => {                 
-							showModal(record.cname, record.ctype, record.cseat, record.tname, record.cid,record.tid)
-						}
-					};
-				}}
 				scroll={{x: 1200}}
+				locale={{ 
+					triggerDesc: '내림차순 정렬하기',
+					triggerAsc: '오름차순 정렬하기', 
+					cancelSort: '정렬해제하기'
+				}}
 			/>
-
-		<Modal title="상영관 추가" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
-			<Form>
-			<Form.Item label="지역">
-			<Select 
-		onChange={handleChange}
-		defaultValue={area}
-		disabled={area}
-	//  options={datas.map((item) => ({
-	//     value: item.tid,
-	//     label: item.tname,
-	//   }))} 
-	>  
-
-			</Select>
-		</Form.Item>  
-		<Form.Item label="상영관명" onChange={onChangeName}>
-			<Input value={name}/>
-		</Form.Item>
-		<Form.Item label="타입" onChange={onChangeAddr}>
-			<Input value={type}/>
-		</Form.Item>
-		<Form.Item label="좌석수" >
-		<Select 
-		onChange={handleChangeSeat}
-		defaultValue={seat}
-	options={[{
-		value: "30",
-		label: "30"
-		},
-	{ value: "50",
-		label: "50"},
-		{ value: "70",
-			label: "70"}]} /> 
-		</Form.Item>
-
-		
-		{modify ?
-		<Form.Item style={{position:'relative', top:'57px'}}>
-		<Button type="primary" danger onClick={()=>{onDelete()}}>
-		삭제
-		</Button>      </Form.Item>
-:""}
-	</Form>
-		</Modal>     </>
+			<ModalWrap 
+			title={delState ? "상영관추가" : "상영관수정"}
+			open={isModalOpen} 
+			onOk={onInsertORUpdate} 
+			okText={delState ? "추가" : "수정"}
+			cancelText="취소"
+			onCancel={handleCancel} destroyOnClose>
+				<Form>
+					<Form.Item label="영화관명">
+						<Select 
+							onChange={onChangeTname}
+							value={tname}
+							options={THEATER.map((theater) => ({
+									value: theater.tid,
+									label: theater.tname,
+								}))}
+						/>  
+					</Form.Item>  
+					<Form.Item label="상영관명" onChange={onChangeName}>
+						<Input value={name}/>
+					</Form.Item>
+					<Form.Item label="타입" onChange={onChangeAddr}>
+						<Input value={type}/>
+					</Form.Item>
+					<Form.Item label="좌석수" >
+						<Select 
+						onChange={onChangeSeat}
+						defaultValue={seat}
+						options={[
+							{
+								value: '30',
+								label: '30',
+							},
+							{
+								value: '50',
+								label: '50',
+							},
+							{
+								value: '70',
+								label: '70',
+							}
+						]}/> 
+					</Form.Item>
+					<Form.Item style={{position:'relative', top:'57px'}}>
+						<Button disabled={delState} onClick={onDelete} type="primary" danger>
+							삭제
+						</Button>       
+					</Form.Item>
+				</Form>
+			</ModalWrap>     
+		</>
 	);
 };
 
@@ -326,6 +421,26 @@ const TableWrap = styled(Table)`
       left: 50%;
       transform:translate(-50%, -45%); /* translate(x축,y축) */
     }
+  }
+`;
+
+const TableButton = styled.button`
+  color: #1677ff;
+  text-decoration: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  border: none;
+`;
+
+const ModalWrap = styled(Modal)`
+  .ant-modal-header {
+    margin-bottom: 16px;
+  }
+
+  .ant-modal-footer {
+    margin-top: 0;
   }
 `;
 

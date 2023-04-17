@@ -7,7 +7,15 @@ import styled from 'styled-components';
 import { Table, Input, Button, Modal, Form, Select } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { MANAGER_THEATER_REQUEST, MANAGER_THEATER_INSERT_REQUEST, MANAGER_THEATER_INSERT_RESET } from '../../reducer/R_manager_theater';
+import { 
+	MANAGER_THEATER_REQUEST, 
+	MANAGER_THEATER_INSERT_REQUEST, 
+	MANAGER_THEATER_INSERT_RESET,
+	MANAGER_THEATER_DELETE_REQUEST, 
+	MANAGER_THEATER_DELETE_RESET,
+	MANAGER_THEATER_UPDATE_REQUEST, 
+	MANAGER_THEATER_UPDATE_RESET
+} from '../../reducer/R_manager_theater';
 import { PlusOutlined } from '@ant-design/icons';
 
 const Theater = () => {
@@ -15,13 +23,17 @@ const Theater = () => {
 	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-  const { THEATER_loading, THEATER, THEATER_INSERT_done, THEATER_INSERT_error, 
-		LOGIN_STATUS_done, LOGIN_data } = useSelector(
+  const { THEATER_loading, THEATER, THEATER_INSERT_done, THEATER_INSERT_error, THEATER_DELETE_done, THEATER_DELETE_error,
+		THEATER_UPDATE_done, THEATER_UPDATE_error, LOGIN_STATUS_done, LOGIN_data } = useSelector(
     state => ({
       THEATER_loading: state.R_manager_theater.THEATER_loading,
       THEATER: state.R_manager_theater.THEATER,
 			THEATER_INSERT_done: state.R_manager_theater.THEATER_INSERT_done,
 			THEATER_INSERT_error: state.R_manager_theater.THEATER_INSERT_error,
+			THEATER_DELETE_done: state.R_manager_theater.THEATER_DELETE_done,
+			THEATER_DELETE_error: state.R_manager_theater.THEATER_DELETE_error,
+			THEATER_UPDATE_done: state.R_manager_theater.THEATER_UPDATE_done,
+			THEATER_UPDATE_error: state.R_manager_theater.THEATER_UPDATE_error,
 			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
       LOGIN_data: state.R_user_login.LOGIN_data
     }),
@@ -112,10 +124,10 @@ const Theater = () => {
 
 	// modify 버튼을 누를때 실행되는 함수
 	const ClickRowModify = useCallback((data) => {
-    // if (data.cntCinema !== 0) {
-    //   alert('보유 상영관이 없는 영화관만 수정이 가능합니다.');
-    //   return;
-    // }
+    if (data.cntCinema !== 0) {
+      alert('보유 상영관이 없는 영화관만 수정이 가능합니다.');
+      return;
+    }
 
     // 삭제버튼 활성화 및 영화관 ID 설정
     setdelState(false);
@@ -147,13 +159,7 @@ const Theater = () => {
 			return;
 		}
 
-    // 영화관을 추가할 때
-    if (delState) {
-      if (!window.confirm('영화관을 추가하시겠습니까?')) {
-        return;
-      }
-
-			var value = null;
+		var value = null;
       if (area === 'seoul') {
         value = '서울';
       }
@@ -167,6 +173,11 @@ const Theater = () => {
         value = '부산';
       }
 
+    // 영화관을 추가할 때
+    if (delState) {
+      if (!window.confirm('영화관을 추가하시겠습니까?')) {
+        return;
+      }
       dispatch({
 				type: MANAGER_THEATER_INSERT_REQUEST,
 				data: {
@@ -181,33 +192,32 @@ const Theater = () => {
       if (!window.confirm('영화관을 수정하시겠습니까?')) {
         return;
       }
-      // dispatch({
-			// 	type: MANAGER_MOVIEINFO_UPDATE_REQUEST,
-			// 	data: {
-      //     miid: infoId,
-			// 		mid: selectMovieModal,
-      //     cid: selectCinemaModal,
-      //     updateStartDay: dayStartModal,
-      //     updateEndDay: dayEndModal
-			// 	}
-			// });
+      dispatch({
+				type: MANAGER_THEATER_UPDATE_REQUEST,
+				data: {
+					tname: name,
+					tarea: value,
+					taddr: addr,
+					tid : theaterId
+				}
+			});
     }
-  }, [area, name, addr, delState, dispatch]);
+  }, [area, name, addr, theaterId, delState, dispatch]);
 
-	// // 삭제 버튼 누를때 실행되는 함수
-  // const onDelete = useCallback(()=> {
-  //   if (!window.confirm("영화관을 삭제하시겠습니까? (삭제한 정보는 복구되지 않습니다.)")) {
-  //     return;
-  //   };
+	// 삭제 버튼 누를때 실행되는 함수
+  const onDelete = useCallback(()=> {
+    if (!window.confirm("영화관을 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다)")) {
+      return;
+    };
 
-  //   dispatch({
-  //     type: MANAGER_MOVIEINFO_DELETE_REQUEST,
-  //     data: {
-  //       miid: infoId
-  //     }
-  //   });
+    dispatch({
+      type: MANAGER_THEATER_DELETE_REQUEST,
+      data: {
+        tid: theaterId
+      }
+    });
 
-  // }, [infoId, dispatch]);
+  }, [theaterId, dispatch]);
 
 	// 영화관 추가 성공여부에 따른 useEffect
   useEffect(()=> {
@@ -216,10 +226,10 @@ const Theater = () => {
       alert('영화관이 추가되었습니다.');
 
 			// 모달 상태 초기화
-			setAddr('')
-			setName('')
-			setArea('')
-			setIsModalOpen(false)
+			setAddr('');
+			setName('');
+			setArea('');
+			setIsModalOpen(false);
 
       dispatch({
         type: MANAGER_THEATER_INSERT_RESET
@@ -231,7 +241,7 @@ const Theater = () => {
 		}
 
     // 추가 실패
-    if(THEATER_INSERT_error) {
+    if (THEATER_INSERT_error) {
       alert('영화관 추가에 실패했습니다.');
       dispatch({
         type: MANAGER_THEATER_INSERT_RESET
@@ -239,12 +249,94 @@ const Theater = () => {
     }
   }, [THEATER_INSERT_done, THEATER_INSERT_error, dispatch]);
 
+	// 영화관 삭제 성공여부에 따른 useEffect
+  useEffect(()=> {
+    // 삭제 성공
+    if (THEATER_DELETE_done) {
+      alert('영화관이 삭제되었습니다.');
+
+			// 모달 상태 초기화
+			setAddr('');
+			setName('');
+			setArea('');
+			setIsModalOpen(false);
+
+      dispatch({
+        type: MANAGER_THEATER_DELETE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_THEATER_REQUEST
+      });
+    }
+
+    // 삭제 실패
+    if (THEATER_DELETE_error) {
+      alert('영화관 삭제에 실패했습니다.');
+
+			// 모달 상태 초기화
+			setAddr('');
+			setName('');
+			setArea('');
+			setIsModalOpen(false);
+			
+			dispatch({
+        type: MANAGER_THEATER_DELETE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_THEATER_REQUEST
+      });
+    }
+  }, [THEATER_DELETE_done, THEATER_DELETE_error, dispatch]);
+
+	// 영화관 수정 성공여부에 따른 useEffect
+  useEffect(()=> {
+    // 수정 성공
+    if (THEATER_UPDATE_done) {
+      alert('영화관이 수정되었습니다.');
+
+			// 모달 상태 초기화
+			setAddr('');
+			setName('');
+			setArea('');
+			setIsModalOpen(false);
+
+      dispatch({
+        type: MANAGER_THEATER_UPDATE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_THEATER_REQUEST
+      });
+		}
+
+    // 수정 실패
+    if (THEATER_UPDATE_error) {
+      alert('영화관 수정에 실패했습니다.');
+
+			// 모달 상태 초기화
+			setAddr('');
+			setName('');
+			setArea('');
+			setIsModalOpen(false);
+
+      dispatch({
+        type: MANAGER_THEATER_UPDATE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_THEATER_REQUEST
+      });
+    }
+  }, [THEATER_UPDATE_done, THEATER_UPDATE_error, dispatch]);
+
 	// 모달창 닫을 시 초기화
 	const handleCancel = useCallback(() => {
-		setAddr('')
-		setName('')
-		setArea('')
-		setIsModalOpen(false)
+		setAddr('');
+		setName('');
+		setArea('');
+		setIsModalOpen(false);
 	}, []);
 
 	return(
@@ -307,7 +399,7 @@ const Theater = () => {
 						<Input value={addr}/>
 					</Form.Item>
 					<Form.Item style={{position:'relative', top:'57px'}}>
-						<Button disabled={delState} type="primary" danger>
+						<Button disabled={delState} onClick={onDelete} type="primary" danger>
               삭제
             </Button>       
 					</Form.Item>

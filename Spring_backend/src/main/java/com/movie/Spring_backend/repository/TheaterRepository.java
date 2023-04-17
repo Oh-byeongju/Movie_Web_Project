@@ -8,20 +8,18 @@ import com.movie.Spring_backend.entity.TheaterEntity;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface TheaterRepository extends JpaRepository<TheaterEntity, Long>  {
+public interface TheaterRepository extends JpaRepository<TheaterEntity, Long> {
+
+    // 영화관 수정하는 메소드
+    @Modifying
+    @Query("UPDATE TheaterEntity as t " +
+            "SET t.tname = :tname, t.tarea = :tarea, t.taddr = :taddr WHERE t.tid = :tid")
+    void TheaterUpdate(@Param("tname") String tname, @Param("tarea") String tarea,
+                       @Param("taddr")String taddr, @Param("tid") Long tid);
 
 
-
-
-
-    //JpaRepository<Entity클래스, PK값>
-    List<TheaterEntity> findAll();
-
-
-  
     //영화로 극장을 검색하는 메소드, able
     @Query("select theater from TheaterEntity as theater where theater.tid in " +
             "(select cinema.theater.tid from CinemaEntity as cinema where cinema.cid in (" +
@@ -65,14 +63,6 @@ public interface TheaterRepository extends JpaRepository<TheaterEntity, Long>  {
             "select info.cinema.cid from MovieInfoEntity as info where info.miday= :miday and " +
             "info.movie.mid = :mid and info.mistarttime >= function('addtime', now(), '0:30:00')))")
     List<TheaterEntity> DayMovieToTheaterDis(@Param("miday") Date miday, @Param("mid")Long mid);
-
-    @Modifying
-    @Query("update TheaterEntity set tname = :tname ,taddr = :taddr where tid = :tid")
-    public void updateTheater(@Param("tname")String tname,@Param("taddr")String taddr, @Param("tid") Long tid);
-
-
-
-
 
 
 }

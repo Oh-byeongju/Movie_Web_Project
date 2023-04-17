@@ -44,37 +44,5 @@ public class CinemaService {
                 CinemaDto.builder().cid(data.getCid()).cname(data.getCname()).ctype(data.getCtype()).cseat(data.getCseat())
                         .tname(data.getTheater().getTname()).tid(data.getTheater().getTid()).build()).collect(Collectors.toList());
     }
-
-     @Transactional
-     public void insert(@RequestBody Map<String, String> requestMap, HttpServletRequest request, MultipartFile[] multipartFile) {
-
-            String tid = requestMap.get("tname").trim();
-            String cid = requestMap.get("cid").trim();
-            String name = requestMap.get("cname").trim();
-            String type = requestMap.get("ctype").trim();
-            String seat = requestMap.get("cseat").trim();
-            String state = requestMap.get("state").trim();
-         System.out.println("tid" +  tid);
-         if(state.equals("insert")){
-                System.out.println(tid);
-                TheaterEntity theater = TheaterEntity.builder().tid(Long.valueOf(tid)).build();
-
-                CinemaEntity cinema;
-                cinema = CinemaEntity.builder()
-                        .cname(name)
-                        .ctype(type)
-                        .cseat(Integer.valueOf(seat))
-                        .theater(theater)
-                        .build();
-                cinemaRepository.save(cinema);
-            }
-            else if(state.equals("update")){
-                cinemaRepository.updateCinema(name,type, Integer.valueOf(seat), Long.valueOf(cid));
-            }
-            else if(state.equals("delete")){
-                cinemaRepository.deleteById(Long.valueOf(cid));
-            }
-    }
-
 }
 

@@ -91,19 +91,42 @@ public class ManagerOneController {
     // 영화관 삭제 메소드
     @DeleteMapping("/auth/deleteTheater")
     public ResponseEntity<String> DeleteTheater(HttpServletRequest request, @RequestParam Long tid) {
-
-
-
-        managerOneService.MovieInfoDelete(request, miid);
+        managerOneService.TheaterDelete(request, tid);
         return ResponseEntity.noContent().build();
     }
 
-
+    // 영화관 수정 메소드
+    @PatchMapping("/auth/updateTheater")
+    public ResponseEntity<String> UpdateTheater(HttpServletRequest request, @RequestBody TheaterDto requestDto) {
+        managerOneService.TheaterUpdate(request, requestDto);
+        return ResponseEntity.noContent().build();
+    }
 
     // 상영관 조회 메소드
     @GetMapping("/auth/allCinema")
     public ResponseEntity<List<CinemaDto>> AllCinema(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllCinemaSearch(request));
+    }
+
+    // 상영관 추가 메소드
+    @PostMapping("/auth/insertCinema")
+    public ResponseEntity<String> InsertCinema(HttpServletRequest request, @RequestBody CinemaDto requestDto) {
+        managerOneService.CinemaInsert(request, requestDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 상영관 삭제 메소드
+    @DeleteMapping("/auth/deleteCinema")
+    public ResponseEntity<String> DeleteCinema(HttpServletRequest request, @RequestParam Long cid) {
+        managerOneService.CinemaDelete(request, cid);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 상영관 수정 메소드
+    @PatchMapping("/auth/updateCinema")
+    public ResponseEntity<String> UpdateCinema(HttpServletRequest request, @RequestBody CinemaDto requestDto) {
+        managerOneService.CinemaUpdate(request, requestDto);
+        return ResponseEntity.noContent().build();
     }
 
     // 상영정보 불러오는 메소드

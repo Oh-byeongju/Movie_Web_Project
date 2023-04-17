@@ -5,6 +5,9 @@ package com.movie.Spring_backend.service;
 
 import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.entity.*;
+import com.movie.Spring_backend.error.exception.EntityNotFoundException;
+import com.movie.Spring_backend.error.exception.ErrorCode;
+import com.movie.Spring_backend.error.exception.InvalidValueException;
 import com.movie.Spring_backend.exceptionlist.MovieInfoExistException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.repository.*;
@@ -12,6 +15,7 @@ import com.movie.Spring_backend.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +44,7 @@ public class ManagerOneService {
     private final ActorRepository actorRepository;
     private final TheaterRepository theaterRepository;
     private final CinemaRepository cinemaRepository;
+    private final SeatRepository seatRepository;
     private final EntityManagerFactory entityManagerFactory;
     private final BoardRepository boardRepository;
     String POSTER_PATH = "/Users/mok/Desktop/Movie_Project/React_frontend/public/img/ranking";
@@ -513,13 +518,27 @@ public class ManagerOneService {
         theaterRepository.deleteById(tid);
     }
 
+    // 영화관을 수정하는 메소드
+    @Transactional
+    public void TheaterUpdate(HttpServletRequest request, TheaterDto requestDto) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
 
+        // 영화관 수정에 필요한 정보 Entity로 변환
+        TheaterEntity theater = TheaterEntity.builder().tid(requestDto.getTid()).build();
 
+        // 영화관 수정전 영화관에 대한 상영관 정보 조회
+        List<CinemaEntity> cinema = cinemaRepository.findByTheater(theater);
 
+        // 상영관이 존재할경우 예외처리
+        if(!cinema.isEmpty()) {
+            throw new InvalidValueException("상영관이 존재합니다.", ErrorCode.CINEMA_IS_EXIST);
+        }
 
-
-
-
+        // 영화관 정보 수정
+        theaterRepository.TheaterUpdate(requestDto.getTname(), requestDto.getTarea(),
+                requestDto.getTaddr(), requestDto.getTid());
+    }
 
     // 전체 상영관 불러오는 메소드
     public List<CinemaDto> AllCinemaSearch(HttpServletRequest request) {
@@ -537,7 +556,109 @@ public class ManagerOneService {
                 .cseat(cinema.getCseat())
                 .tid(cinema.getTheater().getTid())
                 .tname(cinema.getTheater().getTname())
+                .cntMovieInfo(cinema.getCntMovieInfo())
                 .build()).collect(Collectors.toList());
+    }
+
+    // 상영관을 추가하는 메소드
+    @Transactional
+    public void CinemaInsert(HttpServletRequest request, CinemaDto requestDto) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 상영관 정보 추가
+        cinemaRepository.save(CinemaEntity.builder()
+                .cname(requestDto.getCname())
+                .ctype(requestDto.getCtype())
+                .cseat(requestDto.getCseat())
+                .theater(TheaterEntity.builder().tid(requestDto.getTid()).build()).build());
+
+        // 추가한 상영관의 ID값으로 Entity 생성
+        List<CinemaEntity> cinemas = cinemaRepository.findAll();
+        CinemaEntity cinema = CinemaEntity.builder().cid(cinemas.get(cinemas.size()-1).getCid()).build();
+
+        // 상영관에 좌석수에 따라 알파벳 순서대로 10자리씩 상영관에 대한 개별 좌석 생성 후 SeatEntity 리스트에 삽입
+        // ex) 30자리 -> A1~A10, B1~B10, C1~C10
+        List<SeatEntity> seats = new ArrayList<>();
+        int num = 65;
+        for (int i = 0; i < requestDto.getCseat() / 10; i++) {
+            String alpha = String.valueOf((char) (num+i));
+            for (int j = 1; j <= 10; j++) {
+                SeatEntity seat = SeatEntity.builder().sname(alpha + j).cinema(cinema).build();
+                seats.add(seat);
+            }
+        }
+        // 상영관에 대한 개별 좌석 Insert(DB 테이블)
+        seatRepository.saveAll(seats);
+    }
+
+    // 상영관을 삭제하는 메소드
+    @Transactional
+    public void CinemaDelete(HttpServletRequest request, Long cid) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 상영관 삭제에 필요한 정보 Entity로 변환
+        CinemaEntity cinema = CinemaEntity.builder().cid(cid).build();
+
+        // 상영관 삭제전 상영관이 사용된 상영정보 조회
+        List<MovieInfoEntity> movieInfos = movieInfoRepository.findByCinema(cinema);
+
+        // 상영정보가 존재할 경우 예외처리
+        if (!movieInfos.isEmpty()) {
+            throw new MovieInfoExistException("상영정보가 존재합니다.");
+        }
+
+        // 상영관 및 상영관에 대한 개별좌석 제거
+        seatRepository.deleteByCinema(cinema);
+        cinemaRepository.deleteById(cid);
+    }
+
+    // 상영관을 수정하는 메소드
+    @Transactional
+    public void CinemaUpdate(HttpServletRequest request, CinemaDto requestDto) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 상영관 수정에 필요한 정보 Entity로 변환
+        CinemaEntity cinema = cinemaRepository.findById(requestDto.getCid())
+                .orElseThrow(() -> new EntityNotFoundException("상영관이 존재하지 않습니다.", ErrorCode.CINEMA_IS_NONE));
+        TheaterEntity theater = TheaterEntity.builder().tid(requestDto.getTid()).build();
+
+        // 상영관 수정전 상영관이 사용된 상영정보 조회
+        List<MovieInfoEntity> movieInfos = movieInfoRepository.findByCinema(cinema);
+
+        // 상영정보가 존재할 경우 예외처리
+        if (!movieInfos.isEmpty()) {
+            throw new MovieInfoExistException("상영정보가 존재합니다.");
+        }
+
+        // 상영관의 수정하는 좌석수와 DB에 저장된 좌석수가 일치하는지에 대한 변수
+        boolean equal = Objects.equals(cinema.getCseat(), requestDto.getCseat());
+
+        // 상영관 정보 수정
+        cinemaRepository.CinemaUpdate(requestDto.getCname(), requestDto.getCtype(), requestDto.getCseat(),
+                theater, requestDto.getCid());
+
+        // 좌석수를 변경했을 경우
+        if (!equal) {
+            // 상영관에 대한 개별좌석 제거
+            seatRepository.deleteByCinema(cinema);
+
+            // 상영관에 좌석수에 따라 알파벳 순서대로 10자리씩 상영관에 대한 개별 좌석 생성 후 SeatEntity 리스트에 삽입
+            // ex) 30자리 -> A1~A10, B1~B10, C1~C10
+            List<SeatEntity> seats = new ArrayList<>();
+            int num = 65;
+            for (int i = 0; i < requestDto.getCseat() / 10; i++) {
+                String alpha = String.valueOf((char) (num+i));
+                for (int j = 1; j <= 10; j++) {
+                    SeatEntity seat = SeatEntity.builder().sname(alpha + j).cinema(cinema).build();
+                    seats.add(seat);
+                }
+            }
+            // 상영관에 대한 개별 좌석 Insert(DB 테이블)
+            seatRepository.saveAll(seats);
+        }
     }
 
     // 상영정보를 불러오는 메소드
@@ -654,7 +775,7 @@ public class ManagerOneService {
 
         // JPA 사용을 위한 형 변환
         MovieInfoEntity movieInfo = MovieInfoEntity.builder().miid(miid).build();
-        
+
         // 상영정보 삭제전 상영정보에 대한 예매기록 조회
         List<ReservationEntity> reservation = reservationRepository.findByMovieInfo(movieInfo);
 

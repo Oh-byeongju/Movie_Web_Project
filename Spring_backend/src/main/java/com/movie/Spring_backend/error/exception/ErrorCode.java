@@ -35,7 +35,11 @@ public enum ErrorCode {
     COMMENT_IS_EXIST(400, "MC002", "작성된 관람평이 존재합니다."),
     WATCHING_IS_NONE(400, "MC003", "영화 관람기록이 없습니다."),
     RESERVE_IS_NONE(400, "MR001", "영화 예매기록이 없습니다."),
-    MOVIEINFO_IS_EXIST(400, "MI001", "수정이 불가능한 상영정보입니다.");
+    MOVIEINFO_IS_EXIST(400, "MI001", "수정이 불가능한 상영정보입니다."),
+
+    // THEATER
+    CINEMA_IS_EXIST(400, "T001", "상영관이 존재합니다."),
+    CINEMA_IS_NONE(400, "T002", "상영관이 존재하지 않습니다.");
 
     private final String code;
     private final String message;

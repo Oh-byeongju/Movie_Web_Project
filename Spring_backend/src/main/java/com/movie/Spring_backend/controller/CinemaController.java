@@ -37,9 +37,5 @@ public class CinemaController {
     public ResponseEntity<List<CinemaDto>> cinema() {
         return ResponseEntity.ok().body(cinemaService.findall());
     }
-    @PostMapping("/normal/insertcinema")
-    public void insert(@RequestBody Map<String, String> requestMap, HttpServletRequest request,
-                       @RequestBody MultipartFile multipartFile[]){
-        cinemaService.insert(requestMap,request,multipartFile);
-    }
+
 }

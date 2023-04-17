@@ -11,6 +11,7 @@ import {
   USER_LOGOUT_REQUEST, USER_LOGOUT_SUCCESS, USER_LOGOUT_FAILURE,
   USER_ID_FIND_REQUEST, USER_ID_FIND_SUCCESS, USER_ID_FIND_FAILURE,
   USER_PW_FIND_REQUEST, USER_PW_FIND_SUCCESS, USER_PW_FIND_FAILURE,
+  USER_PW_CHANGE_REQUEST, USER_PW_CHANGE_SUCCESS, USER_PW_CHANGE_FAILURE,
   USER_PW_CHECK_REQUEST, USER_PW_CHECK_SUCCESS, USER_PW_CHECK_FAILURE
 } from "../reducer/R_user_login";
 import { http } from "../lib/http";
@@ -160,6 +161,32 @@ async function CallUserFindPw(data) {
     });
 }
 
+// 비밀번호 변경 함수
+function* UserChangePw(action) {
+  const result = yield call(CallUserChangePw, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: USER_PW_CHANGE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+      type: USER_PW_CHANGE_FAILURE
+    });
+  }
+}
+
+// 비밀번호 변경 함수 백엔드 호출
+async function CallUserChangePw(data) {
+  return await http.patch("/member/normal/changePw", data)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
 // 비밀번호 비교 함수
 function* UserPwCheck(action) {
   const result = yield call(callPwCheck, action.data);
@@ -214,15 +241,20 @@ function* USER_PWFIND() {
   yield takeLatest(USER_PW_FIND_REQUEST, UserFindPw);
 }
 
+function* USER_PWCHANGE() {
+  yield takeLatest(USER_PW_CHANGE_REQUEST, UserChangePw);
+}
+
 function* USER_PWCHECK() {
   yield takeLatest(USER_PW_CHECK_REQUEST, UserPwCheck);
 }
 
 export default function* S_user_login() {
   yield all([fork(USER_LOGIN),
-     fork(USER_STATUS), 
-     fork(USER_LOGOUT), 
-     fork(USER_IDFIND), 
-     fork(USER_PWFIND),
-     fork(USER_PWCHECK)]);
+    fork(USER_STATUS), 
+    fork(USER_LOGOUT), 
+    fork(USER_IDFIND), 
+    fork(USER_PWFIND),
+    fork(USER_PWCHANGE),
+    fork(USER_PWCHECK)]);
 }

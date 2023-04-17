@@ -36,10 +36,6 @@ public class TheaterController {
         return theaterService.getInfo();
     }
 
-    @PostMapping("/normal/inserttheater")
-    public void insert(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
-        theaterService.insert(requestMap,request);
-    }
 }
 
 

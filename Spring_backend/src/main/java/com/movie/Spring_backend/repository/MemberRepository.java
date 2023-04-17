@@ -24,6 +24,11 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
     // 회원 이름, 아이디, 이메일을 이용하여 검색하는 메소드
     Optional<MemberEntity> findByUnameAndUidAndUemail(String uname, String uid, String Uemail);
 
+    // 비밀번호 변경 메소드
+    @Modifying
+    @Query("UPDATE MemberEntity u SET u.upw = :upw WHERE u.uid = :uid")
+    void MemberPwUpdate(@Param("uid") String uid, @Param("upw") String upw);
+
     // 회원정보를 수정했을 때 실행되는 메소드
     @Modifying
     @Query("UPDATE MemberEntity u " +

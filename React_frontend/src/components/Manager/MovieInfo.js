@@ -11,15 +11,18 @@ import dayjs from 'dayjs';
 import "dayjs/locale/ko";
 import * as date from "../../lib/date.js";
 import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 const { RangePicker } = DatePicker;
 
 const MovieInfo = () => {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-  const { LOGIN_data, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST, MOVIEINFO_CINEMA_LIST } = useSelector(
+  const { LOGIN_data, LOGIN_STATUS_done, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST, MOVIEINFO_CINEMA_LIST } = useSelector(
     state => ({
       LOGIN_data: state.R_user_login.LOGIN_data,
+			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
       MOVIEINFO_MOVIE_LIST: state.R_manager_movieinfo.MOVIEINFO_MOVIE_LIST,
 			MOVIEINFO_THEATER_LIST: state.R_manager_movieinfo.MOVIEINFO_THEATER_LIST,
 			MOVIEINFO_CINEMA_LIST: state.R_manager_movieinfo.MOVIEINFO_CINEMA_LIST
@@ -29,8 +32,14 @@ const MovieInfo = () => {
 
 	// 모든 영화 및 상영관 조회 useEffect
   useEffect(() => {
+		// 관리자 이외의 계정은 접근 불가능
+		if (LOGIN_STATUS_done && LOGIN_data.uid !== 'manager') {
+			alert('관리자 계정만 사용 가능합니다. 관리자 계정으로 로그인 해주세요! (id : manager, pw: manager123456)');
+			navigate('/');
+		}
+
 		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
-		if (LOGIN_data.uid !== 'No_login' && MOVIEINFO_MOVIE_LIST.length === 0 && MOVIEINFO_THEATER_LIST.length === 0 && MOVIEINFO_CINEMA_LIST.length === 0) {
+		if (LOGIN_data.uid === 'manager' && MOVIEINFO_MOVIE_LIST.length === 0 && MOVIEINFO_THEATER_LIST.length === 0 && MOVIEINFO_CINEMA_LIST.length === 0) {
 		 	dispatch({
 			 	type: MANAGER_MOVIEINFO_MOVIE_LIST_REQUEST
 		 	});
@@ -54,7 +63,7 @@ const MovieInfo = () => {
 				}
 			});
 	 	}
- 	}, [LOGIN_data.uid, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST, MOVIEINFO_CINEMA_LIST, dispatch])
+ 	}, [LOGIN_data.uid, LOGIN_STATUS_done, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST, MOVIEINFO_CINEMA_LIST, dispatch, navigate]);
 
 	// 분리된 극장들 변수
 	const [seoulTheater, setseoulTheater] = useState('');

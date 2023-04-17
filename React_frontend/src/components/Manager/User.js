@@ -3,17 +3,20 @@ import styled from 'styled-components';
 import { Table, Input } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { MANAGER_USER_LIST_REQUEST, MANAGER_USER_DROP_REQUEST } from '../../reducer/R_manager_user';
+import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 const User = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // 필요한 리덕스 상태들
-  const { USER_LIST_loading, USER_DROP_loading, USER_LIST, LOGIN_data } = useSelector(
+  const { USER_LIST_loading, USER_DROP_loading, USER_LIST, LOGIN_STATUS_done, LOGIN_data } = useSelector(
     state => ({
       USER_LIST_loading: state.R_manager_user.USER_LIST_loading,
       USER_DROP_loading: state.R_manager_user.USER_DROP_loading,
       USER_LIST: state.R_manager_user.USER_LIST,
+      LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
       LOGIN_data: state.R_user_login.LOGIN_data
     }),
     shallowEqual
@@ -21,8 +24,14 @@ const User = () => {
 
   // 모든 유저 조회 useEffect
   useEffect(()=> {
+    // 관리자 이외의 계정은 접근 불가능
+    if (LOGIN_STATUS_done && LOGIN_data.uid !== 'manager') {
+      alert('관리자 계정만 사용 가능합니다. 관리자 계정으로 로그인 해주세요! (id : manager, pw: manager123456)');
+      navigate('/');
+    }
+
     // 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
-    if (LOGIN_data.uid !== 'No_login') {
+    if (LOGIN_data.uid === 'manager') {
       dispatch({
         type: MANAGER_USER_LIST_REQUEST,
         data: {
@@ -33,7 +42,7 @@ const User = () => {
         }
       });
     }
-  }, [LOGIN_data.uid, dispatch])
+  }, [LOGIN_STATUS_done, LOGIN_data.uid, navigate, dispatch])
 
   // 검색칸 내용 변수
   const [search, setsearch] = useState('');

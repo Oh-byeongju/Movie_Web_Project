@@ -157,7 +157,7 @@ const TopButtons = () => {
                   <Link to="/ManagerPage/MovieInfo">상영정보관리</Link>
                 </div>
                 <div className="category">
-                  <Link to="/ManagerPage/Cinema">영화관 관리</Link>
+                  <Link to="/ManagerPage/Building">영화관 관리</Link>
                 </div>
               </div>
               <div className="menu_category">

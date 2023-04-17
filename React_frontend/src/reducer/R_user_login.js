@@ -33,6 +33,11 @@ export const USER_PW_FIND_SUCCESS = "USER_PW_FIND_SUCCESS";
 export const USER_PW_FIND_FAILURE = "USER_PW_FIND_FAILURE";
 export const USER_PW_FIND_RESET = "USER_PW_FIND_RESET";
 
+// 비밀번호 변경 리스트
+export const USER_PW_CHANGE_REQUEST = "USER_PW_CHANGE_REQUEST";
+export const USER_PW_CHANGE_SUCCESS = "USER_PW_CHANGE_SUCCESS";
+export const USER_PW_CHANGE_FAILURE = "USER_PW_CHANGE_FAILURE";
+
 // 마이페이지 비밀번호 재확인 리스트
 export const USER_PW_CHECK_REQUEST = "USER_PW_CHECK_REQUEST";
 export const USER_PW_CHECK_SUCCESS = "USER_PW_CHECK_SUCCESS";
@@ -62,6 +67,10 @@ const initalState = {
   PW_FIND_done: false,
   PW_FIND_error: null,
   PW_FIND_data: '',
+
+  PW_CHANGE_loading: false,
+  PW_CHANGE_done: false,
+  PW_CHANGE_error: null,
 
   PW_CHECK_loading: false,
   PW_CHECK_done: false,
@@ -123,7 +132,7 @@ const R_user_login = (state = initalState, action) => {
       return {
         ...state,
         LOGIN_STATUS_loading: false,
-        LOGIN_STATUS_done: false,
+        LOGIN_STATUS_done: true,
         LOGIN_STATUS_error: action.data,
       };
     // 로그아웃 케이스들
@@ -211,6 +220,28 @@ const R_user_login = (state = initalState, action) => {
         PW_FIND_done: false,
         PW_FIND_error: null,
         PW_FIND_data: ''
+      };
+    // 비밀번호 변경 케이스들
+    case USER_PW_CHANGE_REQUEST:
+      return {
+        ...state,
+        PW_CHANGE_loading: true,
+        PW_CHANGE_done: false,
+        PW_CHANGE_error: null
+      };
+    case USER_PW_CHANGE_SUCCESS:
+      return {
+        ...state,
+        PW_CHANGE_loading: false,
+        PW_CHANGE_done: true,
+        PW_CHANGE_error: null
+      };
+    case USER_PW_CHANGE_FAILURE:
+      return {
+        ...state,
+        PW_CHANGE_loading: false,
+        PW_CHANGE_done: false,
+        PW_CHANGE_error: true
       };
     // 비밀번호 비교 케이스들
     case USER_PW_CHECK_REQUEST:

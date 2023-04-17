@@ -39,12 +39,5 @@ public class MovieActorEntity {
         this.movie = movie;
         this.actor = actor;
     }
-
-    public void updateActor(Long maid, String marole, MovieEntity movie, ActorEntity actor){
-        this.maid = maid;
-        this.marole = marole;
-        this.movie = movie;
-        this.actor = actor;
-    }
 }
 

@@ -1161,7 +1161,6 @@ const TextType = styled.span`
 	padding-left: 5px;
 `;
 
-
 const ButtonForm = styled.div`
 	display: flex;
 	-webkit-box-pack: center;

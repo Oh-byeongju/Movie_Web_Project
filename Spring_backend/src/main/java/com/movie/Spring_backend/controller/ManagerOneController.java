@@ -27,17 +27,12 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/manager")
+@RequestMapping("/Manager")
 public class ManagerOneController {
 
     String POSTER_PATH = "/Users/mok/Desktop/Movie_Project/React_frontend/public/img/ranking";
 
-    private final MovieService movieService;
-    private final JwtValidCheck jwtValidCheck;
     private final ManagerOneService managerOneService;
-
-    private final BoardService boardService;
-
     private final BoardCommentService boardCommentService;
     //영화 가져오기
 
@@ -79,6 +74,31 @@ public class ManagerOneController {
         }
         return null;
     }
+
+    // 영화관 조회 메소드
+    @GetMapping("/auth/allTheater")
+    public ResponseEntity<List<TheaterDto>> AllTheater(HttpServletRequest request) {
+        return ResponseEntity.ok().body(managerOneService.AllTheaterSearch(request));
+    }
+
+    // 영화관 추가 메소드
+    @PostMapping("/auth/insertTheater")
+    public ResponseEntity<String> InsertTheater(HttpServletRequest request, @RequestBody TheaterDto requestDto) {
+        managerOneService.TheaterInsert(request, requestDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 영화관 삭제 메소드
+    @DeleteMapping("/auth/deleteTheater")
+    public ResponseEntity<String> DeleteTheater(HttpServletRequest request, @RequestParam Long tid) {
+
+
+
+        managerOneService.MovieInfoDelete(request, miid);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
     // 상영관 조회 메소드
     @GetMapping("/auth/allCinema")

@@ -35,6 +35,19 @@ const InfoCheck = () => {
 
 	// 확인 버튼을 누를 때 함수
 	const onCheck = useCallback(() => {
+
+		// 테스트 계정 수정을 방지하는 예외처리
+		for (var i = 1; i <= 1120; i++) {
+			if (LOGIN_data.uid === 'temp' + i) {
+				alert('기존에 존재하는 테스트 계정은 회원정보 수정이 불가능합니다.');
+				return;
+			}
+		}
+		if (LOGIN_data.uid === 'manager') {
+			alert('기존에 존재하는 테스트 계정은 회원정보 수정이 불가능합니다.');
+			return;
+		}
+		
 		if (pw === '') {
 			alert('비밀번호를 입력해주세요.');
 			return;
@@ -45,7 +58,7 @@ const InfoCheck = () => {
 			data: pw
 		});
 		
-	}, [pw, dispatch]);
+	}, [pw, LOGIN_data.uid, dispatch]);
 
 	// 비밀번호 재확인의 성공 여부를 알리는 useEffect
 	useEffect(()=> {
@@ -92,6 +105,9 @@ const InfoCheck = () => {
 				</h4>
 				<p>
 					정보를 안전하게 보호하기 위해 비밀번호를 한번 더 입력해주세요.
+						<div>
+							(기존에 존재하는 테스트계정은 회원정보 수정 및 삭제가 불가능합니다!)
+						</div>
 				</p>
 				<ContentDetail>
 					<Inputs>

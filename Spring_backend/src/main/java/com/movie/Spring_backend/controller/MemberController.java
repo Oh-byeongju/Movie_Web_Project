@@ -58,6 +58,13 @@ public class MemberController {
         return ResponseEntity.ok().body(memberService.findPw(requestMap));
     }
 
+    // 비밀번호 변경 메소드
+    @PatchMapping("/normal/changePw")
+    public ResponseEntity<String> changePw(@RequestBody MemberDto requestDto) {
+        memberService.changePw(requestDto);
+        return ResponseEntity.noContent().build();
+    }
+
     // 로그인을 위한 메소드, id와 pw가 일치할 경우 Token을 생성하여 리턴
     @PostMapping("/normal/login")
     public ResponseEntity<MemberDto> login_check(@RequestBody MemberDto requestDto, HttpServletResponse response) {

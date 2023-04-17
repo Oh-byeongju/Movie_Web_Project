@@ -85,7 +85,7 @@ function* AllCinema() {
 
 // 상영관 조회 백엔드 호출
 async function callAllCinema() {
-  return await http.get("/manager/auth/allCinema")
+  return await http.get("/Manager/auth/allCinema")
   .then((response) => {
     return response;
   })
@@ -112,7 +112,7 @@ function* MovieInfoSearch(action) {
 
 // 상영정보 조회 백엔드 호출
 async function callMovieInfoSearch(data) {
-  return await http.get("/manager/auth/getMovieInfo", {
+  return await http.get("/Manager/auth/getMovieInfo", {
     params: {
       mid: data.mid,
       tarea: data.tarea,
@@ -150,7 +150,7 @@ function* MovieInfoInsert(action) {
 
 // 상영정보 추가 백엔드 호출
 async function callMovieInfoInsert(data) {
-  return await http.post("/manager/auth/insertMovieInfo", data)
+  return await http.post("/Manager/auth/insertMovieInfo", data)
   .then((response) => {
     return response;
   })
@@ -178,7 +178,7 @@ function* MovieInfoDelete(action) {
 
 // 상영정보 삭제 백엔드 호출
 async function callMovieInfoDelete(data) {
-  return await http.delete("/manager/auth/deleteMovieInfo", {
+  return await http.delete("/Manager/auth/deleteMovieInfo", {
     params: {
       miid: data.miid
     }
@@ -210,7 +210,7 @@ function* MovieInfoUpdate(action) {
 
 // 상영정보 수정 백엔드 호출
 async function callMovieInfoUpdate(data) {
-  return await http.patch("/manager/auth/updateMovieInfo", data)
+  return await http.patch("/Manager/auth/updateMovieInfo", data)
   .then((response) => {
     return response;
   })

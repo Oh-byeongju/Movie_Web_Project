@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ManagerMemberService {
-
     private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
     private final TheaterRepository theaterRepository;
@@ -180,24 +179,6 @@ public class ManagerMemberService {
         // 위에서 검색한 영화 목록과 예매 가능 여부, 전체 예매 횟수를 mapping 후 리턴
         return Movies.stream().map(movie ->
                 movieMapper.toDtoManagerReserve(movie, MoviePossibleList.contains(movie.getMid()))).collect(Collectors.toList());
-    }
-
-    // 전체 극장 불러오는 메소드
-    // 이거 이사가야 할수도 있음 MangerOne으로
-    @Transactional
-    public List<TheaterDto> AllTheaterSearch(HttpServletRequest request) {
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        // 모든 극장 검색
-        List<TheaterEntity> Theaters = theaterRepository.findAll();
-
-        // 검색한 극장 리턴
-        return Theaters.stream().map(theater -> TheaterDto.builder()
-                        .tid(theater.getTid())
-                        .tname(theater.getTname())
-                        .taddr(theater.getTaddr())
-                        .tarea(theater.getTarea()).build()).collect(Collectors.toList());
     }
 
     // 특정 영화의 예매기록을 불러오는 메소드

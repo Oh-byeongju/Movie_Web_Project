@@ -138,6 +138,13 @@ public class MemberService {
         return MemberDto.builder().uid(Member.getUid()).build();
     }
 
+    // 비밀번호 변경 메소드
+    @Transactional
+    public void changePw(MemberDto requestDto) {
+        // 새로운 비밀번호로 update
+        memberRepository.MemberPwUpdate(requestDto.getUid(), passwordEncoder.encode(requestDto.getNewPw()));
+    }
+
     // 로그인 메소드
     @Transactional
     public MemberDto login(MemberDto requestDto, HttpServletResponse response) {

@@ -5,13 +5,20 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { MANAGER_MOVIE_LIST_COMMENT_REQUEST, MANAGER_MOVIE_COMMENT_SELECT, MANAGER_MOVIE_COMMENT_LIST_REQUEST, } from '../../reducer/R_manager_user';
 import DocumentMovieComment from './DocumentMovieComment';
 import Board from './Board'
+import ManagerLoading from './ManagerLoading';
+import { useNavigate } from 'react-router-dom';
+
 const Document = () => {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-  const { LOGIN_data, MOVIE_LIST_COMMENT, MOVIE_COMMENT, MOVIE_COMMENT_LIST } = useSelector(
+  const { LOGIN_data, LOGIN_STATUS_done, MOVIE_LIST_COMMENT_loading, 
+		MOVIE_LIST_COMMENT, MOVIE_COMMENT, MOVIE_COMMENT_LIST } = useSelector(
     state => ({
       LOGIN_data: state.R_user_login.LOGIN_data,
+			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
+			MOVIE_LIST_COMMENT_loading: state.R_manager_user.MOVIE_LIST_COMMENT_loading,
       MOVIE_LIST_COMMENT: state.R_manager_user.MOVIE_LIST_COMMENT,
       MOVIE_COMMENT: state.R_manager_user.MOVIE_COMMENT,
 			MOVIE_COMMENT_LIST: state.R_manager_user.MOVIE_COMMENT_LIST
@@ -21,8 +28,14 @@ const Document = () => {
 
 	// 모든 영화 조회 useEffect
   useEffect(() => {
+		// 관리자 이외의 계정은 접근 불가능
+		if (LOGIN_STATUS_done && LOGIN_data.uid !== 'manager') {
+			alert('관리자 계정만 사용 가능합니다. 관리자 계정으로 로그인 해주세요! (id : manager, pw: manager123456)');
+			navigate('/');
+		}
+
 		 // 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
-		 if (LOGIN_data.uid !== 'No_login' && MOVIE_LIST_COMMENT.length === 0) {
+		 if (LOGIN_data.uid === 'manager' && MOVIE_LIST_COMMENT.length === 0) {
       dispatch({
         type: MANAGER_MOVIE_LIST_COMMENT_REQUEST
       });
@@ -37,7 +50,7 @@ const Document = () => {
 				});
 			}
 		}
-  }, [LOGIN_data.uid, MOVIE_LIST_COMMENT, dispatch])
+  }, [LOGIN_data.uid, LOGIN_STATUS_done, MOVIE_LIST_COMMENT, navigate, dispatch]);
 
 	// 예매기록 조회 useEffect (영화 선택)
   useEffect(()=> {
@@ -104,6 +117,7 @@ const Document = () => {
 						</ul>
 					</TabLeft>
 					<TabCenter>
+						{!LOGIN_STATUS_done || MOVIE_LIST_COMMENT_loading ? <ManagerLoading/> :
 						<MovieWrapper>
               <ListSection>
 								<ScrollBar>
@@ -124,7 +138,7 @@ const Document = () => {
 									<img src={`/${MOVIE_COMMENT.mimagepath}`} style={{width:"100%" ,height:"100%"}} alt ='Poster'/>
 								</Info>
 							</Poster>
-						</MovieWrapper> 
+						</MovieWrapper>}
 					</TabCenter>
 				</MovieAreaChoice>
 				<Notice>
@@ -132,7 +146,7 @@ const Document = () => {
 				</Notice>
 				<DocumentMovieComment/></> : 
 				<>
-					<Board />
+					<Board/>
 				</>}
       </InnerWraps>
      </Container>

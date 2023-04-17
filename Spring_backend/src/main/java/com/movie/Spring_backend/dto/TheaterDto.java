@@ -16,16 +16,17 @@ public class TheaterDto {
     private String able;
     private int count;
 
+    private Integer cntCinema;
+
     @Builder
-    public TheaterDto(Long tid, String tname, String taddr, String tarea, String able, int count) {
+    public TheaterDto(Long tid, String tname, String taddr, String tarea, String able, int count, Integer cntCinema) {
         this.tid=tid;
         this.tname=tname;
         this.taddr=taddr;
         this.tarea=tarea;
         this.able=able;
         this.count=count;
+        this.cntCinema = cntCinema;
     }
-
-
 }
 

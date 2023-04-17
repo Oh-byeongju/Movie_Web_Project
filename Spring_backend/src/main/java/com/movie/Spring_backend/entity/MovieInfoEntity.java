@@ -16,7 +16,6 @@ import org.hibernate.annotations.Formula;
 @Entity
 @Getter
 @NoArgsConstructor
-// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "MID")
 
 public class MovieInfoEntity {
 

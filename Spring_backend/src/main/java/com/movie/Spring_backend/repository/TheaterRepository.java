@@ -11,7 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TheaterRepository extends JpaRepository<TheaterEntity,Long>  {
+public interface TheaterRepository extends JpaRepository<TheaterEntity, Long>  {
+
+
+
+
+
     //JpaRepository<Entity클래스, PK값>
     List<TheaterEntity> findAll();
 

@@ -18,7 +18,6 @@ import MyPageFinishDetail from "./pages/MyPageFinishDetail";
 import MyPageLike from "./pages/MyPageLike";
 import MyPageComment from "./pages/MyPageComment";
 import MyPageModify from "./pages/MyPageModify";
-// import StoryChange from "./pages/StoryChange";
 import TimeTable from "./pages/TimeTable";
 import Board from "./pages/Board";
 import BoardList from "./pages/BoardList";
@@ -28,7 +27,7 @@ import BoardSearch from "./pages/BoardSearch";
 import ManagerUser from "./pages/ManagerUser";
 import ManagerReserve from "./pages/ManagerReserve";
 import ManagerWriteRecord from "./pages/ManagerWriteRecord";
-import Manager from "./pages/Manager";
+import ManagerBuilding from "./pages/ManagerBuilding";
 import ManagerMovieInfo from "./pages/ManagerMovieInfo";
 import Movie from "./components/Manager/Movie";
 import ManagerBoard from "./pages/ManagerBoard";
@@ -66,12 +65,11 @@ function App() {
           <Route path="/Mypage/Comment" element={<MyPageComment />}></Route>
           <Route path="/Mypage/Modify" element={<MyPageModify />}></Route>
         </Route>
-        {/* <Route path="/StoryChange" element={<StoryChange />}></Route> */}
         <Route path="/Timetable" element={<TimeTable />}></Route>
         <Route path="/ManagerPage/User" element={<ManagerUser />}></Route>
         <Route path="/ManagerPage/Reserve" element={<ManagerReserve />}></Route>
         <Route path="/ManagerPage/Document" element={<ManagerWriteRecord />}></Route>
-        <Route path="/ManagerPage/Cinema" element={<Manager />}></Route>
+        <Route path="/ManagerPage/Building" element={<ManagerBuilding />}></Route>
         <Route path="/ManagerPage/MovieInfo" element={<ManagerMovieInfo />}></Route>
         <Route path="/ManagerPage/Movie" element={<Movie />}></Route>
         <Route path="/ManagerPage/Board" element={<ManagerBoard />}></Route>

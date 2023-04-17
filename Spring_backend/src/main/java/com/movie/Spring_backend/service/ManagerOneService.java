@@ -38,6 +38,7 @@ public class ManagerOneService {
     private final ReservationRepository reservationRepository;
     private final MovieActorRepository movieActorRepository;
     private final ActorRepository actorRepository;
+    private final TheaterRepository theaterRepository;
     private final CinemaRepository cinemaRepository;
     private final EntityManagerFactory entityManagerFactory;
     private final BoardRepository boardRepository;
@@ -468,6 +469,58 @@ public class ManagerOneService {
         boardRepository.deleteById(Long.valueOf(bid));
     }
 
+
+
+
+    // 전체 영화관 불러오는 메소드
+    @Transactional
+    public List<TheaterDto> AllTheaterSearch(HttpServletRequest request) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 모든 영화관 검색
+        List<TheaterEntity> Theaters = theaterRepository.findAll();
+
+        // 검색한 영화관 리턴
+        return Theaters.stream().map(theater -> TheaterDto.builder()
+                .tid(theater.getTid())
+                .tname(theater.getTname())
+                .taddr(theater.getTaddr())
+                .tarea(theater.getTarea())
+                .cntCinema(theater.getCntCinema()).build()).collect(Collectors.toList());
+    }
+
+    // 영화관을 추가하는 메소드
+    @Transactional
+    public void TheaterInsert(HttpServletRequest request, TheaterDto requestDto) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 영화관 정보 추가
+        theaterRepository.save(TheaterEntity.builder()
+                .tname(requestDto.getTname())
+                .tarea(requestDto.getTarea())
+                .taddr(requestDto.getTaddr()).build());
+    }
+
+    // 영화관을 삭제하는 메소드
+    @Transactional
+    public void TheaterDelete(HttpServletRequest request, Long tid) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 영화관 삭제(Cascade 설정을 안해둬서 상영관이 존재할경우 SQL이 알아서 예외처리를 해줌)
+        theaterRepository.deleteById(tid);
+    }
+
+
+
+
+
+
+
+
+
     // 전체 상영관 불러오는 메소드
     public List<CinemaDto> AllCinemaSearch(HttpServletRequest request) {
         // Access Token에 대한 유효성 검사
@@ -479,8 +532,11 @@ public class ManagerOneService {
         // 검색한 상영관 리턴
         return Cinemas.stream().map(cinema -> CinemaDto.builder()
                 .cid(cinema.getCid())
-                .cname(cinema.getCname() + " (" + cinema.getCtype() + ", " + cinema.getCseat() + "좌석)")
+                .cname(cinema.getCname())
+                .ctype(cinema.getCtype())
+                .cseat(cinema.getCseat())
                 .tid(cinema.getTheater().getTid())
+                .tname(cinema.getTheater().getTname())
                 .build()).collect(Collectors.toList());
     }
 
@@ -598,7 +654,7 @@ public class ManagerOneService {
 
         // JPA 사용을 위한 형 변환
         MovieInfoEntity movieInfo = MovieInfoEntity.builder().miid(miid).build();
-
+        
         // 상영정보 삭제전 상영정보에 대한 예매기록 조회
         List<ReservationEntity> reservation = reservationRepository.findByMovieInfo(movieInfo);
 

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import CoPresentOutlinedIcon from '@mui/icons-material/CoPresentOutlined';
 import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { MANAGER_MOVIE_LIST_REQUEST, 
 	MANAGER_MOVIE_SELECT, 
 	MANAGER_THEATER_LIST_REQUEST, 
@@ -11,14 +12,19 @@ import { MANAGER_MOVIE_LIST_REQUEST,
 	MANAGER_RESERVE_THEATER_LIST_REQUEST } from '../../reducer/R_manager_user';
 import ReserveMovie from './ReserveMovie';
 import ReserveTheater from './ReserveTheater';
+import ManagerLoading from './ManagerLoading';
 
 const Reserve = () => {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-  const { LOGIN_data, MOVIE_LIST, MOVIE, THEATER_LIST, THEATER, RESERVE_MOVIE_LIST, RESERVE_THEATER_LIST } = useSelector(
+  const { LOGIN_data, LOGIN_STATUS_done, MOVIE_LIST, MOVIE, THEATER_LIST, MOVIE_LIST_loading,
+		THEATER, RESERVE_MOVIE_LIST, RESERVE_THEATER_LIST } = useSelector(
     state => ({
       LOGIN_data: state.R_user_login.LOGIN_data,
+			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
+			MOVIE_LIST_loading: state.R_manager_user.MOVIE_LIST_loading,
       MOVIE_LIST: state.R_manager_user.MOVIE_LIST,
       MOVIE: state.R_manager_user.MOVIE,
       THEATER_LIST: state.R_manager_user.THEATER_LIST,
@@ -31,8 +37,14 @@ const Reserve = () => {
 
 	// 모든 영화 및 상영관 조회 useEffect
   useEffect(() => {
+		// 관리자 이외의 계정은 접근 불가능
+		if (LOGIN_STATUS_done && LOGIN_data.uid !== 'manager') {
+			alert('관리자 계정만 사용 가능합니다. 관리자 계정으로 로그인 해주세요! (id : manager, pw: manager123456)');
+			navigate('/');
+		}
+
 		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
-		if (LOGIN_data.uid !== 'No_login' && MOVIE_LIST.length === 0 && THEATER_LIST.length === 0) {
+		if (LOGIN_data.uid === 'manager' && MOVIE_LIST.length === 0 && THEATER_LIST.length === 0) {
       dispatch({
         type: MANAGER_MOVIE_LIST_REQUEST
       });
@@ -57,7 +69,7 @@ const Reserve = () => {
 				});
 			}
 		}
-  }, [LOGIN_data.uid, MOVIE_LIST, THEATER_LIST, dispatch])
+  }, [LOGIN_data.uid, LOGIN_STATUS_done, MOVIE_LIST, THEATER_LIST, dispatch, navigate]);
 
 	// 예매기록 조회 useEffect (영화 선택)
   useEffect(()=> {
@@ -186,7 +198,7 @@ const Reserve = () => {
 						</ul>
 					</TabLeft>
 					<TabCenter>
-						{moviebutton ? 
+						{moviebutton ? !LOGIN_STATUS_done || MOVIE_LIST_loading ? <ManagerLoading/> :
 						<MovieWrapper>
               <ListSection>
 								<ScrollBar>
@@ -250,7 +262,7 @@ const Reserve = () => {
 									</ScrollBarT>
 								</ListSectionT>
 							</Wrapper>
-						</TheaterWrapper> }
+						</TheaterWrapper>}
 					</TabCenter>
 				</MovieAreaChoice>
 				{moviebutton ? 
@@ -356,6 +368,7 @@ const TabLeft = styled.div`
 `;
 
 const TabCenter = styled.div`
+	height: 300px;
 `;
 
 const MovieWrapper = styled.div`

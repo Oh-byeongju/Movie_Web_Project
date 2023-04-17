@@ -593,7 +593,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
           cancelSort: '정렬해제하기'
       	}}
       />
-			<ModalWrap title="상영정보관리" 
+			<ModalWrap title={delState ? "상영정보추가" : "상영정보수정"} 
       open={isModalOpen} 
       okButtonProps={{ disabled: infoState}} 
       onOk={onInsertORUpdate} 
@@ -664,7 +664,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
             onChange={handleCinemaChangeModal}
             options={MOVIEINFO_CINEMA_LIST.filter(cinema => cinema.tid === selectTheaterModal).map((cinema) => ({
               value: cinema.cid,
-              label: cinema.cname
+              label: cinema.cname + " (" + cinema.ctype + ", " + cinema.cseat + "좌석)"
             }))}
             />
           </Form.Item>

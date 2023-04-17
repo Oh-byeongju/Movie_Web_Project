@@ -42,12 +42,6 @@ public class ManagerMemberController {
         return ResponseEntity.ok().body(managerMemberService.AllMovieSearch(request));
     }
 
-    // 극장 조회 메소드
-    @GetMapping("/auth/allTheater")
-    public ResponseEntity<List<TheaterDto>> AllTheater(HttpServletRequest request) {
-        return ResponseEntity.ok().body(managerMemberService.AllTheaterSearch(request));
-    }
-
     // 예매기록 조회 메소드(영화 선택)
     @GetMapping("/auth/allMovieReserve")
     public ResponseEntity<Page<ReservationDto>> MovieReserve(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {

@@ -40,8 +40,6 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                // https만 사용하기위해 httpBasic을 disable
-                .httpBasic().disable()
                 // 리액트와 스프링부트 사이에 REST API 사용을 위해 csrf 방지 disable
                 .csrf().disable()
                 // REST API를 통해 세션 없이 토큰을 주고받으며 데이터를 주고받기 때문에 세션설정을 STATELESS로 설정
@@ -57,8 +55,8 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/**/normal/**").permitAll()
+                .antMatchers("/Manager/**").hasRole("ADMIN") // ADMIN 권한을 가진 사용자만 접근 허용(관리자)
                 .anyRequest().authenticated()
-//                .antMatchers("/mypage").hasRole("ADMIN") // ROLE_ADMIN 권한을 가진 사용자만 접근 허용 추후 사용
 
                 .and()
                 // cors 관련 필터 적용(전역 설정)

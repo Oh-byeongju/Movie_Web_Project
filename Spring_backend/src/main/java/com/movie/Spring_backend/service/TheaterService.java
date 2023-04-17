@@ -108,35 +108,11 @@ public class TheaterService {
         return dedupication;
     }
 
-    @Transactional
-    public void insert(@RequestBody Map<String, String> requestMap, HttpServletRequest request) {
 
-        String area = requestMap.get("tarea").trim();
-        String name = requestMap.get("tname").trim();
-        String addr = requestMap.get("taddr").trim();
-        String state = requestMap.get("state").trim();
-        String tid = requestMap.get("tid").trim();
 
-        if(state.equals("insert")) {
-            if (!area.equals("") && !name.equals("") && !addr.equals("")) {
-                TheaterEntity theater;
-                theater = TheaterEntity.builder()
-                        .tarea(area)
-                        .tname(name)
-                        .taddr(addr)
-                        .build();
-                theaterRepository.save(theater);
-            } else {
-                System.out.println("입력 불가합니다.");
-            }
-        }
-        else if(state.equals("update")){
-            theaterRepository.updateTheater(name,addr, Long.valueOf(tid));
-        }
-        else if(state.equals("delete")){
-            theaterRepository.deleteById(Long.valueOf(tid));
-        }
-    }
+
+
+
 
 
 }

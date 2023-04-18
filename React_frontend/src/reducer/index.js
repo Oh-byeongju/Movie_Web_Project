@@ -13,6 +13,7 @@ import R_manager_user from "./R_manager_user";
 import R_manager_theater from "./R_manager_theater";
 import R_manager_movieinfo from "./R_manager_movieinfo";
 import R_manager_board from "./R_manager_board";
+import R_manager_movie from "./R_manager_movie";
 
 // 리듀서 파일 생성 시 여기 추가하면 됨.
 const rootReducer = combineReducers({
@@ -29,7 +30,8 @@ const rootReducer = combineReducers({
   R_manager_user,
   R_manager_theater,
   R_manager_movieinfo,
-  R_manager_board
+  R_manager_board,
+	R_manager_movie
 });
 
 export default rootReducer;

@@ -180,7 +180,7 @@ const Reserve = () => {
 					<TabLeft>
 						<ul>
 							<li className={moviebutton ? "hover tab" : "tab"} onClick={onMovie}>
-								<a href="#!">
+								<a href={()=> false}>
 									<i>
 										<MovieOutlinedIcon style={{width:'40px' ,height:'40px'}}/>
 									</i>
@@ -188,7 +188,7 @@ const Reserve = () => {
 								</a>
 							</li>
 							<li className={theaterbutton ? "hover tab" : "tab"} onClick={onTheater}>
-								<a href="#!">
+								<a href={()=> false}>
 									<i>
 										<CoPresentOutlinedIcon style={{width:'40px' ,height:'40px'}} />
 									</i>
@@ -335,7 +335,7 @@ const TabLeft = styled.div`
 			display: block;
 			text-align: center;
 			width: 100%;
-			height: 149px;
+			height: 150px;
 			line-height: 160px;
 			border: 1px solid #d8d9db;
 			border-width: 0 1px 1px 0;

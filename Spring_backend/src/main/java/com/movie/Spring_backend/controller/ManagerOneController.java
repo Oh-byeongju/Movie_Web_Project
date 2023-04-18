@@ -1,5 +1,7 @@
 /*
   23-04-03 ~ 23-04-05 관리자 페이지 상영정보관리 구현(오병주)
+  23-04-17 상영관, 영화관 관리자 페이지 수정(오병주)
+  23-04-18 영화 관리자 페이지 수정(오병주)
 */
 package com.movie.Spring_backend.controller;
 
@@ -30,16 +32,10 @@ import java.util.Map;
 @RequestMapping("/Manager")
 public class ManagerOneController {
 
-    String POSTER_PATH = "/Users/mok/Desktop/Movie_Project/React_frontend/public/img/ranking";
-
     private final ManagerOneService managerOneService;
-    private final BoardCommentService boardCommentService;
-    //영화 가져오기
 
-    @GetMapping("/auth/movieall")
-    public ResponseEntity<List<MovieDto>> AllMovie(@RequestParam Map<String, String> requestMap) {
-        return ResponseEntity.ok().body(managerOneService.getAllMovie(requestMap));
-    }
+
+
 
 
     //영화를 저장, 수정, 삭제하는 메소드
@@ -50,32 +46,45 @@ public class ManagerOneController {
         managerOneService.postMovie(requestMap,request,multipartFiles);
     }
 
-    @GetMapping("/auth/boardread")
-    public ResponseEntity<List<BoardDto>> BoardWrite() {
-        return ResponseEntity.ok().body(managerOneService.ReadBoard());
+
+
+
+    // 영화 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
+    @GetMapping("/auth/allMovie")
+    public ResponseEntity<List<MovieDto>> AllMovie(HttpServletRequest request) {
+        return ResponseEntity.ok().body(managerOneService.AllMovieSearch(request));
     }
 
-    @GetMapping("/auth/boardselect")
-    public ResponseEntity<List<BoardDto>> BoardSelect(@RequestParam("text") String text ,@RequestParam("state") String state){
-        return ResponseEntity.ok().body(managerOneService.SearchUid(text,state));
+
+
+    // 배우 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
+    @GetMapping("/auth/allActor")
+    public ResponseEntity<List<ActorDto>> AllActor(HttpServletRequest request) {
+        return ResponseEntity.ok().body(managerOneService.AllActorSearch(request));
     }
 
-    @PostMapping("/auth/deleteboard")
-    public void BoardDelete(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
-
-        managerOneService.boarddelete(requestMap,request);
-
-    }
-    @GetMapping("/auth/commentread")
-    public ResponseEntity<CountCommentMapper> commentAll(@RequestParam("bid") Long bid, @RequestParam("type") String type) {
-
-        if(type.equals("new")) {
-            return ResponseEntity.ok().body(boardCommentService.findByComment(bid));
-        }
-        return null;
+    // 배우 추가 메소드
+    @PostMapping("/auth/insertActor")
+    public ResponseEntity<String> InsertActor(HttpServletRequest request, @RequestBody ActorDto requestDto) {
+        managerOneService.ActorInsert(request, requestDto);
+        return ResponseEntity.noContent().build();
     }
 
-    // 영화관 조회 메소드
+    // 배우 삭제 메소드
+    @DeleteMapping("/auth/deleteActor")
+    public ResponseEntity<String> DeleteActor(HttpServletRequest request, @RequestParam Long aid) {
+        managerOneService.ActorDelete(request, aid);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 배우 수정 메소드
+    @PatchMapping("/auth/updateActor")
+    public ResponseEntity<String> UpdateActor(HttpServletRequest request, @RequestBody ActorDto requestDto) {
+        managerOneService.ActorUpdate(request, requestDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 영화관 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
     @GetMapping("/auth/allTheater")
     public ResponseEntity<List<TheaterDto>> AllTheater(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllTheaterSearch(request));
@@ -102,7 +111,7 @@ public class ManagerOneController {
         return ResponseEntity.noContent().build();
     }
 
-    // 상영관 조회 메소드
+    // 상영관 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
     @GetMapping("/auth/allCinema")
     public ResponseEntity<List<CinemaDto>> AllCinema(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllCinemaSearch(request));

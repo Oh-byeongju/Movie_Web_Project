@@ -1,9 +1,12 @@
 import React from "react";
-import Movie from "../components/Manager/Movie";
-const ManagerMovie =()=>{
-    return(<>
-<Movie />
-    </>)
-}
+import MovieLayout from "../components/Manager/MovieLayout";
+
+const ManagerMovie = () => {
+	return (
+		<>
+			<MovieLayout/>
+		</>
+	);
+};
 
 export default ManagerMovie;

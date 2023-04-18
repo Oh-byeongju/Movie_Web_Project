@@ -6,6 +6,8 @@
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.*;
+import com.movie.Spring_backend.mapper.CountCommentMapper;
+import com.movie.Spring_backend.service.BoardCommentService;
 import com.movie.Spring_backend.service.ManagerMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,8 +25,10 @@ public class ManagerMemberController {
 
     private final ManagerMemberService managerMemberService;
 
+    // 아래꺼도 옮기려면 옮겨야할듯
+    private final BoardCommentService boardCommentService;
+
     // 사용자 조회 메소드
-    // manager security 설정 나중에 하기
     @GetMapping("/auth/allUser")
     public ResponseEntity<Page<MemberDto>> AllMember(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(managerMemberService.AllMemberSearch(request, requestMap));
@@ -36,8 +40,8 @@ public class ManagerMemberController {
         return ResponseEntity.ok().body(managerMemberService.DropMember(request, requestMap));
     }
 
-    // 영화 조회 메소드
-    @GetMapping("/auth/allMovie")
+    // 예매기록 페이지에서 전체 영화 불러오는 메소드
+    @GetMapping("/auth/allMovie/Reservation")
     public ResponseEntity<List<MovieDto>> AllMovie(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerMemberService.AllMovieSearch(request));
     }
@@ -64,5 +68,26 @@ public class ManagerMemberController {
     @DeleteMapping("/auth/allMovieCommentDelete")
     public ResponseEntity<Page<CommentInfoDto>> MovieCommentDelete(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(managerMemberService.MovieCommentDelete(request, requestMap));
+    }
+
+
+    @GetMapping("/auth/boardread")
+    public ResponseEntity<List<BoardDto>> BoardWrite() {
+        return ResponseEntity.ok().body(managerMemberService.ReadBoard());
+    }
+    @GetMapping("/auth/boardselect")
+    public ResponseEntity<List<BoardDto>> BoardSelect(@RequestParam("text") String text ,@RequestParam("state") String state){
+        return ResponseEntity.ok().body(managerMemberService.SearchUid(text,state));
+    }
+    @PostMapping("/auth/deleteboard")
+    public void BoardDelete(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
+        managerMemberService.boarddelete(requestMap,request);
+    }
+    @GetMapping("/auth/commentread")
+    public ResponseEntity<CountCommentMapper> commentAll(@RequestParam("bid") Long bid, @RequestParam("type") String type) {
+        if(type.equals("new")) {
+            return ResponseEntity.ok().body(boardCommentService.findByComment(bid));
+        }
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.MovieActorEntity;
 import com.movie.Spring_backend.entity.MovieEntity;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,15 +11,17 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface MovieActorRepository extends JpaRepository<MovieActorEntity, Long> {
-
-    // movie id로 엔티디 값 들고오는 메소드
+    // 특정 영화에 출연하는 배우 검색하는 메소드
+    @EntityGraph(attributePaths = {"actor"})
     List<MovieActorEntity> findByMovie(MovieEntity movie);
 
-
-
-    @Query("select mv from MovieActorEntity as mv where mv.movie = :movie and mv.marole = :type ")
+    // 배우의 정보까지 묶어서 불러오는 메소드
+    @Override
     @EntityGraph(attributePaths = {"actor"})
-    List <MovieActorEntity> findByActor(@Param("movie") MovieEntity movie , @Param("type") String type);
+    List<MovieActorEntity> findAll();
+
+
+
 
 
     @Query("select mv from MovieActorEntity as mv where mv.actor.aname in :name and mv.movie.mid = :mid" +

@@ -1,32 +1,133 @@
-
-import React, { useState, useEffect,useMemo ,useRef} from 'react';
+/*
+	23-04-18 영화 관리자 페이지 수정(오병주)
+*/
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Table, Input ,Button,Modal,Form,message} from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { Table, Input, InputNumber, Button, Modal, Form} from 'antd';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { PlusOutlined } from '@ant-design/icons';
-import { MOVIES_REQUEST, MOVIE_INSERT_LOADING } from '../../reducer/R_manager_theater';
-import ReactQuill from 'react-quill';
-import useInput from '../../hooks/useInput';
-import Actor from './Actor';
-import EditStroy from './EditStory';
-import 'react-quill/dist/quill.snow.css';
+import { MANAGER_MOVIE_REQUEST } from '../../reducer/R_manager_movie';
+import { useNavigate } from 'react-router-dom';
 
-const { Search } = Input;
+
+import { 			 MOVIE_INSERT_LOADING } from '../../reducer/R_manager_theater';
+import useInput from '../../lib/useInput';
+import Actor from './Actorss';
+import EditStroy from './EditStory';
+
 const Movie = () =>{
-    const dispatch = useDispatch();
-	const { LOGIN_data } = useSelector((state) => state.R_user_login);
-    const { movie ,movie_insert_done} = useSelector((state) => state.R_manager_theater);
-    const [messageApi, contextHolder] = message.useMessage();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
+	// 내일할꺼
+	// input넘버 그냥 넣어놨는데 수정좀하기 --> Numericinput인가 이거 있음 숫자만 드가는거
+	// 개봉일도 datepicker 사용하기
+	// 관람등급 넣을때 inputselect인가 그거 써서 라벨 벨류 설정 
+	// 배우 관련해서 input에 검색기능 있는거 찾아보기 --> select에서 있는거 쓰면될듯
+	// 포스터 버튼 이쁜거 있음 그걸로 바꾸기 --> antd
+
+	// 필요한 리덕스 상태들
+  const { MOVIE_loading, MOVIE, LOGIN_STATUS_done, LOGIN_data } = useSelector(
+    state => ({
+      MOVIE_loading: state.R_manager_movie.MOVIE_loading,
+      MOVIE: state.R_manager_movie.MOVIE,
+			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
+      LOGIN_data: state.R_user_login.LOGIN_data
+    }),
+    shallowEqual
+  );
+
+	// 모든 영화 조회 useEffect
+	useEffect(()=> {
+		// 관리자 이외의 계정은 접근 불가능
+		if (LOGIN_STATUS_done && LOGIN_data.uid !== 'manager') {
+			alert('관리자 계정만 사용 가능합니다. 관리자 계정으로 로그인 해주세요! (id : manager, pw: manager123456)');
+			navigate('/');
+		}
+
+		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
+		if (LOGIN_data.uid === 'manager') {
+			dispatch({
+				type: MANAGER_MOVIE_REQUEST
+			});
+		}
+	}, [LOGIN_STATUS_done, LOGIN_data.uid, navigate, dispatch]);
+
+	// antd css 설정
+	const columns = [
+    {
+      title: '영화명',
+      width: 9,
+      dataIndex: 'mtitle',
+			ellipsis: true,
+      fixed: 'left'
+    },
+    {
+      title: '감독',
+      width: 8.5,
+      dataIndex: 'mdir',
+			ellipsis: true,
+      fixed: 'left'
+    },
+		{
+      title: '상영시간',
+      width: 6,
+      fixed: 'left',
+			render: (text, row) => <div> {row["mtime"]}분 </div>
+    },
+		{
+      title: '장르',
+      width: 7,
+      dataIndex: 'mgenre',
+    },
+		{
+      title: '등급',
+      width: 9.5,
+			render: (text, row) => <div> {row["mrating"] === '0' ? '전체 이용가' : row["mrating"] === '18' ? '청소년 관람불가' : row["mrating"] + '세 이용가'} </div>
+    },
+    {
+      title: '주연',
+      width: 13,
+      dataIndex: 'mainactor',
+			ellipsis: true,
+      render: (mainactor) => mainactor.map(main => main).join(', '),
+    },
+    {
+      title: '조연',
+      width: 13,
+      dataIndex: 'subactor',
+			ellipsis: true,
+      render: (subactor) => subactor.map(sub => sub).join(', '),
+
+    },
+    {
+      title: '성우',
+      width: 13,
+      dataIndex: 'voiceactor',
+			ellipsis: true,
+      render: (voiceactor) => voiceactor.map(voice => voice).join(', '),
+
+    },
+    {
+      title: '개봉일',
+      width: 7.5,
+			fixed: 'right',
+      dataIndex: 'mdate'
+    },
+
+		{
+      title: '관리자',
+      width: 5.5,
+			fixed: 'right',
+      render: (text, row) => <TableButton>modify</TableButton>
+    },
+  ]; 
+
+
 
     const [main , setMain ] = useState([])
     const [sub, setSub] = useState([]);
     const [voice, setVoice]= useState([]);
-    useEffect(()=>{
-        dispatch({
-            type:MOVIES_REQUEST,
-            data:LOGIN_data.uid
-        })
-    },[movie_insert_done])
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modify , setModify] = useState(false);
 
@@ -43,7 +144,6 @@ const Movie = () =>{
         setContent(value)
         };
   
-  const quillRef = useRef();
 
     const [file, setFile ] = useState(null);
     const [filechange, setFileChange] = useState(false);
@@ -90,7 +190,9 @@ const Movie = () =>{
   //확인
   const handleOk = async () => {
 
-    if(name!="" && dir !="" && genre!="" && time!="" && date !="" && Board_Content !="" ){
+		console.log('fadsfsda')
+
+    if(true ){
     const mainactor = main.join()
     const subactor = sub.join()
     const voiceactor = voice.join()
@@ -153,10 +255,6 @@ const Movie = () =>{
 
   }
   else{
-    messageApi.open({
-      type: 'warning',
-      content: '데이터를 전부 입력해야합니다.',
-    });
   }
     
   }
@@ -171,243 +269,111 @@ const Movie = () =>{
   const handleClose = () => setOpen(false);
 
 
-  const columns = [
-    {
-      title: '영화명',
-      width: 10,
-      dataIndex: 'mtitle',
-      fixed: 'left',
-        
-    },
-    {
-      title: '감독',
-      width: 5,
-      dataIndex: 'mdir',
-      fixed: 'left',
-    },
-    {
-      title: '주연',
-      width: 7,
-      dataIndex: 'mainactor',
-      fixed: 'left',
-      render: (mainactor) => mainactor.map(main => main).join(),
-    },
-    {
-      title: '조연',
-      width: 7,
-      dataIndex: 'subactor',
-      fixed: 'left',
-      render: (subactor) => subactor.map(main => main).join(),
+  
 
-    },
-    {
-      title: '성우',
-      width: 7,
-      dataIndex: 'voiceactor',
-      fixed: 'left',
-      render: (voiceactor) => voiceactor.map(main => main).join(),
+	return(
+		<>
+			<div className="search">
+				<p>
+					{MOVIE.length}개의 영화가 검색되었습니다.
+				</p>
+				<div className="search_button">
+					<Button type="primary" shape="circle" icon={<PlusOutlined />} size={"20"} onClick={showModdal}/>
+				</div>
+			</div>
+			<TableWrap rowKey="mid"
+				loading={MOVIE_loading}
+				dataSource={MOVIE}
+				columns={columns}
+				onRow={(record, rowIndex) => {
+					return {
+							// click row
+						onDoubleClick: event => {   
+							showModal(
+								record.mid,record.mtitle, record.mdir, record.mgenre, record.mtime, record.mdate,
+								record.mstory,record.mainactor,record.subactor, record.voiceactor
+								)
+						}, // double click row
+						onContextMenu: event => {}, // right button click row
+						onMouseEnter: event => {}, // mouse enter row
+						onMouseLeave: event => {}, // mouse leave row
+					};
+				}}
+				scroll={{
+				x: 1350,
+			}}/>
 
-    },
-    {
-      title: '장르',
-      width: 5,
-      dataIndex: 'mgenre',
-      fixed: 'left',
+		<Modal 
+		width={1200}
+		
+		title="영화관 추가" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
+			<Form>
+			<Form.Item label="영화명" onChange={onChangeName}>
+			<Input value={name}/>
+		</Form.Item>  
+		<Form.Item label="감독&nbsp;&nbsp;&nbsp;" onChange={onChangeDir}>
+			<Input value={dir}/>
+		</Form.Item>
 
-    },
-    {
-      title: '상영시간',
-      width: 5,
-      dataIndex: 'mtime',
-      fixed: 'left',
-      
-    },
-    {
-      title: '개봉일',
-      width: 10,
-      dataIndex: 'mdate',
-      fixed: 'left',
-    },
-    
-  ]; 
+		<Form.Item label="장르&nbsp;&nbsp;&nbsp;" onChange={onChangeGenre}>
+			<Input value={genre}/>
+		</Form.Item>
 
-  const modules = useMemo (
-    () => ({
-      toolbar: {
-        container : [
-          [{ 'header': [1, 2, false] }],
-          ['bold', 'italic', 'underline','strike', 'blockquote'],
-          [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-          ['link', 'image'],
-          [{ 'align': [] }, { 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-          ['clean']
-        ],
-      }, 
-      
-  }),
-  []);
+		<Form.Item label="상영시간" onChange={onChangeTime}>
+			<InputNumber value={time}/>
+		</Form.Item>
 
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'image',
-    'align', 'color', 'background',        
-  ]
+		<Form.Item label="개봉일" onChange={onChangeDate}>
+			<Input value={date}/>
+		</Form.Item>
+		<Form.Item label="주연&nbsp;&nbsp;&nbsp;">
+		
+		<Actor tags ={main} setTags={setMain}/>
+		</Form.Item>
+		<Form.Item label="조연&nbsp;&nbsp;&nbsp;">
+		<Actor tags ={sub} setTags={setSub}/>
+		</Form.Item> 
 
-    return(
-        <Container>{contextHolder}
-      <InnerWraps>
-        <div className="titleMenu" 
-        onClick={()=>{
-        }}>
-          <h1>
-             영화 관리
-             
-          </h1>
-        </div>
-      
-        <div className="search">
-        <p>
-            {movie.length}개의 영화관이 검색되었습니다.
-            더블클릭하면 수정할 수 있음.
-          </p>
-          
-            <div className="search_button">
-            <Button type="primary" shape="circle" icon={<PlusOutlined />} size={"20"} 
-            onChange={()=>{}}
-            onClick={showModdal}></Button>
-          </div>
-        </div>
-        <TableWrap rowKey="cienma"
-          dataSource={movie}
-          columns={columns}
-          onRow={(record, rowIndex) => {
-            return {
-               // click row
-              onDoubleClick: event => {   
-                showModal(
-                  record.mid,record.mtitle, record.mdir, record.mgenre, record.mtime, record.mdate,
-                  record.mstory,record.mainactor,record.subactor, record.voiceactor
-                  )
-              }, // double click row
-              onContextMenu: event => {}, // right button click row
-              onMouseEnter: event => {}, // mouse enter row
-              onMouseLeave: event => {}, // mouse leave row
-            };
-          }}
-          scroll={{
-          x: 1350,
-        }}/>
-      </InnerWraps>
-      <Modal 
-     width={1200}
-     
-      title="영화관 추가" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
-        <Form>
-        <Form.Item label="영화명" onChange={onChangeName}>
-        <Input value={name}/>
-      </Form.Item>  
-      <Form.Item label="감독&nbsp;&nbsp;&nbsp;" onChange={onChangeDir}>
-        <Input value={dir}/>
-      </Form.Item>
+		<Form.Item label="성우&nbsp;&nbsp;&nbsp;">
+		
+		<Actor tags ={voice} setTags={setVoice}/>
+		</Form.Item> 
 
-      <Form.Item label="장르&nbsp;&nbsp;&nbsp;" onChange={onChangeGenre}>
-        <Input value={genre}/>
-      </Form.Item>
-
-      <Form.Item label="상영시간" onChange={onChangeTime}>
-        <Input value={time}/>
-      </Form.Item>
-
-      <Form.Item label="개봉일" onChange={onChangeDate}>
-        <Input value={date}/>
-      </Form.Item>
-      <Form.Item label="주연&nbsp;&nbsp;&nbsp;">
-      
-      <Actor tags ={main} setTags={setMain}/>
-      </Form.Item>
-      <Form.Item label="조연&nbsp;&nbsp;&nbsp;">
-      <Actor tags ={sub} setTags={setSub}/>
-      </Form.Item> 
-
-      <Form.Item label="성우&nbsp;&nbsp;&nbsp;">
-      
-      <Actor tags ={voice} setTags={setVoice}/>
-      </Form.Item> 
-
-      <Form.Item label="포스터" >
-        <input type="file" id="file" onChange={onChangeImg} 
-        multiple="multiple" /> {update ?"파일을 선택하면 교체 놔두면 교체 안함" :"" } 
-      </Form.Item>
-     
-     <Form.Item label="줄거리&nbsp;&nbsp;&nbsp;">
-      <MovieStory dangerouslySetInnerHTML={{__html:Board_Content}}></MovieStory>
-      <EditStroy handleOpen={handleOpen} open={open} handleClose={handleClose} 
-      value={Board_Content} onChange={onEditorChange} setContent={setContent}/>
-    <Button type="primary" onClick={()=>{
+		<Form.Item label="포스터" >
+			<input type="file" id="file" onChange={onChangeImg} 
+			multiple="multiple" /> {update ?"파일을 선택하면 교체 놔두면 교체 안함" :"" } 
+		</Form.Item>
+		
+		<Form.Item label="줄거리&nbsp;&nbsp;&nbsp;">
+		<MovieStory dangerouslySetInnerHTML={{__html:Board_Content}}></MovieStory>
+		<EditStroy handleOpen={handleOpen} open={open} handleClose={handleClose} 
+		value={Board_Content} onChange={onEditorChange} setContent={setContent}/>
+	<Button type="primary" onClick={()=>{
 handleOpen()
-    }} >줄거리 수정</Button>
-     </Form.Item>      {modify ?
-      <Form.Item style={{position:'relative', top:'57px'}}>
-      <Button type="primary" danger onClick={()=>{}}>
-      삭제
-      </Button>      </Form.Item>
+	}} >줄거리 수정</Button>
+		</Form.Item>      {modify ?
+		<Form.Item style={{position:'relative', top:'57px'}}>
+		<Button type="primary" danger onClick={()=>{}}>
+		삭제
+		</Button>      </Form.Item>
 :""}
-    </Form>
-      </Modal>     </Container>
-    )
+	</Form>
+		</Modal> 
+		</>
+	)
 }
 
-
-const Container = styled.div`
-  padding: 0;
-  width: 1150px;
-  margin : 0 auto;
-  box-sizing: border-box; 
-  margin-bottom: 0;
-  min-height: 820px;
-`;
-
-const InnerWraps = styled.div`
-  width: 100%;
-  padding-left: 10px;
-
-  .titleMenu {
-    position: relative;
-    top: 18px;
-  }
-  .search {
-    position: relative;
-    width: 100%;
-    border-bottom: 3px solid #241d1e;
-    padding-bottom: 5px;
-    margin-top: 30px;
-
-    p {
-      font-weight: 1000;
-      padding-top: 8px;
-    }
-
-    .search_button {
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-  }
-`;
-
-const MovieStory=  styled.div`
+const MovieStory = styled.div`
   position:relative;
   top:-16px;
 `
 
 const TableWrap = styled(Table)`
-  margin-bottom: 30px;
+  padding-bottom: 20px;
 
   .ant-table-placeholder {
     .ant-table-expanded-row-fixed{
-      min-height: 600px !important;
+      min-height: 603px !important;
     }
     .css-dev-only-do-not-override-acm2ia {
       position:absolute;
@@ -418,6 +384,24 @@ const TableWrap = styled(Table)`
   }
 `;
 
-const CustomReactQuill = styled(ReactQuill)`
-height:500px;`
+const TableButton = styled.button`
+  color: #1677ff;
+  text-decoration: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  border: none;
+`;
+
+const ModalWrap = styled(Modal)`
+  .ant-modal-header {
+    margin-bottom: 16px;
+  }
+
+  .ant-modal-footer {
+    margin-top: 0;
+  }
+`;
+
 export default Movie;

@@ -410,11 +410,11 @@ const Theater = () => {
 };
 
 const TableWrap = styled(Table)`
-  margin-bottom: 30px;
+  padding-bottom: 20px;
 
   .ant-table-placeholder {
     .ant-table-expanded-row-fixed{
-      min-height: 600px !important;
+      min-height: 603px !important;
     }
     .css-dev-only-do-not-override-acm2ia {
       position:absolute;

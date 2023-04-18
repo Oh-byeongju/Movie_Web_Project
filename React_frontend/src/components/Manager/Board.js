@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 import React,{useEffect, useState} from "react";
 import { useDispatch ,useSelector} from "react-redux";
 import { Table, Input ,Modal,Form} from 'antd';
@@ -227,17 +229,11 @@ const Board = () =>{
        
       ]; 
     return(
-        <Container>
-      <InnerWraps>
-        <div className="titleMenu">
-          <h1>
-            게시판관리
-          </h1>
-        </div>
-        <div className="search">
-          <p>
+			<>
+        <Layout>
+          <Text>
             {board.length}명의 게시글이 검색되었습니다. (더블클릭시 댓글, 댓글에서 더블클릭시 대댓글)
-          </p>
+          </Text>
             <ButtonList>
               <ButtonWrap>
                 <button className={"btn" + (namebutton ? " active" : "")} onClick={()=>{clickname()}}>
@@ -250,20 +246,20 @@ const Board = () =>{
                 </button>
               </ButtonWrap>
             </ButtonList>
-            <div className="search_button">
-            <SearchWarp
-              placeholder="게시물 검색"
-              allowClear
-              onSearch={onSearch}
-              value={search}
-              onChange={handleSearchChange}
-              style={{
-                width: 200,
-                height: 10,
-              }}
-            />
-          </div>
-        </div>
+            <SearchButton>
+							<SearchWarp
+								placeholder="게시물 검색"
+								allowClear
+								onSearch={onSearch}
+								value={search}
+								onChange={handleSearchChange}
+								style={{
+									width: 200,
+									height: 10,
+								}}
+							/>
+          </SearchButton>
+        </Layout>
         <TableWrap rowKey="bid"
           columns={columns}
           dataSource={board}
@@ -281,7 +277,6 @@ const Board = () =>{
             };
           }}
         />
-      </InnerWraps>
       <Modal width={1200}title="댓글" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         
       <TableWrap rowKey="bid"
@@ -323,47 +318,20 @@ const Board = () =>{
      
       </Modal>
     
-    
-     </Container>
-    )
-    }
+    </>
+  )
+}
 
-    
-const Container = styled.div`
-  padding: 0;
-  width: 1235px;
-  margin : 0 auto;
-  box-sizing: border-box; 
-  margin-bottom: 0;
-  min-height: 820px;
+const Layout = styled.div`
+	position: relative;
+	width: 100%;
+	border-bottom: 3px solid #241d1e;
+	padding-bottom: 5px;
 `;
 
-const InnerWraps = styled.div`
-  width: 100%;
-  padding-left: 10px;
-
-  .titleMenu {
-    position: relative;
-    top: 18px;
-  }
-  .search {
-    position: relative;
-    width: 100%;
-    border-bottom: 3px solid #241d1e;
-    padding-bottom: 5px;
-    margin-top: 30px;
-
-    p {
-      font-weight: 1000;
-      padding-top: 8px;
-    }
-
-    .search_button {
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-  }
+const Text = styled.p`
+	font-weight: 1000;
+	padding-top: 8px;
 `;
 
 const ButtonList = styled.ul`
@@ -374,6 +342,17 @@ const ButtonList = styled.ul`
 	padding: 0;
     top: 16%;
     right: 18%;
+
+		::after{
+		content: '';
+    display: block;
+    position: absolute;
+    left: 45px;
+    top: 3px;
+    width: 1px;
+    height: 16px;
+    background-color: #ccc;
+	}
 
 
 	li:first-child {
@@ -404,6 +383,12 @@ const ButtonWrap = styled.li`
 	}
 `;
 
+const SearchButton = styled.div`
+	position: absolute;
+	top: 0;
+	right: 0;
+`;
+
 const SearchWarp = styled(Search)`
   span {
     .ant-input-clear-icon {
@@ -425,11 +410,11 @@ const SearchWarp = styled(Search)`
 `;
 
 const TableWrap = styled(Table)`
-  margin-bottom: 30px;
+  padding-bottom: 20px;
 
   .ant-table-placeholder {
     .ant-table-expanded-row-fixed{
-      min-height: 600px !important;
+      min-height: 603px !important;
     }
     .css-dev-only-do-not-override-acm2ia {
       position:absolute;

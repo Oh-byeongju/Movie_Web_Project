@@ -8,7 +8,7 @@ import Board from './Board'
 import ManagerLoading from './ManagerLoading';
 import { useNavigate } from 'react-router-dom';
 
-const Document = () => {
+const DocumentLayout = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
@@ -99,7 +99,7 @@ const Document = () => {
             관람평관리
           </button>
 					<button className={noticebutton ? "hover" : "not_hover"} onClick={onNotice}>
-						게시물관리
+						게시판관리
 					</button>
         </div>
 				{moviecommentbutton ? <>
@@ -169,7 +169,6 @@ const InnerWraps = styled.div`
   .titleMenu {
     position: relative;
     top: 18px;
-		margin-bottom: 14px;
 
 		.not_hover {
 			color: #999;
@@ -195,6 +194,7 @@ const InnerWraps = styled.div`
 			padding: 0;
 			cursor: pointer;
 			margin-left: 30px;
+			margin-bottom: 14.2px;
 
 			::before {
 				position: absolute;
@@ -219,6 +219,7 @@ const MovieAreaChoice = styled.div`
 	border-radius: 10px;
 	padding: 0;
 	margin-bottom: 50px;
+	margin-top: 21.2px;
 `;
 
 const TabLeft = styled.div`
@@ -365,4 +366,4 @@ const Notice = styled.div`
 	font-size: 17px;
 `;
 
-export default Document;
+export default DocumentLayout;

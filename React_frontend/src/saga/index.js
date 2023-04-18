@@ -13,6 +13,7 @@ import S_manager_user from "./S_manager_user";
 import S_manager_theater from "./S_manager_theater";
 import S_manager_movieinfo from "./S_manager_movieinfo";
 import S_manager_board from "./S_manager_board";
+import S_manager_movie from "./S_manager_movie";
 
 //사가 파일 추가 시 rootSaga 안에 fork해주면 됨
 export default function* rootSaga() {
@@ -30,6 +31,7 @@ export default function* rootSaga() {
     fork(S_manager_user),
     fork(S_manager_theater),
     fork(S_manager_movieinfo),
-    fork(S_manager_board)
+    fork(S_manager_board),
+		fork(S_manager_movie)
   ]);
 }

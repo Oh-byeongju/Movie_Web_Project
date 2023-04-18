@@ -1,10 +1,10 @@
 import React from 'react';
-import Document from '../components/Manager/Document';
+import DocumentLayout from '../components/Manager/DocumentLayout';
 
 const ManagerWriteRecord = () => {
 	return (
 		<>
-			<Document />
+			<DocumentLayout/>
 		</>
 	);
 };

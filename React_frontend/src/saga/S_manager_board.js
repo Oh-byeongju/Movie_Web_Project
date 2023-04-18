@@ -27,7 +27,7 @@ function* boardread(action) {
 
 // 상영관 조회 백엔드 호출
 async function boardReadApi() {
-  return await http.get("/manager/auth/boardread")
+  return await http.get("/Manager/auth/boardread")
     .then((response) => {
       return response;
     })
@@ -56,7 +56,7 @@ function* boardselect(action) {
   
   //조회 백엔드 호출
   async function boardSelectApi(data) {
-    return await http.get("/manager/auth/boardselect",{
+    return await http.get("/Manager/auth/boardselect",{
         params:{
             text:data.text,
             state:data.state
@@ -90,7 +90,7 @@ function* boarddelete(action) {
   
   //조회 백엔드 호출
   async function boardDeleteApi(data) {
-    return await http.post("/manager/auth/deleteboard",data)
+    return await http.post("/Manager/auth/deleteboard",data)
       .then((response) => {
         return response;
       })

@@ -104,7 +104,7 @@ function* AllMovie() {
 
 // 영화 조회 백엔드 호출
 async function callAllMovie() {
-  return await http.get("/Manager/auth/allMovie")
+  return await http.get("/Manager/auth/allMovie/Reservation")
   .then((response) => {
     return response;
   })

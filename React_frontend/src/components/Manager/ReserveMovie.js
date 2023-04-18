@@ -103,7 +103,7 @@ const ReserveMovie = () => {
 };
 
 const TableWrap = styled(Table)`
-  margin-bottom: 30px;
+  padding-bottom: 20px;
   min-height: 693px;
 
   .ant-table-placeholder {

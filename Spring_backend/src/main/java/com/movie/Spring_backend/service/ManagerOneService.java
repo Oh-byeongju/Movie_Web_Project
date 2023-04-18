@@ -1,5 +1,7 @@
 /*
   23-04-03 ~ 23-04-05 관리자 페이지 상영정보관리 구현(오병주)
+  23-04-17 상영관, 영화관 관리자 페이지 수정(오병주)
+  23-04-18 영화 관리자 페이지 수정(오병주)
 */
 package com.movie.Spring_backend.service;
 
@@ -10,6 +12,7 @@ import com.movie.Spring_backend.error.exception.ErrorCode;
 import com.movie.Spring_backend.error.exception.InvalidValueException;
 import com.movie.Spring_backend.exceptionlist.MovieInfoExistException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
+import com.movie.Spring_backend.mapper.MovieMapper;
 import com.movie.Spring_backend.repository.*;
 import com.movie.Spring_backend.util.DateUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
@@ -38,57 +42,19 @@ import java.util.stream.Collectors;
 public class ManagerOneService {
     private final JwtValidCheck jwtValidCheck;
     private final MovieRepository movieRepository;
+    private final MovieActorRepository movieActorRepository;
+
+
     private final MovieInfoRepository movieInfoRepository;
     private final ReservationRepository reservationRepository;
-    private final MovieActorRepository movieActorRepository;
+
     private final ActorRepository actorRepository;
     private final TheaterRepository theaterRepository;
     private final CinemaRepository cinemaRepository;
     private final SeatRepository seatRepository;
     private final EntityManagerFactory entityManagerFactory;
     private final BoardRepository boardRepository;
-    String POSTER_PATH = "/Users/mok/Desktop/Movie_Project/React_frontend/public/img/ranking";
-
-
-    // 전체 영화 조회 메소드
-    public List<MovieDto> getAllMovie(Map<String, String> requestMap) {
-
-        List<MovieEntity> datas = movieRepository.findAll();
-
-
-        List<MovieDto> movie= new ArrayList<>();
-        for(MovieEntity dd : datas){
-            List<String > mainactor = new ArrayList<>();
-            List<String > subactor = new ArrayList<>();
-            List<String > voiceactor = new ArrayList<>();
-            List<MovieActorEntity> main = movieActorRepository.findByActor(dd,"주연");
-            if(main !=null){
-                for(MovieActorEntity aa : main) {
-                    mainactor.add(aa.getActor().getAname());
-                }
-            }
-            List<MovieActorEntity> sub = movieActorRepository.findByActor(dd,"조연");
-            if(sub !=null){
-                for(MovieActorEntity aa : sub) {
-                    subactor.add(aa.getActor().getAname());
-                }
-            }
-            List<MovieActorEntity> voice = movieActorRepository.findByActor(dd,"성우");
-            if(voice !=null){
-                for(MovieActorEntity aa : voice) {
-                    voiceactor.add(aa.getActor().getAname());
-                }
-            }
-
-            movie.add(MovieDto.builder().mid(dd.getMid()).mtitle(dd.getMtitle()).mdir(dd.getMdir()).mdate(dd.getMdate())
-                    .mgenre(dd.getMgenre()).mtime(dd.getMtime()).mrating(dd.getMrating()).mimagepath(dd.getMimagepath())
-                            .mainactor(mainactor).subactor(subactor).voiceactor(voiceactor)
-                    .mstory(dd.getMstory()).build());
-        }
-        return movie;
-
-    }
-
+    private final MovieMapper movieMapper;
 
 
     //영화 INSERT
@@ -112,294 +78,294 @@ public class ManagerOneService {
         }
 
 
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-
-        String main = requestMap.get("main").trim();//주연배우
-        String[] mainactor = main.split(",");
-        String sub = requestMap.get("sub").trim();//조연배우
-        String[] subactor = sub.split(",");
-        String voice = requestMap.get("voice").trim();//성우
-        String[] voiceactor = voice.split(",");
-
-
-        if (state.equals("insert")) {
-            MovieEntity movieEntity;
-            movieEntity = MovieEntity.builder().
-                    mtitle(name)
-                    .mdir(dir)
-                    .mgenre(genre)
-                    .mtime(Integer.parseInt(time))
-                    .mdate(Date.valueOf(date))
-                    .mrating(rating)
-                    .mstory(story)
-                    .mimagepath(imagepath).build();
-
-
-            movieRepository.save(movieEntity);
-            MovieEntity movies = movieRepository.findByMovie(movieEntity);
-
-            if (mainactor.length > 0) {
-                for (String mm : mainactor) {
-                    ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
-                    ActorEntity empty;
-                    if (actor == null) {                        //actor가 없으면
-                        empty = ActorEntity.builder()
-                                .aname(mm)
-                                .abirthplace("서울")
-                                .build();
-                        actorRepository.save(empty);                               //배우추가
-                        ActorEntity actorid = actorRepository.findByActor(mm);  //추가한 id를 찾는다.
-
-                        MovieActorEntity movieActorEntity = null;                   //영화와 배우로 주연배우 추가
-                        movieActorEntity = movieActorEntity.builder()
-                                .marole("주연")
-                                .actor(actorid)
-                                .movie(movies)
-                                .build();
-
-                        movieActorRepository.save(movieActorEntity);
-                    } else {                                                            //배우가 있으면
-                        ActorEntity actorid = actorRepository.findByActor(mm);    //배우 아이디를 찾은 후
-
-                        MovieActorEntity movieActorEntity = null;                     //영화와 배우로 주연배우 추가
-                        movieActorEntity = movieActorEntity.builder()
-                                .marole("주연")
-                                .actor(actorid)
-                                .movie(movies)
-                                .build();
-
-                        movieActorRepository.save(movieActorEntity);
-                    }
-                }
-            }
-
-
-            if (subactor.length > 0) {
-                for (String mm : subactor) {
-                    ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
-                    ActorEntity empty;
-                    if (actor == null) {                        //actor가 없으면
-                        empty = ActorEntity.builder()
-                                .aname(mm)
-                                .abirthplace("서울")
-                                .build();
-                        actorRepository.save(empty);                               //배우추가
-                        ActorEntity actorid = actorRepository.findByActor(mm);  //추가한 id를 찾는다.
-
-                        MovieActorEntity movieActorEntity = null;                   //영화와 배우로 주연배우 추가
-                        movieActorEntity = movieActorEntity.builder()
-                                .marole("조연")
-                                .actor(actorid)
-                                .movie(movies)
-                                .build();
-
-                        movieActorRepository.save(movieActorEntity);
-                    } else {                                                            //배우가 있으면
-                        ActorEntity actorid = actorRepository.findByActor(mm);    //배우 아이디를 찾은 후
-
-                        MovieActorEntity movieActorEntity = null;                     //영화와 배우로 주연배우 추가
-                        movieActorEntity = movieActorEntity.builder()
-                                .marole("조연")
-                                .actor(actorid)
-                                .movie(movies)
-                                .build();
-
-                        movieActorRepository.save(movieActorEntity);
-                    }
-                }
-            }
-
-            if (voiceactor.length > 0) {
-                for (String mm : voiceactor) {
-                    ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
-                    ActorEntity empty;
-                    if (actor == null) {                        //actor가 없으면
-                        empty = ActorEntity.builder()
-                                .aname(mm)
-                                .abirthplace("서울")
-                                .build();
-                        actorRepository.save(empty);                               //배우추가
-                        ActorEntity actorid = actorRepository.findByActor(mm);  //추가한 id를 찾는다.
-
-                        MovieActorEntity movieActorEntity = null;                   //영화와 배우로 주연배우 추가
-                        movieActorEntity = movieActorEntity.builder()
-                                .marole("성우")
-                                .actor(actorid)
-                                .movie(movies)
-                                .build();
-
-                        movieActorRepository.save(movieActorEntity);
-                    } else {                                                            //배우가 있으면
-                        ActorEntity actorid = actorRepository.findByActor(mm);    //배우 아이디를 찾은 후
-
-                        MovieActorEntity movieActorEntity = null;                     //영화와 배우로 주연배우 추가
-                        movieActorEntity = movieActorEntity.builder()
-                                .marole("성우")
-                                .actor(actorid)
-                                .movie(movies)
-                                .build();
-
-                        movieActorRepository.save(movieActorEntity);
-                    }
-                }
-
-            }
-        } else if (state.equals("update")) {
-            //변경된 부부만 교체하는 메소드
-            MovieEntity movies = MovieEntity.builder().mid(Long.valueOf(id)).build();
-            entityManager.getTransaction().begin();
-            MovieEntity transmovie = movieRepository.findByMovie(movies);
-            if(imagepath == null){
-                imagepath= transmovie.getMimagepath();
-            }
-            transmovie.updateMovie(Long.valueOf(id), name, dir, genre, Integer.valueOf(time), Date.valueOf(date), rating, story, imagepath);
-            entityManager.getTransaction().commit();  //트렌잭션이 끝나도 아무런 업데이트가 일어나지 않는다.
-            System.out.println("update");
-            //영화 수정 끄읕
-
-            //배우 수정
-            //주연
-            //없는 배우들은 넣어줘야한다.
-            if (mainactor.length != 0) {
-                {
-                    for (String mm : mainactor) {
-                        ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
-                        ActorEntity empty;
-                        if (actor == null) {                        //actor가 없으면
-                            empty = ActorEntity.builder()
-                                    .aname(mm)
-                                    .abirthplace("서울")
-                                    .build();
-                            actorRepository.save(empty);                               //배우추가
-                        }
-                        System.out.println("주연배우추가ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-                    }
-                    //기존 배우
-                    List<String> originactor = new ArrayList<>();
-                    List<MovieActorEntity> movieActor = movieActorRepository.findByActor(movies, "주연"); //영화로 검색한 배우
-                    for (MovieActorEntity mapped : movieActor) {
-                        originactor.add(mapped.getActor().getAname());
-                    }
-                    //new 배우
-                    List<String> newactor = new ArrayList<>(Arrays.asList(mainactor));
-                    //검색 된 배우
-                    originactor.removeAll(newactor);  // 제거 리스트
-                    newactor.removeAll(originactor);  // 추가 리스트
-                    System.out.println(originactor.toString());
-                    System.out.println(newactor.toString());
-                    for (String aacc : originactor) {
-                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "주연");
-                        movieActorRepository.delete(removeactor);
-                    }
-
-                    for (String aacc : newactor) {
-                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "주연");
-                        if (removeactor == null) {
-                            MovieActorEntity newactors = null;
-                            newactors = MovieActorEntity.builder()
-                                    .marole("주연")
-                                    .movie(MovieEntity.builder().mid(Long.valueOf(id)).build())
-                                    .actor(actorRepository.findByActor(aacc))
-                                    .build();
-
-                            movieActorRepository.save(newactors);
-                        }
-
-                    }
-                }
-            }
-                //-------------------------------------------------------조연
-                if (subactor.length != 0) {
-                    for (String mm : subactor) {
-                        ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
-                        ActorEntity empty;
-                        if (actor == null) {                        //actor가 없으면
-                            empty = ActorEntity.builder()
-                                    .aname(mm)
-                                    .abirthplace("서울")
-                                    .build();
-                            actorRepository.save(empty);
-                            System.out.println("조연배우추가ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");//배우 추가
-                        }
-                    }
-                    //조연
-                    //기존 조연 배우
-                    List<String> originsubactor = new ArrayList<>();
-                    List<MovieActorEntity> moviesubActor = movieActorRepository.findByActor(movies, "조연"); //영화로 검색한 배우
-                    for (MovieActorEntity mapped : moviesubActor) {
-                        originsubactor.add(mapped.getActor().getAname());
-                    }
-                    //new 배우
-                    List<String> newsubactor = new ArrayList<>(Arrays.asList(subactor));
-                    //검색 된 배우
-                    originsubactor.removeAll(newsubactor);  // 제거 리스트
-                    newsubactor.removeAll(originsubactor);  // 추가 리스트
-                    for (String aacc : originsubactor) {
-                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "조연");
-                        movieActorRepository.delete(removeactor);
-                    }
-
-                    for (String aacc : newsubactor) {
-                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "조연");
-                        if (removeactor == null) {
-                            MovieActorEntity newactors = null;
-                            newactors = MovieActorEntity.builder()
-                                    .marole("조연")
-                                    .movie(MovieEntity.builder().mid(Long.valueOf(id)).build())
-                                    .actor(actorRepository.findByActor(aacc))
-                                    .build();
-                            movieActorRepository.save(newactors);
-                        }
-                    }
-                }
-                //-------------------------------------------------------성우
-                if (voiceactor.length != 0) {
-                    for (String mm : voiceactor) {
-                        ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
-                        ActorEntity empty;
-                        if (actor == null) {                        //actor가 없으면
-                            empty = ActorEntity.builder()
-                                    .aname(mm)
-                                    .abirthplace("서울")
-                                    .build();
-                            actorRepository.save(empty);
-                            System.out.println("성웇푸가ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");//배우 추가
-                        }
-                    }
-
-                    //조연
-                    //기존 조연 배우
-                    List<String> originvoiceactor = new ArrayList<>();
-                    List<MovieActorEntity> movievoiceActor = movieActorRepository.findByActor(movies, "성우"); //영화로 검색한 배우
-                    for (MovieActorEntity mapped : movievoiceActor) {
-                        originvoiceactor.add(mapped.getActor().getAname());
-                    }
-                    //new 배우
-                    List<String> newvoiceactor = new ArrayList<>(Arrays.asList(voiceactor));
-                    //검색 된 배우
-                    originvoiceactor.removeAll(newvoiceactor);  // 제거 리스트
-                    newvoiceactor.removeAll(originvoiceactor);  // 추가 리스트
-                    for (String aacc : originvoiceactor) {
-                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "성우");
-                        movieActorRepository.delete(removeactor);
-                    }
-
-                    for (String aacc : newvoiceactor) {
-                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "성우");
-                        if (removeactor == null) {
-                            MovieActorEntity newactors = null;
-                            newactors = MovieActorEntity.builder()
-                                    .marole("성우")
-                                    .movie(MovieEntity.builder().mid(Long.valueOf(id)).build())
-                                    .actor(actorRepository.findByActor(aacc))
-                                    .build();
-                            movieActorRepository.save(newactors);
-                        }
-
-                    }
-                }
-            }
+//        EntityManager entityManager = entityManagerFactory.createEntityManager();
+//
+//
+//        String main = requestMap.get("main").trim();//주연배우
+//        String[] mainactor = main.split(",");
+//        String sub = requestMap.get("sub").trim();//조연배우
+//        String[] subactor = sub.split(",");
+//        String voice = requestMap.get("voice").trim();//성우
+//        String[] voiceactor = voice.split(",");
+//
+//
+//        if (state.equals("insert")) {
+//            MovieEntity movieEntity;
+//            movieEntity = MovieEntity.builder().
+//                    mtitle(name)
+//                    .mdir(dir)
+//                    .mgenre(genre)
+//                    .mtime(Integer.parseInt(time))
+//                    .mdate(Date.valueOf(date))
+//                    .mrating(rating)
+//                    .mstory(story)
+//                    .mimagepath(imagepath).build();
+//
+//
+//            movieRepository.save(movieEntity);
+//            MovieEntity movies = movieRepository.findByMovie(movieEntity);
+//
+//            if (mainactor.length > 0) {
+//                for (String mm : mainactor) {
+//                    ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
+//                    ActorEntity empty;
+//                    if (actor == null) {                        //actor가 없으면
+//                        empty = ActorEntity.builder()
+//                                .aname(mm)
+//                                .abirthplace("서울")
+//                                .build();
+//                        actorRepository.save(empty);                               //배우추가
+//                        ActorEntity actorid = actorRepository.findByActor(mm);  //추가한 id를 찾는다.
+//
+//                        MovieActorEntity movieActorEntity = null;                   //영화와 배우로 주연배우 추가
+//                        movieActorEntity = movieActorEntity.builder()
+//                                .marole("주연")
+//                                .actor(actorid)
+//                                .movie(movies)
+//                                .build();
+//
+//                        movieActorRepository.save(movieActorEntity);
+//                    } else {                                                            //배우가 있으면
+//                        ActorEntity actorid = actorRepository.findByActor(mm);    //배우 아이디를 찾은 후
+//
+//                        MovieActorEntity movieActorEntity = null;                     //영화와 배우로 주연배우 추가
+//                        movieActorEntity = movieActorEntity.builder()
+//                                .marole("주연")
+//                                .actor(actorid)
+//                                .movie(movies)
+//                                .build();
+//
+//                        movieActorRepository.save(movieActorEntity);
+//                    }
+//                }
+//            }
+//
+//
+//            if (subactor.length > 0) {
+//                for (String mm : subactor) {
+//                    ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
+//                    ActorEntity empty;
+//                    if (actor == null) {                        //actor가 없으면
+//                        empty = ActorEntity.builder()
+//                                .aname(mm)
+//                                .abirthplace("서울")
+//                                .build();
+//                        actorRepository.save(empty);                               //배우추가
+//                        ActorEntity actorid = actorRepository.findByActor(mm);  //추가한 id를 찾는다.
+//
+//                        MovieActorEntity movieActorEntity = null;                   //영화와 배우로 주연배우 추가
+//                        movieActorEntity = movieActorEntity.builder()
+//                                .marole("조연")
+//                                .actor(actorid)
+//                                .movie(movies)
+//                                .build();
+//
+//                        movieActorRepository.save(movieActorEntity);
+//                    } else {                                                            //배우가 있으면
+//                        ActorEntity actorid = actorRepository.findByActor(mm);    //배우 아이디를 찾은 후
+//
+//                        MovieActorEntity movieActorEntity = null;                     //영화와 배우로 주연배우 추가
+//                        movieActorEntity = movieActorEntity.builder()
+//                                .marole("조연")
+//                                .actor(actorid)
+//                                .movie(movies)
+//                                .build();
+//
+//                        movieActorRepository.save(movieActorEntity);
+//                    }
+//                }
+//            }
+//
+//            if (voiceactor.length > 0) {
+//                for (String mm : voiceactor) {
+//                    ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
+//                    ActorEntity empty;
+//                    if (actor == null) {                        //actor가 없으면
+//                        empty = ActorEntity.builder()
+//                                .aname(mm)
+//                                .abirthplace("서울")
+//                                .build();
+//                        actorRepository.save(empty);                               //배우추가
+//                        ActorEntity actorid = actorRepository.findByActor(mm);  //추가한 id를 찾는다.
+//
+//                        MovieActorEntity movieActorEntity = null;                   //영화와 배우로 주연배우 추가
+//                        movieActorEntity = movieActorEntity.builder()
+//                                .marole("성우")
+//                                .actor(actorid)
+//                                .movie(movies)
+//                                .build();
+//
+//                        movieActorRepository.save(movieActorEntity);
+//                    } else {                                                            //배우가 있으면
+//                        ActorEntity actorid = actorRepository.findByActor(mm);    //배우 아이디를 찾은 후
+//
+//                        MovieActorEntity movieActorEntity = null;                     //영화와 배우로 주연배우 추가
+//                        movieActorEntity = movieActorEntity.builder()
+//                                .marole("성우")
+//                                .actor(actorid)
+//                                .movie(movies)
+//                                .build();
+//
+//                        movieActorRepository.save(movieActorEntity);
+//                    }
+//                }
+//
+//            }
+//        } else if (state.equals("update")) {
+//            //변경된 부부만 교체하는 메소드
+//            MovieEntity movies = MovieEntity.builder().mid(Long.valueOf(id)).build();
+//            entityManager.getTransaction().begin();
+//            MovieEntity transmovie = movieRepository.findByMovie(movies);
+//            if(imagepath == null){
+//                imagepath= transmovie.getMimagepath();
+//            }
+//            transmovie.updateMovie(Long.valueOf(id), name, dir, genre, Integer.valueOf(time), Date.valueOf(date), rating, story, imagepath);
+//            entityManager.getTransaction().commit();  //트렌잭션이 끝나도 아무런 업데이트가 일어나지 않는다.
+//            System.out.println("update");
+//            //영화 수정 끄읕
+//
+//            //배우 수정
+//            //주연
+//            //없는 배우들은 넣어줘야한다.
+//            if (mainactor.length != 0) {
+//                {
+//                    for (String mm : mainactor) {
+//                        ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
+//                        ActorEntity empty;
+//                        if (actor == null) {                        //actor가 없으면
+//                            empty = ActorEntity.builder()
+//                                    .aname(mm)
+//                                    .abirthplace("서울")
+//                                    .build();
+//                            actorRepository.save(empty);                               //배우추가
+//                        }
+//                        System.out.println("주연배우추가ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+//                    }
+//                    //기존 배우
+//                    List<String> originactor = new ArrayList<>();
+//                    List<MovieActorEntity> movieActor = movieActorRepository.findByActor(movies, "주연"); //영화로 검색한 배우
+//                    for (MovieActorEntity mapped : movieActor) {
+//                        originactor.add(mapped.getActor().getAname());
+//                    }
+//                    //new 배우
+//                    List<String> newactor = new ArrayList<>(Arrays.asList(mainactor));
+//                    //검색 된 배우
+//                    originactor.removeAll(newactor);  // 제거 리스트
+//                    newactor.removeAll(originactor);  // 추가 리스트
+//                    System.out.println(originactor.toString());
+//                    System.out.println(newactor.toString());
+//                    for (String aacc : originactor) {
+//                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "주연");
+//                        movieActorRepository.delete(removeactor);
+//                    }
+//
+//                    for (String aacc : newactor) {
+//                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "주연");
+//                        if (removeactor == null) {
+//                            MovieActorEntity newactors = null;
+//                            newactors = MovieActorEntity.builder()
+//                                    .marole("주연")
+//                                    .movie(MovieEntity.builder().mid(Long.valueOf(id)).build())
+//                                    .actor(actorRepository.findByActor(aacc))
+//                                    .build();
+//
+//                            movieActorRepository.save(newactors);
+//                        }
+//
+//                    }
+//                }
+//            }
+//                //-------------------------------------------------------조연
+//                if (subactor.length != 0) {
+//                    for (String mm : subactor) {
+//                        ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
+//                        ActorEntity empty;
+//                        if (actor == null) {                        //actor가 없으면
+//                            empty = ActorEntity.builder()
+//                                    .aname(mm)
+//                                    .abirthplace("서울")
+//                                    .build();
+//                            actorRepository.save(empty);
+//                            System.out.println("조연배우추가ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");//배우 추가
+//                        }
+//                    }
+//                    //조연
+//                    //기존 조연 배우
+//                    List<String> originsubactor = new ArrayList<>();
+//                    List<MovieActorEntity> moviesubActor = movieActorRepository.findByActor(movies, "조연"); //영화로 검색한 배우
+//                    for (MovieActorEntity mapped : moviesubActor) {
+//                        originsubactor.add(mapped.getActor().getAname());
+//                    }
+//                    //new 배우
+//                    List<String> newsubactor = new ArrayList<>(Arrays.asList(subactor));
+//                    //검색 된 배우
+//                    originsubactor.removeAll(newsubactor);  // 제거 리스트
+//                    newsubactor.removeAll(originsubactor);  // 추가 리스트
+//                    for (String aacc : originsubactor) {
+//                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "조연");
+//                        movieActorRepository.delete(removeactor);
+//                    }
+//
+//                    for (String aacc : newsubactor) {
+//                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "조연");
+//                        if (removeactor == null) {
+//                            MovieActorEntity newactors = null;
+//                            newactors = MovieActorEntity.builder()
+//                                    .marole("조연")
+//                                    .movie(MovieEntity.builder().mid(Long.valueOf(id)).build())
+//                                    .actor(actorRepository.findByActor(aacc))
+//                                    .build();
+//                            movieActorRepository.save(newactors);
+//                        }
+//                    }
+//                }
+//                //-------------------------------------------------------성우
+//                if (voiceactor.length != 0) {
+//                    for (String mm : voiceactor) {
+//                        ActorEntity actor = actorRepository.findByActor(mm);  //주연 배우 중 actor table에 사람이 없으면 추가시켜준다
+//                        ActorEntity empty;
+//                        if (actor == null) {                        //actor가 없으면
+//                            empty = ActorEntity.builder()
+//                                    .aname(mm)
+//                                    .abirthplace("서울")
+//                                    .build();
+//                            actorRepository.save(empty);
+//                            System.out.println("성웇푸가ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");//배우 추가
+//                        }
+//                    }
+//
+//                    //조연
+//                    //기존 조연 배우
+//                    List<String> originvoiceactor = new ArrayList<>();
+//                    List<MovieActorEntity> movievoiceActor = movieActorRepository.findByActor(movies, "성우"); //영화로 검색한 배우
+//                    for (MovieActorEntity mapped : movievoiceActor) {
+//                        originvoiceactor.add(mapped.getActor().getAname());
+//                    }
+//                    //new 배우
+//                    List<String> newvoiceactor = new ArrayList<>(Arrays.asList(voiceactor));
+//                    //검색 된 배우
+//                    originvoiceactor.removeAll(newvoiceactor);  // 제거 리스트
+//                    newvoiceactor.removeAll(originvoiceactor);  // 추가 리스트
+//                    for (String aacc : originvoiceactor) {
+//                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "성우");
+//                        movieActorRepository.delete(removeactor);
+//                    }
+//
+//                    for (String aacc : newvoiceactor) {
+//                        MovieActorEntity removeactor = movieActorRepository.removeFor(aacc, Long.valueOf(id), "성우");
+//                        if (removeactor == null) {
+//                            MovieActorEntity newactors = null;
+//                            newactors = MovieActorEntity.builder()
+//                                    .marole("성우")
+//                                    .movie(MovieEntity.builder().mid(Long.valueOf(id)).build())
+//                                    .actor(actorRepository.findByActor(aacc))
+//                                    .build();
+//                            movieActorRepository.save(newactors);
+//                        }
+//
+//                    }
+//                }
+//            }
         }
 
     //포스터를 저장
@@ -419,8 +385,9 @@ public class ManagerOneService {
             String safeFile =System.currentTimeMillis() + originFileName;
 
             FileNames =safeFile;
-            try {
-                File f1 = new File(POSTER_PATH,safeFile);
+        String POSTER_PATH = "C:/Users/OBJ/PROJECT/Movie_Project_final/React_frontend/public/img/ranking";
+        try {
+                File f1 = new File(POSTER_PATH, safeFile);
                 //업로드 주소 , 파일명
                 multipartFiles.transferTo(f1);
                 //저장
@@ -436,46 +403,80 @@ public class ManagerOneService {
         return POSTER_PATH +"/" + FileNames;
     }
 
-    //전체 게시판 불러오기
-    public List<BoardDto> ReadBoard (){
 
-        List<BoardEntity> boardEntities =boardRepository.findAll();
-        return boardEntities.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .thumb(data.getThumb()).uid(data.getMember().getUid()).
-                build()).collect(Collectors.toList());
 
+
+
+
+    // 전체 영화 불러오는 메소드
+    public List<MovieDto> AllMovieSearch(HttpServletRequest request) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 전체 영화 검색
+        List<MovieEntity> Movies = movieRepository.findAll();
+
+        // 출연 정보까지 포함된 전체 배우 검색
+        List<MovieActorEntity> MovieActors = movieActorRepository.findAll();
+
+        // 정보를 매핑하여 리턴
+        return movieMapper.toDtoManagerMovie(Movies, MovieActors);
     }
 
-    //페이지내 이름으로 검색하는 메소드
+
+
+    // 전체 배우 불러오는 메소드
+    public List<ActorDto> AllActorSearch(HttpServletRequest request) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 배우 검색
+        List<ActorEntity> Actors = actorRepository.findAll();
+
+        // 정보를 매핑하여 리턴
+        return Actors.stream().map(actor -> ActorDto.builder()
+                .aid(actor.getAid())
+                .aname(actor.getAname())
+                .abirthplace(actor.getAbirthplace())
+                .cntMovie(actor.getCntMovie()).build()).collect(Collectors.toList());
+    }
+
+    // 배우 추가하는 메소드
     @Transactional
-    public List<BoardDto> SearchUid(String text, String state) {
-        if(state.equals("uid")) {
-            List<BoardEntity> datas = boardRepository.ManagerUid(text);
-            return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                    .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                    .thumb(data.getThumb()).uid(data.getMember().getUid()).
-                    build()).collect(Collectors.toList());
+    public void ActorInsert(HttpServletRequest request, ActorDto requestDto) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 배우 정보 추가
+        actorRepository.save(ActorEntity.builder()
+                .aname(requestDto.getAname())
+                .abirthplace(requestDto.getAbirthplace()).build());
+    }
+
+    // 배우 삭제하는 메소드
+    @Transactional
+    public void ActorDelete(HttpServletRequest request, Long aid) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 배우정보 삭제
+        actorRepository.deleteById(aid);
+    }
+
+    // 배우 수정하는 메소드
+    @Transactional
+    public void ActorUpdate(HttpServletRequest request, ActorDto requestDto) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 배우가 존재하지 않을경우 예외처리
+        if (!actorRepository.existsById(requestDto.getAid())) {
+            throw new EntityNotFoundException("배우가 존재하지 않습니다.");
         }
 
-        else if(state.equals("title")){
-            List<BoardEntity> datas = boardRepository.ManagerTitle(text);
-            return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                    .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                    .thumb(data.getThumb()).uid(data.getMember().getUid()).
-                    build()).collect(Collectors.toList());
-        }
-        return null;
+        // 배우 정보 수정
+        actorRepository.ActorUpdate(requestDto.getAname(), requestDto.getAbirthplace(), requestDto.getAid());
     }
-
-    @Transactional
-    public void boarddelete(Map<String, String> requestMap, HttpServletRequest request){
-        String bid = requestMap.get("bid");
-        boardRepository.deleteById(Long.valueOf(bid));
-    }
-
-
-
 
     // 전체 영화관 불러오는 메소드
     @Transactional

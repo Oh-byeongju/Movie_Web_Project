@@ -221,26 +221,17 @@ public class MovieService {
         boolean Screen = Movie_id.contains(mid);
 
         // 영화에 출연하는 출연진 정보 검색
-        List<MovieActorEntity> MovieActor = movieActorRepository.findByMovie(movie);
-
-        // Actor 테이블의 기본키 추출
-        Set<Long> Actor_Ids = new HashSet<>();
-        for (MovieActorEntity MA : MovieActor) {
-            Actor_Ids.add(MA.getActor().getAid());
-        }
-
-        // Actor 테이블의 기본키를 이용하여 정보 검색
-        List<ActorEntity> Actor = actorRepository.findAllById(Actor_Ids);
+        List<MovieActorEntity> MovieActors = movieActorRepository.findByMovie(movie);
 
         // 영화 출연진들의 이름 매핑
         List<String> Actors = new ArrayList<>();
-        for (ActorEntity A : Actor) {
-            Actors.add(A.getAname() + ",");
+        for (MovieActorEntity MA : MovieActors) {
+            Actors.add(MA.getActor().getAname() + ",");
         }
 
         // List의 마지막 요소에 콤마를 제거
         if (!Actors.isEmpty()) {
-            Actors.set(Actor.size()-1, Actors.get(Actor.size()-1).replaceAll(",$", ""));
+            Actors.set(Actors.size()-1, Actors.get(Actors.size()-1).replaceAll(",$", ""));
         }
 
         // 받은 id 정보를 entity 형으로 변환(로그인 정보가 없으면 전달받은 매개변수 uid가 No_login 으로 설정)

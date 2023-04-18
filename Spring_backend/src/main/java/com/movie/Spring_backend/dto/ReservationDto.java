@@ -9,7 +9,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class ReservationDto {
-
     private Long rid;
     private String uid;
     private String rdate;

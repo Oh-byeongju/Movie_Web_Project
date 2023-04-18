@@ -1,6 +1,6 @@
 /*
  23-03-29 관리자 페이지 영화관 관련 crud (강경목)
- 23-04-17 상영관, 영화관 관리자 페이지 CRUD 리팩토링(오병주)
+ 23-04-17 상영관, 영화관 관리자 페이지 CRUD 수정(오병주)
 */
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
@@ -257,9 +257,9 @@ async function callUpdateCinema(data) {
     }
   }
   
-  // 상영관 추가 백엔드 호출
+
   async function MovieApi(data) {
-    return await http.get("manager/auth/movieall", {
+    return await http.get("Manager/auth/movieall", {
       params: {
         uid: data,
         button: 'rate',
@@ -290,9 +290,8 @@ async function callUpdateCinema(data) {
     }
   }
   
-  // 상영관 추가 백엔드 호출
   async function MovieInsertApi(data) {
-    return await http.post("manager/auth/postmovie", data.fd)
+    return await http.post("Manager/auth/postmovie", data.fd)
       .then((response) => {
         return response;
       })

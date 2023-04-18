@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
 public class ManagerMemberService {
     private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
-    private final TheaterRepository theaterRepository;
     private final ReservationRepository reservationRepository;
     private final MovieMemberRepository movieMemberRepository;
     private final CommentInfoRepository commentInfoRepository;
+    private final BoardRepository boardRepository;
     private final MovieMapper movieMapper;
     private final ReservationMapper reservationMapper;
     private final MovieCommentMapper movieCommentMapper;
@@ -157,8 +157,7 @@ public class ManagerMemberService {
                 .ujoindate(member.getUjoindate()).build());
     }
 
-    // 전체 영화 불러오는 메소드
-    // 이거 이사가야 할수도 있음 MangerOne으로
+    // 예매기록 페이지에서 전체 영화 불러오는 메소드
     @Transactional
     public List<MovieDto> AllMovieSearch(HttpServletRequest request) {
         // Access Token에 대한 유효성 검사
@@ -347,5 +346,41 @@ public class ManagerMemberService {
 
         // 관람평 목록과 좋아요 기록을 mapping 후 리턴
         return MovieMembers.map(Moviemember -> movieCommentMapper.toDto(Moviemember, false));
+    }
+
+    //전체 게시판 불러오기
+    public List<BoardDto> ReadBoard (){
+        List<BoardEntity> boardEntities =boardRepository.findAll();
+        return boardEntities.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
+                .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
+                .thumb(data.getThumb()).uid(data.getMember().getUid()).
+                build()).collect(Collectors.toList());
+
+    }
+    //페이지내 이름으로 검색하는 메소드
+    @Transactional
+    public List<BoardDto> SearchUid(String text, String state) {
+        if(state.equals("uid")) {
+            List<BoardEntity> datas = boardRepository.ManagerUid(text);
+            return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
+                    .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
+                    .thumb(data.getThumb()).uid(data.getMember().getUid()).
+                    build()).collect(Collectors.toList());
+        }
+
+        else if(state.equals("title")){
+            List<BoardEntity> datas = boardRepository.ManagerTitle(text);
+            return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
+                    .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
+                    .thumb(data.getThumb()).uid(data.getMember().getUid()).
+                    build()).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    @Transactional
+    public void boarddelete(Map<String, String> requestMap, HttpServletRequest request){
+        String bid = requestMap.get("bid");
+        boardRepository.deleteById(Long.valueOf(bid));
     }
 }

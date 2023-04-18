@@ -6,6 +6,7 @@
 package com.movie.Spring_backend.mapper;
 
 import com.movie.Spring_backend.dto.MovieDto;
+import com.movie.Spring_backend.entity.MovieActorEntity;
 import com.movie.Spring_backend.entity.MovieEntity;
 import org.springframework.stereotype.Component;
 
@@ -176,7 +177,72 @@ public class MovieMapper {
         }
     }
 
-    // 관리자 페이지에 필요한 영화 내용들을 mapping 해주는 메소드
+    // 관리자 페이지(영화관리)에 필요한 영화 내용들을 mapping 해주는 메소드
+    public List<MovieDto> toDtoManagerMovie(List<MovieEntity> movieList, List<MovieActorEntity> movieActorList) {
+
+        // 사용될 변수들 초기화
+        List<MovieDto> Movies = new ArrayList<>();
+        Long movieId = 0L;
+        Long actorMovieId = 0L;
+        int num = 0;
+        String role = "";
+        String name = "";
+
+        // 반복문을 통해 영화에 출연하는 배우들을 분리
+        for (MovieEntity movieEntity : movieList) {
+            List<String> mainActor = new ArrayList<>();
+            List<String> subActor = new ArrayList<>();
+            List<String> voiceActor = new ArrayList<>();
+            int cnt = 0;
+            // 현재 돌고있는 반복문 순번 영화의 Id
+            movieId = movieEntity.getMid();
+
+            for (int j = num; j < movieActorList.size(); j++) {
+                // 현재 돌고있는 반복문 순번 배우의 출연 영화 Id
+                actorMovieId = movieActorList.get(j).getMovie().getMid();
+
+                // 현재 영화의 Id와 배우의 출연 영화 Id가 같을경우
+                if (movieId.equals(actorMovieId)) {
+                    role = movieActorList.get(j).getMarole();
+                    name = movieActorList.get(j).getActor().getAname();
+
+                    // 배우들의 역할에 따라 이름을 할당
+                    if (role.equals("주연")) {
+                        mainActor.add(name);
+                    } else if (role.equals("조연")) {
+                        subActor.add(name);
+                    } else {
+                        voiceActor.add(name);
+                    }
+                    // 배우들을 할당한 횟수 count
+                    cnt++;
+                }
+                // 현재 영화의 Id와 배우의 출연 영화 Id가 다르면 break
+                else {
+                    break;
+                }
+            }
+            // 배우와 영화 정보를 리턴할 배열에 삽입
+            Movies.add(MovieDto.builder()
+                    .mid(movieId)
+                    .mtitle(movieEntity.getMtitle())
+                    .mdir(movieEntity.getMdir())
+                    .mdate(movieEntity.getMdate())
+                    .mgenre(movieEntity.getMgenre())
+                    .mtime(movieEntity.getMtime())
+                    .mrating(movieEntity.getMrating())
+                    .mimagepath(movieEntity.getMimagepath())
+                    .mainactor(mainActor)
+                    .subactor(subActor)
+                    .voiceactor(voiceActor)
+                    .mstory(movieEntity.getMstory()).build());
+            // 배우에 대한 반복문 시작위치 조정(이미 추가된 배우를 건너뛰기 위한 과정)
+            num += cnt;
+        }
+        return Movies;
+    }
+
+    // 관리자 페이지(예매기록관리)에 필요한 영화 내용들을 mapping 해주는 메소드
     public MovieDto toDtoManagerReserve(MovieEntity entity, boolean Screen) {
 
         // 영화 예매가 불가능 하면 (상영예정)을 이름에 붙여서 보냄

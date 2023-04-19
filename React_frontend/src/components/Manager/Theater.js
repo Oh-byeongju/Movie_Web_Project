@@ -93,20 +93,20 @@ const Theater = () => {
     },
   ];  
 
-	// 영화관명 변수
+	// 영화관명 useState
 	const [name , setName] = useState('');
   const onChangeName = (e) =>{
     setName(e.target.value)
   }
 
-	// 영화관 주소 변수
+	// 영화관 주소 useState
   const [addr, setAddr] = useState('');
   const onChangeAddr = (e) =>{
     setAddr(e.target.value)
   }
 
-	// 지역 변수
-	const [area, setArea] = useState('');
+	// 지역 useState
+	const [area, setArea] = useState([]);
 	const handleChange = (value) => {
 		setArea(value)
 	};
@@ -228,7 +228,7 @@ const Theater = () => {
 			// 모달 상태 초기화
 			setAddr('');
 			setName('');
-			setArea('');
+			setArea([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -258,7 +258,7 @@ const Theater = () => {
 			// 모달 상태 초기화
 			setAddr('');
 			setName('');
-			setArea('');
+			setArea([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -277,7 +277,7 @@ const Theater = () => {
 			// 모달 상태 초기화
 			setAddr('');
 			setName('');
-			setArea('');
+			setArea([]);
 			setIsModalOpen(false);
 			
 			dispatch({
@@ -299,7 +299,7 @@ const Theater = () => {
 			// 모달 상태 초기화
 			setAddr('');
 			setName('');
-			setArea('');
+			setArea([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -318,7 +318,7 @@ const Theater = () => {
 			// 모달 상태 초기화
 			setAddr('');
 			setName('');
-			setArea('');
+			setArea([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -335,7 +335,7 @@ const Theater = () => {
 	const handleCancel = useCallback(() => {
 		setAddr('');
 		setName('');
-		setArea('');
+		setArea([]);
 		setIsModalOpen(false);
 	}, []);
 
@@ -361,6 +361,7 @@ const Theater = () => {
 				}}
 			/>
 			<ModalWrap 
+			keyboard={false}
 			title={delState ? "영화관추가" : "영화관수정"}
 			open={isModalOpen} 
 			onOk={onInsertORUpdate}
@@ -369,7 +370,8 @@ const Theater = () => {
 			onCancel={handleCancel} destroyOnClose>
 				<Form>
 					<Form.Item label="지역">
-						<Select 
+						<Select
+							placeholder='지역을 선택해주세요'
 							onChange={handleChange}
 							defaultValue={area}
 							options={[
@@ -393,10 +395,10 @@ const Theater = () => {
 						</Select>
 					</Form.Item>  
 					<Form.Item label="영화관명" onChange={onChangeName}>
-						<Input value={name}/>
+						<Input placeholder='영화관명을 입력해주세요' value={name}/>
 					</Form.Item>
 					<Form.Item label="주소" onChange={onChangeAddr}>
-						<Input value={addr}/>
+						<Input placeholder='주소를 입력해주세요' value={addr}/>
 					</Form.Item>
 					<Form.Item style={{position:'relative', top:'57px'}}>
 						<Button disabled={delState} onClick={onDelete} type="primary" danger>

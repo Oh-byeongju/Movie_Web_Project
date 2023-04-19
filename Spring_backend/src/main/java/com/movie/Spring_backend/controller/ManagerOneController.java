@@ -1,7 +1,7 @@
 /*
   23-04-03 ~ 23-04-05 관리자 페이지 상영정보관리 구현(오병주)
   23-04-17 상영관, 영화관 관리자 페이지 수정(오병주)
-  23-04-18 영화 관리자 페이지 수정(오병주)
+  23-04-18 ~ 19 영화 관리자 페이지 수정(오병주)
 */
 package com.movie.Spring_backend.controller;
 
@@ -43,6 +43,7 @@ public class ManagerOneController {
     public void postMovie(@RequestPart(value="data") Map<String, String> requestMap,HttpServletRequest request,
                           @RequestPart(required = false) MultipartFile multipartFiles
     )     throws SQLException {
+        System.out.println("도착");
         managerOneService.postMovie(requestMap,request,multipartFiles);
     }
 

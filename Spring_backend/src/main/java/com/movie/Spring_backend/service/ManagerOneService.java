@@ -1,7 +1,7 @@
 /*
   23-04-03 ~ 23-04-05 관리자 페이지 상영정보관리 구현(오병주)
   23-04-17 상영관, 영화관 관리자 페이지 수정(오병주)
-  23-04-18 영화 관리자 페이지 수정(오병주)
+  23-04-18 ~ 19영화 관리자 페이지 수정(오병주)
 */
 package com.movie.Spring_backend.service;
 
@@ -72,6 +72,11 @@ public class ManagerOneService {
         String story = requestMap.get("story").trim();//줄거리
         String state = requestMap.get("state").trim();//줄거리
         String imagepath = null;
+
+        System.out.println(multipartFiles);
+
+
+        // null인지 아닌지 체크를 해줘야함
         if (multipartFiles != null) {
             String path = AxiosFileTest(multipartFiles);  //이미지 주소
             imagepath = path.substring(path.lastIndexOf("img/")); //sql에 저장하는 이름을 지정해주기 위함

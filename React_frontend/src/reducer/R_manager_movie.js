@@ -1,5 +1,5 @@
 /*
-	23-04-18 영화 관리자 페이지 리듀서 수정(오병주)
+	23-04-18 ~ 19 영화 관리자 페이지 리듀서 수정(오병주)
 */
 // 영화 조회 리스트
 export const MANAGER_MOVIE_REQUEST = "MANAGER_MOVIE_REQUEST";

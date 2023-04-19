@@ -184,6 +184,7 @@ public class MovieMapper {
         List<MovieDto> Movies = new ArrayList<>();
         Long movieId = 0L;
         Long actorMovieId = 0L;
+        Long actorId = 0L;
         int num = 0;
         String role = "";
         String name = "";
@@ -191,8 +192,11 @@ public class MovieMapper {
         // 반복문을 통해 영화에 출연하는 배우들을 분리
         for (MovieEntity movieEntity : movieList) {
             List<String> mainActor = new ArrayList<>();
+            List<String> mainActorId = new ArrayList<>();
             List<String> subActor = new ArrayList<>();
+            List<String> subActorId = new ArrayList<>();
             List<String> voiceActor = new ArrayList<>();
+            List<String> voiceActorId = new ArrayList<>();
             int cnt = 0;
             // 현재 돌고있는 반복문 순번 영화의 Id
             movieId = movieEntity.getMid();
@@ -205,14 +209,18 @@ public class MovieMapper {
                 if (movieId.equals(actorMovieId)) {
                     role = movieActorList.get(j).getMarole();
                     name = movieActorList.get(j).getActor().getAname();
+                    actorId = movieActorList.get(j).getActor().getAid();
 
                     // 배우들의 역할에 따라 이름을 할당
                     if (role.equals("주연")) {
                         mainActor.add(name);
+                        mainActorId.add(String.valueOf(actorId));
                     } else if (role.equals("조연")) {
                         subActor.add(name);
+                        subActorId.add(String.valueOf(actorId));
                     } else {
                         voiceActor.add(name);
+                        voiceActorId.add(String.valueOf(actorId));
                     }
                     // 배우들을 할당한 횟수 count
                     cnt++;
@@ -233,8 +241,11 @@ public class MovieMapper {
                     .mrating(movieEntity.getMrating())
                     .mimagepath(movieEntity.getMimagepath())
                     .mainactor(mainActor)
+                    .mainactorId(mainActorId)
                     .subactor(subActor)
+                    .subactorId(subActorId)
                     .voiceactor(voiceActor)
+                    .voiceactorId(voiceActorId)
                     .mstory(movieEntity.getMstory()).build());
             // 배우에 대한 반복문 시작위치 조정(이미 추가된 배우를 건너뛰기 위한 과정)
             num += cnt;

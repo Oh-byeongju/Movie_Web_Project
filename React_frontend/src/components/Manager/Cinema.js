@@ -98,26 +98,26 @@ const Cinema = () =>{
     },
 	];  
 
-	// 영화관명 변수
-	const [tname, setTname] = useState('');
+	// 영화관명 useState
+	const [tname, setTname] = useState([]);
 	const onChangeTname = (value) => {
 		setTname(value)
 	};
 
-	// 상영관명 변수
+	// 상영관명 useState
   const [name, setName] = useState('');
   const onChangeName = (e) =>{
     setName(e.target.value)
   }
 
-  // 상영관 타입 변수
+  // 상영관 타입 useState
   const [type, setType] = useState('');
   const onChangeAddr = (e) =>{
     setType(e.target.value)
   }
 
-  // 상영관 좌석수 변수
-  const [seat, setSeat] = useState('');
+  // 상영관 좌석수 useState
+  const [seat, setSeat] = useState([]);
   const onChangeSeat = (value) => {
     setSeat(value)
   }
@@ -214,10 +214,10 @@ const Cinema = () =>{
       alert('상영관이 추가되었습니다.');
 
 			// 모달 상태 초기화
-			setTname('');
+			setTname([]);
 			setName('');
 			setType('');
-			setSeat('');
+			setSeat([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -245,10 +245,10 @@ const Cinema = () =>{
       alert('상영관이 삭제되었습니다.');
 
 			// 모달 상태 초기화
-			setTname('');
+			setTname([]);
 			setName('');
 			setType('');
-			setSeat('');
+			setSeat([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -265,10 +265,10 @@ const Cinema = () =>{
       alert('상영관 삭제에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setTname('');
+			setTname([]);
 			setName('');
 			setType('');
-			setSeat('');
+			setSeat([]);
 			setIsModalOpen(false);
 			
 			dispatch({
@@ -288,10 +288,10 @@ const Cinema = () =>{
       alert('상영관이 수정되었습니다.');
 
 			// 모달 상태 초기화
-			setTname('');
+			setTname([]);
 			setName('');
 			setType('');
-			setSeat('');
+			setSeat([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -308,10 +308,10 @@ const Cinema = () =>{
       alert('상영관 수정에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setTname('');
+			setTname([]);
 			setName('');
 			setType('');
-			setSeat('');
+			setSeat([]);
 			setIsModalOpen(false);
 
       dispatch({
@@ -326,10 +326,10 @@ const Cinema = () =>{
 
 	// 모달창 닫을 시 초기화
 	const handleCancel = useCallback(() => {
-		setTname('');
+		setTname([]);
 		setName('');
 		setType('');
-		setSeat('');
+		setSeat([]);
 		setIsModalOpen(false);
 	}, []);
 
@@ -355,6 +355,7 @@ const Cinema = () =>{
 				}}
 			/>
 			<ModalWrap 
+			keyboard={false}
 			title={delState ? "상영관추가" : "상영관수정"}
 			open={isModalOpen} 
 			onOk={onInsertORUpdate} 
@@ -364,6 +365,7 @@ const Cinema = () =>{
 				<Form>
 					<Form.Item label="영화관명">
 						<Select 
+							placeholder='영화관을 선택해주세요'
 							onChange={onChangeTname}
 							value={tname}
 							options={THEATER.map((theater) => ({
@@ -373,13 +375,14 @@ const Cinema = () =>{
 						/>  
 					</Form.Item>  
 					<Form.Item label="상영관명" onChange={onChangeName}>
-						<Input value={name}/>
+						<Input placeholder='상영관명을 입력해주세요' value={name}/>
 					</Form.Item>
 					<Form.Item label="타입" onChange={onChangeAddr}>
-						<Input value={type}/>
+						<Input placeholder='상영관 타입을 입력해주세요' value={type}/>
 					</Form.Item>
 					<Form.Item label="좌석수" >
 						<Select 
+						placeholder='좌석수를 선택해주세요'
 						onChange={onChangeSeat}
 						defaultValue={seat}
 						options={[

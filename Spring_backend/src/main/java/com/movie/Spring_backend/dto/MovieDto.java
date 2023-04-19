@@ -35,15 +35,19 @@ public class MovieDto {
     // 관리자 페이지
     private Integer reserveCntAll; // 전체 예매 횟수
     private List<String> mainactor;  // 주연
+    private List<String> mainactorId; // 주연배우 Id (프론트단에서 사용)
     private List<String> subactor;  // 조연
+    private List<String> subactorId; // 조연배우 Id (프론트단에서 사용)
     private List<String> voiceactor;  // 성우
+    private List<String> voiceactorId; // 성우 Id (프론트단에서 사용)
 
 
     @Builder
     public MovieDto(Long mid, String mtitle, String mdir, String mgenre, int mtime, Date mdate, String mrating,
-                    String mstory , String mimagepath, Integer mlikes, Float mscore, Boolean mlike,
-                    String able, List<String> actors, Boolean reserve, Float reserveRate, Integer reserveCnt, Integer reserveCntAll
-                     ,List<String> mainactor, List<String> subactor, List<String> voiceactor) {
+                    String mstory , String mimagepath, Integer mlikes, Float mscore, Boolean mlike, String able,
+                    List<String> actors, Boolean reserve, Float reserveRate, Integer reserveCnt, Integer reserveCntAll
+                     ,List<String> mainactor, List<String> subactor, List<String> voiceactor, List<String> mainactorId,
+                    List<String> subactorId, List<String> voiceactorId) {
         this.mid = mid;
         this.mtitle = mtitle;
         this.mdir = mdir;
@@ -63,8 +67,11 @@ public class MovieDto {
         this.reserveCnt = reserveCnt;
         this.reserveCntAll = reserveCntAll;
         this.mainactor = mainactor;
+        this.mainactorId = mainactorId;
         this.subactor = subactor;
+        this.subactorId = subactorId;
         this.voiceactor = voiceactor;
+        this.voiceactorId = voiceactorId;
     }
 }
 

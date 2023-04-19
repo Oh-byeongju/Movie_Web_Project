@@ -1,5 +1,5 @@
 /*
-	23-04-18 영화 관리자 페이지 수정(오병주)
+	23-04-18 ~ 19 영화 관리자 페이지 수정(오병주)
 */
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
@@ -14,7 +14,6 @@ import { http } from "../lib/http";
 // 영화 조회 함수
 function* AllMovie() {
   const result = yield call(callAllMovie);
-	console.log(result);
   if (result.status === 200) {
     yield put({
       type: MANAGER_MOVIE_SUCCESS,

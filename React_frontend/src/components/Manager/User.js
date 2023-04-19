@@ -119,7 +119,7 @@ const User = () => {
 
   // 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback((uid) => {
-    if (!window.confirm("사용자를 제거하시겠습니까? (삭제된 사용자는 복구되지 않습니다)")) {
+    if (!window.confirm("사용자를 삭제하시겠습니까? \n(삭제된 사용자는 복구되지 않습니다)")) {
       return;
     };
 

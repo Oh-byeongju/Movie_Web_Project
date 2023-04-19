@@ -276,6 +276,7 @@ async function callUpdateCinema(data) {
 
 
   function* MovieInsert(action) {
+
     const result = yield call(MovieInsertApi, action);
     if (result.status === 200) {
       yield put({
@@ -291,7 +292,7 @@ async function callUpdateCinema(data) {
   }
   
   async function MovieInsertApi(data) {
-    return await http.post("Manager/auth/postmovie", data.fd)
+    return await http.post("Manager/auth/postmovie", data.Fdata)
       .then((response) => {
         return response;
       })

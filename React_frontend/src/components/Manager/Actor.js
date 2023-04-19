@@ -5,7 +5,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { Table, Input, Button, Modal, Form } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { 
 	MANAGER_ACTOR_REQUEST,
 	MANAGER_ACTOR_INSERT_REQUEST,
@@ -19,11 +18,10 @@ import { PlusOutlined } from '@ant-design/icons';
 
 const Actor = () => {
 	const dispatch = useDispatch();
-	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
   const { ACTOR_loading, ACTOR, ACTOR_INSERT_done, ACTOR_INSERT_error, ACTOR_DELETE_done, ACTOR_DELETE_error,
-		ACTOR_UPDATE_done, ACTOR_UPDATE_error, LOGIN_STATUS_done, LOGIN_data } = useSelector(
+		ACTOR_UPDATE_done, ACTOR_UPDATE_error } = useSelector(
     state => ({
       ACTOR_loading: state.R_manager_movie.ACTOR_loading,
       ACTOR: state.R_manager_movie.ACTOR,
@@ -32,28 +30,10 @@ const Actor = () => {
 			ACTOR_DELETE_done: state.R_manager_movie.ACTOR_DELETE_done,
 			ACTOR_DELETE_error: state.R_manager_movie.ACTOR_DELETE_error,
 			ACTOR_UPDATE_done: state.R_manager_movie.ACTOR_UPDATE_done,
-			ACTOR_UPDATE_error: state.R_manager_movie.ACTOR_UPDATE_error,
-			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
-      LOGIN_data: state.R_user_login.LOGIN_data
+			ACTOR_UPDATE_error: state.R_manager_movie.ACTOR_UPDATE_error
     }),
     shallowEqual
   );
-
-	// 모든 배우 조회 useEffect
-  useEffect(()=> {
-    // 관리자 이외의 계정은 접근 불가능
-    if (LOGIN_STATUS_done && LOGIN_data.uid !== 'manager') {
-      alert('관리자 계정만 사용 가능합니다. 관리자 계정으로 로그인 해주세요! (id : manager, pw: manager123456)');
-      navigate('/');
-    }
-
-    // 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
-    if (LOGIN_data.uid === 'manager') {
-      dispatch({
-				type: MANAGER_ACTOR_REQUEST
-			});
-    }
-  }, [LOGIN_STATUS_done, LOGIN_data.uid, navigate, dispatch]);
 
 	// antd css 설정
 	const columns = [
@@ -86,13 +66,13 @@ const Actor = () => {
     },
   ];  
 
-	// 배우명 변수
+	// 배우명 useState
 	const [name , setName] = useState('');
   const onChangeName = (e) =>{
     setName(e.target.value)
   }
 
-	// 배우 출생지 변수
+	// 배우 출생지 useState
   const [place, setPlace] = useState('');
   const onChangePlace = (e) =>{
     setPlace(e.target.value)
@@ -307,6 +287,7 @@ const Actor = () => {
 				}}
 			/>
 			<ModalWrap 
+			keyboard={false}
 			title={delState ? "배우추가" : "배우수정"}
 			open={isModalOpen} 
 			onOk={onInsertORUpdate}
@@ -315,10 +296,10 @@ const Actor = () => {
 			onCancel={handleCancel} destroyOnClose>
 				<Form>
 					<Form.Item label="이름" onChange={onChangeName}>
-						<Input value={name}/>
+						<Input placeholder='배우 이름을 입력해주세요' value={name}/>
 					</Form.Item>
 					<Form.Item label="출생지" onChange={onChangePlace}>
-						<Input value={place}/>
+						<Input placeholder='배우 출생지를 입력해주세요' value={place}/>
 					</Form.Item>
 					<Form.Item style={{position:'relative', top:'57px'}}>
 						<Button disabled={delState} onClick={onDelete} type="primary" danger>

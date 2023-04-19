@@ -44,7 +44,7 @@ const DocumentMovieComment = () => {
 
   // 관람평 삭제 버튼 누르면 실행되는 함수
 	const CommentDelete = useCallback((data) => {
-    if (!window.confirm("관람평을 삭제하시겠습니까? (삭제된 관람평은 복구되지 않습니다)")) {
+    if (!window.confirm("관람평을 삭제하시겠습니까? \n(삭제된 관람평은 복구되지 않습니다)")) {
       return;
     };
 

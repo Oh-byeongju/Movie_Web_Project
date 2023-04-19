@@ -12,13 +12,12 @@ import {
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import * as date from "../../lib/date.js";
 import { PlusOutlined } from '@ant-design/icons';
-import { Table, Modal, Button, Form, Select, DatePicker } from 'antd';
+import { Table, Modal, Button, Form, Select, DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 import "dayjs/locale/ko";
 import locale from 'antd/lib/locale/ko_KR';
 import moment from 'moment';
 import 'moment/locale/ko';
-import { ConfigProvider } from 'antd';
 
 const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselectMovie, setselectArea, setselectTheater, setDays, seoulTheater, gyeonggiTheater, incheonTheater, busanTheater }) => {
   const dispatch = useDispatch();
@@ -363,7 +362,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
 
   // 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback(()=> {
-    if (!window.confirm("상영정보를 삭제하시겠습니까? (삭제한 정보는 복구되지 않습니다.)")) {
+    if (!window.confirm("상영정보를 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다.)")) {
       return;
     };
 
@@ -603,7 +602,8 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
           cancelSort: '정렬해제하기'
       	}}
       />
-			<ModalWrap title={delState ? "상영정보추가" : "상영정보수정"} 
+			<ModalWrap title={delState ? "상영정보추가" : "상영정보수정"}
+			keyboard={false} 
       open={isModalOpen} 
       okButtonProps={{ disabled: infoState}} 
       onOk={onInsertORUpdate} 

@@ -6,16 +6,21 @@ import styled from 'styled-components';
 import { Table, Input, Select, Button, Modal, Form, DatePicker, ConfigProvider, Upload } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { MANAGER_MOVIE_REQUEST, MANAGER_ACTOR_REQUEST, } from '../../reducer/R_manager_movie';
+import { 
+	MANAGER_MOVIE_REQUEST,
+	MANAGER_ACTOR_REQUEST, 
+	MANAGER_MOVIE_INSERT_REQUEST,
+	MANAGER_MOVIE_INSERT_RESET,
+	MANAGER_MOVIE_DELETE_REQUEST, 
+	MANAGER_MOVIE_DELETE_RESET,
+	MANAGER_MOVIE_UPDATE_REQUEST, 
+	MANAGER_MOVIE_UPDATE_RESET
+} from '../../reducer/R_manager_movie';
 import { useNavigate } from 'react-router-dom';
 import locale from 'antd/lib/locale/ko_KR';
 import dayjs from 'dayjs';
 import "dayjs/locale/ko";
 import EditStroy from './EditStory';
-
-
-import { 			 MOVIE_INSERT_LOADING } from '../../reducer/R_manager_theater';
-
 const { Option } = Select;
 
 // 상영시간 input을 위한 css 설정
@@ -44,11 +49,18 @@ const Movie = () => {
 	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-  const { MOVIE_loading, MOVIE, ACTOR, LOGIN_STATUS_done, LOGIN_data } = useSelector(
+  const { MOVIE_loading, MOVIE, ACTOR, MOVIE_INSERT_done, MOVIE_INSERT_error, MOVIE_DELETE_done, MOVIE_DELETE_error,
+		MOVIE_UPDATE_done, MOVIE_UPDATE_error, LOGIN_STATUS_done, LOGIN_data } = useSelector(
     state => ({
       MOVIE_loading: state.R_manager_movie.MOVIE_loading,
       MOVIE: state.R_manager_movie.MOVIE,
 			ACTOR: state.R_manager_movie.ACTOR,
+			MOVIE_INSERT_done: state.R_manager_movie.MOVIE_INSERT_done,
+			MOVIE_INSERT_error: state.R_manager_movie.MOVIE_INSERT_error,
+			MOVIE_DELETE_done: state.R_manager_movie.MOVIE_DELETE_done,
+			MOVIE_DELETE_error: state.R_manager_movie.MOVIE_DELETE_error,
+			MOVIE_UPDATE_done: state.R_manager_movie.MOVIE_UPDATE_done,
+			MOVIE_UPDATE_error: state.R_manager_movie.MOVIE_UPDATE_error,
 			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
       LOGIN_data: state.R_user_login.LOGIN_data
     }),
@@ -79,7 +91,7 @@ const Movie = () => {
 	const columns = [
 		{
       title: '영화번호',
-      width: 7.9,
+      width: 7.6,
       dataIndex: 'mid',
       fixed: 'left',
 			sorter: (a, b) => a.mid - b.mid,
@@ -87,7 +99,7 @@ const Movie = () => {
     },
     {
       title: '영화명',
-      width: 9.6,
+      width: 9.8,
       dataIndex: 'mtitle',
 			ellipsis: true,
       fixed: 'left'
@@ -101,18 +113,20 @@ const Movie = () => {
     },
 		{
       title: '상영시간',
-      width: 6.6,
-      fixed: 'left',
+      width: 6.4,
+			ellipsis: true,
 			render: (text, row) => <div> {row["mtime"]}분 </div>
     },
 		{
       title: '장르',
-      width: 7.7,
+      width: 7.4,
+			ellipsis: true,
       dataIndex: 'mgenre',
     },
 		{
       title: '관람등급',
-      width: 10,
+      width: 9.7,
+			ellipsis: true,
 			render: (text, row) => <div> {row["mrating"] === '0' ? '전체 이용가' : row["mrating"] === '18' ? '청소년 관람불가' : row["mrating"] + '세 이용가'} </div>
     },
     {
@@ -145,6 +159,12 @@ const Movie = () => {
       dataIndex: 'mdate'
     },
 		{
+			title: '보유상영정보',
+			width: 8.5,
+			render: (text, row) => <div> {row["cntMovieInfo"]}개 </div>,
+			fixed: 'right'
+		},
+		{
       title: '관리자',
       width: 5.5,
 			fixed: 'right',
@@ -153,13 +173,13 @@ const Movie = () => {
   ]; 
 
 	// 영화명 useState
-	const [name , setName] = useState('');
+	const [name, setName] = useState('');
 	const onChangeName = (e) =>{
 		setName(e.target.value);
 	}
-
+	
 	// 감독 useState
-	const [dir , setDir] = useState('');
+	const [dir, setDir] = useState('');
 	const onChangeDir = (e) =>{
 		setDir(e.target.value);
 	}
@@ -168,13 +188,13 @@ const Movie = () => {
 	const [time, setTime] = useState('');
 
 	// 장르 useState
-	const [genre , setGenre] = useState('');
+	const [genre, setGenre] = useState('');
 	const onChangeGenre = (e) =>{
 		setGenre(e.target.value);
 	}
 
 	// 관람등급 useState
-	const [rating , setRating] = useState([]);
+	const [rating, setRating] = useState([]);
 	const onChangeRating = (value) =>{
 		setRating(value);
 	}
@@ -197,16 +217,21 @@ const Movie = () => {
 	// 포스터 useState
 	const [file, setFile] = useState(null);
 	const [filechange, setFileChange] = useState(false);
-	const onChangeImg = e => {
-		setFile(e.target.files);
-		setFileChange(true);
-	};
 			
 	// 기존에 설정된 포스터 useState
 	const [fileList, setFileList] = useState([]);
 	
 	// 포스터 갱신에 대한 함수
 	const normFile = (e) => {
+		const regType = /^[a-zA-Z0-9.]*$/;	
+
+		setFileChange(true);
+		if (!regType.test(e.file.name) || (e.file.size / 1024) >= 1024) {
+			alert('이미지명과 용량을 확인해주세요!');
+			setFile(null);
+			return null;
+		}
+
 		if (e.fileList.length === 0) {
 			setFile(null);
 		}
@@ -229,19 +254,18 @@ const Movie = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
   const [movieId, setmovieId] = useState();
   const [delState, setdelState] = useState(true);
+	const [modify, setModify] = useState(false);
+
+	// + 버튼 누를때 실행되는 함수
+	const ClickRowInsert = useCallback(()=> {
+    setIsModalOpen(true);
+		setdelState(true);
+  }, []);
 
 	// modify 버튼을 누를때 실행되는 함수
 	const ClickRowModify = useCallback((data) => {
-    // if (data.cntCinema !== 0) {
-    //   alert('보유 상영관이 없는 영화관만 수정이 가능합니다.');
-    //   return;
-    // }
-
-    // 삭제버튼 활성화 및 영화 ID 설정
-    setdelState(false);
-    setmovieId(data.mid);
-		
-    // 모달창에 정보 입력
+		// 모달창에 정보 입력
+		setmovieId(data.mid);
 		setName(data.mtitle);
  		setDir(data.mdir);
 	  setTime(data.mtime);
@@ -259,156 +283,209 @@ const Movie = () => {
 		}])
 		setStory(data.mstory);
     setIsModalOpen(true);
+		setdelState(false);
+
+		// 보유 상영정보가 존재할경우
+		if (data.cntMovieInfo !== 0) {
+			setModify(true);
+      alert('상영정보가 있을경우 일부 정보만 수정 가능합니다.');
+    }
 	}, []);
 
-
-
-
-
-	// // 아래는 내꺼 아님
-	
-
-  const [modify , setModify] = useState(false);
-
-
-  const showModdal = () => {
-   
-    setIsModalOpen(true);
-  };
-
-
-
-  //확인
-  const handleOk = () => {
-
-		console.log(file);
-
-		const Fdata = new FormData();
-
-		if (file){
-			Fdata.append("multipartFiles", file.file); 
-		}
-
-		const updatedata ={
-			    id:'1',
-			    name:'1',
-			    dir:'1',
-			    genre:'1',
-			    time:'1',
-			    date:'1',
-			    rating:"12",
-			    story:'1',
-			    state:"update"
-		}
-
-		// 업데이트 할 내용
-		Fdata.append("data", new Blob([JSON.stringify(updatedata)], {   //데이터
-      type: "application/json"
-    }))
-
-		// FormData의 value 확인
-		for (let key of Fdata.keys()) {
-			console.log(key, ":", Fdata.get(key));
-		}
-
-		dispatch({
-			    type:MOVIE_INSERT_LOADING,
-			    Fdata
-			  })
-
-	}
-	
-	// 나중에 상영정보가 있으면 상영시간, 관람등급, 개봉일은 수정 못하게 하기
-	// 사진 정보가 바뀌면 그게 되나 싶은데 내 컴퓨터에 있는 사진을 지우기??
-	// 사진을 업로드 했을 때 filechage 이걸로 감지를 해줘야함 \
-	// 근데 감지 안하고 백에서 그냥 null이면 안날리고 하면 될수도 있음
-	// 이미지 경로는 결국 그거네
-	// 파일을 안바꿨으면 원래 쓰던거 보내줘서 (data.mimagepath.substr(12),) 저부분 
-	// 그거 업데이트 쿼리에 넣어버리면 됨
-	// 아니면 백에서 select해도되고
-
-
-  //   if(true ){
-  //   const subactor = sub.join()
-  //   const voiceactor = voice.join()
-
-  //   const fd = new FormData();  	
-  //   const updatedata ={
-  //     id:mid,
-  //     name:name,
-  //     dir:dir,
-  //     genre:genre,
-  //     time:time,
-  //     date:date,
-  //     rating:"12",
-  //     story:Board_Content,
-  //     sub:subactor,
-  //     voice:voiceactor,
-  //     state:"update"
-  //     }
-  //     const insertdata ={
-  //       id:mid,
-  //       name:name,
-  //       dir:dir,
-  //       genre:genre,
-  //       time:time,
-  //       date:date,
-  //       rating:"12",
-  //       story:Board_Content,
-  //       sub:subactor,
-  //       voice:voiceactor,
-  //       state:"insert"
-  //       }
-
-  //  //이미지
-  //   if(update){
-  //     if(filechange){
-  //     if(file){
-  //       fd.append("multipartFiles", file[0]); 
-  //     }
-  //   }
-  //   fd.append("data", new Blob([JSON.stringify(updatedata)], {   //데이터
-  //     type: "application/json"
-  //   }))
-  // }
-  // //insert
-  // else if(!update){
-  //   if(file){
-  //     fd.append("multipartFiles", file[0]); 
-  //   }
-  //   fd.append("data", new Blob([JSON.stringify(insertdata)], {   //데이터
-  //     type: "application/json"
-  //   }))
-  // }
-  //   dispatch({
-  //     type:MOVIE_INSERT_LOADING,
-  //     fd
-  //   })
-  //   setIsModalOpen(false);    
-
-  // }
-  // else{
-  // }
-    
-  // }
-
-  //창 닫을 시 초기화
+	// 창 닫을 시 초기화
   const handleCancel = useCallback(() => {
-    setName(null);
- 		setDir(null);
-	  setTime(null);
- 		setGenre(null);
+    setName('');
+ 		setDir('');
+	  setTime('');
+ 		setGenre('');
 	 	setRating(null);
 		setDate(null);
 		setMainActor([]);
 		setSubActor([]);
 		setVoiceActor([]);
 		setFile(null);
+		setFileChange(false);
     setFileList([]);
-		setStory(null);
+		setStory('');
 		setdelState(true);
     setIsModalOpen(false);
+		setModify(false);
   }, []);
+
+	// 추가 또는 수정 버튼을 누를때 실행되는 함수
+  const onInsertORUpdate = useCallback(()=> {
+		// 추가 버튼 누를때
+		if (delState) {
+			if (file === null || name === '' || dir === '' || time === '' || genre === '' || rating.length === 0 || date === null || story === '') {
+				alert('배우를 제외한 모든 정보를 입력해주세요.');
+				return;
+			}
+		}
+		// 수정 버튼 누를때
+		else {
+			if ((filechange && file === null) || name === '' || dir === '' || time === '' || genre === '' || rating.length === 0 || date === null || story === '') {
+				alert('배우를 제외한 모든 정보를 입력해주세요.');
+				return;
+			}
+		}
+		
+		// 입력한 정보 FormData로 매핑
+		const Fdata = new FormData();
+		if (file) {
+			Fdata.append("multipartFiles", file.file);
+		}
+
+		const data = {
+			mid: movieId,
+			mtitle: name,
+    	mdir: dir,
+			mtime: time,
+    	mgenre: genre,
+			mrating: rating,
+    	mdate: date,
+     	mstory: story,
+    	mainactorId: mainActor,
+   		subactorId: subActor,
+			voiceactorId: voiceActor
+		}	
+
+		Fdata.append("data", new Blob([JSON.stringify(data)], {
+      type: "application/json"
+    }))
+
+    // 영화를 추가할 때
+    if (delState) {
+      if (!window.confirm('영화를 추가하시겠습니까?')) {
+        return;
+      }
+      dispatch({
+				type: MANAGER_MOVIE_INSERT_REQUEST,
+				Fdata
+			});
+    }
+    // 영화를 수정할 때
+    else {
+      if (!window.confirm('영화를 수정하시겠습니까?')) {
+        return;
+      }
+      dispatch({
+				type: MANAGER_MOVIE_UPDATE_REQUEST,
+				Fdata
+			});
+    }
+  }, [delState, file, filechange, movieId, name, dir, time, genre, rating, date, story, mainActor, subActor, voiceActor, dispatch]);
+
+	// 삭제 버튼 누를때 실행되는 함수
+  const onDelete = useCallback(()=> {
+    if (!window.confirm("영화를 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다)")) {
+      return;
+    };
+
+    dispatch({
+      type: MANAGER_MOVIE_DELETE_REQUEST,
+      data: {
+        mid: movieId
+      }
+    });
+
+  }, [movieId, dispatch]);
+
+	// 영화 추가 성공여부에 따른 useEffect
+  useEffect(()=> {
+    // 추가 성공
+    if (MOVIE_INSERT_done) {
+      alert('영화가 추가되었습니다.');
+
+			// 모달 상태 초기화
+			handleCancel();
+
+      dispatch({
+        type: MANAGER_MOVIE_INSERT_RESET
+      });
+
+			dispatch({
+        type: MANAGER_MOVIE_REQUEST
+      });
+		}
+
+    // 추가 실패
+    if (MOVIE_INSERT_error) {
+      alert('영화 추가에 실패했습니다.');
+      dispatch({
+        type: MANAGER_MOVIE_INSERT_RESET
+      });
+    }
+  }, [MOVIE_INSERT_done, MOVIE_INSERT_error, handleCancel, dispatch]);
+
+	// 영화 삭제 성공여부에 따른 useEffect
+  useEffect(()=> {
+    // 삭제 성공
+    if (MOVIE_DELETE_done) {
+      alert('영화가 삭제되었습니다.');
+
+			// 모달 상태 초기화
+			handleCancel();
+
+      dispatch({
+        type: MANAGER_MOVIE_DELETE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_MOVIE_REQUEST
+      });
+    }
+
+    // 삭제 실패
+    if (MOVIE_DELETE_error) {
+      alert('영화 삭제에 실패했습니다.');
+
+			// 모달 상태 초기화
+			handleCancel();
+		
+			dispatch({
+        type: MANAGER_MOVIE_DELETE_RESET
+      });
+
+			dispatch({
+        type: MANAGER_MOVIE_REQUEST
+      });
+    }
+  }, [MOVIE_DELETE_done, MOVIE_DELETE_error, handleCancel, dispatch]);
+
+	// 영화 수정 성공여부에 따른 useEffect
+	useEffect(()=> {
+		// 수정 성공
+		if (MOVIE_UPDATE_done) {
+			alert('영화가 수정되었습니다.');
+
+			// 모달 상태 초기화
+			handleCancel();
+
+			dispatch({
+				type: MANAGER_MOVIE_UPDATE_RESET
+			});
+
+			dispatch({
+				type: MANAGER_MOVIE_REQUEST
+			});
+		}
+
+		// 수정 실패
+		if (MOVIE_UPDATE_error) {
+			alert('영화 수정에 실패했습니다.');
+
+			// 모달 상태 초기화
+			handleCancel();
+
+			dispatch({
+				type: MANAGER_MOVIE_UPDATE_RESET
+			});
+
+			dispatch({
+				type: MANAGER_MOVIE_REQUEST
+			});
+		}
+	}, [MOVIE_UPDATE_done, MOVIE_UPDATE_error, handleCancel, dispatch]);
 
 	return(
 		<>
@@ -417,14 +494,14 @@ const Movie = () => {
 					{MOVIE.length}개의 영화가 검색되었습니다.
 				</p>
 				<div className="search_button">
-					<Button type="primary" shape="circle" icon={<PlusOutlined/>} size={"20"} onClick={showModdal}/>
+					<Button type="primary" shape="circle" icon={<PlusOutlined/>} size={"20"} onClick={ClickRowInsert}/>
 				</div>
 			</div>
 			<TableWrap rowKey="mid"
 				loading={MOVIE_loading}
 				dataSource={MOVIE}
 				columns={columns}
-				scroll={{x: 1400}}
+				scroll={{x: 1500}}
 				locale={{ 
 					triggerDesc: '내림차순 정렬하기',
 					triggerAsc: '오름차순 정렬하기', 
@@ -438,7 +515,7 @@ const Movie = () => {
 			open={isModalOpen}
 			okText={delState ? "추가" : "수정"}
 			cancelText="취소" 
-			onOk={handleOk} 
+			onOk={onInsertORUpdate} 
 			onCancel={handleCancel} destroyOnClose>
 				<Form>
 					<Form.Item label="영화명" onChange={onChangeName} style={{width: "100%"}}>
@@ -449,6 +526,7 @@ const Movie = () => {
 					</Form.Item>
 					<Form.Item label="상영시간">
 						<NumericInput
+							disabled={modify}
       				style={{width: 155}}
       				value={time}
       				onChange={setTime}
@@ -460,6 +538,7 @@ const Movie = () => {
 					<Form.Item label="관람등급" >
 						<Select 
 						style={{width: "100%"}}
+						disabled={modify}
 						onChange={onChangeRating}
 						defaultValue={rating}
 						placeholder='관람 등급을 선택해주세요'
@@ -485,6 +564,7 @@ const Movie = () => {
 					<Form.Item label="개봉일">
 						<ConfigProvider locale={locale}>
 							<DatePicker 
+								disabled={modify}
 								onChange={onChangeDate} 
 								allowClear={false} 
 								value={date !== null ? dayjs(date, 'YYYY-MM-DD') : ""}
@@ -548,7 +628,7 @@ const Movie = () => {
       			label="포스터"
       			valuePropName="fileList"
       			getValueFromEvent={normFile}
-      			extra="이미지는 최대 한개만 업로드됩니다."
+      			extra="이미지는 최대 한개만 업로드됩니다. (1MB 미만 + 파일명이 영어와 숫자의 조합)"
     			>
 						<Upload name="logo" beforeUpload={(file, fileList) => false} defaultFileList={fileList ? fileList : null} listType="picture">
 							<Button icon={<UploadOutlined />}>이미지 업로드</Button>
@@ -565,7 +645,7 @@ const Movie = () => {
 						</Button>
 					</Form.Item>
 					<Form.Item style={{position:'relative', top:'57px'}}>
-						<Button disabled={delState} type="primary" danger onClick={()=>{}}>
+						<Button disabled={delState || modify} type="primary" danger onClick={onDelete}>
 							삭제
 						</Button>      
 					</Form.Item>

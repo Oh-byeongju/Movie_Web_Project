@@ -84,12 +84,12 @@ const Cinema = () =>{
 		{
 			title: '좌석수',
 			width: 80,
-			render: (text, row) => <div> {row["cseat"]} 좌석 </div>
+			render: (text, row) => <div> {row["cseat"]}좌석 </div>
 		},
 		{
 			title: '보유상영정보',
 			width: 80,
-			render: (text, row) => <div> {row["cntMovieInfo"]} 개 </div>
+			render: (text, row) => <div> {row["cntMovieInfo"]}개 </div>
 		},
 		{
       title: '관리자',

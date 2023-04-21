@@ -34,29 +34,32 @@ public class ManagerOneController {
 
     private final ManagerOneService managerOneService;
 
-
-
-
-
-    //영화를 저장, 수정, 삭제하는 메소드
-    @PostMapping("/auth/postmovie")
-    public void postMovie(@RequestPart(value="data") Map<String, String> requestMap,HttpServletRequest request,
-                          @RequestPart(required = false) MultipartFile multipartFiles
-    )     throws SQLException {
-        System.out.println("도착");
-        managerOneService.postMovie(requestMap,request,multipartFiles);
-    }
-
-
-
-
     // 영화 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
     @GetMapping("/auth/allMovie")
     public ResponseEntity<List<MovieDto>> AllMovie(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllMovieSearch(request));
     }
 
+    // 영화 추가 메소드
+    @PostMapping("/auth/insertMovie")
+    public ResponseEntity<String> InsertMovie(HttpServletRequest request, @RequestPart(value="data") MovieDto requestDto, @RequestPart(required = false) MultipartFile multipartFiles) {
+        managerOneService.MovieInsert(request, requestDto, multipartFiles);
+        return ResponseEntity.noContent().build();
+    }
 
+    // 영화 삭제 메소드
+    @DeleteMapping("/auth/deleteMovie")
+    public ResponseEntity<String> DeleteMovie(HttpServletRequest request, @RequestParam Long mid) {
+        managerOneService.MovieDelete(request, mid);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 영화 수정 메소드
+    @PatchMapping("/auth/updateMovie")
+    public ResponseEntity<String> UpdateMovie(HttpServletRequest request, @RequestPart(value="data") MovieDto requestDto, @RequestPart(required = false) MultipartFile multipartFiles) {
+        managerOneService.MovieUpdate(request, requestDto, multipartFiles);
+        return ResponseEntity.noContent().build();
+    }
 
     // 배우 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
     @GetMapping("/auth/allActor")

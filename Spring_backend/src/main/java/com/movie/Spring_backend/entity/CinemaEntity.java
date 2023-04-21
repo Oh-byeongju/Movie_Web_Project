@@ -35,15 +35,23 @@ public class CinemaEntity {
     // 상영관이 지정된 상영정보 개수
     @Formula("(SELECT COUNT(*) FROM movie_information mi WHERE mi.cid = cid)")
     private Integer cntMovieInfo;
+
+    // 일대다 관계 매핑
+    @OneToMany(mappedBy = "cinema",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<SeatEntity> seats = new ArrayList<>();
     
     @Builder
-    public CinemaEntity(Long cid, String cname, String ctype, Integer cseat ,TheaterEntity theater, Integer cntMovieInfo) {
+    public CinemaEntity(Long cid, String cname, String ctype, Integer cseat ,TheaterEntity theater,
+                        Integer cntMovieInfo, List<SeatEntity> seats) {
         this.cid = cid;
         this.cname = cname;
         this.ctype = ctype;
         this.cseat = cseat;
         this.theater = theater;
         this.cntMovieInfo = cntMovieInfo;
+        this.seats = seats;
     }
 }
 

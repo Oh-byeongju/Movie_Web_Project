@@ -16,21 +16,9 @@ public interface MovieActorRepository extends JpaRepository<MovieActorEntity, Lo
     List<MovieActorEntity> findByMovie(MovieEntity movie);
 
     // 배우의 정보까지 묶어서 불러오는 메소드
-    @Override
     @EntityGraph(attributePaths = {"actor"})
-    List<MovieActorEntity> findAll();
+    List<MovieActorEntity> findAllByOrderByMovieAsc();
 
-
-
-
-
-    @Query("select mv from MovieActorEntity as mv where mv.actor.aname in :name and mv.movie.mid = :mid" +
-            " and mv.marole = :type")
-    List<MovieActorEntity> findByMovieActor (@Param("name")String[] name, @Param("mid") Long mid, @Param("type") String type);
-
-
-    @Query("select mv from MovieActorEntity as mv where mv.actor.aname = :name and mv.movie.mid = :mid" +
-            " and mv.marole = :type")
-    MovieActorEntity removeFor (@Param("name")String name, @Param("mid") Long mid, @Param("type") String type);
-
+    // 특정 영화에 출연하는 배우를 삭제하는 메소드
+    void deleteByMovie(MovieEntity movie);
 }

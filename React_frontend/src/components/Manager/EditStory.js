@@ -89,7 +89,7 @@ const Modal = styled.div`
 `;
 
 const Layout = styled.div`
-  width: 800px;
+  width: 880px;
   height: 650px;
   background-color: white;
   position: relative;

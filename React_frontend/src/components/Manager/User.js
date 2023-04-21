@@ -119,6 +119,11 @@ const User = () => {
 
   // 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback((uid) => {
+		if (uid === 'manager' || uid === 'temp1') {
+			alert('관리자 및 temp1 계정은 삭제가 불가능합니다.');
+			return;
+		}
+
     if (!window.confirm("사용자를 삭제하시겠습니까? \n(삭제된 사용자는 복구되지 않습니다)")) {
       return;
     };

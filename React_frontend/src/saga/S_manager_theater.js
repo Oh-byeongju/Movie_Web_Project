@@ -11,10 +11,7 @@ import {
 	MANAGER_CINEMA_REQUEST, MANAGER_CINEMA_SUCCESS, MANAGER_CINEMA_FAILURE,
 	MANAGER_CINEMA_INSERT_REQUEST, MANAGER_CINEMA_INSERT_SUCCESS, MANAGER_CINEMA_INSERT_FAILURE,
 	MANAGER_CINEMA_DELETE_REQUEST, MANAGER_CINEMA_DELETE_SUCCESS, MANAGER_CINEMA_DELETE_FAILURE,
-	MANAGER_CINEMA_UPDATE_REQUEST, MANAGER_CINEMA_UPDATE_SUCCESS, MANAGER_CINEMA_UPDATE_FAILURE,
-
-    MOVIES_REQUEST,MOVIES_SUCCESS,MOVIES_FAILURE,
-    MOVIE_INSERT_LOADING,MOVIE_INSERT_DONE,MOVIE_INSERT_ERROR
+	MANAGER_CINEMA_UPDATE_REQUEST, MANAGER_CINEMA_UPDATE_SUCCESS, MANAGER_CINEMA_UPDATE_FAILURE
  } from "../reducer/R_manager_theater";
 import { http } from "../lib/http";
 
@@ -236,72 +233,6 @@ async function callUpdateCinema(data) {
   });
 }
 
-
-
-// 아래로 수정
-//////###
-
-  function* Movie(action) {
-    const result = yield call(MovieApi, action.data);
-    if (result.status === 200) {
-      yield put({
-        type: MOVIES_SUCCESS,
-        data:result.data
-      });
-    } 
-    else {
-      yield put({
-              type: MOVIES_FAILURE,
-              data:result.error
-      });
-    }
-  }
-  
-
-  async function MovieApi(data) {
-    return await http.get("Manager/auth/movieall", {
-      params: {
-        uid: data,
-        button: 'rate',
-        search: ''
-      },
-    })
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
-
-
-  function* MovieInsert(action) {
-
-    const result = yield call(MovieInsertApi, action);
-    if (result.status === 200) {
-      yield put({
-        type: MOVIE_INSERT_DONE,
-      });
-    } 
-    else {
-      yield put({
-              type: MOVIE_INSERT_ERROR,
-              data:result.error
-      });
-    }
-  }
-  
-  async function MovieInsertApi(data) {
-    return await http.post("Manager/auth/postmovie", data.Fdata)
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
-
-
 function* THEATER_LIST() {
 	yield takeLatest(MANAGER_THEATER_REQUEST, AllTheater);
 }
@@ -334,19 +265,6 @@ function* CINEMA_UPDATE() {
 	yield takeLatest(MANAGER_CINEMA_UPDATE_REQUEST, UpdateCinema);
 }
 
-// 아래로 수정
-
-
-
-
-
-  function* MOVIE_UPLOAD() {
-    yield takeLatest(MOVIES_REQUEST, Movie);
-  }
-  function* POST_MOVIE() {
-    yield takeLatest(MOVIE_INSERT_LOADING, MovieInsert);
-  }
-
 export default function* S_manager_theater() {
   yield all([fork(THEATER_LIST),
 		fork(THEATER_INSERT),
@@ -355,10 +273,6 @@ export default function* S_manager_theater() {
 		fork(CINEMA_LIST),
 		fork(CINEMA_INSERT),
 		fork(CINEMA_DELETE),
-		fork(CINEMA_UPDATE),
-
-		// 아래로 수정
-
-		fork(MOVIE_UPLOAD),
-		fork(POST_MOVIE)]);
+		fork(CINEMA_UPDATE)
+	]);
 }

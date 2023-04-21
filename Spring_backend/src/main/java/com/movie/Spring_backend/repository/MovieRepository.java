@@ -7,6 +7,7 @@ package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import com.movie.Spring_backend.entity.MovieEntity;
@@ -109,8 +110,18 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
     // 모든 영화 조회 (개봉일순으로 내림차순)
     List<MovieEntity> findAllByOrderByMdateAsc();
 
-    //날짜로 영화를 검색하는 메소드 able
+    // 영화 수정하는 메소드
+    @Modifying
+    @Query("UPDATE MovieEntity as m " +
+            "SET m.mtitle = :mtitle, m.mdir = :mdir, m.mgenre = :mgenre, m.mtime = :mtime, " +
+            "m.mdate = :mdate, m.mrating = :mrating, m.mstory = :mstory, m.mimagepath = :mimagepath WHERE m.mid = :mid")
+    void MovieUpdate(@Param("mtitle") String mtitle, @Param("mdir") String mdir, @Param("mgenre") String mgenre,
+                     @Param("mtime") int mtime, @Param("mdate") Date mdate, @Param("mrating") String mrating,
+                     @Param("mstory") String mstory, @Param("mimagepath") String mimagepath,  @Param("mid") Long mid);
 
+
+
+    //날짜로 영화를 검색하는 메소드 able
     @Query("select movie from MovieEntity as movie where movie.mid in " +
             "(select info.movie.mid from MovieInfoEntity as info where info.mistarttime >= function('addtime', now(), '0:30:00') " +
             "and info.miday = :miday)")
@@ -148,7 +159,4 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
             "(select info.movie.mid from MovieInfoEntity as info where info.mistarttime >= function('addtime', now(), '0:30:00')" +
             " and info.cinema.cid in (select cinema.cid from CinemaEntity as cinema where cinema.theater.tid = :tid))")
     List<MovieEntity> MovieToTheaterDis(@Param("tid") Long tid);
-
-    @Query("select movie from MovieEntity as movie where movie = :movie")
-    MovieEntity findByMovie(@Param("movie") MovieEntity movie);
 }

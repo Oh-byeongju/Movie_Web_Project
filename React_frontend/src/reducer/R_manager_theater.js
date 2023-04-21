@@ -48,17 +48,6 @@ export const MANAGER_CINEMA_UPDATE_SUCCESS = "MANAGER_CINEMA_UPDATE_SUCCESS";
 export const MANAGER_CINEMA_UPDATE_FAILURE = "MANAGER_CINEMA_UPDATE_FAILURE";
 export const MANAGER_CINEMA_UPDATE_RESET = "MANAGER_CINEMA_UPDATE_RESET";
 
-
-
-// 아래로 수정
-export const MOVIES_REQUEST = "MOVIES_REQUEST"
-export const MOVIES_SUCCESS = "MOVIES_SUCCESS"
-export const MOVIES_FAILURE = "MOVIES_FAILURE"
-
-export const MOVIE_INSERT_LOADING = "MOVIE_INSERT_LOADING"
-export const MOVIE_INSERT_DONE = "MOVIE_INSERT_DONE"
-export const MOVIE_INSERT_ERROR = "MOVIE_INSERT_ERROR"
-
 const initalState = {
 	THEATER_loading: false,
   THEATER_done: false,
@@ -92,17 +81,7 @@ const initalState = {
 
 	CINEMA_UPDATE_loading: false,
   CINEMA_UPDATE_done: false,
-  CINEMA_UPDATE_error: false,
-
-	// 아래로 수정
-	movie_loading:false,
-	movie_done:false,
-	movie_error:null,
-	movie:[],
-
-	movie_insert_loading:false,
-	movie_insert_done:false,
-	movie_insert_error:null,
+  CINEMA_UPDATE_error: false
 };
 
 const R_manager_theater = (state = initalState, action) => {
@@ -326,59 +305,7 @@ const R_manager_theater = (state = initalState, action) => {
 				CINEMA_UPDATE_loading: false,
 				CINEMA_UPDATE_done: false,
 				CINEMA_UPDATE_error: false
-			};
-
-
-
-
-	// 아래로 수정
-	
-
-	
-	case MOVIES_REQUEST:
-			return{
-					...state,
-					movie_loading:true,
-					movie_done:false,
-					movie_error:null
-			}
-	case MOVIES_SUCCESS:
-			return{
-					...state,
-					movie_loading:false,
-					movie_done:true,
-					movie_error:null,
-					movie:action.data
-			}
-	case MOVIES_FAILURE:
-			return{
-					...state,
-					movie_loading:false,
-					movie_done:false,
-					movie_error:action.error,
-			}   
-	case MOVIE_INSERT_LOADING:
-			return{
-					...state,
-					movie_insert_loading:true,
-					movie_insert_done:false,
-					movie_insert_error:null,
-					}
-	case MOVIE_INSERT_DONE:
-			return{
-					...state,
-					movie_insert_loading:false,
-					movie_insert_done:true,
-					movie_insert_error:null,
-			}
-	
-	case MOVIE_INSERT_ERROR:
-			return{
-					...state,
-					movie_insert_loading:false,
-					movie_insert_done:false,
-					movie_insert_error:action.error,
-			}        
+			};    
 		default:
       return state;
 	}

@@ -72,6 +72,9 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "where tid = :tid) ")
     List<MovieInfoEntity> findTimeTheater(@Param("miday") Date miday, @Param("tid") Long tid);
 
+
+
+
     // 특정 사용자가 예매후 관람이 끝난 영화 정보를 들고오는 메소드
     // 이런거도 inner join 써야하는거 같음
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi LEFT OUTER JOIN mi.reservations rs " +
@@ -80,6 +83,9 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
 
     // 특정 상영관에 대한 상영정보를 가져오는 메소드
     List<MovieInfoEntity> findByCinema(CinemaEntity cinema);
+
+    // 특정 영화에 대한 상영정보를 가져오는 메소드
+    List<MovieInfoEntity> findByMovie(MovieEntity movie);
 
     // 관리자 페이지에서 상영정보를 가져오는 메소드
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +

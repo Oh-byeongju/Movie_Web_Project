@@ -5,16 +5,16 @@ package com.movie.Spring_backend.entity;
 import javax.persistence.*;
 
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name="movie")
 @Entity
 @Getter
 @NoArgsConstructor
-@DynamicUpdate      //더티 체킹
 public class MovieEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,9 +60,26 @@ public class MovieEntity {
              "(select mi.miid from movie_information mi where mi.mid = mid))")
     private Integer cntReserve;
 
+    // 영화가 지정된 상영정보 개수
+    @Formula("(SELECT COUNT(*) FROM movie_information mi WHERE mi.mid = mid)")
+    private Integer cntMovieInfo;
+
+    // 일대다 관계 매핑
+    @OneToMany(mappedBy = "movie",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<MovieMemberEntity> movieMembers = new ArrayList<>();
+
+    // 일대다 관계 매핑
+    @OneToMany(mappedBy = "movie",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<MovieActorEntity> movieActors = new ArrayList<>();
+
     @Builder
     public MovieEntity(Long mid, String mtitle, String mdir, String mgenre, int mtime, Date mdate, String mrating,
-                       String mstory, String mimagepath, Integer cntMovieLike, Float avgScore, Integer cntReserve) {
+                       String mstory, String mimagepath, Integer cntMovieLike, Float avgScore, Integer cntReserve, Integer cntMovieInfo,
+                       List<MovieMemberEntity> movieMembers, List<MovieActorEntity> movieActors) {
         this.mid = mid;
         this.mtitle = mtitle;
         this.mdir = mdir;
@@ -75,19 +92,9 @@ public class MovieEntity {
         this.cntMovieLike = cntMovieLike;
         this.avgScore = avgScore;
         this.cntReserve = cntReserve;
-    }
-
-    public void updateMovie(Long mid, String mtitle, String mdir, String mgenre, int mtime, Date mdate, String mrating,
-                            String mstory, String mimagepath){
-        this.mid = mid;
-        this.mtitle = mtitle;
-        this.mdir = mdir;
-        this.mgenre = mgenre;
-        this.mtime = mtime;
-        this.mdate = mdate;
-        this.mrating = mrating;
-        this.mstory = mstory;
-        this.mimagepath = mimagepath;
+        this.cntMovieInfo = cntMovieInfo;
+        this.movieMembers = movieMembers;
+        this.movieActors = movieActors;
     }
 }
 

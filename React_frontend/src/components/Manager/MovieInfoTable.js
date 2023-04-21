@@ -682,6 +682,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
             <ConfigProvider locale={locale}>
               <DatePicker 
               disabled={infoState}
+							showNow={false}
               disabledDate={(current) => {
                 return current && current < moment(openDay, "YYYY-MM-DD");
               }} 

@@ -38,7 +38,7 @@ const MovieInfo = () => {
 			navigate('/');
 		}
 
-		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
+		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청(검색에 필요한 정보)
 		if (LOGIN_data.uid === 'manager' && MOVIEINFO_MOVIE_LIST.length === 0 && MOVIEINFO_THEATER_LIST.length === 0 && MOVIEINFO_CINEMA_LIST.length === 0) {
 		 	dispatch({
 			 	type: MANAGER_MOVIEINFO_MOVIE_LIST_REQUEST
@@ -49,7 +49,10 @@ const MovieInfo = () => {
 			dispatch({
 				type: MANAGER_MOVIEINFO_CINEMA_LIST_REQUEST
 			});
-			// 첫 검색도 같이 실행(모든 값 null 전체 검색)
+	 	}
+
+		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청(상영정보)
+		if (LOGIN_data.uid === 'manager') {
 			dispatch({
 				type: MANAGER_MOVIEINFO_LIST_REQUEST,
 				data: {
@@ -62,7 +65,7 @@ const MovieInfo = () => {
 					size: 10
 				}
 			});
-	 	}
+		}
  	}, [LOGIN_data.uid, LOGIN_STATUS_done, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST, MOVIEINFO_CINEMA_LIST, dispatch, navigate]);
 
 	// 분리된 극장들 변수

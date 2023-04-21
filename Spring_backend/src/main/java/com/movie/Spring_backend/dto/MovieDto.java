@@ -31,7 +31,6 @@ public class MovieDto {
     private Boolean reserve;    // 예매 가능 여부
     private Float reserveRate;  // 예매율
     private Integer reserveCnt; // 예매횟수
-
     // 관리자 페이지
     private Integer reserveCntAll; // 전체 예매 횟수
     private List<String> mainactor;  // 주연
@@ -40,14 +39,14 @@ public class MovieDto {
     private List<String> subactorId; // 조연배우 Id (프론트단에서 사용)
     private List<String> voiceactor;  // 성우
     private List<String> voiceactorId; // 성우 Id (프론트단에서 사용)
-
+    private Integer cntMovieInfo; // 영화가 사용된 상영정보 개수
 
     @Builder
     public MovieDto(Long mid, String mtitle, String mdir, String mgenre, int mtime, Date mdate, String mrating,
                     String mstory , String mimagepath, Integer mlikes, Float mscore, Boolean mlike, String able,
-                    List<String> actors, Boolean reserve, Float reserveRate, Integer reserveCnt, Integer reserveCntAll
-                     ,List<String> mainactor, List<String> subactor, List<String> voiceactor, List<String> mainactorId,
-                    List<String> subactorId, List<String> voiceactorId) {
+                    List<String> actors, Boolean reserve, Float reserveRate, Integer reserveCnt, Integer reserveCntAll,
+                    List<String> mainactor, List<String> subactor, List<String> voiceactor, List<String> mainactorId,
+                    List<String> subactorId, List<String> voiceactorId, Integer cntMovieInfo) {
         this.mid = mid;
         this.mtitle = mtitle;
         this.mdir = mdir;
@@ -72,6 +71,7 @@ public class MovieDto {
         this.subactorId = subactorId;
         this.voiceactor = voiceactor;
         this.voiceactorId = voiceactorId;
+        this.cntMovieInfo = cntMovieInfo;
     }
 }
 

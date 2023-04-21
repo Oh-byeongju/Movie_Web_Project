@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public interface TheaterRepository extends JpaRepository<TheaterEntity, Long> {
-
     // 영화관 수정하는 메소드
     @Modifying
     @Query("UPDATE TheaterEntity as t " +

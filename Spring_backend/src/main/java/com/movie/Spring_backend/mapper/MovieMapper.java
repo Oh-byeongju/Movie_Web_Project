@@ -180,6 +180,9 @@ public class MovieMapper {
     // 관리자 페이지(영화관리)에 필요한 영화 내용들을 mapping 해주는 메소드
     public List<MovieDto> toDtoManagerMovie(List<MovieEntity> movieList, List<MovieActorEntity> movieActorList) {
 
+        System.out.println(movieActorList.size());
+        System.out.println("여기봐");
+
         // 사용될 변수들 초기화
         List<MovieDto> Movies = new ArrayList<>();
         Long movieId = 0L;
@@ -246,6 +249,7 @@ public class MovieMapper {
                     .subactorId(subActorId)
                     .voiceactor(voiceActor)
                     .voiceactorId(voiceActorId)
+                    .cntMovieInfo(movieEntity.getCntMovieInfo())
                     .mstory(movieEntity.getMstory()).build());
             // 배우에 대한 반복문 시작위치 조정(이미 추가된 배우를 건너뛰기 위한 과정)
             num += cnt;

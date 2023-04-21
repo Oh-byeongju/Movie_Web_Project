@@ -4,6 +4,9 @@
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
 	MANAGER_MOVIE_REQUEST, MANAGER_MOVIE_SUCCESS, MANAGER_MOVIE_FAILURE,
+	MANAGER_MOVIE_INSERT_REQUEST, MANAGER_MOVIE_INSERT_SUCCESS, MANAGER_MOVIE_INSERT_FAILURE,
+	MANAGER_MOVIE_DELETE_REQUEST, MANAGER_MOVIE_DELETE_SUCCESS, MANAGER_MOVIE_DELETE_FAILURE,
+	MANAGER_MOVIE_UPDATE_REQUEST, MANAGER_MOVIE_UPDATE_SUCCESS, MANAGER_MOVIE_UPDATE_FAILURE,
 	MANAGER_ACTOR_REQUEST, MANAGER_ACTOR_SUCCESS, MANAGER_ACTOR_FAILURE,
 	MANAGER_ACTOR_INSERT_REQUEST, MANAGER_ACTOR_INSERT_SUCCESS, MANAGER_ACTOR_INSERT_FAILURE,
 	MANAGER_ACTOR_DELETE_REQUEST, MANAGER_ACTOR_DELETE_SUCCESS, MANAGER_ACTOR_DELETE_FAILURE,
@@ -38,8 +41,87 @@ async function callAllMovie() {
   });
 }
 
+// 영화 추가 함수
+function* InsertMovie(action) {
+  const result = yield call(callInsertMovie, action);
+  if (result.status === 204) {
+    yield put({
+      type: MANAGER_MOVIE_INSERT_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: MANAGER_MOVIE_INSERT_FAILURE
+    });
+  }
+}
 
+// 영화 추가 백엔드 호출
+async function callInsertMovie(data) {
+  return await http.post("/Manager/auth/insertMovie", data.Fdata)
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
+// 영화 삭제 함수
+function* DeleteMovie(action) {
+  const result = yield call(callDeleteMovie, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: MANAGER_MOVIE_DELETE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: MANAGER_MOVIE_DELETE_FAILURE
+    });
+  }
+}
+
+// 영화 삭제 백엔드 호출
+async function callDeleteMovie(data) {
+  return await http.delete("/Manager/auth/deleteMovie", {
+    params: {
+      mid: data.mid
+    }
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+// 영화 수정 함수
+function* UpdateMovie(action) {
+  const result = yield call(callUpdateMovie, action);
+  if (result.status === 204) {
+    yield put({
+      type: MANAGER_MOVIE_UPDATE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: MANAGER_MOVIE_UPDATE_FAILURE
+    });
+  }
+}
+
+// 영화 수정 백엔드 호출
+async function callUpdateMovie(data) {
+  return await http.patch("/Manager/auth/updateMovie", data.Fdata)
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
 // 배우 조회 함수
 function* AllActor() {
@@ -154,6 +236,18 @@ function* MOVIE_LIST() {
 	yield takeLatest(MANAGER_MOVIE_REQUEST, AllMovie);
 }
 
+function* MOVIE_INSERT() {
+	yield takeLatest(MANAGER_MOVIE_INSERT_REQUEST, InsertMovie);
+}
+
+function* MOVIE_DELETE() {
+	yield takeLatest(MANAGER_MOVIE_DELETE_REQUEST, DeleteMovie);
+}
+
+function* MOVIE_UPDATE() {
+	yield takeLatest(MANAGER_MOVIE_UPDATE_REQUEST, UpdateMovie);
+}
+
 function* ACTOR_LIST() {
 	yield takeLatest(MANAGER_ACTOR_REQUEST, AllActor);
 }
@@ -172,6 +266,9 @@ function* ACTOR_UPDATE() {
 
 export default function* S_manager_movie() {
   yield all([fork(MOVIE_LIST), 
+		fork(MOVIE_INSERT),
+		fork(MOVIE_DELETE),
+		fork(MOVIE_UPDATE),
 		fork(ACTOR_LIST),
 		fork(ACTOR_INSERT),
 		fork(ACTOR_DELETE),

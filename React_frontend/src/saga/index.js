@@ -5,7 +5,7 @@ import S_user_login from "./S_user_login";
 import movieSaga from "./movie";
 import S_user_movie from "./S_user_movie";
 import seatSaga from "./seat";
-import timeTableSaga from "./TimeTable";
+import S_TimeTable from "./S_TimeTable";
 import S_mypage_movie from "./S_mypage_movie";
 import BoardSaga from "./Board";
 import S_mypage_reserve from "./S_mypage_reserve";
@@ -24,7 +24,7 @@ export default function* rootSaga() {
     fork(movieSaga),
     fork(S_user_movie),
     fork(seatSaga),
-    fork(timeTableSaga),
+    fork(S_TimeTable),
     fork(S_mypage_movie),
     fork(BoardSaga),
     fork(S_mypage_reserve),

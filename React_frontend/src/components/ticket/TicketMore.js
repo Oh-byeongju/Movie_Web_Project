@@ -8,7 +8,6 @@ import {
   SELECT_INFOSEAT_REQUEST,
   CHECK_SEAT_REQUEST,
 } from "../../reducer/seat";
-import { Login } from "@mui/icons-material";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { PAYMENT_REQUEST, RESERVE_LOGIN_PAGE } from "../../reducer/ticket";
 import * as Payment from "../Common_components/Function";

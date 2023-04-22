@@ -40,6 +40,7 @@ public class MovieController {
         return ResponseEntity.ok().body(movieService.getMovieDetail(mid, uid));
     }
 
+    // 아랫놈들은 컨트롤러를 따로 빼버릴까 고민 무비 멤버로
     // 영화 세부내용의 관람평을 가져오는 메소드(최신순)
     @GetMapping("/normal/recentcomment/Moviedetail/{mid}")
     public ResponseEntity<List<CommentInfoDto>> MovieDetailCommentRecent(@PathVariable("mid") Long mid, @RequestParam(value = "uid") String uid){
@@ -50,5 +51,11 @@ public class MovieController {
     @GetMapping("/normal/likecomment/Moviedetail/{mid}")
     public ResponseEntity<List<CommentInfoDto>> MovieDetailCommentLike(@PathVariable("mid") Long mid, @RequestParam(value = "uid") String uid){
         return ResponseEntity.ok().body(movieService.getMovieDetailCommentLike(mid, uid));
+    }
+
+    // 현재 예매가 가능한 영화를 가져오는 메소드(예매율 순으로 내림차순)
+    @GetMapping("/normal/ReservePossibleDESC")
+    public ResponseEntity<List<MovieDto>> PossibleDESCMovie() {
+        return ResponseEntity.ok().body(movieService.getPossibleDESCMovie());
     }
 }

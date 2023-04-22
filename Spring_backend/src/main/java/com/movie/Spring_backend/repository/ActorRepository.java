@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ActorRepository extends JpaRepository<ActorEntity, Long>{
-
     // 배우 수정하는 메소드
     @Modifying
     @Query("UPDATE ActorEntity as a " +

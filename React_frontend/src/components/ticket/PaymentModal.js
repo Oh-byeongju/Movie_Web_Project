@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import * as Payment from "../Common_components/Function";
 import seat, { CHECK_SEAT_REQUEST } from "../../reducer/seat";
-import { Login } from "@mui/icons-material";
+
 const PaymentModal = ({ closeModal }) => {
   const dispatch = useDispatch();
   const { movieData, theaterData, DayData, scheduleData, payment_done } = useSelector(

@@ -29,7 +29,6 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieMemberRepository movieMemberRepository;
     private final MovieActorRepository movieActorRepository;
-    private final ActorRepository actorRepository;
     private final CommentInfoRepository commentInfoRepository;
     private final MovieMapper movieMapper;
     private final MovieCommentMapper movieCommentMapper;
@@ -321,5 +320,17 @@ public class MovieService {
         // 관람평 목록과 좋아요 기록을 mapping 후 리턴
         return MovieMembers.stream().map(MovieMember ->
                 movieCommentMapper.toDto(MovieMember, CommentLikeSet.contains(MovieMember.getUmid()))).collect(Collectors.toList());
+    }
+
+    // 현재 예매가 가능한 영화 조회 메소드
+    public List<MovieDto> getPossibleDESCMovie() {
+        // 영화 테이블에서 현재 예매가 가능한 영화들 조회(예매율 순으로 내림차순)
+        List<MovieEntity> Movies = movieRepository.findShowMoviesReserveDESC("");
+
+        // 검색한 영화목록 리턴
+        return Movies.stream().map(movie -> MovieDto.builder()
+                .mid(movie.getMid())
+                .mtitle(movie.getMtitle())
+                .mimagepath(movie.getMimagepath()).build()).collect(Collectors.toList());
     }
 }

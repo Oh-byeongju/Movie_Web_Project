@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import CoPresentOutlinedIcon from '@mui/icons-material/CoPresentOutlined';
-import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
+import { PicCenterOutlined, BankOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { MANAGER_MOVIE_LIST_REQUEST, 
@@ -35,7 +34,7 @@ const Reserve = () => {
     shallowEqual
   );
 
-	// 모든 영화 및 상영관 조회 useEffect
+	// 모든 영화 및 극장 조회 useEffect
   useEffect(() => {
 		// 관리자 이외의 계정은 접근 불가능
 		if (LOGIN_STATUS_done && LOGIN_data.uid !== 'manager') {
@@ -180,20 +179,20 @@ const Reserve = () => {
 					<TabLeft>
 						<ul>
 							<li className={moviebutton ? "hover tab" : "tab"} onClick={onMovie}>
-								<a href={()=> false}>
+								<div>
 									<i>
-										<MovieOutlinedIcon style={{width:'40px' ,height:'40px'}}/>
+										<PicCenterOutlined/>
 									</i>
-									영화별
-								</a>
+									영화
+								</div>
 							</li>
 							<li className={theaterbutton ? "hover tab" : "tab"} onClick={onTheater}>
-								<a href={()=> false}>
+								<div>
 									<i>
-										<CoPresentOutlinedIcon style={{width:'40px' ,height:'40px'}} />
+										<BankOutlined/>
 									</i>
-									극장별
-								</a>
+									극장
+								</div>
 							</li>	
 						</ul>
 					</TabLeft>
@@ -211,7 +210,7 @@ const Reserve = () => {
 												</button>
 											</Movies>)}
 										</ul>
-										</MovieContainer>
+									</MovieContainer>
 								</ScrollBar>
 							</ListSection>
 							<Poster>
@@ -326,12 +325,12 @@ const TabLeft = styled.div`
 		padding: 0;
 
 		.hover {
-		background-color: #fff;
-		border-right: none;
+			background-color: #fff;
+			border-right: none;
 		}
 
     li {
-			cursor:pointer;
+			cursor: pointer;
 			display: block;
 			text-align: center;
 			width: 100%;
@@ -341,22 +340,22 @@ const TabLeft = styled.div`
 			border-width: 0 1px 1px 0;
 			background-color: #f2f4f5;
 
-			a {
+			div {
 				display: block;
 				color: #444;
 				font-size: 1.2em;
 				font-weight: 400;
 				text-decoration: none;
 
-				i {
+				i	{
 					width: 39px;
 					height: 32px;
 					overflow: hidden;
 					display: inline-block;
-					margin-bottom:10px;
-					margin-right:5px;
+					margin-bottom: 5px;
+					margin-right: 5px;
 					padding: 0;
-					font-size: 0;
+					font-size: 32px;
 					line-height: 0;
 					vertical-align: middle;
 					background-position: 0 0;
@@ -454,7 +453,7 @@ const Info = styled.div`
 	display: block;
 	width: 100%;
 	height: 100%;
-`
+`;
 
 const TheaterWrapper = styled.div`
 	position: absolute;
@@ -494,8 +493,8 @@ const TheaterContainer = styled.div`
 	position: relative;
 	top: 0;
 	left: 0;
-	overflow:auto;
-	height:100%;
+	overflow: auto;
+	height: 100%;
 
 	ul {
 		overflow: hidden;

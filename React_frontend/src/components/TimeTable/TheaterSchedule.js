@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SELECT_SC_THEATER_REQUEST } from "../../reducer/TimeTable";
+import { SELECT_SC_THEATER_REQUEST } from "../../reducer/R_TimeTable";
 import * as ReserveLogin from "../Common_components/Function";
 import { useNavigate } from "react-router-dom";
 const TheaterSchedule = () =>{
     const navigate = useNavigate();
 
-    const { area,dayone,city,theater} =useSelector((state)=>state.TimeTable)
+    const { area,dayone,city,theater} =useSelector((state)=>state.R_TimeTable)
     const dispatch = useDispatch();
   useEffect(()=>{
     dispatch({

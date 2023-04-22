@@ -11,12 +11,23 @@ import java.util.List;
 
 @Repository
 public interface TheaterRepository extends JpaRepository<TheaterEntity, Long> {
+    // 현재 예매가 가능한 영화관 조회 메소드(영화시작 시간이 현재시간에 30분을 더한 값 보다 큰것들)
+    @Query(value = "SELECT DISTINCT t FROM TheaterEntity as t INNER JOIN CinemaEntity as c ON t.tid = c.theater WHERE c.cid IN " +
+            "(SELECT DISTINCT mi.cinema FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00'))")
+    List<TheaterEntity> findPossibleTheater();
+
     // 영화관 수정하는 메소드
     @Modifying
     @Query("UPDATE TheaterEntity as t " +
             "SET t.tname = :tname, t.tarea = :tarea, t.taddr = :taddr WHERE t.tid = :tid")
     void TheaterUpdate(@Param("tname") String tname, @Param("tarea") String tarea,
                        @Param("taddr")String taddr, @Param("tid") Long tid);
+
+
+
+
+
+
 
 
     //영화로 극장을 검색하는 메소드, able

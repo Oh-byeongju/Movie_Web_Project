@@ -1,6 +1,5 @@
 package com.movie.Spring_backend.service;
 
-import com.movie.Spring_backend.entity.BoardEntity;
 import com.movie.Spring_backend.util.DeduplicationUtil;
 import com.movie.Spring_backend.dto.TheaterDto;
 import com.movie.Spring_backend.entity.TheaterEntity;
@@ -8,14 +7,10 @@ import com.movie.Spring_backend.mapper.TheaterMapper;
 import com.movie.Spring_backend.repository.TheaterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,15 +19,37 @@ import java.util.stream.IntStream;
 public class TheaterService {
 
     private final TheaterRepository theaterRepository;
-
     private final TheaterMapper theaterMapper;
 
+    // 예매가 가능한 영화관 조회하는 메소드
+    @Transactional
+    public List<TheaterDto> getPossibleTheater() {
+        List<TheaterEntity> Theaters = theaterRepository.findPossibleTheater();
+
+        return Theaters.stream().map(theater -> TheaterDto.builder()
+                .tid(theater.getTid())
+                .tname(theater.getTname())
+                .tarea(theater.getTarea()).build()).collect(Collectors.toList());
+    }
+
+
+
+
+
+
+    // 아래로 수정
     @Transactional
     public List<TheaterDto> getInfo() {
         List<TheaterEntity> datas = theaterRepository.findAll();
         return datas.stream()
                 .map(data -> theaterMapper.toDto(data)).collect(Collectors.toList());
     }
+
+
+
+
+
+
 
 
     //영화로 극장 검색하는 메소드

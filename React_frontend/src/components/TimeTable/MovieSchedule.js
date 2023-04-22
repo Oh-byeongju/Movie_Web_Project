@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React ,{useEffect, useState}from "react";
-import { SELECT_SC_THEATER_REQUEST ,AREA_DATAS} from "../../reducer/TimeTable";
+import { SELECT_SC_THEATER_REQUEST ,AREA_DATAS} from "../../reducer/R_TimeTable";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as ReserveLogin from "../Common_components/Function";
@@ -8,7 +8,7 @@ import * as ReserveLogin from "../Common_components/Function";
 const MovieSchedule = () =>{
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { movie,theater,area,dayone,city} =useSelector((state)=>state.TimeTable)
+    const { movie,theater,area,dayone,city} =useSelector((state)=>state.R_TimeTable)
     const [ tab, setTab] = useState(1);
     const tabClick= (index)=>
     {
@@ -18,7 +18,7 @@ const MovieSchedule = () =>{
         dispatch({
             type:SELECT_SC_THEATER_REQUEST,
             data:{
-                mid:movie.id,
+                mid:1,
                 miday:dayone,
                 area:area,
                 tid:0,

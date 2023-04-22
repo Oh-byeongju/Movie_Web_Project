@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { EditTwoTone ,FireTwoTone,StarTwoTone ,QrcodeOutlined,SearchOutlined } from "@ant-design/icons";
-import { QrCodeTwoTone } from "@mui/icons-material";
 import { useLocation,useNavigate, Link, useParams } from "react-router-dom";
 import { useDispatch,useSelector } from "react-redux";
 

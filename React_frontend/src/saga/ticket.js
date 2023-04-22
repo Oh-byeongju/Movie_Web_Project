@@ -104,7 +104,7 @@ function* allMovieLoad(action) {
 //전체 극장 검색하기
 async function allTheaterApi() {
   return await http
-    .get("/v2/normal/area")
+    .get("/Theater/normal/area")
     .then((response) => {
       return response;
     })

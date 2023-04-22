@@ -8,7 +8,6 @@ package com.movie.Spring_backend.repository;
 import com.movie.Spring_backend.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import com.movie.Spring_backend.entity.MovieEntity;
 import org.springframework.data.jpa.repository.Query;

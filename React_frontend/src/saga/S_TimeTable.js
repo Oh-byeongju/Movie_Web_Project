@@ -1,7 +1,73 @@
-import { DAY_REQUEST, DAY_SUCCESS, MOVIE_FAILURE, MOVIE_REQUEST, MOVIE_SUCCESS, MOVIE_DATAS,SELECT_SC_THEATER_FAILURE, SELECT_SC_THEATER_REQUEST, SELECT_SC_THEATER_SUCCESS, DAY_DATAS } from "../reducer/TimeTable";
-import { call, all, takeLatest, fork, put, select } from "redux-saga/effects";
+import { DAY_REQUEST, DAY_SUCCESS, MOVIE_FAILURE, MOVIE_REQUEST, MOVIE_SUCCESS, MOVIE_DATAS,SELECT_SC_THEATER_FAILURE, SELECT_SC_THEATER_REQUEST, SELECT_SC_THEATER_SUCCESS } from "../reducer/R_TimeTable";
+// 위에꺼 나중에 날리기
+import { call, all, takeLatest, fork, put } from "redux-saga/effects";
+import { 
+	TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_LIST_SUCCESS, TIMETABLE_MOVIE_LIST_FAILURE,
+	TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_LIST_SUCCESS, TIMETABLE_THEATER_LIST_FAILURE 
+} from "../reducer/R_TimeTable";
 import { http } from "../lib/http";
-import { useSelector } from "react-redux";
+
+// 예매 가능한 영화 조회 함수
+function* MovieSearch() {
+  const result = yield call(callMovieSearch);
+  if (result.status === 200) {
+    yield put({
+      type: TIMETABLE_MOVIE_LIST_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TIMETABLE_MOVIE_LIST_FAILURE
+    });
+  }
+}
+
+// 예매 가능한 영화 조회 백엔드 호출
+async function callMovieSearch() {
+  return await http.get("/movie/normal/ReservePossibleDESC")
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+// 예매 가능한 극장 조회 함수
+function* TheaterSearch() {
+  const result = yield call(callTheaterSearch);
+  if (result.status === 200) {
+    yield put({
+      type: TIMETABLE_THEATER_LIST_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TIMETABLE_THEATER_LIST_FAILURE
+    });
+  }
+}
+
+// 예매 가능한 극장 조회 백엔드 호출
+async function callTheaterSearch() {
+  return await http.get("/Theater/normal/ReservePossible")
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+
+
+
+
+
+
+// 아래로 수정
 async function selectTheaterApi(data) {
     return await http
       .get("/infomovie/normal/findtest", {params:{
@@ -130,6 +196,23 @@ async function selectTheaterApi(data) {
   function* movieSaga() {
     yield takeLatest(MOVIE_REQUEST, AllMovieLoad);
   }
-  export default function* timeTableSaga() {
-    yield all([fork(selectTheaterSaga),fork(selectDaySaga),fork(movieSaga)]);
-  }
+// 위로 수정
+
+
+
+function* MOVIE_LIST() {
+  yield takeLatest(TIMETABLE_MOVIE_LIST_REQUEST, MovieSearch);
+}
+
+function* THEATER_LIST() {
+  yield takeLatest(TIMETABLE_THEATER_LIST_REQUEST, TheaterSearch);
+}
+
+export default function* S_TimeTable() {
+	yield all([fork(MOVIE_LIST),
+		fork(THEATER_LIST),
+
+		// 아래로 수정
+		
+		fork(selectTheaterSaga),fork(selectDaySaga),fork(movieSaga)]);
+}

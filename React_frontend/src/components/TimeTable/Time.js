@@ -4,12 +4,12 @@ import styled from "styled-components";
 import "moment/locale/ko";
 import { useEffect } from "react";
 import { useDispatch,useSelector } from "react-redux";
-import { DAY_REQUEST, DAY_DATAS} from "../../reducer/TimeTable";
+import { DAY_REQUEST, DAY_DATAS} from "../../reducer/R_TimeTable";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 const Time = ({tab})=>{
     moment.locale('ko')
     const dispatch = useDispatch();
-    const {area, theater,city,movie, date,dayone} =useSelector((state)=>state.TimeTable)
+    const {area, theater,city,movie, date,dayone} =useSelector((state)=>state.R_TimeTable)
     let able = false;
     const week = [];
     const day =[];
@@ -18,7 +18,9 @@ const Time = ({tab})=>{
 
     const today = moment().format("YYYY-MM-DD")
     const tomorrow = moment().add('days',1).format("YYYY-MM-DD"); 
-    for(let i = 0 ; i < 21; i++){
+
+		// dlrj이거 수정해보기
+    for(let i = 0 ; i < 25; i++){
         week[i] = moment().add('days',i).format("YYYY-MM-DD"); 
         day[i]= moment().add('days',i).format('dddd');
     }

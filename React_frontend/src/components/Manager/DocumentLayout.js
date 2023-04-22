@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
+import { PicCenterOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { MANAGER_MOVIE_LIST_COMMENT_REQUEST, MANAGER_MOVIE_COMMENT_SELECT, MANAGER_MOVIE_COMMENT_LIST_REQUEST, } from '../../reducer/R_manager_user';
 import DocumentMovieComment from './DocumentMovieComment';
@@ -107,12 +107,12 @@ const DocumentLayout = () => {
 					<TabLeft>
 						<ul>
 							<li className="hover tab">
-								<a href="#!">
+								<div>
 									<i>
-										<MovieOutlinedIcon style={{width:'40px' ,height:'40px'}}/>
+										<PicCenterOutlined/>
 									</i>
 									영화
-								</a>
+								</div>
 							</li>
 						</ul>
 					</TabLeft>
@@ -246,22 +246,22 @@ const TabLeft = styled.div`
 			line-height: 300px;
 			background-color: #f2f4f5;
 
-			a {
+			div {
 				display: block;
 				color: #444;
 				font-size: 1.2em;
 				font-weight: 400;
 				text-decoration: none;
 
-				i {
+				i	{
 					width: 39px;
 					height: 32px;
 					overflow: hidden;
 					display: inline-block;
-					margin-bottom:10px;
-					margin-right:5px;
+					margin-bottom: 5px;
+					margin-right: 5px;
 					padding: 0;
-					font-size: 0;
+					font-size: 32px;
 					line-height: 0;
 					vertical-align: middle;
 					background-position: 0 0;

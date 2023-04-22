@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button, Space } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { style } from "@mui/system";
 import { useSelector, useDispatch } from "react-redux";
-import { set } from "date-fns";
+
 import {
   SEAT_CHOICE,
   SEAT_REMOVE,

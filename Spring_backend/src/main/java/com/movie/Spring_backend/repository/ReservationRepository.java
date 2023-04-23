@@ -21,6 +21,7 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     ReservationEntity findByRpayid(String rpayid);
 
     // 사용자가 예매한 영화 정보들을 가져오는 메소드(예매시간 순으로 내림차순, 아직 영화가 끝나지 않은 예매들)
+    // 아래꺼도 movieInfocinema 지워도 되는걸로암
     @Query(value = "SELECT rs FROM ReservationEntity as rs INNER JOIN MovieInfoEntity as mi " +
             "ON rs.movieInfo = mi.miid " +
             "WHERE rs.member = :member AND rs.rstate = true AND rs.rdate > :rdate AND mi.miendtime > now() " +

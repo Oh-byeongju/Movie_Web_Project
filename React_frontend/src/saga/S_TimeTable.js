@@ -3,7 +3,8 @@ import { DAY_REQUEST, DAY_SUCCESS, MOVIE_FAILURE, MOVIE_REQUEST, MOVIE_SUCCESS, 
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
 	TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_LIST_SUCCESS, TIMETABLE_MOVIE_LIST_FAILURE,
-	TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_LIST_SUCCESS, TIMETABLE_THEATER_LIST_FAILURE 
+	TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_LIST_SUCCESS, TIMETABLE_THEATER_LIST_FAILURE,
+	TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_LIST_SUCCESS, TIMETABLE_DAY_LIST_FAILURE 
 } from "../reducer/R_TimeTable";
 import { http } from "../lib/http";
 
@@ -60,6 +61,42 @@ async function callTheaterSearch() {
     return error.response;
   });
 }
+
+// 날짜 조회 함수
+function* DaySearch(action) {
+  const result = yield call(callDaySearch, action.data);
+  if (result.status === 200) {
+    yield put({
+      type: TIMETABLE_DAY_LIST_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TIMETABLE_DAY_LIST_FAILURE
+    });
+  }
+}
+
+// 날짜 조회 백엔드 호출
+async function callDaySearch(data) {
+  return await http.get("/infomovie/normal/findDay", {
+    params: {
+      mid: data.mid,
+      tarea: data.tarea,
+			tid: data.tid
+    }
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+
+
 
 
 
@@ -208,9 +245,14 @@ function* THEATER_LIST() {
   yield takeLatest(TIMETABLE_THEATER_LIST_REQUEST, TheaterSearch);
 }
 
+function* DAY_LIST() {
+  yield takeLatest(TIMETABLE_DAY_LIST_REQUEST, DaySearch);
+}
+
 export default function* S_TimeTable() {
 	yield all([fork(MOVIE_LIST),
 		fork(THEATER_LIST),
+		fork(DAY_LIST),
 
 		// 아래로 수정
 		

@@ -6,6 +6,7 @@ export const TIMETABLE_MOVIE_LIST_REQUEST = "TIMETABLE_MOVIE_LIST_REQUEST";
 export const TIMETABLE_MOVIE_LIST_SUCCESS = "TIMETABLE_MOVIE_LIST_SUCCESS";
 export const TIMETABLE_MOVIE_LIST_FAILURE = "TIMETABLE_MOVIE_LIST_FAILURE";
 export const TIMETABLE_MOVIE_SELECT = "TIMETABLE_MOVIE_SELECT";
+export const TIMETABLE_AREA_SELECT = "TIMETABLE_AREA_SELECT";
 
 // 극장 목록 조회 리스트
 export const TIMETABLE_THEATER_LIST_REQUEST = "TIMETABLE_THEATER_LIST_REQUEST";
@@ -13,6 +14,11 @@ export const TIMETABLE_THEATER_LIST_SUCCESS = "TIMETABLE_THEATER_LIST_SUCCESS";
 export const TIMETABLE_THEATER_LIST_FAILURE = "TIMETABLE_THEATER_LIST_FAILURE";
 export const TIMETABLE_THEATER_SELECT = "TIMETABLE_THEATER_SELECT";
 
+// 날짜 목록 조회 리스트
+export const TIMETABLE_DAY_LIST_REQUEST = "TIMETABLE_DAY_LIST_REQUEST";
+export const TIMETABLE_DAY_LIST_SUCCESS = "TIMETABLE_DAY_LIST_SUCCESS";
+export const TIMETABLE_DAY_LIST_FAILURE = "TIMETABLE_DAY_LIST_FAILURE";
+export const TIMETABLE_DAY_SELECT = "TIMETABLE_DAY_SELECT";
 
 
 
@@ -42,12 +48,19 @@ const initalState = {
   MOVIE_LIST_error: false,
 	MOVIE_LIST: [],
 	MOVIE: '',
+	AREA: '서울',
 
 	THEATER_LIST_loading: false,
   THEATER_LIST_done: false,
   THEATER_LIST_error: false,
 	THEATER_LIST: [],
 	THEATER: '',
+
+	DAY_LIST_loading: false,
+  DAY_LIST_done: false,
+  DAY_LIST_error: false,
+	DAY_LIST: [],
+	DAY: '',
 
 
 	// 아래로 수정
@@ -102,6 +115,11 @@ const R_TimeTable = (state = initalState, action) => {
         ...state,
         MOVIE: action.data
       };
+		case TIMETABLE_AREA_SELECT:
+			return {
+				...state,
+				AREA: action.data
+			};
 		// 극장 조회 케이스들
 		case TIMETABLE_THEATER_LIST_REQUEST:
 			return {
@@ -130,6 +148,35 @@ const R_TimeTable = (state = initalState, action) => {
 			return {
 				...state,
 				THEATER: action.data
+			};
+		// 날짜 조회 케이스들
+		case TIMETABLE_DAY_LIST_REQUEST:
+			return {
+				...state,
+				DAY_LIST_loading: true,
+				DAY_LIST_done: false,
+				DAY_LIST_error: false
+			};
+		case TIMETABLE_DAY_LIST_SUCCESS:
+			return {
+				...state,
+				DAY_LIST_loading: false,
+				DAY_LIST_done: true,
+				DAY_LIST_error: false,
+				DAY_LIST: action.data,
+				DAY: action.data[0].miday
+			};
+		case TIMETABLE_DAY_LIST_FAILURE:
+			return {
+				...state,
+				DAY_LIST_loading: false,
+				DAY_LIST_done: false,
+				DAY_LIST_error: true
+			};
+		case TIMETABLE_DAY_SELECT:
+			return {
+				...state,
+				DAY: action.data
 			};
 
 

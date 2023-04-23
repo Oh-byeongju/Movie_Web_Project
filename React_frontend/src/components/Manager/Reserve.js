@@ -438,6 +438,7 @@ const Movies = styled.li`
     cursor: pointer;
     letter-spacing: -.5px;
     font-weight: 400;
+		font-size: 15px;
 	}
 `;
 

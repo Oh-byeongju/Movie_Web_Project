@@ -3,30 +3,44 @@ package com.movie.Spring_backend.controller;
 import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.MovieInfoDto;
 import com.movie.Spring_backend.dto.TheaterDto;
-import com.movie.Spring_backend.mapper.ScheduleMapper;
 import com.movie.Spring_backend.repository.MovieInfoRepository;
 import com.movie.Spring_backend.service.CinemaService;
 import com.movie.Spring_backend.service.MovieInfoService;
 import com.movie.Spring_backend.service.MovieService;
 import com.movie.Spring_backend.service.TheaterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.*;
 
 //crossorigin 바꿔야함
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+// 무비 인포로 바까야할듯
 @RequestMapping("/infomovie")
 public class MovieInfoController {
 
     private final MovieInfoService movieInfoService;
     private final CinemaService cinemaService;
     private final MovieService movieService;
-    final TheaterService theaterService;
+    private final TheaterService theaterService;
     private final MovieInfoRepository movieInfoRepository;
+
+    // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드
+    @GetMapping("/normal/findDay")
+    public ResponseEntity<List<MovieInfoDto>> movieInfoFindDay(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(movieInfoService.getMovieInfoDay(requestMap));
+    }
+
+
+
+
+
+
 
     @GetMapping("/normal/movieinfo")
     public List<MovieInfoDto> getData() {
@@ -109,22 +123,7 @@ public class MovieInfoController {
     }
 
 
-    @GetMapping("normal/findtest")
-    public List<ScheduleMapper> findtest(@RequestParam Long mid , @RequestParam Date miday, @RequestParam String area,@RequestParam Long tid,
-    @RequestParam String message){
-        if(message.equals("movie")) {
-            System.out.println("극장조회");
-            List<ScheduleMapper>  cinema= movieInfoService.findTest(mid, miday, area);
-            return cinema;
-        }
-        else if(message.equals("theater")){
-            System.out.println("영화조회");
 
-            List<ScheduleMapper> movie = movieInfoService.findByTheater(miday,tid);
-            return movie;
-        }
-        return null;
-    }
 
     //영화 스케쥴 페이지에서 날짜 검색(movie: 영화 기준, theater: 극장 기준)
     @GetMapping("/normal/timeselect")

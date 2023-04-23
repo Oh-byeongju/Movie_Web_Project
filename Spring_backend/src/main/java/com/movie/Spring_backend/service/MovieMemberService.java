@@ -124,6 +124,8 @@ public class MovieMemberService {
             throw new BusinessException("작성된 관람평이 존재합니다.", ErrorCode.COMMENT_IS_EXIST);
         }
 
+        // 이거 아래 검색도 reservation을 조인해서 들고오면 되지않나 싶기도함
+
         // 상영이 끝난 영화정보 튜플 검색
         List<MovieInfoEntity> MovieInfos = movieInfoRepository.findInfoBeforeToday(movie);
 

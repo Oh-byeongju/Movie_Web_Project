@@ -1,30 +1,21 @@
 package com.movie.Spring_backend.service;
 
-import com.google.gson.JsonObject;
 import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.MovieInfoDto;
-import com.movie.Spring_backend.dto.TheaterDto;
 import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
-import com.movie.Spring_backend.jwt.JwtValidCheck;
-import com.movie.Spring_backend.mapper.InfoMapper;
 import com.movie.Spring_backend.mapper.MovieInfoMapper;
 import com.movie.Spring_backend.mapper.MovieMapper;
-import com.movie.Spring_backend.mapper.ScheduleMapper;
 import com.movie.Spring_backend.repository.MovieInfoRepository;
-import com.movie.Spring_backend.repository.MovieInfoSeatRepository;
 import com.movie.Spring_backend.repository.MovieRepository;
 import com.movie.Spring_backend.util.DeduplicationUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +23,55 @@ import java.util.stream.Collectors;
 public class MovieInfoService {
     private final MovieInfoRepository movieInfoRepository;
     private final MovieRepository movieRepository;
-    private final MovieInfoSeatRepository movieInfoSeatRepository;
     private final MovieInfoMapper movieInfoMapper;
-    private final JwtValidCheck jwtValidCheck;
-
     private final MovieMapper movieMapper;
+
+    // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드
+    @Transactional
+    public List<MovieInfoDto> getMovieInfoDay(Map<String, String> requestMap) {
+
+        // requestMap 데이터 추출 및 형변환
+        String mid = requestMap.get("mid");
+        String tarea = requestMap.get("tarea");
+        String tid = requestMap.get("tid");
+
+        // 프론트단에서 영화를 선택 안했을경우 파라미터를 null로 주기위한 과정
+        MovieEntity movie = null;
+        if (mid != null) {
+            movie = MovieEntity.builder().mid(Long.valueOf(mid)).build();
+        }
+
+        // 프론트단에서 극장을 선택 안했을경우 파라미터를 null로 주기위한 과정
+        Long theater = null;
+        if (tid != null) {
+            theater = Long.valueOf(tid);
+        }
+
+        // 프론트단에서 보낸 조건을 이용해서 상영정보 검색
+        List<MovieInfoEntity> MovieInfos = movieInfoRepository.findMovieInfoDay(movie, theater, tarea);
+
+        // 검색된 상영정보에 날짜 중복제거
+        HashSet<Date> Dates = new HashSet<>();
+        for (MovieInfoEntity MI : MovieInfos) {
+            Dates.add(MI.getMiday());
+        }
+
+        // List로 변환 후 정렬(오름차순)
+        List<Date> result = new ArrayList<>(Dates);
+        Collections.sort(result);
+
+        return result.stream().map(date -> MovieInfoDto.builder().miday(date).build()).collect(Collectors.toList());
+    }
+
+
+
+
+
+
+
+
+
+
 
     @Transactional
     public List<MovieInfoDto> findAllMiday() {
@@ -155,100 +190,4 @@ public class MovieInfoService {
         return datas.stream().map(data -> movieInfoMapper.CountDto(data, data.getCinema().getCid(), data.getCinema().getCname(), data.getCinema().getCtype(), data.getCntSeatInfo(), data.getCinema().getCseat())).collect(Collectors.toList());
 
     }
-
-    //영화와 날짜 지역으로 영화 정보를 불러오는 서비스
-    @Transactional
-    public List<ScheduleMapper> findTest(Long mid, Date miday, String tarea) {
-        List<MovieInfoEntity> datas = movieInfoRepository.findSchedule(mid, miday, tarea);
-        List<MovieInfoDto> mapped = datas.stream().map(data -> movieInfoMapper.Test(data, data.getCinema().getCid(), data.getCinema().getCname(), data.getCinema().getCtype(), data.getCntSeatInfo(), data.getCinema().getCseat(), data.getCinema().getTheater().getTname(),data.getMovie().getMtitle(),data.getMovie().getMid(),data.getCinema().getTheater().getTid(),data.getMovie().getMtime(),data.getMovie().getMrating(),data.getMovie().getMimagepath())).collect(Collectors.toList());
-        //매핑을 위해 중복을 제거
-        //극장 번호 , 지역
-        List<MovieInfoDto> cid = DeduplicationUtil.deduplication(mapped, MovieInfoDto::getCid);
-        List<MovieInfoDto> area = DeduplicationUtil.deduplication(mapped, MovieInfoDto::getArea);
-
-        List<ScheduleMapper> scheduleMappers = new ArrayList<>();
-        ScheduleMapper scheduleMapper = new ScheduleMapper();
-        for (MovieInfoDto c : area) {    //지역으로 나눔
-            List<InfoMapper> infoMapper = new ArrayList<>();
-
-            for (MovieInfoDto a : cid) { //극장으로 나눔
-                if (c.getArea().equals(a.getArea())) {
-                    System.out.println(a.getCid());//전체 지역 중 중복 제거한 극장의 지역명이 같으면
-                    List<MovieInfoEntity> miid = movieInfoRepository.findmiid(mid, miday, a.getCid()); //지점과 cid 에 맞는 miid들
-                    List<Map<String, Object>> history = new ArrayList<>();
-                    for (MovieInfoEntity mi : miid) {
-                        Map<String, Object> miidd = Map.of(
-                                "miid", mi.getMiid(),
-                                "start", mi.getMistarttime(),
-                                "count", mi.getCntSeatInfo(),
-                                "end", mi.getMiendtime()
-                        );
-                        history.add(miidd);
-                    }
-
-                    InfoMapper dd = new InfoMapper(a.getCid(), a.getAllcount(), a.getType(), a.getArea(), a.getName(),a.getTid(), history); //1상영관에 대한 정보
-                    infoMapper.add(dd);    //여기는 r에 해당하는 모든 상영관에 대한 정보   //극장에 해당하는 모든 정보
-                    //여기까지 하면 cid 에 맞는 miid 추출
-                    //지역에 따른 cid 정보들로 ㅊ푸출
-                }
-            }
-
-            scheduleMapper = new ScheduleMapper(c.getArea(), infoMapper);
-
-            scheduleMappers.add(scheduleMapper);
-
-        }
-
-        //극장으로 나눈 후 상영관으로 나눠야한다 .
-        return scheduleMappers;
-    }
-
-
-    @Transactional
-    public List<ScheduleMapper> findByTheater(Date miday, Long tid) {
-        List<MovieInfoEntity> datas = movieInfoRepository.findTimeTheater(miday, tid);
-        List<MovieInfoDto> mapped = datas.stream().map(data -> movieInfoMapper.Test(data, data.getCinema().getCid(), data.getCinema().getCname(), data.getCinema().getCtype(), data.getCntSeatInfo(), data.getCinema().getCseat(), data.getCinema().getTheater().getTname(), data.getMovie().getMtitle(),data.getMovie().getMid(),data.getCinema().getTheater().getTid(),data.getMovie().getMtime(),data.getMovie().getMrating(),data.getMovie().getMimagepath())).collect(Collectors.toList());
-        List<MovieInfoDto> cid = DeduplicationUtil.deduplication(mapped, MovieInfoDto::getCid);
-        List<MovieInfoDto> title = DeduplicationUtil.deduplication(mapped, MovieInfoDto::getTitle);
-
-
-        List<ScheduleMapper> scheduleMappers = new ArrayList<>();
-        ScheduleMapper scheduleMapper = new ScheduleMapper();
-        // 영화 중복 제거해서 for문
-        for(MovieInfoDto movies : title){
-            List<InfoMapper> infoMapper = new ArrayList<>();
-
-            for( MovieInfoDto cinema : cid){  // 10 , 12
-                List<MovieInfoEntity> miid = movieInfoRepository.findmiid(movies.getMid(), miday, cinema.getCid()); //지점과 cid 에 맞는 miid들
-                List<Map<String, Object>> history = new ArrayList<>();
-                if(!miid.isEmpty()) {
-                    for (MovieInfoEntity mi : miid) {
-                        System.out.println(mi.getMiid());
-                        Map<String, Object> miidd = Map.of(
-                                "miid", mi.getMiid(),
-                                "start", mi.getMistarttime(),
-                                "count", mi.getCntSeatInfo(),
-                                "end", mi.getMiendtime()
-
-                        );
-                        history.add(miidd);
-                    }
-                    InfoMapper dd = new InfoMapper(cinema.getCid(), cinema.getAllcount(), cinema.getType(), cinema.getArea(), cinema.getName(),cinema.getTid(), history); //1상영관에 대한 정보
-                    infoMapper.add(dd);    //여기는 r에 해당하는 모든 상영관에 대한 정보   //극장에 해당하는 모든 정보
-                    //여기까지 하면 cid 에 맞는 miid 추출
-                    //지역에 따른 cid 정보들로 ㅊ푸출
-                }
-
-            }
-
-
-            scheduleMapper = new ScheduleMapper(movies.getTitle(),movies.getMid(),movies.getTime(), movies.getRating(), movies.getImage(),infoMapper);
-
-            scheduleMappers.add(scheduleMapper);
-
-        }
-        return scheduleMappers;
-    }
-
-
 }

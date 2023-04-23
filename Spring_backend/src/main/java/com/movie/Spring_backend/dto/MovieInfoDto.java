@@ -14,16 +14,12 @@ import java.sql.Date;
 public class MovieInfoDto {
 
     private Long miid;
-
     private Date miday;
     private String mistarttime;
-
     private String miendtime;
 
     private MovieEntity movie;
-
     private CinemaEntity cinema;
-
     private Long cid;
     private String type;
     private String name;

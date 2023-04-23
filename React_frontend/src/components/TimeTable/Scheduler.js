@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { PicCenterOutlined, BankOutlined } from "@ant-design/icons";
-import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_TimeTable";
+import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_AREA_SELECT, TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_TimeTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import TimeTableLoading from "./TimeTableLoading";
-
+import Time from "./Time";
 
 
 import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';
-// import Time from "./Time";
+
 // import MovieSchedule from "./MovieSchedule";
 // import TheaterSchedule from "./TheaterSchedule";
 
@@ -16,11 +16,12 @@ const Scheduler = () =>{
 	const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE_LIST_loading, MOVIE_LIST, MOVIE, THEATER_LIST, THEATER } = useSelector(
+	const { MOVIE_LIST_loading, MOVIE_LIST, MOVIE, AREA, THEATER_LIST, THEATER } = useSelector(
 		state => ({
 			MOVIE_LIST_loading: state.R_TimeTable.MOVIE_LIST_loading,
 			MOVIE_LIST: state.R_TimeTable.MOVIE_LIST,
 			MOVIE: state.R_TimeTable.MOVIE,
+			AREA: state.R_TimeTable.AREA,
 			THEATER_LIST: state.R_TimeTable.THEATER_LIST,
 			THEATER: state.R_TimeTable.THEATER,
 		}),
@@ -79,7 +80,16 @@ const Scheduler = () =>{
 			type: TIMETABLE_MOVIE_SELECT,
 			data: movie
 		});
-	}, [dispatch])
+	}, [dispatch]);
+
+	// 영화별 조회시 지역 버튼에 사용될 변수
+	const movieArea = ["서울", "경기", "인천", "부산"];
+	const onMovieArea = useCallback((name)=> {
+		dispatch({
+			type: TIMETABLE_AREA_SELECT,
+			data: name
+		});
+	}, [dispatch]);
 
 	// 선택된 지역 버튼 useState
 	const [selectArea, setselectArea] = useState('seoul');
@@ -123,17 +133,6 @@ const Scheduler = () =>{
 			busan: temp_busan
 		}));
 	}, [THEATER_LIST]);
-
-	// 영화별 조회시 지역 버튼에 사용될 변수
-	const movieArea = ["서울", "경기", "인천", "부산"];
-	const [movieAreaSelect, setMovieAreaSelect] = useState("서울");
-	const onMovieArea = useCallback((name)=> {
-		setMovieAreaSelect(name);
-	}, [])
-
-
-	// 내일 이제 날짜 우째 볼러오는지 먼저 생각하고 시작하면됨
-  
   
 	return(
 		<TimeTableWrapper>
@@ -227,12 +226,11 @@ const Scheduler = () =>{
 						</TheaterWrapper>}
 					</TabCenter>
 				</MovieAreaChoice>
-				{/* 여기 무비버튼 이런거 보내줘야함 아래 타임에 */}
-				{/* <Time    /> */}
+				<Time moviebutton={moviebutton} theaterbutton={theaterbutton}/>
 					{moviebutton ? <CityTab>   
 						<ul>
 						{movieArea.map((city, index)=> 
-							<City key={index} city={city} selectArea={movieAreaSelect} onClick={()=> onMovieArea(city)}> 
+							<City key={index} city={city} selectArea={AREA} onClick={()=> onMovieArea(city)}> 
 								<span>
 									{city}
 								</span>
@@ -400,7 +398,8 @@ const Movies = styled.li`
     overflow: hidden;
     cursor: pointer;
     letter-spacing: -.5px;
-    font-weight: 400;
+    font-weight: 500;
+		font-size: 15px;
 	}
 `;
 

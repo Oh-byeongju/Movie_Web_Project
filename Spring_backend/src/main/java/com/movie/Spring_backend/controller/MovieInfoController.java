@@ -1,8 +1,12 @@
+/*
+  23-04-22 ~ 23-04-24 상영시간표에 사용되는 메소드 수정(오병주)
+*/
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.MovieInfoDto;
 import com.movie.Spring_backend.dto.TheaterDto;
+import com.movie.Spring_backend.dto.TimeTableDto;
 import com.movie.Spring_backend.repository.MovieInfoRepository;
 import com.movie.Spring_backend.service.CinemaService;
 import com.movie.Spring_backend.service.MovieInfoService;
@@ -35,6 +39,20 @@ public class MovieInfoController {
     public ResponseEntity<List<MovieInfoDto>> movieInfoFindDay(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(movieInfoService.getMovieInfoDay(requestMap));
     }
+
+    // 영화, 상영날짜, 지역을 이용하여 상영정보를 검색하는 메소드(상영시간표 페이지)
+    @GetMapping("/normal/timeTableByMovie")
+    public ResponseEntity<List<TimeTableDto>> TimeTableByMovie(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(movieInfoService.getTimeTableByMovie(requestMap));
+    }
+
+    // 극장, 상영날짜를 이용하여 상영정보를 검색하는 메소드(상영시간표 페이지)
+    @GetMapping("/normal/timeTableByTheater")
+    public ResponseEntity<List<TimeTableDto>> TimeTableByTheater(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(movieInfoService.getTimeTableByTheater(requestMap));
+    }
+
+
 
 
 
@@ -113,7 +131,6 @@ public class MovieInfoController {
         return theaterService.findDayMovieToTheater(miday,mid);
     }
 
-
     //스케쥴을 불러오는 메소드
     //영화, 극장, 날짜를 다 선택한 경우
     @GetMapping("normal/Schedule")
@@ -121,25 +138,4 @@ public class MovieInfoController {
         List<Long> cid = cinemaService.findByTheaterday(tid);
         return movieInfoService.findBySchedule(miday,mid,tid);
     }
-
-
-
-
-    //영화 스케쥴 페이지에서 날짜 검색(movie: 영화 기준, theater: 극장 기준)
-    @GetMapping("/normal/timeselect")
-    public List<MovieInfoDto> timeselect(@RequestParam Long mid,@RequestParam Long tid,@RequestParam String message) {
-
-        if(message.equals("movie")){
-            List<MovieInfoDto> mappedmid = movieInfoService.findByMovieToDay(mid);
-            return mappedmid;
-        }
-        else if(message.equals("theater")){
-            List<MovieInfoDto> theater = movieInfoService.findByCinemaCidIn(tid);
-            return theater;
-        }
-        return null;
-        //영화 검색 시 해당하는 상영 날짜 추출
-    }
-
-
 }

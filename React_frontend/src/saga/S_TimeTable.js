@@ -1,10 +1,15 @@
-import { DAY_REQUEST, DAY_SUCCESS, MOVIE_FAILURE, MOVIE_REQUEST, MOVIE_SUCCESS, MOVIE_DATAS,SELECT_SC_THEATER_FAILURE, SELECT_SC_THEATER_REQUEST, SELECT_SC_THEATER_SUCCESS } from "../reducer/R_TimeTable";
+/*
+	23-04-22 ~ 24 상영시간표 페이지 수정(오병주)
+*/
+import { SELECT_SC_THEATER_FAILURE, SELECT_SC_THEATER_REQUEST, SELECT_SC_THEATER_SUCCESS } from "../reducer/R_TimeTable";
 // 위에꺼 나중에 날리기
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
 	TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_LIST_SUCCESS, TIMETABLE_MOVIE_LIST_FAILURE,
 	TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_LIST_SUCCESS, TIMETABLE_THEATER_LIST_FAILURE,
-	TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_LIST_SUCCESS, TIMETABLE_DAY_LIST_FAILURE 
+	TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_LIST_SUCCESS, TIMETABLE_DAY_LIST_FAILURE,
+	TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST, TIMETABLE_MOVIEINFO_LIST_MOVIE_SUCCESS, TIMETABLE_MOVIEINFO_LIST_MOVIE_FAILURE,
+	TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST, TIMETABLE_MOVIEINFO_LIST_THEATER_SUCCESS, TIMETABLE_MOVIEINFO_LIST_THEATER_FAILURE
 } from "../reducer/R_TimeTable";
 import { http } from "../lib/http";
 
@@ -95,6 +100,72 @@ async function callDaySearch(data) {
   });
 }
 
+// 상영정보 조회(영화선택) 함수
+function* MovieInfoByMovieSearch(action) {
+  const result = yield call(callMovieInfoByMovieSearch, action.data);
+  if (result.status === 200) {
+    yield put({
+      type: TIMETABLE_MOVIEINFO_LIST_MOVIE_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TIMETABLE_MOVIEINFO_LIST_MOVIE_FAILURE
+    });
+  }
+}
+
+// 상영정보 조회(영화선택) 백엔드 호출
+async function callMovieInfoByMovieSearch(data) {
+  return await http.get("/infomovie/normal/timeTableByMovie", {
+    params: {
+      mid: data.mid,
+			miday: data.miday,
+      tarea: data.tarea
+		}
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+// 상영정보 조회(극장선택) 함수
+function* MovieInfoByTheaterSearch(action) {
+  const result = yield call(callMovieInfoByTheaterSearch, action.data);
+
+	console.log(result);
+  if (result.status === 200) {
+    yield put({
+      type: TIMETABLE_MOVIEINFO_LIST_THEATER_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TIMETABLE_MOVIEINFO_LIST_THEATER_FAILURE
+    });
+  }
+}
+
+// 상영정보 조회(극장선택) 백엔드 호출
+async function callMovieInfoByTheaterSearch(data) {
+  return await http.get("/infomovie/normal/timeTableByTheater", {
+    params: {
+      tid: data.tid,
+			miday: data.miday
+		}
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
 
 
@@ -123,9 +194,9 @@ async function selectTheaterApi(data) {
   }
   
   function* selectTheater(action) {
-    console.log('gg')
+
     const result = yield call(selectTheaterApi, action.data);
-    console.log(result);
+
   
     if (result.status === 200) { 
       yield put({
@@ -139,99 +210,8 @@ async function selectTheaterApi(data) {
       });   
     }
   }
-  async function selectDayApi(data) {
-    return await http
-      .get("/infomovie/normal/timeselect", {params:{
-        mid:data.mid,
-        tid:data.tid,
-        message:data.message
-      }})
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
-  
-  function* selectDay(action) {
-    const result = yield call(selectDayApi, action.data);
-  
-    console.log('day datya')
-    console.log(result);
-    
-    if (result.status === 200) { 
-      yield put({
-        type: DAY_SUCCESS,
-        data:result.data,
-      });
-  
-    } else {
-      yield put({
-        type: DAY_REQUEST,
-        data: result.status,
-      });
-    }
-  }
-  function* AllMovieLoad(action) {
-    const result = yield call(LoadAllMovie, action.data);
-    const allmoviedata = result.data.map((mv) => ({
-      id: mv.mid, 
-      dir: mv.mdir, 
-      date: mv.mdate, 
-      time: mv.mtime, 
-      genre: mv.mgenre, 
-      story: mv.mstory,
-      title: mv.mtitle, 
-      rating: mv.mrating, 
-      imagepath: mv.mimagepath,
-      likes: mv.mlikes,
-      score: mv.mscore,
-      like: mv.mlike,
-      reserve: mv.reserve,
-      reserveRate: mv.reserveRate
-    }));
-    if (result.status === 200) {
-      yield put({
-        type: MOVIE_SUCCESS,
-        data: allmoviedata,
-      });
-      yield put({
-        type:MOVIE_DATAS,
-        data: allmoviedata[0]
-      })
-    } else {
-      yield put({
-        type: MOVIE_FAILURE,
-        data: result.status,
-      });
-    }
-  }
-  
-  // 백엔드 호출
-  async function LoadAllMovie(data) {
-    return await http.get("/movie/normal/allmovie", {
-      params: {
-        uid: data.uid,
-        button: data.button,
-        search: data.search
-      }
-    })
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
   function* selectTheaterSaga() {
     yield takeLatest(SELECT_SC_THEATER_REQUEST, selectTheater);
-  }
-  function* selectDaySaga() {
-    yield takeLatest(DAY_REQUEST, selectDay);
-  }
-  function* movieSaga() {
-    yield takeLatest(MOVIE_REQUEST, AllMovieLoad);
   }
 // 위로 수정
 
@@ -249,12 +229,22 @@ function* DAY_LIST() {
   yield takeLatest(TIMETABLE_DAY_LIST_REQUEST, DaySearch);
 }
 
+function* MOVIEINFO_LIST_MOVIE() {
+  yield takeLatest(TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST, MovieInfoByMovieSearch);
+}
+
+function* MOVIEINFO_LIST_THEATER() {
+  yield takeLatest(TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST, MovieInfoByTheaterSearch);
+}
+
 export default function* S_TimeTable() {
 	yield all([fork(MOVIE_LIST),
 		fork(THEATER_LIST),
 		fork(DAY_LIST),
+		fork(MOVIEINFO_LIST_MOVIE),
+		fork(MOVIEINFO_LIST_THEATER),
 
 		// 아래로 수정
 		
-		fork(selectTheaterSaga),fork(selectDaySaga),fork(movieSaga)]);
+		fork(selectTheaterSaga)]);
 }

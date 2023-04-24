@@ -1,14 +1,43 @@
 import styled from "styled-components";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST } from "../../reducer/R_TimeTable";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+
+
 import { SELECT_SC_THEATER_REQUEST } from "../../reducer/R_TimeTable";
 import * as ReserveLogin from "../Common_components/Function";
 import { useNavigate } from "react-router-dom";
+
 const TheaterSchedule = () =>{
-    const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
+	// 필요한 리덕스 상태들
+	const { THEATER, DAY, DAY_LIST_loading, MOVIEINFO_LIST_THEATER } = useSelector(
+		state => ({
+			THEATER: state.R_TimeTable.THEATER,
+			DAY: state.R_TimeTable.DAY,
+			DAY_LIST_loading: state.R_TimeTable.DAY_LIST_loading,
+			MOVIEINFO_LIST_THEATER: state.R_TimeTable.MOVIEINFO_LIST_THEATER
+		}),
+		shallowEqual
+	);
+
+	// 극장 선택에 따른 상영정보 조회 useEffect
+	useEffect(()=> {
+		if (THEATER && DAY && !DAY_LIST_loading) {
+			dispatch({
+				type: TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST,
+				data: {
+					tid: THEATER.tid,
+					miday: DAY,
+				}
+			});
+		}
+	}, [THEATER, DAY, DAY_LIST_loading, dispatch]);
 
     const { area,dayone,city,theater} =useSelector((state)=>state.R_TimeTable)
-    const dispatch = useDispatch();
+    
   useEffect(()=>{
     dispatch({
         type:SELECT_SC_THEATER_REQUEST,
@@ -21,6 +50,7 @@ const TheaterSchedule = () =>{
         }
     })
   },[city,dayone])
+	
     return(<>
         <ReverseTheaterWrapper>
                 {theater.map((th)=>
@@ -97,63 +127,31 @@ const TheaterSchedule = () =>{
         </ReverseTheaterWrapper>
         </>)
     }
-    const ReverseTheaterWrapper = styled.div`
-    width:100%;
-    display:table;
-    border-top:0;
-    padding-top:30px;
-    `
-    const TheaterTab =styled.div`
-    position:relative;
-    right:40px;
-    width:100%;
-    border-bottom:30px !important;
-    height:36px;
-    padding-bottom:40px;
-    ul{
-        list-style-type:none;
-        width:100%;
-        .hover {
-            background-color: grey;
-            border-right: none;
-        
-           }
-        
-       li{
-        cursor:pointer;
-        float:left;
-        width:137px;
-        height:34px;
-        border:1px solid #d8d9db;
-        a{
-            display:block;
-            width:100%:
-            height:34px;
-            margin:0;
-            padding:0;
-            border:0;
-            line-height:36px;
-            text-align:center;
-            text-decoration:none;
-        }
-    }
-    }
-    `
-    const TheaterList = styled.div`
-    position:relative;
-    padding-bottom:50px;
-    `
-    const TheaterArea = styled.div`
-        padding:0 0 15px 0;
-        border-bottom: 1px solid #eaeaea;
-        font-weight:700;
-        font-size:1.2em;
-        a{
-            color:#444;
-            text-decoration:none;
-    
-        }
-    `
+
+
+
+const ReverseTheaterWrapper = styled.div`
+	width:100%;
+	display:table;
+	border-top:0;
+	padding-top:30px;
+`;
+
+const TheaterList = styled.div`
+position:relative;
+padding-bottom:50px;
+`
+const TheaterArea = styled.div`
+		padding:0 0 15px 0;
+		border-bottom: 1px solid #eaeaea;
+		font-weight:700;
+		font-size:1.2em;
+		a{
+				color:#444;
+				text-decoration:none;
+
+		}
+`
     const CinemaTypeWrapper =styled.div`
         overflow:hidden;
         width:100%;

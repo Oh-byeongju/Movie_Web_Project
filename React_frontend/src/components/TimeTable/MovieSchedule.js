@@ -1,219 +1,216 @@
 import styled from "styled-components";
-import React ,{useEffect, useState}from "react";
-import { SELECT_SC_THEATER_REQUEST ,AREA_DATAS} from "../../reducer/R_TimeTable";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import * as ReserveLogin from "../Common_components/Function";
+import React, { useEffect }from "react";
+import { TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST } from "../../reducer/R_TimeTable";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 
 const MovieSchedule = () =>{
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { movie,theater,area,dayone,city} =useSelector((state)=>state.R_TimeTable)
-    const [ tab, setTab] = useState(1);
-    const tabClick= (index)=>
-    {
-        setTab(index);
-    }
-    useEffect(()=>{
-        dispatch({
-            type:SELECT_SC_THEATER_REQUEST,
-            data:{
-                mid:1,
-                miday:dayone,
-                area:area,
-                tid:0,
-                message:"movie"
+	const dispatch = useDispatch();
 
-            }
-        })
-    },[area,movie,dayone])
-   
+	// 필요한 리덕스 상태들
+	const { MOVIE, DAY, AREA, DAY_LIST_loading, MOVIEINFO_LIST_MOVIE } = useSelector(
+		state => ({
+			MOVIE: state.R_TimeTable.MOVIE,
+			DAY: state.R_TimeTable.DAY,
+			AREA: state.R_TimeTable.AREA,
+			DAY_LIST_loading: state.R_TimeTable.DAY_LIST_loading,
+			MOVIEINFO_LIST_MOVIE: state.R_TimeTable.MOVIEINFO_LIST_MOVIE
+		}),
+		shallowEqual
+	);
 
-    return(<>
-    <ReverseTheaterWrapper>
-            {theater.map((th)=>
-                    <TheaterList>
+	// 영화 선택에 따른 상영정보 조회 useEffect
+	useEffect(()=> {
+		if (MOVIE && DAY && AREA && !DAY_LIST_loading) {
+			dispatch({
+				type: TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST,
+				data: {
+					mid: MOVIE.mid,
+					miday: DAY,
+					tarea: AREA
+				}
+			});
+		}
+	}, [MOVIE, DAY, AREA, DAY_LIST_loading, dispatch]);
 
-            <TheaterArea>
-                <a>{th.theater}점</a>
-            </TheaterArea>
-            {th.infoMapper.map((info)=>
-            <CinemaTypeWrapper>
-                <CinemaType>
-                <p className="theater-type">{info.name}</p>
-                <p className="chair">{info.people}명</p>
-                </CinemaType>
-                <CinemaTime>
-                    <Type>{info.type}</Type>
-                    <Time>
-                    <table>
-                        <tbody>
-                        <tr>
-                            {info.history.map((movieinfo)=>
-                             <td onClick={()=>{
-                                ReserveLogin.f1({
-                                    movie:movie,
-                                    theater:{tid:info.tid,
-                                    tarea:area,
-                                    tname:info.area
-                                },
-                                    Day:{miday:dayone},
-                                    schedule:{miid:movieinfo.miid,
-                                    cid: info.cid,
-                                    type: info.name,
-                                    name:info.type,
-                                    mistarttime:movieinfo.start,
-                                    miendtime:movieinfo.end
-                                }
-                                }, dispatch);
-                                navigate("/reserve")
-                             }}>
-                             <div>
-                                 <a>
-                                     <p>
-                                         {movieinfo.start.substring(11, 16)}
-                                     </p>
-                                     <p>
-                                     {info.people-movieinfo.count}석
-                                     </p>
-                                 </a>
-                             </div>
-                         </td>
-                            )}
-                           
-                        </tr>
-                        </tbody>
-                    </table>
-                    </Time>
-                </CinemaTime>
-            </CinemaTypeWrapper>)
-}
-            </TheaterList>
-)}
-    </ReverseTheaterWrapper>
-    </>)
-}
-const ReverseTheaterWrapper = styled.div`
-width:100%;
-display:table;
-border-top:0;
-`
-const TheaterTab =styled.div`
-position:relative;
-right:40px;
-width:100%;
-border-bottom:30px !important;
-height:36px;
-padding-bottom:40px;
-ul{
-    list-style-type:none;
-    width:100%;
-    .hover {
-        background-color: grey;
-        border-right: none;
-    
-       }
-    
-   li{
-    cursor:pointer;
-    float:left;
-    width:137px;
-    height:34px;
-    border:1px solid #d8d9db;
-    a{
-        display:block;
-        width:100%:
-        height:34px;
-        margin:0;
-        padding:0;
-        border:0;
-        line-height:36px;
-        text-align:center;
-        text-decoration:none;
-    }
-}
-}
-`
+	return (
+		<>
+			<ReverseMovieWrapper>
+			{MOVIEINFO_LIST_MOVIE.map((movieInfo, index)=>
+			<TheaterList key={index}>
+				<TheaterArea>
+					<div>
+						{movieInfo.theaterName}점
+					</div>
+				</TheaterArea>
+				{movieInfo.cinemaDtoList.map((cinema)=>
+				<CinemaTypeWrapper key={cinema.cid}>
+					<CinemaType>
+						<p className="theater-type">
+							{cinema.cname}
+						</p>
+						<p className="chair">
+							{cinema.cseat} 좌석
+						</p>
+					</CinemaType>
+					<CinemaTime>
+						<Type>
+							{cinema.ctype}
+						</Type>
+							<Time>
+								<table>
+									<tbody>
+										<tr>
+											{cinema.movieInfoDtoList.map((info)=>
+											<td key={info.miid}>
+												<div>
+													<span>
+														<p className='movietime'>
+															{info.mistarttime.substring(11, 16)} ~ {info.miendtime.substring(11, 16)}
+														</p>
+														<p className='seatinfo'>
+															{cinema.cseat - info.cntSeatInfo} / {cinema.cseat}
+														</p>
+														<p className='reserinfo'>
+															예매하기
+														</p>
+													</span>
+												</div>
+											</td>)}		
+										</tr>
+									</tbody>
+								</table>
+							</Time>
+						</CinemaTime>
+					</CinemaTypeWrapper>)}
+				</TheaterList>)}
+			</ReverseMovieWrapper>
+		</>
+	);
+};
+
+const ReverseMovieWrapper = styled.div`
+	width: 100%;
+	display: table;
+	border-top: 0;
+`;
+
 const TheaterList = styled.div`
-position:relative;
-padding-bottom:50px;
-`
+	position: relative;
+	padding-bottom: 50px;
+`;
+
 const TheaterArea = styled.div`
-    padding:0 0 15px 0;
-    border-bottom: 1px solid #eaeaea;
-    font-weight:700;
-    font-size:1.2em;
-    a{
-        color:#444;
-        text-decoration:none;
+	padding: 0 0 15px 0;
+	border-bottom: 1px solid #eaeaea;
+	font-weight: 700;
+	font-size: 1.2em;
 
-    }
-`
-const CinemaTypeWrapper =styled.div`
-    overflow:hidden;
-    width:100%;
-    position:relative;
-    border-bottom:1px solid #eaeaea;
-    height:112px;
-    padding-bottom:30px;
-`
-const CinemaType =styled.div`
-    text-align:left;
-    width:170px;
-    display:table-cell;
-    vertical-align:middle;
-    position:absolute;
-    top:0;
-    left:0;
-    padding:0!important;
-    float:left;
+	div {
+		color: #444;
+		text-decoration: none;
+	}
+`;
 
-    .theater-type{
-        font-size:1.2em;
-        color:#444;
-        font-weight:400;
-        margin-bottom:10px;
-        line-height:1em;
-    }
-`
+const CinemaTypeWrapper = styled.div`
+	overflow: hidden;
+	width: 100%;
+	position: relative;
+	border-bottom: 1px solid #eaeaea;
+`;
+
+const CinemaType = styled.div`
+	text-align: left;
+	width: 170px;
+	display: table-cell;
+	vertical-align: middle;
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 0!important;
+	float: left;
+
+	.theater-type{
+		font-size: 1.2em;
+		color: #444;
+		font-weight: 400;
+		margin-bottom: 10px;
+		line-height: 1em;
+	}
+`;
+
 const CinemaTime = styled.div`
-    width:100%;
-    float:left;
-    margin:20px 0;
-    margin-left:190px;
+	width: 100%;
+	float: left;
+	margin: 12px 0;
+	margin-left: 190px;
+`;
 
-
-`
 const Type = styled.div`
-display:table-cell;
-vertical-align:middle;
-width:100px;
-height:70px;
-background-color:#f2f4f5;
-text-align:center;
-color:#444;
-font-weight:700;
-border-bottom:0;
-`
+	display: table-cell;
+	vertical-align: middle;
+	width: 100px;
+	box-sizing: border-box;
+	background-color: #f2f4f5;
+	text-align: center;
+	color: #444;
+	font-weight: 700;
+	border-bottom: 0;
+`;
+
 const Time = styled.div`
-display:table-cell;
-width:800px;
-table{
- 
-    margin-left:9px;
-    width:auto;
-    table-layout:auto;
-    td{
-        width:99px;
-       cursor:pointer;
-        text-align:center;
-        div{
-            width:100%;
-            height:70px;
-            display:table;
-            border:1px solid #ededed;
-        }
-    }
-}
-`
+	display: table-cell;
+	width: 800px;
+
+	table {
+    margin-left: 9px;
+    width: auto;
+    table-layout: auto;
+
+    td {
+			width: 99px;
+			cursor: pointer;
+			text-align: center;
+
+			:hover {
+				color: white;
+				font-weight: 500;
+				background: purple;
+				border: none;
+
+				.reserinfo {
+					display: block;
+				}
+				.seatinfo {
+					display: none;
+				}
+				div {
+					border: 1px solid purple;
+				}
+			}
+
+			div {
+				width: 100%;
+				height: 70px;
+				display: table;
+				border: 1px solid #ededed;
+		
+				p {
+					margin: 0;
+				}
+				.movietime {
+					font-size: 14px;
+					margin-bottom: 5px;
+					margin-top: 11px;
+				}
+				.reserinfo {
+					display: none;
+				}
+				.seatinfo {
+					display: block;
+				}
+			}
+		}
+	}
+`;
+
 export default MovieSchedule;

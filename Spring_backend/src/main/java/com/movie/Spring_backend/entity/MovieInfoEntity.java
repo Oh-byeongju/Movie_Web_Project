@@ -18,7 +18,6 @@ import org.hibernate.annotations.Formula;
 @NoArgsConstructor
 
 public class MovieInfoEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long miid;
@@ -40,9 +39,8 @@ public class MovieInfoEntity {
     @JoinColumn(name="cid")
     private CinemaEntity cinema;
 
-    // 이거 miid 빼려면 빼도 될듯
-    // count(*)가 더 빠른지 검사해보기
-    @Formula("(select count(mis.misid) from movie_infoseat mis where mis.miid = miid)")
+    // 현재 상영정보가 점유한 좌석 개수
+    @Formula("(SELECT COUNT(*) FROM movie_infoseat mis WHERE mis.miid = miid)")
     private Integer cntSeatInfo;
 
     // 일대다 관계 매핑
@@ -53,13 +51,13 @@ public class MovieInfoEntity {
     @Builder
     public MovieInfoEntity(Long miid, Date miday, String mistarttime, String miendtime, MovieEntity movie, CinemaEntity cinema,
                            Integer cntSeatInfo, List<ReservationEntity> reservations) {
-       this.miid= miid;
-       this.miday=miday;
-       this.mistarttime=mistarttime;
-       this.miendtime=miendtime;
-       this.movie=movie;
-       this.cinema=cinema;
-       this.cntSeatInfo=cntSeatInfo;
-       this.reservations=reservations;
+       this.miid = miid;
+       this.miday = miday;
+       this.mistarttime = mistarttime;
+       this.miendtime = miendtime;
+       this.movie = movie;
+       this.cinema = cinema;
+       this.cntSeatInfo = cntSeatInfo;
+       this.reservations = reservations;
     }
 }

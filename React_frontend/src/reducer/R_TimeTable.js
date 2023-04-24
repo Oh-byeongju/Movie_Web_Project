@@ -1,5 +1,5 @@
 /*
-	23-04-22 ~ 23 상영 시간표 페이지 리듀서 수정(오병주)
+	23-04-22 ~ 24 상영 시간표 페이지 리듀서 수정(오병주)
 */
 // 영화 목록 조회 리스트
 export const TIMETABLE_MOVIE_LIST_REQUEST = "TIMETABLE_MOVIE_LIST_REQUEST";
@@ -20,6 +20,15 @@ export const TIMETABLE_DAY_LIST_SUCCESS = "TIMETABLE_DAY_LIST_SUCCESS";
 export const TIMETABLE_DAY_LIST_FAILURE = "TIMETABLE_DAY_LIST_FAILURE";
 export const TIMETABLE_DAY_SELECT = "TIMETABLE_DAY_SELECT";
 
+// 상영정보 조회 리스트(영화선택)
+export const TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST = "TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST";
+export const TIMETABLE_MOVIEINFO_LIST_MOVIE_SUCCESS = "TIMETABLE_MOVIEINFO_LIST_MOVIE_SUCCESS";
+export const TIMETABLE_MOVIEINFO_LIST_MOVIE_FAILURE = "TIMETABLE_MOVIEINFO_LIST_MOVIE_FAILURE";
+
+// 상영정보 조회 리스트(극장선택)
+export const TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST = "TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST";
+export const TIMETABLE_MOVIEINFO_LIST_THEATER_SUCCESS = "TIMETABLE_MOVIEINFO_LIST_THEATER_SUCCESS";
+export const TIMETABLE_MOVIEINFO_LIST_THEATER_FAILURE = "TIMETABLE_MOVIEINFO_LIST_THEATER_FAILURE";
 
 
 
@@ -37,10 +46,6 @@ export const SELECT_SC_THEATER_REQUEST = "SELECT_SC_THEATER_REQUEST"
 export const SELECT_SC_THEATER_SUCCESS = "SELECT_SC_THEATER_SUCCESS"
 export const SELECT_SC_THEATER_FAILURE = "SELECT_SC_THEATER_FAILURE"
 
-
-export const DAY_REQUEST = "DAY_REQUEST"
-export const DAY_SUCCESS = "DAY_SUCCESS"
-export const DAY_FAILURE = "DAY_FAILURE"
 
 const initalState = {
 	MOVIE_LIST_loading: false,
@@ -62,6 +67,15 @@ const initalState = {
 	DAY_LIST: [],
 	DAY: '',
 
+	MOVIEINFO_LIST_MOVIE_loading: false,
+  MOVIEINFO_LIST_MOVIE_done: false,
+  MOVIEINFO_LIST_MOVIE_error: false,
+	MOVIEINFO_LIST_MOVIE: [],
+
+	MOVIEINFO_LIST_THEATER_loading: false,
+  MOVIEINFO_LIST_THEATER_done: false,
+  MOVIEINFO_LIST_THEATER_error: false,
+	MOVIEINFO_LIST_THEATER: [],
 
 	// 아래로 수정
     select_theater_loading:false,
@@ -178,7 +192,52 @@ const R_TimeTable = (state = initalState, action) => {
 				...state,
 				DAY: action.data
 			};
-
+		// 상영정보 조회(영화선택) 케이스들
+		case TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST:
+			return {
+				...state,
+				MOVIEINFO_LIST_MOVIE_loading: true,
+				MOVIEINFO_LIST_MOVIE_done: false,
+				MOVIEINFO_LIST_MOVIE_error: false
+			};
+		case TIMETABLE_MOVIEINFO_LIST_MOVIE_SUCCESS:
+			return {
+				...state,
+				MOVIEINFO_LIST_MOVIE_loading: false,
+				MOVIEINFO_LIST_MOVIE_done: true,
+				MOVIEINFO_LIST_MOVIE_error: false,
+				MOVIEINFO_LIST_MOVIE: action.data
+			};
+		case TIMETABLE_MOVIEINFO_LIST_MOVIE_FAILURE:
+			return {
+				...state,
+				MOVIEINFO_LIST_MOVIE_loading: false,
+				MOVIEINFO_LIST_MOVIE_done: false,
+				MOVIEINFO_LIST_MOVIE_error: true
+			};
+		// 상영정보 조회(극장선택) 케이스들
+		case TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST:
+			return {
+				...state,
+				MOVIEINFO_LIST_THEATER_loading: true,
+				MOVIEINFO_LIST_THEATER_done: false,
+				MOVIEINFO_LIST_THEATER_error: false
+			};
+		case TIMETABLE_MOVIEINFO_LIST_THEATER_SUCCESS:
+			return {
+				...state,
+				MOVIEINFO_LIST_THEATER_loading: false,
+				MOVIEINFO_LIST_THEATER_done: true,
+				MOVIEINFO_LIST_THEATER_error: false,
+				MOVIEINFO_LIST_THEATER: action.data
+			};
+		case TIMETABLE_MOVIEINFO_LIST_THEATER_FAILURE:
+			return {
+				...state,
+				MOVIEINFO_LIST_THEATER_loading: false,
+				MOVIEINFO_LIST_THEATER_done: false,
+				MOVIEINFO_LIST_THEATER_error: true
+			};
 
 
 
@@ -251,22 +310,6 @@ const R_TimeTable = (state = initalState, action) => {
 					MOVIE_error:action.error,
 					}
 
-				
-			case DAY_SUCCESS:
-				return{
-					...state,
-					day_loading:false,
-					day_done:true,
-					day_error:null,
-					date:action.data
-				}
-			case DAY_FAILURE:
-				return{
-					...state,
-					day_loading:false,
-					day_done:false,
-				day_error:action.error,
-				}
 		default:
 			return state;
 	}

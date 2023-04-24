@@ -39,23 +39,9 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "info.miday = :miday and info.movie.mid = :mid and info.cinema.cid in " +
             "(select cinema.cid from CinemaEntity as cinema where cinema.theater.tid = :tid)")
     public List<MovieInfoEntity> findBySchedule(@Param("miday") Date miday, @Param("mid") Long mid, @Param("tid") Long tid);
-    //영황 상영 시간표를 검색할 때 영화, 날짜, 지역으로 검색하는 메소드
-    @Query(value = "SELECT mi FROM MovieInfoEntity as mi " +
-            "where mid= :mid and mi.miday= :miday and mi.mistarttime >= function('addtime', now(), '0:30:00') and " +
-            "mi.cinema.cid in (select c.cid from CinemaEntity as c " +
-            "where tid in(select t.tid from TheaterEntity as t where t.tarea= :tarea)) ")
-    List<MovieInfoEntity> findSchedule(@Param("mid") Long mid, @Param("miday") Date miday, @Param("tarea") String tarea);
-    //영화, 날짜, 상영관으로 miid를 추출하는 메소드
-    @Query(value = "SELECT mi FROM MovieInfoEntity as mi " +
-            "where mid= :mid and mi.miday= :miday and " +
-            "cid = :cid and mi.mistarttime >= function('addtime', now(), '0:30:00')"
-    )
-    List<MovieInfoEntity> findmiid(@Param("mid") Long mid, @Param("miday") Date miday, @Param("cid") Long cid);
-    @Query(value = "SELECT mi FROM MovieInfoEntity as mi " +
-            "where mi.miday= :miday and mi.mistarttime >= function('addtime', now(), '0:30:00') and " +
-            "mi.cinema.cid in (select c.cid from CinemaEntity as c " +
-            "where tid = :tid) ")
-    List<MovieInfoEntity> findTimeTheater(@Param("miday") Date miday, @Param("tid") Long tid);
+
+
+
 
 
 
@@ -68,24 +54,22 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "AND (:tid is null or t.tid = :tid) AND (:tarea is null or t.tarea = :tarea)")
     List<MovieInfoEntity> findMovieInfoDay(@Param("movie") MovieEntity movie, @Param("tid") Long tid, @Param("tarea") String tarea);
 
-
-
-
-    // 상영시간표에서 상영정보를 가져오는 메소드 (whao조매있다 쓰기)
+    // 상영시간표에서 상영정보를 가져오는 메소드 (영화 선택)
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +
             "INNER JOIN TheaterEntity as t ON ci.theater = t.tid " +
-            "WHERE (:movie is null or mi.movie = :movie) " +
-            "AND (:startDay is null or mi.miday >= :startDay) AND (:endDay is null or mi.miday <= :endDay)" +
-            "AND (:tid is null or t.tid = :tid) AND (:tarea is null or t.tarea = :tarea) " +
-            "ORDER BY mi.miday DESC, mi.mistarttime DESC")
-    @EntityGraph(attributePaths = {"movie", "cinema.theater"})
-    List<MovieInfoEntity> findTimeTableMovieInfo(@Param("movie") MovieEntity movie,
-                                               @Param("startDay") Date startDay,
-                                               @Param("endDay") Date endDay,
-                                               @Param("tid") Long tid,
-                                               @Param("tarea") String tarea);
+            "WHERE mi.movie = :movie AND mi.miday = :miday AND mi.mistarttime >= function('addtime', now(), '0:30:00') AND t.tarea = :tarea " +
+            "ORDER BY mi.cinema ASC, mi.mistarttime ASC")
+    @EntityGraph(attributePaths = {"cinema.theater"})
+    List<MovieInfoEntity> findTimeTableMovieInfoByMovie(@Param("movie") MovieEntity movie,
+                                                        @Param("miday") Date miday, @Param("tarea") String tarea);
 
-
+    // 상영시간표에서 상영정보를 가져오는 메소드 (극장 선택)
+    @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +
+            "WHERE mi.miday = :miday AND mi.mistarttime >= function('addtime', now(), '0:30:00') AND ci.theater = :theater " +
+            "ORDER BY mi.movie ASC, mi.cinema ASC, mi.mistarttime ASC")
+    @EntityGraph(attributePaths = {"movie", "cinema"})
+    List<MovieInfoEntity> findTimeTableMovieInfoByTheater(@Param("miday") Date miday,
+                                                          @Param("theater") TheaterEntity theater);
 
     // 상영이 끝난 특정 영화 정보를 들고오는 메소드
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi " +

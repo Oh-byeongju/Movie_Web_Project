@@ -30,7 +30,7 @@ public class MovieEntity {
     private String mgenre;
 
     @Column(nullable = false)
-    private int mtime;
+    private Integer mtime;
 
     @Column(nullable = false, length = 30)
     private Date mdate;
@@ -77,7 +77,7 @@ public class MovieEntity {
     private List<MovieActorEntity> movieActors = new ArrayList<>();
 
     @Builder
-    public MovieEntity(Long mid, String mtitle, String mdir, String mgenre, int mtime, Date mdate, String mrating,
+    public MovieEntity(Long mid, String mtitle, String mdir, String mgenre, Integer mtime, Date mdate, String mrating,
                        String mstory, String mimagepath, Integer cntMovieLike, Float avgScore, Integer cntReserve, Integer cntMovieInfo,
                        List<MovieMemberEntity> movieMembers, List<MovieActorEntity> movieActors) {
         this.mid = mid;

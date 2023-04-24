@@ -5,12 +5,8 @@ import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_AREA_SE
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import TimeTableLoading from "./TimeTableLoading";
 import Time from "./Time";
-
-
-import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';
-
-// import MovieSchedule from "./MovieSchedule";
-// import TheaterSchedule from "./TheaterSchedule";
+import MovieSchedule from "./MovieSchedule";
+import TheaterSchedule from "./TheaterSchedule";
 
 const Scheduler = () =>{
 	const dispatch = useDispatch();
@@ -23,7 +19,7 @@ const Scheduler = () =>{
 			MOVIE: state.R_TimeTable.MOVIE,
 			AREA: state.R_TimeTable.AREA,
 			THEATER_LIST: state.R_TimeTable.THEATER_LIST,
-			THEATER: state.R_TimeTable.THEATER,
+			THEATER: state.R_TimeTable.THEATER
 		}),
 		shallowEqual
 	);
@@ -134,7 +130,7 @@ const Scheduler = () =>{
 		}));
 	}, [THEATER_LIST]);
   
-	return(
+	return (
 		<TimeTableWrapper>
 			<TimeTablePage>
 				<MovieAreaChoice>  
@@ -237,12 +233,7 @@ const Scheduler = () =>{
 							</City>)}
 						</ul>
 					</CityTab> : null}
-				{/* {moviebutton? <MovieSchedule/> : <TheaterSchedule/>} */}
-							{/* {theater.length === 0 ?<NoTheater>
-									<div>
-									<EventBusyOutlinedIcon  style={{width: "120px", height:"120px"}}/><br />
-									해당 지역에 상영 시간표가 없습니다.<br />
-다른지역을 선택해 주세요.</div> </NoTheater> : ""} */}
+					{moviebutton? <MovieSchedule/> : <TheaterSchedule/>}
 				</TimeTablePage>
 		</TimeTableWrapper>
 	);
@@ -536,6 +527,7 @@ const CityTab = styled.div`
 	ul {
     list-style-type: none;
     width: 100%;
+		margin-top: 24px;
 
     .hover {
 			background-color: grey;
@@ -562,18 +554,6 @@ const City = styled.li`
 		line-height: 36px;
 		text-align: center;
 		text-decoration: none;
-	}
-`;
-
-const NoTheater = styled.div`
-	width:100%;
-	height:200px;
-
-	div {
-		text-align: center;
-		width: 30%;
-		position: relative;
-		left: 390px;
 	}
 `;
 

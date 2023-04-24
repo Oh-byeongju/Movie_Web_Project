@@ -1,9 +1,15 @@
+/*
+  23-04-22 ~ 23-04-24 상영시간표에 사용되는 메소드 수정(오병주)
+*/
 package com.movie.Spring_backend.service;
 
+import com.movie.Spring_backend.dto.CinemaDto;
 import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.MovieInfoDto;
+import com.movie.Spring_backend.dto.TimeTableDto;
 import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
+import com.movie.Spring_backend.mapper.CinemaMapper;
 import com.movie.Spring_backend.mapper.MovieInfoMapper;
 import com.movie.Spring_backend.mapper.MovieMapper;
 import com.movie.Spring_backend.repository.MovieInfoRepository;
@@ -23,6 +29,7 @@ import java.util.stream.Collectors;
 public class MovieInfoService {
     private final MovieInfoRepository movieInfoRepository;
     private final MovieRepository movieRepository;
+    private final CinemaMapper cinemaMapper;
     private final MovieInfoMapper movieInfoMapper;
     private final MovieMapper movieMapper;
 
@@ -63,6 +70,74 @@ public class MovieInfoService {
         return result.stream().map(date -> MovieInfoDto.builder().miday(date).build()).collect(Collectors.toList());
     }
 
+    // 영화, 상영날짜, 지역을 이용하여 상영정보를 검색하는 메소드(상영시간표 페이지)
+    @Transactional
+    public List<TimeTableDto> getTimeTableByMovie(Map<String, String> requestMap) {
+        // requestMap 데이터 추출 및 형변환
+        String mid = requestMap.get("mid");
+        String miday = requestMap.get("miday");
+        String tarea = requestMap.get("tarea");
+
+        // 상영정보 조회에 필요한 정보 Entity로 변환
+        MovieEntity movie = MovieEntity.builder().mid(Long.valueOf(mid)).build();
+
+        // 상영정보 검색
+        List<MovieInfoEntity> MovieInfos = movieInfoRepository.findTimeTableMovieInfoByMovie(movie, Date.valueOf(miday), tarea);
+
+        // 상영정보 리턴을 위한 극장이름 및 상영관번호 추출
+        List<String> TheaterName = new ArrayList<>();
+        List<Long> CinemaID = new ArrayList<>();
+
+        for (MovieInfoEntity MI : MovieInfos) {
+            if (!TheaterName.contains(MI.getCinema().getTheater().getTname())) {
+                TheaterName.add(MI.getCinema().getTheater().getTname());
+            }
+
+            if (!CinemaID.contains(MI.getCinema().getCid())) {
+                CinemaID.add(MI.getCinema().getCid());
+            }
+        }
+
+        // 상영관별로 상영정보를 매핑
+        List<CinemaDto> cinemaDtoList = cinemaMapper.MappingCinemaUseTheater(CinemaID, MovieInfos);
+
+        // 극장별로 상영관 및 상영정보를 매핑
+        return movieInfoMapper.MappingTimeTableByTheater(TheaterName, cinemaDtoList);
+    }
+
+    // 극장, 상영날짜를 이용하여 상영정보를 검색하는 메소드(상영시간표 페이지)
+    @Transactional
+    public List<TimeTableDto> getTimeTableByTheater(Map<String, String> requestMap) {
+        // requestMap 데이터 추출 및 형변환
+        String tid = requestMap.get("tid");
+        String miday = requestMap.get("miday");
+
+        // 상영정보 조회에 필요한 정보 Entity로 변환
+        TheaterEntity theater = TheaterEntity.builder().tid(Long.valueOf(tid)).build();
+
+        // 상영정보 검색
+        List<MovieInfoEntity> MovieInfos = movieInfoRepository.findTimeTableMovieInfoByTheater(Date.valueOf(miday), theater);
+
+        // 상영정보 리턴을 위한 영화번호 및 상영관번호 추출
+        List<Long> MovieID = new ArrayList<>();
+        List<Long> CinemaID = new ArrayList<>();
+
+        for (MovieInfoEntity MI : MovieInfos) {
+            if (!MovieID.contains(MI.getMovie().getMid())) {
+                MovieID.add(MI.getMovie().getMid());
+            }
+
+            if (!CinemaID.contains(MI.getCinema().getCid())) {
+                CinemaID.add(MI.getCinema().getCid());
+            }
+        }
+
+        // 상영관별로 상영정보를 매핑
+        List<CinemaDto> cinemaDtoList = cinemaMapper.MappingCinemaUseMovie(CinemaID, MovieInfos);
+
+        // 영화별로 상영관 및 상영정보를 매핑
+        return movieInfoMapper.MappingTimeTableByMovie(MovieID, cinemaDtoList);
+    }
 
 
 

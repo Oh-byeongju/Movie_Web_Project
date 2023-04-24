@@ -18,7 +18,7 @@ public class MovieDto {
     private String mtitle;
     private String mdir;
     private String mgenre;
-    private int mtime;
+    private Integer mtime;
     private Date mdate;
     private String mrating;
     private String mstory;
@@ -42,7 +42,7 @@ public class MovieDto {
     private Integer cntMovieInfo; // 영화가 사용된 상영정보 개수
 
     @Builder
-    public MovieDto(Long mid, String mtitle, String mdir, String mgenre, int mtime, Date mdate, String mrating,
+    public MovieDto(Long mid, String mtitle, String mdir, String mgenre, Integer mtime, Date mdate, String mrating,
                     String mstory , String mimagepath, Integer mlikes, Float mscore, Boolean mlike, String able,
                     List<String> actors, Boolean reserve, Float reserveRate, Integer reserveCnt, Integer reserveCntAll,
                     List<String> mainactor, List<String> subactor, List<String> voiceactor, List<String> mainactorId,

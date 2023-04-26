@@ -59,9 +59,6 @@ public class MovieInfoMapper {
             for (int i = start; i < entityList.size(); i++) {
                 // 반복되고 있는 리스트들의 영화 ID가 같을경우
                 if (entityList.get(i).getMid().equals(mid)) {
-
-                    System.out.println(entityList.get(i).getMtitle());
-
                     // 상영관 배열에 값 추가
                     cinema.add(entityList.get(i));
                     // 반복문의 시작위치 조정을 위해 변수값 조정
@@ -74,10 +71,10 @@ public class MovieInfoMapper {
             }
             // 가공된 정보 삽입
             timeTables.add(TimeTableDto.builder()
-                            .mid(mid)
-//                    .mtitle(entityList.get(start-1).getMtitle())
-//                    .mtime(entityList.get(start-1).getMtime())
-//                    .mrating(entityList.get(start-1).getMrating())
+                    .mid(mid)
+                    .mtitle(entityList.get(start-1).getMtitle())
+                    .mtime(entityList.get(start-1).getMtime())
+                    .mrating(entityList.get(start-1).getMrating())
                     .cinemaDtoList(cinema).build());
         }
         return timeTables;

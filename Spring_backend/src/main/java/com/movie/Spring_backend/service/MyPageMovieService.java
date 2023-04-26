@@ -89,7 +89,7 @@ public class MyPageMovieService {
         // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
         float cnt = 0;
         for (MovieEntity m : MovieReserve) {
-            cnt += m.getCntReserve();
+            cnt += m.getCntreserve();
         }
         // 람다식에서 사용하기 위해 final 선언
         final float Cnt = cnt;
@@ -202,7 +202,7 @@ public class MyPageMovieService {
         // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
         float cnt = 0;
         for (MovieEntity m : MovieReserve) {
-            cnt += m.getCntReserve();
+            cnt += m.getCntreserve();
         }
         // 람다식에서 사용하기 위해 final 선언
         final float Cnt = cnt;

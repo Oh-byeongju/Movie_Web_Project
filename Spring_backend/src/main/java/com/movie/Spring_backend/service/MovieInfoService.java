@@ -121,14 +121,18 @@ public class MovieInfoService {
         // 상영정보 리턴을 위한 영화번호 및 상영관번호 추출
         List<Long> MovieID = new ArrayList<>();
         List<Long> CinemaID = new ArrayList<>();
+        long checkMovie = 0L;
+        long checkCinema = 0L;
 
         for (MovieInfoEntity MI : MovieInfos) {
             if (!MovieID.contains(MI.getMovie().getMid())) {
                 MovieID.add(MI.getMovie().getMid());
             }
 
-            if (!CinemaID.contains(MI.getCinema().getCid())) {
+            if (!(checkMovie == MI.getMovie().getMid()) || !(checkCinema == MI.getCinema().getCid())) {
                 CinemaID.add(MI.getCinema().getCid());
+                checkMovie = MI.getMovie().getMid();
+                checkCinema = MI.getCinema().getCid();
             }
         }
 

@@ -17,10 +17,8 @@ public class ActorEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aid;
 
-    @Column(nullable = false)
     private String aname;
 
-    @Column(nullable = false, length = 20)
     private String abirthplace;
 
     // 출연한 영화 횟수

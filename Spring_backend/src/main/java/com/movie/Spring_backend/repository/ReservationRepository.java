@@ -63,6 +63,7 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     // 특정 영화의 예매 기록을 전부 들고오는 메소드(예매시간 순으로 내림차순, 예매취소 제외)
     // 엔티티 그래프 쓴거 전부 INNER JOIN으로 바꾸기 (레프트 조인 쓴거도)
     // 엔티티 그래프로 불러오면서 Inner join으로 조건 줘야함
+    // inner join이 하나면 fetch join 써보고 두개면 그냥 inner join걸고 거기에 앤티티 그래프 써야할듯
     @Query(value = "SELECT rs FROM ReservationEntity as rs INNER JOIN MovieInfoEntity as mi " +
             "ON rs.movieInfo = mi.miid " +
             "WHERE rs.rstate = true AND mi.movie = :movie " +

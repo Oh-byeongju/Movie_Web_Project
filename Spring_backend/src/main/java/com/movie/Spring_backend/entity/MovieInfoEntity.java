@@ -22,13 +22,10 @@ public class MovieInfoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long miid;
 
-    @Column(nullable = false,length = 30)
     private Date miday;
 
-    @Column(nullable = false,length = 30)
     private String mistarttime;
 
-    @Column(nullable = false, length = 30)
     private String miendtime;
 
     @ManyToOne(fetch = FetchType.LAZY)

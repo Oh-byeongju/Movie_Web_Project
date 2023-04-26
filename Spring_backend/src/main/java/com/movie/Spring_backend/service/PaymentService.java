@@ -83,7 +83,6 @@ public class PaymentService {
                             .rprice(payamount)
                             .rpeople(rpeople)
                             .rticket(Integer.valueOf(ticket))
-                            .rtoken(token)
                             .rpayid(impUid)
                             .rpaytype("카드결제")
                             .rstate(true)
@@ -135,7 +134,7 @@ public class PaymentService {
     }
 
     // 예매 취소 요청시 실행되는 메소드
-    // 디비에 paytoken 필요없는데 나중에 빼기 디비에서
+    // 디비에 paytoken 필요없는데 나중에 빼기 디비에서 --> PAYTOKEN은 제거함
     @Transactional
     public void CancelPayment(Long rid, HttpServletRequest request) {
         // Access Token에 대한 유효성 검사

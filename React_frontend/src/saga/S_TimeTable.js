@@ -1,8 +1,6 @@
 /*
 	23-04-22 ~ 24 상영시간표 페이지 수정(오병주)
 */
-import { SELECT_SC_THEATER_FAILURE, SELECT_SC_THEATER_REQUEST, SELECT_SC_THEATER_SUCCESS } from "../reducer/R_TimeTable";
-// 위에꺼 나중에 날리기
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
 	TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_LIST_SUCCESS, TIMETABLE_MOVIE_LIST_FAILURE,
@@ -136,8 +134,6 @@ async function callMovieInfoByMovieSearch(data) {
 // 상영정보 조회(극장선택) 함수
 function* MovieInfoByTheaterSearch(action) {
   const result = yield call(callMovieInfoByTheaterSearch, action.data);
-
-	console.log(result);
   if (result.status === 200) {
     yield put({
       type: TIMETABLE_MOVIEINFO_LIST_THEATER_SUCCESS,
@@ -167,56 +163,6 @@ async function callMovieInfoByTheaterSearch(data) {
   });
 }
 
-
-
-
-
-
-
-
-
-// 아래로 수정
-async function selectTheaterApi(data) {
-    return await http
-      .get("/infomovie/normal/findtest", {params:{
-        mid:data.mid,
-        miday:data.miday,
-        area:data.area,
-        tid:data.tid,
-        message:data.message
-      }})
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
-  
-  function* selectTheater(action) {
-
-    const result = yield call(selectTheaterApi, action.data);
-
-  
-    if (result.status === 200) { 
-      yield put({
-        type: SELECT_SC_THEATER_SUCCESS,
-        data:result.data,
-      });
-    } else {
-      yield put({
-        type: SELECT_SC_THEATER_FAILURE,
-        data: result.status,
-      });   
-    }
-  }
-  function* selectTheaterSaga() {
-    yield takeLatest(SELECT_SC_THEATER_REQUEST, selectTheater);
-  }
-// 위로 수정
-
-
-
 function* MOVIE_LIST() {
   yield takeLatest(TIMETABLE_MOVIE_LIST_REQUEST, MovieSearch);
 }
@@ -242,9 +188,5 @@ export default function* S_TimeTable() {
 		fork(THEATER_LIST),
 		fork(DAY_LIST),
 		fork(MOVIEINFO_LIST_MOVIE),
-		fork(MOVIEINFO_LIST_THEATER),
-
-		// 아래로 수정
-		
-		fork(selectTheaterSaga)]);
+		fork(MOVIEINFO_LIST_THEATER)]);
 }

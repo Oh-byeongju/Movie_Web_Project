@@ -19,13 +19,10 @@ public class CinemaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
 
-    @Column(nullable = false)
     private String cname;
 
-    @Column(nullable = false)
     private String ctype;
 
-    @Column(nullable = false)
     private Integer cseat;
 
     @ManyToOne(fetch = FetchType.LAZY)

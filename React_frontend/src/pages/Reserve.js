@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import AllDayList from "../components/ticket/AllDayList";
-import AllMovieList from "../components/ticket/AllMovieList";
-import AllSchedule from "../components/ticket/AllSchedule";
-import AllTheaterList from "../components/ticket/AllTheaterList";
-import TicketMore from "../components/ticket/TicketMore";
-import TopButton from "../components/ticket/TopButton";
-import Seat from "../components/ticket/Seat";
+import AllDayList from "../components/Ticket/AllDayList";
+import AllMovieList from "../components/Ticket/AllMovieList";
+import AllSchedule from "../components/Ticket/AllSchedule";
+import AllTheaterList from "../components/Ticket/AllTheaterList";
+import TicketMore from "../components/Ticket/TicketMore";
+import TopButton from "../components/Ticket/TopButton";
+import Seat from "../components/Ticket/Seat";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RESET_RESERVE_PAGE } from "../reducer/ticket";
-import Complete from "../components/ticket/Complete";
+import Complete from "../components/Ticket/Complete";
 import { PAGE_RESET } from "../reducer/seat";
 import Loading from "../components/Common_components/Loading";
 const Reserve = () => {
@@ -77,9 +77,11 @@ const Container = styled.div`
 
 const BookinWrapper = styled.div`
   display: flex;
-  background: #fff;
-  padding-left: 290px;
-  padding-right: 290px;
+	padding: 0;
+  width: 1180px;
+  margin : 0 auto;
+  box-sizing: border-box; 
+	padding-left: 10px;
 `;
 
 export default Reserve;

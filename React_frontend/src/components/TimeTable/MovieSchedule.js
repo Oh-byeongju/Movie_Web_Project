@@ -36,31 +36,31 @@ const MovieSchedule = () =>{
 		<>
 			<ReverseMovieWrapper>
 			{MOVIEINFO_LIST_MOVIE.map((movieInfo, index)=>
-			<TheaterList key={index}>
-				<TheaterArea>
-					<div>
-						{movieInfo.theaterName}점
-					</div>
-				</TheaterArea>
-				{movieInfo.cinemaDtoList.map((cinema)=>
-				<CinemaTypeWrapper key={cinema.cid}>
-					<CinemaType>
-						<p className="theater-type">
-							{cinema.cname}
-						</p>
-						<p className="chair">
-							{cinema.cseat} 좌석
-						</p>
-					</CinemaType>
-					<CinemaTime>
-						<Type>
-							{cinema.ctype}
-						</Type>
+				<TheaterList key={index}>
+					<TheaterArea>
+						<div>
+							{movieInfo.theaterName}점
+						</div>
+					</TheaterArea>
+					{movieInfo.cinemaDtoList.map((cinema)=>
+					<CinemaTypeWrapper key={cinema.cid}>
+						<CinemaType>
+							<p className="theater-type">
+								{cinema.cname}
+							</p>
+							<p className="chair">
+								{cinema.cseat} 좌석
+							</p>
+						</CinemaType>
+						<CinemaTime>
+							<Type>
+								{cinema.ctype}
+							</Type>
 							<Time>
 								<table>
 									<tbody>
 										<tr>
-											{cinema.movieInfoDtoList.map((info)=>
+										{cinema.movieInfoDtoList.map((info)=>
 											<td key={info.miid}>
 												<div>
 													<span>
@@ -75,7 +75,8 @@ const MovieSchedule = () =>{
 														</p>
 													</span>
 												</div>
-											</td>)}		
+											</td>
+										)}		
 										</tr>
 									</tbody>
 								</table>

@@ -32,7 +32,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
     // 사용자가 검색창에 단어를 입력할경우 단어를 포함하고 있는 영화를 리턴
     @Query(value = "SELECT m FROM MovieEntity as m WHERE m.mtitle LIKE CONCAT('%',:title,'%') AND m.mid IN " +
             "(SELECT DISTINCT mi.movie FROM MovieInfoEntity mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00')) " +
-            "ORDER BY m.cntReserve DESC")
+            "ORDER BY m.cntreserve DESC")
     List<MovieEntity> findShowMoviesReserveDESC(@Param("title") String title);
 
     // 아직 상영일자가 잡히지 않은 영화 조회 메소드(포스터만 존재하고 상영일정이 나오지 않은것들 <-- 예매불가, 개봉일자로 오름차순)
@@ -64,7 +64,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
     @Query(value = "SELECT m FROM MovieEntity as m WHERE m.mtitle LIKE CONCAT('%',:title,'%') " +
             "AND m.mdate <= function('date_format', now(), '%Y-%m-%d') AND m.mid IN " +
             "(SELECT DISTINCT mi.movie FROM MovieInfoEntity mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00')) " +
-            "ORDER BY m.cntReserve DESC")
+            "ORDER BY m.cntreserve DESC")
     List<MovieEntity> findScreenMoviesReserveDESC(@Param("title") String title);
 
     // 현재 예매가 가능하면서 개봉한 영화 조회 메소드(영화시작 시간이 현재시간에 30분을 더한 값 보다 큰것들, 좋아요 순으로 내림차순)
@@ -83,7 +83,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
     @Query(value = "SELECT m FROM MovieEntity as m WHERE m.mtitle LIKE CONCAT('%',:title,'%') " +
             "AND m.mdate > function('date_format', now(), '%Y-%m-%d') AND m.mid IN " +
             "(SELECT DISTINCT mi.movie FROM MovieInfoEntity mi WHERE mi.miday >= function('date_format', now(), '%Y-%m-%d')) " +
-            "ORDER BY m.cntReserve DESC")
+            "ORDER BY m.cntreserve DESC")
     List<MovieEntity> findComingMoviesReserveDESC(@Param("title") String title);
 
     // 현재 예매가 가능하면서 아직 개봉하지 않은 영화 조회 메소드(좋아요 순으로 내림차순)

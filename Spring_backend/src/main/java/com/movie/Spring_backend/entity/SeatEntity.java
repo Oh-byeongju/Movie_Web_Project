@@ -15,7 +15,6 @@ public class SeatEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sid;
 
-    @Column(nullable = false, length = 20)
     private String sname;
 
     @ManyToOne(fetch = FetchType.LAZY)

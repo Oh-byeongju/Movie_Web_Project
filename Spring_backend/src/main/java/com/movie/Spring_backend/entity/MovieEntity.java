@@ -16,33 +16,29 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class MovieEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mid;
 
-    @Column(nullable = false,length = 30)
     private String mtitle;
 
-    @Column(nullable = false, length = 30)
     private String mdir;
 
-    @Column(nullable = false, length = 30)
     private String mgenre;
 
-    @Column(nullable = false)
     private Integer mtime;
 
-    @Column(nullable = false, length = 30)
     private Date mdate;
 
-    @Column(nullable = false, length = 30)
     private String mrating;
 
-    @Column(nullable = false, length = 30)
     private String mstory;
 
-    @Column(nullable = false, length = 50)
     private String mimagepath;
+
+    // 영화의 예매기록 갯수 (예매 취소 제외)
+    private Integer cntreserve;
 
     // 좋아요 개수 추출
     @Basic(fetch = FetchType.LAZY)
@@ -53,12 +49,6 @@ public class MovieEntity {
     @Basic(fetch = FetchType.LAZY)
     @Formula("(select avg(mm.umscore) from movie_member mm where mm.mid = mid)")
     private Float avgScore; // 평점의 평균
-
-    // 영화의 예매기록 갯수 (예매 취소 제외)
-    @Basic(fetch = FetchType.LAZY)
-    @Formula("(select count(*) from movie_reservation mr where mr.rstate = 1 and mr.miid in " +
-             "(select mi.miid from movie_information mi where mi.mid = mid))")
-    private Integer cntReserve;
 
     // 영화가 지정된 상영정보 개수
     @Formula("(SELECT COUNT(*) FROM movie_information mi WHERE mi.mid = mid)")
@@ -78,7 +68,7 @@ public class MovieEntity {
 
     @Builder
     public MovieEntity(Long mid, String mtitle, String mdir, String mgenre, Integer mtime, Date mdate, String mrating,
-                       String mstory, String mimagepath, Integer cntMovieLike, Float avgScore, Integer cntReserve, Integer cntMovieInfo,
+                       String mstory, String mimagepath, Integer cntMovieLike, Float avgScore, Integer cntreserve, Integer cntMovieInfo,
                        List<MovieMemberEntity> movieMembers, List<MovieActorEntity> movieActors) {
         this.mid = mid;
         this.mtitle = mtitle;
@@ -91,7 +81,7 @@ public class MovieEntity {
         this.mimagepath = mimagepath;
         this.cntMovieLike = cntMovieLike;
         this.avgScore = avgScore;
-        this.cntReserve = cntReserve;
+        this.cntreserve = cntreserve;
         this.cntMovieInfo = cntMovieInfo;
         this.movieMembers = movieMembers;
         this.movieActors = movieActors;

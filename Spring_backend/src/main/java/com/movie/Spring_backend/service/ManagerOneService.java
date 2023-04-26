@@ -87,7 +87,8 @@ public class ManagerOneService {
                 .mdate(requestDto.getMdate())
                 .mrating(requestDto.getMrating())
                 .mstory(requestDto.getMstory())
-                .mimagepath(imagePath).build());
+                .mimagepath(imagePath)
+                .cntreserve(0).build());
 
         // 추가한 영화의 ID값으로 Entity 생성
         List<MovieEntity> movies = movieRepository.findAll();

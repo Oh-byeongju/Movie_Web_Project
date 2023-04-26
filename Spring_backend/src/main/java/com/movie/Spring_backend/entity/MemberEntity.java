@@ -18,28 +18,20 @@ public class MemberEntity {
     @Column(nullable = false, length = 20)
     private String uid;
 
-    @Column(nullable = false)
     private String upw;
 
-    @Column(nullable = false, length = 20)
     private String uname;
 
-    @Column(nullable = false, length = 50)
     private String uemail;
 
-    @Column(nullable = false, length = 20)
     private String utel;
 
-    @Column(nullable = false, length = 50)
     private String uaddr;
 
-    @Column(nullable = false, length = 50)
     private String uaddrsecond;
 
-    @Column(nullable = false)
     private Date ubirth;
 
-    @Column(nullable = false)
     private Date ujoindate;
 
     @Enumerated(EnumType.STRING)

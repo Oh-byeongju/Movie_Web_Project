@@ -51,26 +51,25 @@ public class CinemaMapper {
         return cinemas;
     }
 
-
-
-    // dlrp이게 좀 이상함 고쳐야함함 매핑을 다시 생각해보기
-    //상영번호로 하는게 아니라...
-
-    //상영관에 있는 상영정보 매핑해주는 메소드(상영시간표에 사용)
+    // 상영관에 있는 상영정보 매핑해주는 메소드(상영시간표에 사용)
     public List<CinemaDto> MappingCinemaUseMovie(List<Long> cinemaIds, List<MovieInfoEntity> entityList) {
 
         List<CinemaDto> cinemas = new ArrayList<>();
-        // 반복문 시작하는 위치
+        // 반복문 시작하는 위치 및 영화 Id
         int start = 0;
+        long checkMovie = 0L;
 
         // 상영관 ID 개수만큼 반복
         for (Long cid : cinemaIds) {
             List<MovieInfoDto> movieInfos = new ArrayList<>();
 
+            // 반복문 시작하는 위치의 있는 요소가 가진 영화 ID
+            checkMovie = entityList.get(start).getMovie().getMid();
+
             // 매개변수로 전달받은 movieInfo 리스트 크기만큼 반복
             for (int i = start; i < entityList.size(); i++) {
-                // 반복되고 있는 리스트들의 상영관 ID가 같을경우
-                if (entityList.get(i).getCinema().getCid().equals(cid)) {
+                // 반복되고 있는 리스트들의 상영관 ID와 영화 ID가 같을경우
+                if (entityList.get(i).getCinema().getCid().equals(cid) && entityList.get(i).getMovie().getMid().equals(checkMovie)) {
                     // 상영정보 배열에 값 추가
                     movieInfos.add(MovieInfoDto.builder()
                             .miid(entityList.get(i).getMiid())

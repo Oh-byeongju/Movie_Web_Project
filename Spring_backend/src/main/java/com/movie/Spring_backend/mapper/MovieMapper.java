@@ -39,7 +39,7 @@ public class MovieMapper {
                         .mscore(m.getAvgScore())
                         .mlike(MovieLikes.contains(m.getMid()))
                         .reserve(true)
-                        .reserveRate(m.getCntReserve() / AllReserveCnt * 100).build());
+                        .reserveRate(m.getCntreserve() / AllReserveCnt * 100).build());
         }
 
         // 예매가 불가능한 영화 리스트에 삽입
@@ -58,7 +58,7 @@ public class MovieMapper {
                     .mscore(m.getAvgScore())
                     .mlike(MovieLikes.contains(m.getMid()))
                     .reserve(false)
-                    .reserveRate(m.getCntReserve() / AllReserveCnt * 100).build());
+                    .reserveRate(m.getCntreserve() / AllReserveCnt * 100).build());
         }
         return result;
     }
@@ -84,7 +84,7 @@ public class MovieMapper {
                     .mscore(m.getAvgScore())
                     .mlike(MovieLikes.contains(m.getMid()))
                     .reserve(true)
-                    .reserveRate(m.getCntReserve() / AllReserveCnt * 100).build());
+                    .reserveRate(m.getCntreserve() / AllReserveCnt * 100).build());
         }
         return result;
     }
@@ -114,7 +114,7 @@ public class MovieMapper {
                     .mlike(like)
                     .actors(Actors)
                     .reserve(true)
-                    .reserveRate(entity.getCntReserve() / AllReserveCnt * 100).build();
+                    .reserveRate(entity.getCntreserve() / AllReserveCnt * 100).build();
         }
         else {
             return MovieDto.builder()
@@ -158,7 +158,7 @@ public class MovieMapper {
                     .mscore(entity.getAvgScore())
                     .mlike(true)
                     .reserve(true)
-                    .reserveRate(entity.getCntReserve() / AllReserveCnt * 100).build();
+                    .reserveRate(entity.getCntreserve() / AllReserveCnt * 100).build();
         }
         else {
             return MovieDto.builder()

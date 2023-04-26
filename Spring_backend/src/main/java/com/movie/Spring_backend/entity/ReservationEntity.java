@@ -16,30 +16,20 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rid;
 
-    @Column(nullable = false)
     private String rdate;
 
-    @Column(nullable = false)
     private Integer rprice;
 
-    @Column(nullable= false)
     private String rpeople;
 
     // 티켓 매수
-    @Column(nullable = false)
     private Integer rticket;
 
-    @Column(nullable = false)
     private String rpayid;
 
-    @Column(nullable = false)
-    private String rtoken;
-
-    @Column(nullable = false)
     private String rpaytype;
 
     // 예매 취소 확인용(true -> 예매한 것, false -> 취소한 것)
-    @Column(nullable = false)
     private Boolean rstate;
 
     private String rcanceldate;
@@ -60,7 +50,7 @@ public class ReservationEntity {
 
     @Builder
     public ReservationEntity(Long rid, String rdate, Integer rprice, String rpeople, Integer rticket, String rpayid,
-                             String rtoken, String rpaytype, Boolean rstate, String rcanceldate, MovieInfoEntity movieInfo,
+                             String rpaytype, Boolean rstate, String rcanceldate, MovieInfoEntity movieInfo,
                              MemberEntity member, List<MovieInfoSeatEntity> infoSeats) {
         this.rid = rid;
         this.rdate = rdate;
@@ -68,7 +58,6 @@ public class ReservationEntity {
         this.rpeople = rpeople;
         this.rticket = rticket;
         this.rpayid = rpayid;
-        this.rtoken = rtoken;
         this.rpaytype = rpaytype;
         this.rstate = rstate;
         this.rcanceldate = rcanceldate;

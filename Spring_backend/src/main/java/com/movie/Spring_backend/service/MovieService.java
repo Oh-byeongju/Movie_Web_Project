@@ -41,7 +41,7 @@ public class MovieService {
         // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
         float cnt = 0;
         for (MovieEntity m : Movies) {
-            cnt += m.getCntReserve();
+            cnt += m.getCntreserve();
         }
 
         // requestMap 안에 정보를 추출
@@ -96,7 +96,7 @@ public class MovieService {
         // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
         float cnt = 0;
         for (MovieEntity m : Movies) {
-            cnt += m.getCntReserve();
+            cnt += m.getCntreserve();
         }
 
         // requestMap 안에 정보를 추출
@@ -144,7 +144,7 @@ public class MovieService {
         // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
         float cnt = 0;
         for (MovieEntity m : Movies) {
-            cnt += m.getCntReserve();
+            cnt += m.getCntreserve();
         }
 
         // requestMap 안에 정보를 추출
@@ -207,7 +207,7 @@ public class MovieService {
         // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
         float cnt = 0;
         for (MovieEntity m : Movies) {
-            cnt += m.getCntReserve();
+            cnt += m.getCntreserve();
         }
 
         // 예매가 가능한 영화들의 기본키 추출

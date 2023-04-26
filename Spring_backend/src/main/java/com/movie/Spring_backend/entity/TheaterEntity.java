@@ -15,13 +15,10 @@ public class TheaterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tid;
 
-    @Column(nullable = false, length = 30)
     private String tname;
 
-    @Column(nullable = false, length = 50)
     private String taddr;
 
-    @Column(nullable = false, length = 30)
     private String tarea;
 
     // 현재 영화관에 있는 상영관 개수

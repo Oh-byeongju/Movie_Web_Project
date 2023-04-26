@@ -97,13 +97,9 @@ const TopButtons = () => {
           </ul>
           <div className="RightIcon">
           <Button style={{ marginRight: "5px" }}>
-            <CalendarOutlined
-              style={{
-                fontSize: "25px",
-                marginRight: "15px",
-                color: "white",
-              }}
-            />
+						<Link to="/TimeTable">						
+            	<CalendarOutlined style={{fontSize: "25px", marginRight: "15px", color: "white"}}/>
+						</Link>
           </Button>
           <Button>
             <Link to="/Mypage/Reserve">

@@ -65,8 +65,9 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
 
     // 상영시간표에서 상영정보를 가져오는 메소드 (극장 선택)
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +
+            "INNER JOIN MovieEntity as m ON mi.movie = m.mid " +
             "WHERE mi.miday = :miday AND mi.mistarttime >= function('addtime', now(), '0:30:00') AND ci.theater = :theater " +
-            "ORDER BY mi.movie ASC, mi.cinema ASC, mi.mistarttime ASC")
+            "ORDER BY m.cntreserve DESC, mi.cinema ASC, mi.mistarttime ASC")
     @EntityGraph(attributePaths = {"movie", "cinema"})
     List<MovieInfoEntity> findTimeTableMovieInfoByTheater(@Param("miday") Date miday,
                                                           @Param("theater") TheaterEntity theater);

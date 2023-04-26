@@ -1,19 +1,17 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {} from "../../reducer/ticket";
-const TopButton = ({}) => {
-  const dispatch = useDispatch();
+
+const TopButton = () => {
   const navigate= useNavigate();
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
+
   const onReset = useCallback(() => {
     if (!window.confirm("예매 페이지를 초기화합니다.")) {
       return;
     }
-
     window.location.replace("/reserve");
   }, []);
+
   return (
     <Nav>
       <Right>
@@ -38,14 +36,15 @@ const TopButton = ({}) => {
 
 const Nav = styled.div`
   position: relative;
-  width: 996px;
+  width: 1180px;
   height: 74px;
   display: block;
+	margin-bottom: 10px;
 `;
 
 const Right = styled.span`
   position: relative;
-  left: 1000px;
+  left: 90%;
   top: 30px;
 `;
 

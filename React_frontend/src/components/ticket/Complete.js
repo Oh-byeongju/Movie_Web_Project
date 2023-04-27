@@ -4,7 +4,7 @@ import { useLocation, Link ,useNavigate} from "react-router-dom";
 
 const Complete = ()=>{
   const { movieData, theaterData, DayData, scheduleData,payment } = useSelector(
-    (state) => state.ticket
+    (state) => state.R_ticket
   );
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
   const { choiceSeat, choiceUser, price, 어른, 아이, 학생 } = useSelector(

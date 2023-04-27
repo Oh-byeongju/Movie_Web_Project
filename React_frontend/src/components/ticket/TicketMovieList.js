@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import styled from "styled-components";
 import {
+	TICKET_ALLMOVIE_LIST_REQUEST,
+
+
   SELECT_THEATER_REQUEST,
   SELECT_DAY_REQUEST,
   T_ALLMOVIE_REQUEST,
@@ -11,11 +14,32 @@ import {
   RESET_DAY_DATA,
   RESET_THEATER_DATA,
   RESET_MOVIE_DATA,
-} from "../../reducer/ticket";
+} from "../../reducer/R_ticket";
 import { useLocation } from "react-router-dom";
 
-const AllMovieList = ({ setDayMore, page }) => {
+const TicketMovieList = ({ setDayMore }) => {
   const dispatch = useDispatch();
+
+	// 필요한 리덕스 상태들
+	const { ALLMOVIE_LIST, MOVIE, LOGIN_data } = useSelector(
+		state => ({
+			ALLMOVIE_LIST: state.R_ticket.ALLMOVIE_LIST,
+			MOVIE: state.R_ticket.MOVIE,
+			LOGIN_data: state.R_user_login.LOGIN_data
+		}),
+		shallowEqual
+	);
+
+	// 모든 영화 조회 useEffect
+  useEffect(() => {
+		dispatch({
+			type: TICKET_ALLMOVIE_LIST_REQUEST
+		});
+  }, [dispatch]);
+
+
+
+
   const {
     t_allMovie,
     choiceTheater,
@@ -23,7 +47,7 @@ const AllMovieList = ({ setDayMore, page }) => {
     movieData,
     theaterData,
     DayData,
-  } = useSelector((state) => state.ticket);
+  } = useSelector((state) => state.R_ticket);
   const location = useLocation();
   
   useEffect(() => {
@@ -45,8 +69,6 @@ const AllMovieList = ({ setDayMore, page }) => {
       });
     };
   }, []);
-  // 로그인 리덕스 상태
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
 
   //able된 영화를 선택하는 함수
   const onClickMovie = (data) => {
@@ -145,23 +167,25 @@ const AllMovieList = ({ setDayMore, page }) => {
   return (
     <MovieWrapper>
       <MovieTitle>
-        <p>영화</p>
+        <p>
+					영화
+				</p>
       </MovieTitle>
       <MovieSelector>
-        <MovieSelectorText>전체</MovieSelectorText>
+        <MovieSelectorText>
+					전체
+				</MovieSelectorText>
       </MovieSelector>
       <MovieListWrapper>
         {t_allMovie.map((movie) => {
-          if (movie.able === "able") {
+          if (true) {
             //극장이나 날짜가 선택이 되어서 able 이 활성화됨
             //극장이 선택된 상태에서 영화 선택
             //날짜가 선택된 상태에서 영화선택
             //극장,날짜가 두개 다 선택된 상태에서 영화 검색
             return (
               <MovieList
-                onClick={() => {
-                  onClickMovie(movie);
-                }}
+                onClick={() => {onClickMovie(movie);}}
                 key={movie.id}
                 movieData={movieData}
                 movie={movie.id}
@@ -173,7 +197,7 @@ const AllMovieList = ({ setDayMore, page }) => {
                 </MovieListMovieName>
               </MovieList>
             );
-          } else if (movie.able === "disable") {
+          } else if (false) {
             //해당하는 데이터가 아닐때
             //다시 극장, 날짜 select
             return (
@@ -232,7 +256,7 @@ const AllMovieList = ({ setDayMore, page }) => {
 const MovieWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 284px;
+  width: 29%;
   border-right: 1px solid #d8d9db;
   background-color: #f2f0e5;
 `;
@@ -247,6 +271,7 @@ const MovieTitle = styled.div`
   padding: 20px 0 20px 20px;
   font-weight: bold;
   top: -15px;
+
   p {
     display: block;
     position: relative;
@@ -297,8 +322,7 @@ const MovieList = styled.div`
     cursor: default;
     opacity: 0.5;
   }
-  background-color: ${(props) =>
-    props.movieData.id === props.movie ? "gray" : "#f2f0e5"};
+  background-color: ${(props) => props.movieData.id === props.movie ? "gray" : "#f2f0e5"};
 `;
 
 const MovieListMovieName = styled.div`
@@ -315,4 +339,4 @@ const Img = styled.img`
   padding-right: 10px;
 `;
 
-export default AllMovieList;
+export default TicketMovieList;

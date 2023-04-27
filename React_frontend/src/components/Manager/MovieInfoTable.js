@@ -42,8 +42,13 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
 		var start = null;
 		var end = null;
 		if (days) {
-			start = date.DateToString(days[0].$d);
-			end = date.DateToString(days[1].$d)
+			if (days[0]) {
+				start = date.DateToString(days[0].$d);
+			}
+
+			if (days[1]) {
+				end = date.DateToString(days[1].$d);
+			}
 		}
 
 		// 사용자가 고른 지역이 있을경우 처리
@@ -447,8 +452,13 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
       var start = null;
       var end = null;
       if (days) {
-        start = date.DateToString(days[0].$d);
-        end = date.DateToString(days[1].$d)
+        if (days[0]) {
+					start = date.DateToString(days[0].$d);
+				}
+	
+				if (days[1]) {
+					end = date.DateToString(days[1].$d);
+				}
       }
 
       var area = null;
@@ -493,8 +503,13 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
       var start2 = null;
       var end2 = null;
       if (days) {
-        start2 = date.DateToString(days[0].$d);
-        end2 = date.DateToString(days[1].$d)
+				if (days[0]) {
+					start2 = date.DateToString(days[0].$d);
+				}
+	
+				if (days[1]) {
+					end2 = date.DateToString(days[1].$d)
+				}
       }
 
       var area2 = null;

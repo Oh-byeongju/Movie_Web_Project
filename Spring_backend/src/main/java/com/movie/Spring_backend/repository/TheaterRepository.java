@@ -1,4 +1,5 @@
 package com.movie.Spring_backend.repository;
+import com.movie.Spring_backend.entity.MovieEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,9 +13,17 @@ import java.util.List;
 @Repository
 public interface TheaterRepository extends JpaRepository<TheaterEntity, Long> {
     // 현재 예매가 가능한 영화관 조회 메소드(영화시작 시간이 현재시간에 30분을 더한 값 보다 큰것들)
-    @Query(value = "SELECT DISTINCT t FROM TheaterEntity as t INNER JOIN CinemaEntity as c ON t.tid = c.theater WHERE c.cid IN " +
-            "(SELECT DISTINCT mi.cinema FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00'))")
+    @Query(value = "SELECT t FROM TheaterEntity as t WHERE t.tid IN " +
+            "(SELECT DISTINCT c.theater FROM CinemaEntity as c WHERE c.cid IN " +
+            "(SELECT DISTINCT mi.cinema FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00')))")
     List<TheaterEntity> findPossibleTheater();
+
+    // 예매 페이지에서 조건에 맞는 영화관 조회 메소드
+    @Query(value = "SELECT t FROM TheaterEntity as t WHERE t.tid IN " +
+            "(SELECT DISTINCT ci.theater FROM CinemaEntity as ci WHERE ci.cid IN " +
+            "(SELECT DISTINCT mi.cinema FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') " +
+            "AND (:miday is null or mi.miday = :miday) AND (:movie is null or mi.movie = :movie)))")
+    List<TheaterEntity> findTheaterOnTicket(@Param("miday") Date miday, @Param("movie") MovieEntity movie);
 
     // 영화관 수정하는 메소드
     @Modifying

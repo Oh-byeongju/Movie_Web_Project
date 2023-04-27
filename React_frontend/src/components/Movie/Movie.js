@@ -14,7 +14,7 @@ import {
   SELECT_DAY_REQUEST,
   SELECT_THEATER_REQUEST,
   MOVIE_DATA,
-} from "../../reducer/ticket";
+} from "../../reducer/R_ticket";
 
 const Movie = ({ movie }) => {
   // 반올림 없이 소수점 생성해주는 함수

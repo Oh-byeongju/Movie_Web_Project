@@ -1,4 +1,26 @@
-export const initalState = {
+/*
+	23-04-27 ~ 28 예매 페이지 리듀서 수정(오병주)
+*/
+// 전체 영화 목록 조회 리스트(예매가 가능한것들만)
+export const TICKET_ALLMOVIE_LIST_REQUEST = "TICKET_ALLMOVIE_LIST_REQUEST";
+export const TICKET_ALLMOVIE_LIST_SUCCESS = "TICKET_ALLMOVIE_LIST_SUCCESS";
+export const TICKET_ALLMOVIE_LIST_FAILURE = "TICKET_ALLMOVIE_LIST_FAILURE";
+export const TICKET_MOVIE_SELECT = "TICKET_MOVIE_SELECT";
+
+
+
+
+
+
+const initalState = {
+	ALLMOVIE_LIST_loading: false,
+  ALLMOVIE_LIST_done: false,
+  ALLMOVIE_LIST_error: false,
+	ALLMOVIE_LIST: [],
+	MOVIE: '',
+
+	// 아래로 수정	
+	// 아래로 수정
   t_allMovie_loading: false,
   t_allMovie_done: false,
   t_allMovie_error: null,
@@ -181,9 +203,45 @@ export const RESET_SCHEDULE_DATA = "RESET_SCHEDULE_DATA";
 export const RESET_RESERVE_PAGE = "RESET_RESERVE_PAGE";
 export const RESERVE_LOGIN_PAGE = "RESERVE_LOGIN_PAGE";
 
-const ticket = (state = initalState, action) => {
+const R_ticket = (state = initalState, action) => {
   switch (action.type) {
-    //전체 영화 검색 movie reduecer 의 값 변경이 안되서 새로 만듬
+		// 전체 영화 조회 케이스들(예매가 가능한것들만)
+    case TICKET_ALLMOVIE_LIST_REQUEST:
+      return {
+        ...state,
+        ALLMOVIE_LIST_loading: true,
+        ALLMOVIE_LIST_done: false,
+        ALLMOVIE_LIST_error: false
+      };
+    case TICKET_ALLMOVIE_LIST_SUCCESS:
+      return {
+        ...state,
+        ALLMOVIE_LIST_loading: false,
+        ALLMOVIE_LIST_done: true,
+        ALLMOVIE_LIST_error: false,
+        ALLMOVIE_LIST: action.data,
+        MOVIE: action.data[0]
+      };
+    case TICKET_ALLMOVIE_LIST_FAILURE:
+      return {
+        ...state,
+        ALLMOVIE_LIST_loading: false,
+        ALLMOVIE_LIST_done: false,
+        ALLMOVIE_LIST_error: true
+      };
+    case TICKET_MOVIE_SELECT:
+      return {
+        ...state,
+        MOVIE: action.data
+      };
+		
+
+
+
+
+
+
+
 
     case T_ALLMOVIE_REQUEST:
       return {
@@ -664,4 +722,4 @@ const ticket = (state = initalState, action) => {
       return state;
   }
 };
-export default ticket;
+export default R_ticket;

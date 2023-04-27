@@ -135,6 +135,40 @@ public class MovieMapper {
         }
     }
 
+    // 예매페이지에서 필요한 영화 내용들을 mapping 해주는 메소드
+    public List<MovieDto> toDtoTicketMovie(List<MovieEntity> conditionMovie, List<MovieEntity> allMovie) {
+
+        // 사용될 변수들 초기화
+        List<MovieDto> Movies = new ArrayList<>();
+        List<Long> checkNum = new ArrayList<>();
+
+        // 조건에 맞는 영화 반복
+        for (MovieEntity m : conditionMovie) {
+            // 영화를 리턴할 MovieDto 배열에 넣고 영화 ID는 조건문을 위해 다른 배열에 삽입
+            Movies.add(MovieDto.builder()
+                    .mid(m.getMid())
+                    .mtitle(m.getMtitle())
+                    .mrating(m.getMrating())
+                    .mimagepath(m.getMimagepath())
+                    .reserve(true).build());
+            checkNum.add(m.getMid());
+        }
+
+        // 예매가 가능한 영화 반복
+        for (MovieEntity m : allMovie) {
+            // MovieDto 배열에 들어가지 않은 영화 삽입
+            if (!checkNum.contains(m.getMid())) {
+                Movies.add(MovieDto.builder()
+                        .mid(m.getMid())
+                        .mtitle(m.getMtitle())
+                        .mrating(m.getMrating())
+                        .mimagepath(m.getMimagepath())
+                        .reserve(false).build());
+            }
+        }
+        return Movies;
+    }
+
     // 마이페이지에 필요한 영화 내용들을 mapping 해주는 메소드
     public MovieDto toDtoMyPage(MovieEntity entity, boolean Screen, float AllReserveCnt) {
 
@@ -179,9 +213,6 @@ public class MovieMapper {
 
     // 관리자 페이지(영화관리)에 필요한 영화 내용들을 mapping 해주는 메소드
     public List<MovieDto> toDtoManagerMovie(List<MovieEntity> movieList, List<MovieActorEntity> movieActorList) {
-
-        System.out.println(movieActorList.size());
-        System.out.println("여기봐");
 
         // 사용될 변수들 초기화
         List<MovieDto> Movies = new ArrayList<>();
@@ -281,6 +312,8 @@ public class MovieMapper {
         }
     }
 
+
+    // 아래로 날리면 될듯
     public MovieDto toAble(MovieEntity entity) {
 
         // 예외처리
@@ -299,29 +332,7 @@ public class MovieMapper {
                 .mstory(entity.getMstory())
                 .mimagepath(entity.getMimagepath())
                 .mlikes(entity.getCntMovieLike())
-                .mscore(entity.getAvgScore())
-                .able("able").build();
-    }
-    public List<MovieDto> toAble(List<MovieEntity> entity) {
-
-        // 예외처리
-        if (entity == null) {
-            return null;
-        }
-
-        return entity.stream().map((entitys)->MovieDto.builder()
-                .mid(entitys.getMid())
-                .mdir(entitys.getMdir())
-                .mtitle(entitys.getMtitle())
-                .mgenre(entitys.getMgenre())
-                .mtime(entitys.getMtime())
-                .mdate(entitys.getMdate())
-                .mrating(entitys.getMrating())
-                .mstory(entitys.getMstory())
-                .mimagepath(entitys.getMimagepath())
-                .mlikes(entitys.getCntMovieLike())
-                .mscore(entitys.getAvgScore())
-                .able("able").build()).collect(Collectors.toList());
+                .mscore(entity.getAvgScore()).build();
     }
 
     public MovieDto toDisable(MovieEntity entity) {
@@ -343,7 +354,6 @@ public class MovieMapper {
                 .mimagepath(entity.getMimagepath())
                 .mlikes(entity.getCntMovieLike())
                 .mscore(entity.getAvgScore())
-                .able("disable")
                 .build();
     }
 }

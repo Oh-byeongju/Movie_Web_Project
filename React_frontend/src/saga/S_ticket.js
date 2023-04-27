@@ -1,4 +1,13 @@
+/*
+	23-04-27 ~ 28 예매 페이지 수정(오병주)
+*/
 import { all, takeLatest, fork, put, call } from "redux-saga/effects";
+import { 
+	TICKET_ALLMOVIE_LIST_REQUEST, TICKET_ALLMOVIE_LIST_SUCCESS, TICKET_ALLMOVIE_LIST_FAILURE 
+} from "../reducer/R_ticket";
+
+
+
 import {
   T_ALLMOVIE_FAILURE,
   T_ALLMOVIE_SUCCESS,
@@ -42,13 +51,55 @@ import {
   PAYMENT_REQUEST,
   PAYMENT_SUCCESS,
   PAYMENT_FAILURE,
-} from "../reducer/ticket";
+} from "../reducer/R_ticket";
 import { http } from "../lib/http";
 
-//모두 수정
+// 예매 가능한 전체 영화 조회 함수
+function* AllMovieSearch() {
+  const result = yield call(callAllMovieSearch);
+  if (result.status === 200) {
+    yield put({
+      type: TICKET_ALLMOVIE_LIST_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TICKET_ALLMOVIE_LIST_FAILURE
+    });
+  }
+}
 
+// 예매 가능한 전체 영화 조회 백엔드 호출
+async function callAllMovieSearch() {
+  return await http.get("/movie/normal/ReservePossibleDESC")
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 절취선
 //전체 영화 검색
-
 //영화 불러오기 좋아요순
 async function loadAllMovie(data) {
   return await http
@@ -560,6 +611,26 @@ function* payment(action) {
     });
   }
 }
+// 절취선
+
+
+function* ALL_MOVIE_LIST() {
+  yield takeLatest(TICKET_ALLMOVIE_LIST_REQUEST, AllMovieSearch);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 절취선
 function* TallMovieSaga() {
   yield takeLatest(T_ALLMOVIE_REQUEST, allMovieLoad);
 }
@@ -606,9 +677,21 @@ function* selectScheduleSaga() {
 function* paymentSaga() {
   yield takeLatest(PAYMENT_REQUEST, payment);
 }
+// 절취선
 
-export default function* ticketSaga() {
+
+
+
+
+
+
+export default function* S_ticket() {
   yield all([
+		fork(ALL_MOVIE_LIST),
+
+
+
+		// 절취선
     fork(TallMovieSaga),
     fork(allTheaterSaga),
     fork(selectTheaterSaga),

@@ -32,7 +32,7 @@ const Seat = () => {
     어른
   } = useSelector((state) => state.seat);
   const { movieData, theaterData, DayData, scheduleData } = useSelector(
-    (state) => state.ticket
+    (state) => state.R_ticket
   );
   //결국 데이터를 받아오려면 한번에 다 받아와야함{location: A1,A id:2}2,A3,A4,A5,A6~B1,B2,B3,B4,B5,B6 이런식
   // 열의 차이를 줘야함 그리고 점유 확인, id값을 받아오고

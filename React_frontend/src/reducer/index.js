@@ -1,11 +1,11 @@
 import { combineReducers } from "redux";
-import ticket from "./ticket";
+import R_ticket from "./R_ticket";
 import R_user_join from "./R_user_join";
 import R_user_login from "./R_user_login";
 import R_user_movie from "./R_user_movie";
 import movie from "./movie";
 import seat from "./seat";
-import R_TimeTable from "./R_TimeTable";
+import R_timeTable from "./R_timeTable";
 import R_mypage_movie from "./R_mypage_movie";
 import Board from "./Board";
 import R_mypage_reserve from "./R_mypage_reserve";
@@ -18,12 +18,12 @@ import R_manager_movie from "./R_manager_movie";
 // 리듀서 파일 생성 시 여기 추가하면 됨.
 const rootReducer = combineReducers({
   R_user_join,
-  ticket,
+  R_ticket,
   R_user_login,
   R_user_movie,
   movie,
   seat,
-  R_TimeTable,
+  R_timeTable,
   R_mypage_movie,
   Board,
   R_mypage_reserve,

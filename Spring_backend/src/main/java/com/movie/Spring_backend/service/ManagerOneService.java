@@ -19,23 +19,14 @@ import com.movie.Spring_backend.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -551,8 +542,11 @@ public class ManagerOneService {
             End = Date.valueOf(endDay);
         }
 
-        // 프론트단에서 보낸 조건을 이용해서 상영정보 검색
-        Page<MovieInfoEntity> MovieInfos = movieInfoRepository.findManagerMovieInfo(movie, Start, End, theater, tarea, PageInfo);
+        // 조건에 맞는 상영관 정보 조회
+        List<CinemaEntity> cinemaEntities = cinemaRepository.findByTidAndTarea(theater, tarea);
+
+        // 프론트단에서 보낸 조건과 상영관 정보를 이용해서 상영정보 검색
+        Page<MovieInfoEntity> MovieInfos = movieInfoRepository.findManagerMovieInfo(movie, Start, End, cinemaEntities, PageInfo);
 
         // 프론트단에서 요청한 조건으로 얻을 수 있는 최대 페이지 number(PageSize에 의해 계산됨)
         int max_index = MovieInfos.getTotalPages() - 1;
@@ -563,7 +557,7 @@ public class ManagerOneService {
         // 최대 페이지 number가 프론트단에서 요청한 페이지 number보다 작을경우 최대 페이지 number로 재검색
         if (max_index < page) {
             PageInfo = PageRequest.of(max_index, size);
-            MovieInfos = movieInfoRepository.findManagerMovieInfo(movie, Start, End, theater, tarea, PageInfo);
+            MovieInfos = movieInfoRepository.findManagerMovieInfo(movie, Start, End, cinemaEntities, PageInfo);
         }
 
         return MovieInfos.map(movieInfo -> MovieInfoDto.builder()

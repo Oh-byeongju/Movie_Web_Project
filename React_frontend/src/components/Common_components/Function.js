@@ -11,7 +11,7 @@ import {
   SCHEDULE_DATA,
   PAYMENT_REQUEST,
   RESERVE_LOGIN_PAGE,
-} from "../../reducer/ticket";
+} from "../../reducer/R_ticket";
 import { useDispatch ,useSelector} from "react-redux";
 
   export function f1(data, dispatch) {

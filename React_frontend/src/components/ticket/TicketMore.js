@@ -9,13 +9,13 @@ import {
   CHECK_SEAT_REQUEST,
 } from "../../reducer/seat";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { PAYMENT_REQUEST, RESERVE_LOGIN_PAGE } from "../../reducer/ticket";
+import { PAYMENT_REQUEST, RESERVE_LOGIN_PAGE } from "../../reducer/R_ticket";
 import * as Payment from "../Common_components/Function";
 import PaymentModal from "./PaymentModal";
 
 const TicketMore = ({ setPage, page }) => {
   const { movieData, theaterData, DayData, scheduleData } = useSelector(
-    (state) => state.ticket
+    (state) => state.R_ticket
   );
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
   const { choiceSeat, choiceUser, price, 어른, 아이, 학생 } = useSelector(

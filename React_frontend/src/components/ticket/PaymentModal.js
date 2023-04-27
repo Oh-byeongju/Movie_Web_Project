@@ -7,7 +7,7 @@ import seat, { CHECK_SEAT_REQUEST } from "../../reducer/seat";
 const PaymentModal = ({ closeModal }) => {
   const dispatch = useDispatch();
   const { movieData, theaterData, DayData, scheduleData, payment_done } = useSelector(
-    (state) => state.ticket
+    (state) => state.R_ticket
   );
   const {  아이, 학생, 어른, choiceSeat, price ,check_seat_error} = useSelector(
     (state) => state.seat

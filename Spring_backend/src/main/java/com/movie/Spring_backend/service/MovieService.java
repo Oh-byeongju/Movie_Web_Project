@@ -3,6 +3,7 @@
   23-02-14 영화 세부내용 메소드 수정(오병주)
   23-02-20 영화 관람평 메소드 구현(오병주)
   23-03-06 전체영화 조회 및 사용자 영화 검색 메소드 수정(오병주)
+  23-04-27 ~ 28 예매 페이지 영화조회 수정(오병주)
 */
 package com.movie.Spring_backend.service;
 import com.movie.Spring_backend.dto.CommentInfoDto;
@@ -15,10 +16,12 @@ import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
 import com.movie.Spring_backend.mapper.MovieMapper;
 
+import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 
@@ -333,4 +336,33 @@ public class MovieService {
                 .mtitle(movie.getMtitle())
                 .mimagepath(movie.getMimagepath()).build()).collect(Collectors.toList());
     }
+
+    // 예매 페이지에서 조건에 맞는 영화를 가져오는 메소드
+    public List<MovieDto> getTicketMovieReserveDESC(Map<String, String> requestMap) {
+        // requestMap 안에 정보를 추출
+        String miday = requestMap.get("miday");
+        String tid = requestMap.get("tid");
+
+        // 프론트단에서 날짜를 선택 안했을경우 파라미터를 null로 주기위한 과정
+        Date day = null;
+        if (miday != null) {
+            day = java.sql.Date.valueOf(miday);
+        }
+
+        // 프론트단에서 극장을 선택 안했을경우 파라미터를 null로 주기위한 과정
+        TheaterEntity theater = null;
+        if (tid != null) {
+            theater = TheaterEntity.builder().tid(Long.valueOf(tid)).build();
+        }
+
+        // 영화 테이블에서 조건에 맞는 영화들 조회(예매율 순으로 내림차순)
+        List<MovieEntity> conditionMovie = movieRepository.findMovieOnTicket(day, theater);
+
+        // 영화 테이블에서 현재 예매가 가능한 영화들 조회(예매율 순으로 내림차순)
+        List<MovieEntity> allMovie = movieRepository.findShowMoviesReserveDESC("");
+
+        // 검색한 영화목록 리턴
+        return movieMapper.toDtoTicketMovie(conditionMovie, allMovie);
+    }
 }
+

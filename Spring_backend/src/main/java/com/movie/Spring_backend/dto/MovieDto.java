@@ -26,7 +26,6 @@ public class MovieDto {
     private Integer mlikes; // 좋아요 개수
     private Float mscore; // 평점 평균
     private Boolean mlike; // 사용자 개인별 좋아요 여부
-    private String able;
     private List<String> actors; // 영화에 출연하는 배우들
     private Boolean reserve;    // 예매 가능 여부
     private Float reserveRate;  // 예매율
@@ -43,7 +42,7 @@ public class MovieDto {
 
     @Builder
     public MovieDto(Long mid, String mtitle, String mdir, String mgenre, Integer mtime, Date mdate, String mrating,
-                    String mstory , String mimagepath, Integer mlikes, Float mscore, Boolean mlike, String able,
+                    String mstory , String mimagepath, Integer mlikes, Float mscore, Boolean mlike,
                     List<String> actors, Boolean reserve, Float reserveRate, Integer reserveCnt, Integer reserveCntAll,
                     List<String> mainactor, List<String> subactor, List<String> voiceactor, List<String> mainactorId,
                     List<String> subactorId, List<String> voiceactorId, Integer cntMovieInfo) {
@@ -59,7 +58,6 @@ public class MovieDto {
         this.mlikes = mlikes;
         this.mscore = mscore;
         this.mlike = mlike;
-        this.able = able;
         this.actors = actors;
         this.reserve = reserve;
         this.reserveRate = reserveRate;

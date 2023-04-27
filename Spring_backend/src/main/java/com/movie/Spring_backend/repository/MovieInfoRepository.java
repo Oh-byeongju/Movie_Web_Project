@@ -16,10 +16,11 @@ import java.util.List;
 @Repository
 public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long> {
 
+
+
+
     @Query("SELECT mi From MovieInfoEntity as mi where mi.mistarttime >= function('addtime', now(), '0:30:00')  Group by mi.miday Order by mi.miday ASC")
     List<MovieInfoEntity> findAll();
-
-
     @Query("SELECT mi From MovieInfoEntity as mi, MovieEntity as m Where mi.movie.mid= (:mid) " +
             "and mi.mistarttime >= function('addtime', now(), '0:30:00') Group by mi.miday Order by mi.miday ASC ")
     public List<MovieInfoEntity> findByMovieToDay(@Param("mid") Long mid);
@@ -46,6 +47,7 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
 
 
 
+    // 이거 조인 빼버려도 될듯 --> 부질의로
     // 특정 조건을 가진 상영정보들을 구하는 메소드(날짜 구할때 사용)
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +
             "INNER JOIN TheaterEntity as t ON ci.theater = t.tid " +
@@ -77,6 +79,7 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "WHERE mi.movie = :movie AND mi.miendtime <= now()")
     List<MovieInfoEntity> findInfoBeforeToday(@Param("movie") MovieEntity movie);
 
+    // 이거 조인 빼버려도 될듯 --> 부질의로
     // 특정 사용자가 예매후 관람이 끝난 영화 정보를 들고오는 메소드
     // 이런거도 inner join 써야하는거 같음
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi LEFT OUTER JOIN mi.reservations rs " +
@@ -90,18 +93,15 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
     List<MovieInfoEntity> findByMovie(MovieEntity movie);
 
     // 관리자 페이지에서 상영정보를 가져오는 메소드
-    @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +
-            "INNER JOIN TheaterEntity as t ON ci.theater = t.tid " +
-            "WHERE (:movie is null or mi.movie = :movie) " +
-            "AND (:startDay is null or mi.miday >= :startDay) AND (:endDay is null or mi.miday <= :endDay)" +
-            "AND (:tid is null or t.tid = :tid) AND (:tarea is null or t.tarea = :tarea) " +
+    @Query(value = "SELECT mi FROM MovieInfoEntity as mi WHERE (:movie is null or mi.movie = :movie) " +
+            "AND (:startDay is null or mi.miday >= :startDay) AND (:endDay is null or mi.miday <= :endDay) " +
+            "AND mi.cinema IN :cinemaEntities " +
             "ORDER BY mi.miday DESC, mi.mistarttime DESC")
     @EntityGraph(attributePaths = {"movie", "cinema.theater"})
     Page<MovieInfoEntity> findManagerMovieInfo(@Param("movie") MovieEntity movie,
                                                @Param("startDay") Date startDay,
                                                @Param("endDay") Date endDay,
-                                               @Param("tid") Long tid,
-                                               @Param("tarea") String tarea,
+                                               @Param("cinemaEntities") List<CinemaEntity> cinemaEntities,
                                                Pageable pageable);
 
     // 상영정보간 시간을 확인하는 메소드(앞뒤 30분 여유 확인)

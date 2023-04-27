@@ -3,7 +3,7 @@ import styled from "styled-components";
 import moment from "moment";
 import "moment/locale/ko";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_SELECT } from "../../reducer/R_TimeTable";
+import { TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_SELECT } from "../../reducer/R_timeTable";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 // 날짜 css에 쓰일 변수들
@@ -31,11 +31,11 @@ const Time = ({ moviebutton, theaterbutton })=> {
 	// 필요한 리덕스 상태들
 	const { MOVIE, AREA, THEATER, DAY_LIST, DAY } = useSelector(
 		state => ({
-			MOVIE: state.R_TimeTable.MOVIE,
-			AREA: state.R_TimeTable.AREA,
-			THEATER: state.R_TimeTable.THEATER,
-			DAY_LIST: state.R_TimeTable.DAY_LIST,
-			DAY: state.R_TimeTable.DAY
+			MOVIE: state.R_timeTable.MOVIE,
+			AREA: state.R_timeTable.AREA,
+			THEATER: state.R_timeTable.THEATER,
+			DAY_LIST: state.R_timeTable.DAY_LIST,
+			DAY: state.R_timeTable.DAY
 		}),
 		shallowEqual
 	);

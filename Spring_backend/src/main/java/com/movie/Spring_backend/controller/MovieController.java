@@ -58,4 +58,10 @@ public class MovieController {
     public ResponseEntity<List<MovieDto>> PossibleDESCMovie() {
         return ResponseEntity.ok().body(movieService.getPossibleDESCMovie());
     }
+
+    // 예매 페이지에서 조건에 맞는 영화를 가져오는 메소드(예매율 순으로 내림차순)
+    @GetMapping("/normal/TicketReserveDESC")
+    public ResponseEntity<List<MovieDto>> TicketReserveDESC(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(movieService.getTicketMovieReserveDESC(requestMap));
+    }
 }

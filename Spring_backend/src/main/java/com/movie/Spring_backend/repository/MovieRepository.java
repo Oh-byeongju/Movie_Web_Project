@@ -6,6 +6,8 @@
 package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.MemberEntity;
+import com.movie.Spring_backend.entity.MovieInfoEntity;
+import com.movie.Spring_backend.entity.TheaterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
@@ -94,6 +96,14 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
             "ORDER BY m.cntMovieLike DESC")
     List<MovieEntity> findComingMoviesLikeDESC(@Param("title") String title);
 
+    // 예매 페이지에서 조건에 맞는 영화 조회 메소드
+    @Query(value = "SELECT m FROM MovieEntity as m WHERE m.mid IN " +
+            "(SELECT DISTINCT mi.movie FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') " +
+            "AND (:miday is null or mi.miday = :miday) AND mi.cinema IN " +
+            "(SELECT ci.cid FROM CinemaEntity as ci WHERE (:theater is null or ci.theater = :theater))) " +
+            "ORDER BY m.cntreserve DESC")
+    List<MovieEntity> findMovieOnTicket(@Param("miday") Date miday, @Param("theater") TheaterEntity theater);
+
     // 사용자가 관람평을 작성할 수 있는 영화 검색 (관람객 평점 기준으로 내림차순)
     @Query("SELECT m FROM MovieEntity as m " +
             "WHERE m.mid IN (:mid)" +
@@ -101,7 +111,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
     List<MovieEntity> findMoviesScoreDESC(@Param("mid") Set<Long> mid);
 
     // 사용자가 좋아요 누른 영화검색 (좋아요 누른 시점 기준으로 내림차순)
-    @Query("SELECT m FROM MovieEntity as m LEFT OUTER JOIN MovieMemberEntity as mm ON m.mid = mm.movie " +
+    @Query("SELECT m FROM MovieEntity as m INNER JOIN MovieMemberEntity as mm ON m.mid = mm.movie " +
             "WHERE mm.member = :member AND mm.umlike = 1 " +
             "ORDER BY mm.umliketime DESC")
     List<MovieEntity> findMemberLikeMovieDESC(@Param("member") MemberEntity member);
@@ -117,6 +127,9 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
     void MovieUpdate(@Param("mtitle") String mtitle, @Param("mdir") String mdir, @Param("mgenre") String mgenre,
                      @Param("mtime") int mtime, @Param("mdate") Date mdate, @Param("mrating") String mrating,
                      @Param("mstory") String mstory, @Param("mimagepath") String mimagepath,  @Param("mid") Long mid);
+
+
+
 
 
 

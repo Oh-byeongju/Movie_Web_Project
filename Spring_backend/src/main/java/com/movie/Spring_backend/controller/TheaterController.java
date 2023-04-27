@@ -1,5 +1,6 @@
 package com.movie.Spring_backend.controller;
 
+import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.TheaterDto;
 import com.movie.Spring_backend.service.TheaterService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,14 @@ public class TheaterController {
     public ResponseEntity<List<TheaterDto>> PossibleTheater() {
         return ResponseEntity.ok().body(theaterService.getPossibleTheater());
     }
+
+    // 예매 페이지에서 조건에 맞는 영화관 불러오는 메소드
+    @GetMapping("/normal/Ticket")
+    public ResponseEntity<List<TheaterDto>> TicketTheater(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(theaterService.getTicketTheater(requestMap));
+    }
+
+
 
 
 

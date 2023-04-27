@@ -8,7 +8,7 @@ import {
 	TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_LIST_SUCCESS, TIMETABLE_DAY_LIST_FAILURE,
 	TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST, TIMETABLE_MOVIEINFO_LIST_MOVIE_SUCCESS, TIMETABLE_MOVIEINFO_LIST_MOVIE_FAILURE,
 	TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST, TIMETABLE_MOVIEINFO_LIST_THEATER_SUCCESS, TIMETABLE_MOVIEINFO_LIST_THEATER_FAILURE
-} from "../reducer/R_TimeTable";
+} from "../reducer/R_timeTable";
 import { http } from "../lib/http";
 
 // 예매 가능한 영화 조회 함수
@@ -183,7 +183,7 @@ function* MOVIEINFO_LIST_THEATER() {
   yield takeLatest(TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST, MovieInfoByTheaterSearch);
 }
 
-export default function* S_TimeTable() {
+export default function* S_timeTable() {
 	yield all([fork(MOVIE_LIST),
 		fork(THEATER_LIST),
 		fork(DAY_LIST),

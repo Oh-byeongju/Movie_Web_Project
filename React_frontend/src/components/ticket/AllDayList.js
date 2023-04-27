@@ -10,7 +10,7 @@ import {
   RESET_MOVIE_DATA,
   RESET_THEATER_DATA,
   RESET_DAY_DATA,
-} from "../../reducer/ticket";
+} from "../../reducer/R_ticket";
 import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -27,7 +27,7 @@ const AllDayList = () => {
     movieData,
     theaterData,
     DayData,
-  } = useSelector((state) => state.ticket);
+  } = useSelector((state) => state.R_ticket);
   useEffect(() => {
     dispatch({
       type: ALLDAY_REQUEST,
@@ -58,7 +58,30 @@ const AllDayList = () => {
   //수정필요합니다.
   return (
     <Calender>
-      <Header>날짜</Header>
+      <Header>
+				날짜
+			</Header>
+			<YearMonthList>
+                <span className={cn("Year")}>
+                  <Year
+                    id="Year"
+                    format={"YYYY"}
+                    ticking={false}
+                    timezone={"KR/Pacific"}
+                  >
+                    {year}
+                  </Year>
+                </span>
+                <span className={cn("Month")}>
+                  <Month
+                    format={"MM"}
+                    ticking={false}
+                    timezone={"KR/Pacific"}
+                  >
+                    04
+                  </Month>
+                </span>
+              </YearMonthList>
 
       <DayList ticking={false}>
         {moment.map((moment, index) => {
@@ -247,7 +270,7 @@ const AllDayList = () => {
     </Calender>
   );
 };
-//{calendar.miday.substring(8, 10)}
+
 const Calender = styled.div`
   display: flex;
   flex-direction: column;

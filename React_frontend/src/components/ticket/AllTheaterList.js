@@ -14,7 +14,7 @@ import {
   RESET_DAY_DATA,
   RESET_THEATER_DATA,
   SELECT_THEATER_REQUEST,
-} from "../../reducer/ticket";
+} from "../../reducer/R_ticket";
 //극장을 표시해주는 컴포넌트 2023-02-13 수정완(강경목)
 
 const AllTheaterList = ({ tabstate, setTabState }) => {
@@ -53,7 +53,7 @@ const AllTheaterList = ({ tabstate, setTabState }) => {
     theaterData,
     movieData,
     DayData,
-  } = useSelector((state) => state.ticket);
+  } = useSelector((state) => state.R_ticket);
   //able된것들 클릭하기
   const location = useLocation();
   useEffect(() => {

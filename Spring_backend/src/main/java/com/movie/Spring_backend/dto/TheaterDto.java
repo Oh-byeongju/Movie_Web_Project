@@ -13,19 +13,21 @@ public class TheaterDto {
     private String tname;
     private String taddr;
     private String tarea;
-    private String able;
+    private Boolean reserve; // 예매 가능 여부
+
+    // 얘는 내가한게 아닌데 날릴지 말지 프론트 해보고 결정
     private int count;
 
     private Integer cntCinema;
 
     @Builder
-    public TheaterDto(Long tid, String tname, String taddr, String tarea, String able, int count, Integer cntCinema) {
-        this.tid=tid;
-        this.tname=tname;
-        this.taddr=taddr;
-        this.tarea=tarea;
-        this.able=able;
-        this.count=count;
+    public TheaterDto(Long tid, String tname, String taddr, String tarea, Boolean reserve, int count, Integer cntCinema) {
+        this.tid = tid;
+        this.tname = tname;
+        this.taddr = taddr;
+        this.tarea = tarea;
+        this.reserve = reserve;
+        this.count = count;
         this.cntCinema = cntCinema;
     }
 }

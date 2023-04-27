@@ -1,5 +1,7 @@
 package com.movie.Spring_backend.service;
 
+import com.movie.Spring_backend.dto.MovieDto;
+import com.movie.Spring_backend.entity.MovieEntity;
 import com.movie.Spring_backend.util.DeduplicationUtil;
 import com.movie.Spring_backend.dto.TheaterDto;
 import com.movie.Spring_backend.entity.TheaterEntity;
@@ -11,6 +13,7 @@ import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,6 +33,34 @@ public class TheaterService {
                 .tid(theater.getTid())
                 .tname(theater.getTname())
                 .tarea(theater.getTarea()).build()).collect(Collectors.toList());
+    }
+
+    // 예매 페이지에서 조건에 맞는 영화관을 가져오는 메소드
+    public List<TheaterDto> getTicketTheater(Map<String, String> requestMap) {
+        // requestMap 안에 정보를 추출
+        String miday = requestMap.get("miday");
+        String mid = requestMap.get("mid");
+
+        // 프론트단에서 날짜를 선택 안했을경우 파라미터를 null로 주기위한 과정
+        Date day = null;
+        if (miday != null) {
+            day = java.sql.Date.valueOf(miday);
+        }
+
+        // 프론트단에서 영화를 선택 안했을경우 파라미터를 null로 주기위한 과정
+        MovieEntity movie = null;
+        if (mid != null) {
+            movie = MovieEntity.builder().mid(Long.valueOf(mid)).build();
+        }
+
+        // 영화관 테이블에서 조건에 맞는 영화관들 조회
+        List<TheaterEntity> conditionTheater = theaterRepository.findTheaterOnTicket(day, movie);
+
+        // 영화관 테이블에서 현재 예매가 가능한 영화관들 조회
+        List<TheaterEntity> allTheater = theaterRepository.findPossibleTheater();
+
+        // 검색한 영화관 목록 리턴
+        return theaterMapper.toDtoTicketTheater(conditionTheater, allTheater);
     }
 
 

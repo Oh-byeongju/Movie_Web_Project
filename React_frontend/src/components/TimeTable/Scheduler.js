@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { PicCenterOutlined, BankOutlined } from "@ant-design/icons";
-import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_AREA_SELECT, TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_TimeTable";
+import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_AREA_SELECT, TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_timeTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import TimeTableLoading from "./TimeTableLoading";
 import Time from "./Time";
@@ -14,12 +14,12 @@ const Scheduler = () =>{
 	// 필요한 리덕스 상태들
 	const { MOVIE_LIST_loading, MOVIE_LIST, MOVIE, AREA, THEATER_LIST, THEATER } = useSelector(
 		state => ({
-			MOVIE_LIST_loading: state.R_TimeTable.MOVIE_LIST_loading,
-			MOVIE_LIST: state.R_TimeTable.MOVIE_LIST,
-			MOVIE: state.R_TimeTable.MOVIE,
-			AREA: state.R_TimeTable.AREA,
-			THEATER_LIST: state.R_TimeTable.THEATER_LIST,
-			THEATER: state.R_TimeTable.THEATER
+			MOVIE_LIST_loading: state.R_timeTable.MOVIE_LIST_loading,
+			MOVIE_LIST: state.R_timeTable.MOVIE_LIST,
+			MOVIE: state.R_timeTable.MOVIE,
+			AREA: state.R_timeTable.AREA,
+			THEATER_LIST: state.R_timeTable.THEATER_LIST,
+			THEATER: state.R_timeTable.THEATER
 		}),
 		shallowEqual
 	);

@@ -5,13 +5,13 @@ import {
   SELECT_SCHEDULE_REQUEST,
   SCHEDULE_DATA,
   RESET_SCHEDULE_DATA,
-} from "../../reducer/ticket";
+} from "../../reducer/R_ticket";
 
 //영화 스케쥴을 표시해주는 컴포넌트 2023-02-13 수정완(강경목)
 const AllSchedule = () => {
   const dispatch = useDispatch();
   const { movieData, theaterData, DayData, selectSchedule, scheduleData } =
-    useSelector((state) => state.ticket);
+    useSelector((state) => state.R_ticket);
 
   useEffect(() => {
     if (movieData !== "" && theaterData !== "" && DayData !== "") {

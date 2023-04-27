@@ -158,9 +158,15 @@ const MovieInfo = () => {
 		// 사용자가 고른 날짜가 있을경우 처리
 		var start = null;
 		var end = null;
+		
 		if (days) {
-			start = date.DateToString(days[0].$d);
-			end = date.DateToString(days[1].$d)
+			if (days[0]) {
+				start = date.DateToString(days[0].$d);
+			}
+
+			if (days[1]) {
+				end = date.DateToString(days[1].$d);
+			}
 		}
 
 		// 사용자가 고른 지역이 있을경우 처리

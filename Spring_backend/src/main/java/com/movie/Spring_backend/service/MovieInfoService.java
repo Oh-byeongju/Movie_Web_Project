@@ -3,10 +3,7 @@
 */
 package com.movie.Spring_backend.service;
 
-import com.movie.Spring_backend.dto.CinemaDto;
-import com.movie.Spring_backend.dto.MovieDto;
-import com.movie.Spring_backend.dto.MovieInfoDto;
-import com.movie.Spring_backend.dto.TimeTableDto;
+import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
 import com.movie.Spring_backend.mapper.CinemaMapper;
@@ -33,10 +30,37 @@ public class MovieInfoService {
     private final MovieInfoMapper movieInfoMapper;
     private final MovieMapper movieMapper;
 
-    // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드
+    // 예매 페이지에서 조건에 맞는 상영정보의 상영날짜를 가져오는 메소드
+    public List<MovieInfoDayDto> getTicketMovieInfoDay(Map<String, String> requestMap) {
+        // requestMap 안에 정보를 추출
+        String tid = requestMap.get("tid");
+        String mid = requestMap.get("mid");
+
+        // 프론트단에서 영화를 선택 안했을경우 파라미터를 null로 주기위한 과정
+        MovieEntity movie = null;
+        if (mid != null) {
+            movie = MovieEntity.builder().mid(Long.valueOf(mid)).build();
+        }
+
+        // 프론트단에서 극장을 선택 안했을경우 파라미터를 null로 주기위한 과정
+        Long theater = null;
+        if (tid != null) {
+            theater = Long.valueOf(tid);
+        }
+
+        // 상영정보 테이블에서 조건에 맞는 상영정보의 날짜들 조회
+        List<MovieInfoEntity> conditionDay = movieInfoRepository.findMovieInfoDay(movie, theater, null);
+
+        // 상영정보 테이블에서 현재 예매가 가능한 상영정보의 날짜들 조회
+        List<MovieInfoEntity> allDay = movieInfoRepository.findPossibleMovieInfoDay();
+
+        // 검색한 상영정보 날짜 리턴
+        return movieInfoMapper.toDtoTicketInfoDay(conditionDay, allDay);
+    }
+
+    // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드(상영 시간표 페이지)
     @Transactional
     public List<MovieInfoDto> getMovieInfoDay(Map<String, String> requestMap) {
-
         // requestMap 데이터 추출 및 형변환
         String mid = requestMap.get("mid");
         String tarea = requestMap.get("tarea");
@@ -57,17 +81,9 @@ public class MovieInfoService {
         // 프론트단에서 보낸 조건을 이용해서 상영정보 검색
         List<MovieInfoEntity> MovieInfos = movieInfoRepository.findMovieInfoDay(movie, theater, tarea);
 
-        // 검색된 상영정보에 날짜 중복제거
-        HashSet<Date> Dates = new HashSet<>();
-        for (MovieInfoEntity MI : MovieInfos) {
-            Dates.add(MI.getMiday());
-        }
-
-        // List로 변환 후 정렬(오름차순)
-        List<Date> result = new ArrayList<>(Dates);
-        Collections.sort(result);
-
-        return result.stream().map(date -> MovieInfoDto.builder().miday(date).build()).collect(Collectors.toList());
+        // 정보를 리턴
+        return MovieInfos.stream().map(movieInfo -> MovieInfoDto.builder()
+                .miday(movieInfo.getMiday()).build()).collect(Collectors.toList());
     }
 
     // 영화, 상영날짜, 지역을 이용하여 상영정보를 검색하는 메소드(상영시간표 페이지)

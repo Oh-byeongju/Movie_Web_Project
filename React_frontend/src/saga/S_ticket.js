@@ -3,7 +3,9 @@
 */
 import { all, takeLatest, fork, put, call } from "redux-saga/effects";
 import { 
-	TICKET_ALLMOVIE_LIST_REQUEST, TICKET_ALLMOVIE_LIST_SUCCESS, TICKET_ALLMOVIE_LIST_FAILURE 
+	TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_LIST_SUCCESS, TICKET_MOVIE_LIST_FAILURE,
+	TICKET_THEATER_LIST_REQUEST, TICKET_THEATER_LIST_SUCCESS, TICKET_THEATER_LIST_FAILURE,
+	TICKET_DAY_LIST_REQUEST, TICKET_DAY_LIST_SUCCESS, TICKET_DAY_LIST_FAILURE 
 } from "../reducer/R_ticket";
 
 
@@ -54,25 +56,30 @@ import {
 } from "../reducer/R_ticket";
 import { http } from "../lib/http";
 
-// 예매 가능한 전체 영화 조회 함수
-function* AllMovieSearch() {
-  const result = yield call(callAllMovieSearch);
+// 영화 조회 함수
+function* MovieSearch(action) {
+  const result = yield call(callMovieSearch, action.data);
   if (result.status === 200) {
     yield put({
-      type: TICKET_ALLMOVIE_LIST_SUCCESS,
+      type: TICKET_MOVIE_LIST_SUCCESS,
       data: result.data
     });
   } 
   else {
     yield put({
-			type: TICKET_ALLMOVIE_LIST_FAILURE
+			type: TICKET_MOVIE_LIST_FAILURE
     });
   }
 }
 
-// 예매 가능한 전체 영화 조회 백엔드 호출
-async function callAllMovieSearch() {
-  return await http.get("/movie/normal/ReservePossibleDESC")
+// 영화 조회 백엔드 호출
+async function callMovieSearch(data) {
+  return await http.get("/movie/normal/TicketReserveDESC", {
+    params: {
+			miday: data.miday,
+      tid: data.tid
+		}
+  })
   .then((response) => {
     return response;
   })
@@ -81,9 +88,69 @@ async function callAllMovieSearch() {
   });
 }
 
+// 극장 조회 함수
+function* TheaterSearch(action) {
+  const result = yield call(callTheaterSearch, action.data);
+  if (result.status === 200) {
+    yield put({
+      type: TICKET_THEATER_LIST_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TICKET_THEATER_LIST_FAILURE
+    });
+  }
+}
 
+// 극장 조회 백엔드 호출
+async function callTheaterSearch(data) {
+  return await http.get("/Theater/normal/Ticket", {
+    params: {
+			miday: data.miday,
+      mid: data.mid
+		}
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
+// 날짜 조회 함수
+function* DaySearch(action) {
+  const result = yield call(callDaySearch, action.data);
+  if (result.status === 200) {
+    yield put({
+      type: TICKET_DAY_LIST_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: TICKET_DAY_LIST_FAILURE
+    });
+  }
+}
 
+// 날짜 조회 백엔드 호출
+async function callDaySearch(data) {
+  return await http.get("/infomovie/normal/Ticket", {
+    params: {
+			tid: data.tid,
+      mid: data.mid
+		}
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
 
 
@@ -614,13 +681,17 @@ function* payment(action) {
 // 절취선
 
 
-function* ALL_MOVIE_LIST() {
-  yield takeLatest(TICKET_ALLMOVIE_LIST_REQUEST, AllMovieSearch);
+function* MOVIE_LIST() {
+  yield takeLatest(TICKET_MOVIE_LIST_REQUEST, MovieSearch);
 }
 
+function* THEATER_LIST() {
+  yield takeLatest(TICKET_THEATER_LIST_REQUEST, TheaterSearch);
+}
 
-
-
+function* DAY_LIST() {
+  yield takeLatest(TICKET_DAY_LIST_REQUEST, DaySearch);
+}
 
 
 
@@ -687,7 +758,9 @@ function* paymentSaga() {
 
 export default function* S_ticket() {
   yield all([
-		fork(ALL_MOVIE_LIST),
+		fork(MOVIE_LIST),
+		fork(THEATER_LIST),
+		fork(DAY_LIST),
 
 
 

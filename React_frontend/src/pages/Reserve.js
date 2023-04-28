@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import TicketMovieList from "../components/Ticket/TicketMovieList";
-
-
-import AllDayList from "../components/Ticket/AllDayList";
+import TicketTheaterList from "../components/Ticket/TicketTheaterList";
+import TicketDayList from "../components/Ticket/TicketDayList";
 
 
 import AllSchedule from "../components/Ticket/AllSchedule";
-import AllTheaterList from "../components/Ticket/AllTheaterList";
+
 import TicketMore from "../components/Ticket/TicketMore";
 import TopButton from "../components/Ticket/TopButton";
 import Seat from "../components/Ticket/Seat";
@@ -18,12 +17,7 @@ import Loading from "../components/Common_components/Loading";
 
 const Reserve = () => {
   //토글
-  const [tabstate, setTabState] = useState({
-    seoul: true,
-    busan: false,
-    gyeonggi: false,
-    incheon: false,
-  });
+  
   const dispatch = useDispatch();
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
   const {payment_done,select_theater_loading} = useSelector((state)=>state.R_ticket);
@@ -57,8 +51,8 @@ const Reserve = () => {
       ) : (
         <BookinWrapper>
           <TicketMovieList />
-          <AllTheaterList tabstate={tabstate} setTabState={setTabState} />
-          <AllDayList />
+          <TicketTheaterList/>
+          <TicketDayList />
           <AllSchedule />
           
         </BookinWrapper> 

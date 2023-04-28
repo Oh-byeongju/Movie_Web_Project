@@ -68,6 +68,11 @@ public class TheaterService {
 
 
 
+
+
+
+
+
     // 아래로 수정
     @Transactional
     public List<TheaterDto> getInfo() {
@@ -75,9 +80,6 @@ public class TheaterService {
         return datas.stream()
                 .map(data -> theaterMapper.toDto(data)).collect(Collectors.toList());
     }
-
-
-
 
 
 

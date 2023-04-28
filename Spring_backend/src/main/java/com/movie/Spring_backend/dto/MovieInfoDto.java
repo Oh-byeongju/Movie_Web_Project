@@ -19,6 +19,7 @@ public class MovieInfoDto {
     private String miendtime;
 
 
+
     private Long cid;
     private String type;
     private String name;
@@ -34,6 +35,7 @@ public class MovieInfoDto {
     private String image;
 
 
+    private Boolean reserve; // 예매 가능 여부
     private String mtitle;
     private String tarea;
     private String tname;
@@ -46,7 +48,8 @@ public class MovieInfoDto {
                         Long cid,  String name, String type,  Integer allcount,  Integer count ,String area,String title,Long mid,
                         Long tid,Integer time,String rating,String image,
 
-                        String mtitle, String tarea, String tname, String cname, Date mdate, Integer cntSeatInfo) {
+
+                        Boolean reserve, String mtitle, String tarea, String tname, String cname, Date mdate, Integer cntSeatInfo) {
 
         this.miid= miid;
         this.miday=miday;
@@ -64,6 +67,8 @@ public class MovieInfoDto {
         this.time=time;
         this.rating=rating;
         this.image=image;
+
+        this.reserve = reserve;
         this.mtitle = mtitle;
         this.tarea = tarea;
         this.mdate = mdate;

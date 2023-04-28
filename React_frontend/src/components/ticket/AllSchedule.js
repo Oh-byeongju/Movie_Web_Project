@@ -10,21 +10,21 @@ import {
 //영화 스케쥴을 표시해주는 컴포넌트 2023-02-13 수정완(강경목)
 const AllSchedule = () => {
   const dispatch = useDispatch();
-  const { movieData, theaterData, DayData, selectSchedule, scheduleData } =
+  const { MOVIE, THEATER, DAY, selectSchedule, scheduleData } =
     useSelector((state) => state.R_ticket);
 
   useEffect(() => {
-    if (movieData !== "" && theaterData !== "" && DayData !== "") {
+    if (MOVIE !== "" && THEATER !== "" && DAY !== "") {
       dispatch({
         type: SELECT_SCHEDULE_REQUEST,
         data: {
-          miday: DayData.miday,
-          mid: movieData.id,
-          tid: theaterData.tid,
+          miday: DAY.miday,
+          mid: MOVIE.mid,
+          tid: THEATER.tid,
         },
       });
     }
-  }, [dispatch, movieData, theaterData, DayData]);
+  }, [dispatch, MOVIE, THEATER, DAY]);
   return (
     <Schedule>
       <ScheduleTitle>
@@ -33,7 +33,7 @@ const AllSchedule = () => {
       <ScheduleList>
         <Result>
           <TimeList>
-            {movieData !== "" && theaterData !== "" && DayData !== "" ? (
+            {MOVIE !== "" && THEATER !== "" && DAY !== "" ? (
               <>
                 {selectSchedule.map((sc) => (
                   <Time schedule={sc.miid} scheduleData={scheduleData}>
@@ -60,13 +60,14 @@ const AllSchedule = () => {
                       </Hour>
                       <Title>
                         <Name>
-                          {movieData.title}
-                          <Em>{movieData.genre}</Em>
+                          {MOVIE.mtitle}
+													{/* 장르 불러와야함 */}
+                          <Em>{MOVIE.genre}</Em>
                         </Name>
                       </Title>
                       <Info>
                         <Theater>
-                          {theaterData.tarea} {theaterData.tname}점
+                          {THEATER.tarea} {THEATER.tname}점
                           <br />
                           {sc.type} {sc.name}
                         </Theater>

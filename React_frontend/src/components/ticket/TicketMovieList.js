@@ -1,168 +1,57 @@
-import React, { useEffect } from "react";
+/*
+	23-04-28 예매 페이지 영화 컴포넌트 수정(오병주)
+*/
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import styled from "styled-components";
-import {
-	TICKET_ALLMOVIE_LIST_REQUEST,
+import { TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_SELECT } from "../../reducer/R_ticket";
 
-
-  SELECT_THEATER_REQUEST,
-  SELECT_DAY_REQUEST,
-  T_ALLMOVIE_REQUEST,
-  SELECT_MOVIETHEATER_TO_DAY_REQUEST,
-  SELECT_DAYMOVIE_TO_THEATER_REQUEST,
-  MOVIE_DATA,
-  RESET_DAY_DATA,
-  RESET_THEATER_DATA,
-  RESET_MOVIE_DATA,
-} from "../../reducer/R_ticket";
-import { useLocation } from "react-router-dom";
-
-const TicketMovieList = ({ setDayMore }) => {
+const TicketMovieList = () => {
   const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { ALLMOVIE_LIST, MOVIE, LOGIN_data } = useSelector(
+	const { MOVIE_LIST, MOVIE, THEATER, DAY } = useSelector(
 		state => ({
-			ALLMOVIE_LIST: state.R_ticket.ALLMOVIE_LIST,
+			MOVIE_LIST: state.R_ticket.MOVIE_LIST,
 			MOVIE: state.R_ticket.MOVIE,
-			LOGIN_data: state.R_user_login.LOGIN_data
+			THEATER: state.R_ticket.THEATER,
+			DAY: state.R_ticket.DAY
 		}),
 		shallowEqual
 	);
 
-	// 모든 영화 조회 useEffect
+	// 영화 조회 useEffect
   useEffect(() => {
 		dispatch({
-			type: TICKET_ALLMOVIE_LIST_REQUEST
+			type: TICKET_MOVIE_LIST_REQUEST,
+			data: {
+				miday: DAY.miday,
+				tid: THEATER.tid
+			}
 		});
+  }, [DAY, THEATER, dispatch]);
+
+  // 영화를 선택하는 함수
+  const onClickMovie = useCallback((movie) => {
+		// 상영스케줄이 존재할 경우
+		if (movie.reserve) {
+			dispatch({
+				type: TICKET_MOVIE_SELECT,
+				data: movie
+			});
+		}
+		else {
+			if (!window.confirm("선택한 영화에 원하시는 상영스케줄이 없습니다. 계속하겠습니까?")) {
+				return;
+			}
+			else {
+				console.log('여기 초기화');
+			}
+		}
   }, [dispatch]);
 
-
-
-
-  const {
-    t_allMovie,
-    choiceTheater,
-    choiceDay,
-    movieData,
-    theaterData,
-    DayData,
-  } = useSelector((state) => state.R_ticket);
-  const location = useLocation();
-  
-  useEffect(() => {
-    //첫 로딩
-    if (location.state === null) {
-      console.log("보통 페이지에서 넘어오면 state에 데이터가 없다.");
-      dispatch({
-        type: T_ALLMOVIE_REQUEST,
-        data: LOGIN_data.uid,
-      });
-    }
-    //새로고침 감지
-    //기본적으로 페이지를 나가거나 첫 불러오기시 데이터를 다불러옴
-
-    return () => {
-      dispatch({
-        type: T_ALLMOVIE_REQUEST,
-        data: LOGIN_data.uid,
-      });
-    };
-  }, []);
-
-  //able된 영화를 선택하는 함수
-  const onClickMovie = (data) => {
-    dispatch({
-      type: MOVIE_DATA,
-      data: data,
-    });
-    //날짜와 극장이 선택되어있을 때
-    if (choiceDay && choiceTheater) {
-      dispatch({
-        type: SELECT_DAYMOVIE_TO_THEATER_REQUEST,
-        data: {
-          miday: DayData.miday,
-          mid: data.id,
-        },
-      });
-      dispatch({
-        type: SELECT_MOVIETHEATER_TO_DAY_REQUEST,
-        data: {
-          mid: data.id,
-          tid: theaterData.tid,
-        },
-      });
-    }
-    //극장이 선택되어 있을 때
-    else if (choiceTheater && !choiceDay) {
-      dispatch({
-        type: SELECT_MOVIETHEATER_TO_DAY_REQUEST,
-        data: {
-          mid: data.id,
-          tid: theaterData.tid,
-        },
-      });
-
-      //극장이 선택되어 있어도 극장은 같이 변해야함
-      dispatch({
-        type: SELECT_THEATER_REQUEST,
-        data: data.id,
-      });
-    }
-    //날짜가 선택되어 있을 때
-    else if (!choiceTheater && choiceDay) {
-      console.log("날짜만선택");
-      dispatch({
-        type: SELECT_DAY_REQUEST,
-        data: data.id,
-      });
-      dispatch({
-        type: SELECT_DAYMOVIE_TO_THEATER_REQUEST,
-        data: {
-          miday: DayData.miday,
-          mid: data.id,
-        },
-      });
-    }
-  };
-
-  //disable된 상태 검색
-  const onClickDisable = (data) => {
-    if (
-      !window.confirm(
-        "선택한 영화에 원하시는 상영스케줄이 없습니다. 계속하겠습니까?"
-      )
-    ) {
-      return;
-    }
-    dispatch({
-      type: MOVIE_DATA,
-      data: data,
-    });
-    dispatch({
-      type: RESET_DAY_DATA,
-    });
-    dispatch({
-      type: RESET_THEATER_DATA,
-    });
-    //영화도 새로고침
-    dispatch({
-      type: T_ALLMOVIE_REQUEST,
-      data: LOGIN_data.uid,
-    });
-    //극장을 영화에 대해 검색
-    dispatch({
-      type: SELECT_THEATER_REQUEST,
-      data: data.id,
-    });
-    //날짜를 영화에 대해 검색
-    dispatch({
-      type: SELECT_DAY_REQUEST,
-      data: data.id,
-    });
-    setDayMore("");
-  };
-  //영화 토클 함수
+	// css 위치 맞춰야함
+	// 정렬 넣을꺼면 넣기
 
   return (
     <MovieWrapper>
@@ -177,77 +66,14 @@ const TicketMovieList = ({ setDayMore }) => {
 				</MovieSelectorText>
       </MovieSelector>
       <MovieListWrapper>
-        {t_allMovie.map((movie) => {
-          if (true) {
-            //극장이나 날짜가 선택이 되어서 able 이 활성화됨
-            //극장이 선택된 상태에서 영화 선택
-            //날짜가 선택된 상태에서 영화선택
-            //극장,날짜가 두개 다 선택된 상태에서 영화 검색
-            return (
-              <MovieList
-                onClick={() => {onClickMovie(movie);}}
-                key={movie.id}
-                movieData={movieData}
-                movie={movie.id}
-              >
-                <MovieListMovieName movieData={movieData}>
-                  <Img src={`img/age/${movie.rating}.png`} alt="영화" />
-
-                  {movie.title}
-                </MovieListMovieName>
-              </MovieList>
-            );
-          } else if (false) {
-            //해당하는 데이터가 아닐때
-            //다시 극장, 날짜 select
-            return (
-              <MovieList
-                onClick={() => {
-                  //disable된 영화를 선택하면 theater day 모두 영화로 다시 검색
-                  onClickDisable(movie);
-                }}
-                key={movie.id}
-                movieData={movieData}
-                movie={movie.id}
-              >
-                <MovieListMovieName movieData={movieData} className="disable">
-                  <Img src={`img/age/${movie.rating}.png`} alt="영화" />
-
-                  {movie.title}
-                </MovieListMovieName>
-              </MovieList>
-            );
-          } else {
-            return (
-              <MovieList
-                onClick={() => {
-                  dispatch({
-                    type: MOVIE_DATA,
-                    data: movie,
-                  });
-                  //allmovie(태초상태)
-                  //영화 클릭시 날짜 극장 검색해주면 됨
-                  dispatch({
-                    type: SELECT_THEATER_REQUEST,
-                    data: movie.id,
-                  });
-                  dispatch({
-                    type: SELECT_DAY_REQUEST,
-                    data: movie.id,
-                  });
-                }}
-                key={movie.id}
-                movieData={movieData}
-                movie={movie.id}
-              >
-                <MovieListMovieName movieData={movieData}>
-                  <Img src={`img/age/${movie.rating}.png`} alt="영화" />
-                  {movie.title}
-                </MovieListMovieName>
-              </MovieList>
-            );
-          }
-        })}
+        {MOVIE_LIST.map((movie) => 
+					<MovieList key={movie.mid} onClick={() => {onClickMovie(movie);}} select_movie={MOVIE.mid} movie={movie.mid}>
+            <MovieListMovieName className={movie.reserve ? "" : "disable"}>
+              <Img src={`img/age/${movie.mrating}.png`} alt="영화" />
+              {movie.mtitle}
+            </MovieListMovieName>
+          </MovieList>
+        )}
       </MovieListWrapper>
     </MovieWrapper>
   );
@@ -303,7 +129,6 @@ const MovieListWrapper = styled.div`
   width: 235px;
   display: flex;
   overflow-x: scroll;
-
   overflow-x: hidden;
   flex-direction: column;
 `;
@@ -318,11 +143,13 @@ const MovieList = styled.div`
   position: relative;
   background-color: #f2f0e5;
   cursor: pointer;
+	background-color: ${(props) => props.select_movie === props.movie ? "#333333" : "#f2f0e5"};
+	color: ${(props) => props.select_movie === props.movie ? "white" : "black"};
+
   .disable {
     cursor: default;
     opacity: 0.5;
   }
-  background-color: ${(props) => props.movieData.id === props.movie ? "gray" : "#f2f0e5"};
 `;
 
 const MovieListMovieName = styled.div`

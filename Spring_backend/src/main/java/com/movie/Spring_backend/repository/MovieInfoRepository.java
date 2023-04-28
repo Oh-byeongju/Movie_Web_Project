@@ -16,9 +16,6 @@ import java.util.List;
 @Repository
 public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long> {
 
-
-
-
     @Query("SELECT mi From MovieInfoEntity as mi where mi.mistarttime >= function('addtime', now(), '0:30:00')  Group by mi.miday Order by mi.miday ASC")
     List<MovieInfoEntity> findAll();
     @Query("SELECT mi From MovieInfoEntity as mi, MovieEntity as m Where mi.movie.mid= (:mid) " +
@@ -45,15 +42,20 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
 
 
 
-
-
-    // 이거 조인 빼버려도 될듯 --> 부질의로
-    // 특정 조건을 가진 상영정보들을 구하는 메소드(날짜 구할때 사용)
-    @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +
-            "INNER JOIN TheaterEntity as t ON ci.theater = t.tid " +
+    // 현재 예매가 가능한 상영정보 조회 메소드(날짜 구할때 사용)
+    @Query(value = "SELECT mi FROM MovieInfoEntity as mi " +
             "WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') " +
-            "AND (:movie is null or mi.movie = :movie) " +
-            "AND (:tid is null or t.tid = :tid) AND (:tarea is null or t.tarea = :tarea)")
+            "GROUP BY mi.miday " +
+            "ORDER BY mi.miday ASC")
+    List<MovieInfoEntity> findPossibleMovieInfoDay();
+
+    // 특정 조건을 가진 상영정보들을 구하는 메소드(날짜 구할때 사용)
+    @Query(value = "SELECT mi FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') AND " +
+            "(:movie is null or mi.movie = :movie) AND mi.cinema IN " +
+            "(SELECT c FROM CinemaEntity as c WHERE c.theater IN " +
+            "(SELECT t FROM TheaterEntity as t WHERE (:tid is null or t.tid = :tid) AND (:tarea is null or t.tarea = :tarea))) " +
+            "GROUP BY mi.miday " +
+            "ORDER BY mi.miday ASC")
     List<MovieInfoEntity> findMovieInfoDay(@Param("movie") MovieEntity movie, @Param("tid") Long tid, @Param("tarea") String tarea);
 
     // 상영시간표에서 상영정보를 가져오는 메소드 (영화 선택)
@@ -81,7 +83,6 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
 
     // 이거 조인 빼버려도 될듯 --> 부질의로
     // 특정 사용자가 예매후 관람이 끝난 영화 정보를 들고오는 메소드
-    // 이런거도 inner join 써야하는거 같음
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi LEFT OUTER JOIN mi.reservations rs " +
             "WHERE mi.miendtime <= NOW() AND rs.rstate = 1 AND rs.member = :member")
     List<MovieInfoEntity> findMemberPossible(@Param("member") MemberEntity member);

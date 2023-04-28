@@ -1,23 +1,43 @@
 /*
 	23-04-27 ~ 28 예매 페이지 리듀서 수정(오병주)
 */
-// 전체 영화 목록 조회 리스트(예매가 가능한것들만)
-export const TICKET_ALLMOVIE_LIST_REQUEST = "TICKET_ALLMOVIE_LIST_REQUEST";
-export const TICKET_ALLMOVIE_LIST_SUCCESS = "TICKET_ALLMOVIE_LIST_SUCCESS";
-export const TICKET_ALLMOVIE_LIST_FAILURE = "TICKET_ALLMOVIE_LIST_FAILURE";
+// 영화 목록 조회 리스트
+export const TICKET_MOVIE_LIST_REQUEST = "TICKET_MOVIE_LIST_REQUEST";
+export const TICKET_MOVIE_LIST_SUCCESS = "TICKET_MOVIE_LIST_SUCCESS";
+export const TICKET_MOVIE_LIST_FAILURE = "TICKET_MOVIE_LIST_FAILURE";
 export const TICKET_MOVIE_SELECT = "TICKET_MOVIE_SELECT";
 
+// 극장 목록 조회 리스트
+export const TICKET_THEATER_LIST_REQUEST = "TICKET_THEATER_LIST_REQUEST";
+export const TICKET_THEATER_LIST_SUCCESS = "TICKET_THEATER_LIST_SUCCESS";
+export const TICKET_THEATER_LIST_FAILURE = "TICKET_THEATER_LIST_FAILURE";
+export const TICKET_THEATER_SELECT = "TICKET_THEATER_SELECT";
 
-
-
-
+// 날짜 목록 조회 리스트
+export const TICKET_DAY_LIST_REQUEST = "TICKET_DAY_LIST_REQUEST";
+export const TICKET_DAY_LIST_SUCCESS = "TICKET_DAY_LIST_SUCCESS";
+export const TICKET_DAY_LIST_FAILURE = "TICKET_DAY_LIST_FAILURE";
+export const TICKET_DAY_SELECT = "TICKET_DAY_SELECT";
 
 const initalState = {
-	ALLMOVIE_LIST_loading: false,
-  ALLMOVIE_LIST_done: false,
-  ALLMOVIE_LIST_error: false,
-	ALLMOVIE_LIST: [],
+	MOVIE_LIST_loading: false,
+  MOVIE_LIST_done: false,
+  MOVIE_LIST_error: false,
+	MOVIE_LIST: [],
 	MOVIE: '',
+
+	THEATER_LIST_loading: false,
+  THEATER_LIST_done: false,
+  THEATER_LIST_error: false,
+	THEATER_LIST: [],
+	THEATER: '',
+
+	DAY_LIST_loading: false,
+  DAY_LIST_done: false,
+  DAY_LIST_error: false,
+	DAY_LIST: [],
+	DAY: '',
+
 
 	// 아래로 수정	
 	// 아래로 수정
@@ -105,11 +125,6 @@ const initalState = {
 export const T_ALLMOVIE_REQUEST = "T_ALLMOVIE_REQUEST";
 export const T_ALLMOVIE_SUCCESS = "T_ALLMOVIE_SUCCESS";
 export const T_ALLMOVIE_FAILURE = "T_ALLMOVIE_FAILURE";
-
-//지역 검색
-export const ALLAREA_REQUEST = "ALLAREA_REQUEST";
-export const ALLAREA_SUCCESS = "ALLAREA_SUCCESS";
-export const ALLAREA_FAILURE = "ALLAREA_FAILURE";
 
 //지역에 따른
 export const ALLTHEATER_REQUEST = "ALLTHEATER_REQUEST";
@@ -205,36 +220,91 @@ export const RESERVE_LOGIN_PAGE = "RESERVE_LOGIN_PAGE";
 
 const R_ticket = (state = initalState, action) => {
   switch (action.type) {
-		// 전체 영화 조회 케이스들(예매가 가능한것들만)
-    case TICKET_ALLMOVIE_LIST_REQUEST:
+		// 영화 조회 케이스들
+    case TICKET_MOVIE_LIST_REQUEST:
       return {
         ...state,
-        ALLMOVIE_LIST_loading: true,
-        ALLMOVIE_LIST_done: false,
-        ALLMOVIE_LIST_error: false
+        MOVIE_LIST_loading: true,
+        MOVIE_LIST_done: false,
+        MOVIE_LIST_error: false
       };
-    case TICKET_ALLMOVIE_LIST_SUCCESS:
+    case TICKET_MOVIE_LIST_SUCCESS:
       return {
         ...state,
-        ALLMOVIE_LIST_loading: false,
-        ALLMOVIE_LIST_done: true,
-        ALLMOVIE_LIST_error: false,
-        ALLMOVIE_LIST: action.data,
-        MOVIE: action.data[0]
+        MOVIE_LIST_loading: false,
+        MOVIE_LIST_done: true,
+        MOVIE_LIST_error: false,
+        MOVIE_LIST: action.data
       };
-    case TICKET_ALLMOVIE_LIST_FAILURE:
+    case TICKET_MOVIE_LIST_FAILURE:
       return {
         ...state,
-        ALLMOVIE_LIST_loading: false,
-        ALLMOVIE_LIST_done: false,
-        ALLMOVIE_LIST_error: true
+        MOVIE_LIST_loading: false,
+        MOVIE_LIST_done: false,
+        MOVIE_LIST_error: true
       };
     case TICKET_MOVIE_SELECT:
       return {
         ...state,
         MOVIE: action.data
       };
-		
+		// 극장 조회 케이스들
+    case TICKET_THEATER_LIST_REQUEST:
+      return {
+        ...state,
+        THEATER_LIST_loading: true,
+        THEATER_LIST_done: false,
+        THEATER_LIST_error: false
+      };
+    case TICKET_THEATER_LIST_SUCCESS:
+      return {
+        ...state,
+        THEATER_LIST_loading: false,
+        THEATER_LIST_done: true,
+        THEATER_LIST_error: false,
+        THEATER_LIST: action.data
+      };
+    case TICKET_THEATER_LIST_FAILURE:
+      return {
+        ...state,
+        THEATER_LIST_loading: false,
+        THEATER_LIST_done: false,
+        THEATER_LIST_error: true
+      };
+    case TICKET_THEATER_SELECT:
+      return {
+        ...state,
+        THEATER: action.data
+      };
+		// 날짜 조회 케이스들
+    case TICKET_DAY_LIST_REQUEST:
+      return {
+        ...state,
+        DAY_LIST_loading: true,
+        DAY_LIST_done: false,
+        DAY_LIST_error: false
+      };
+    case TICKET_DAY_LIST_SUCCESS:
+      return {
+        ...state,
+        DAY_LIST_loading: false,
+        DAY_LIST_done: true,
+        DAY_LIST_error: false,
+        DAY_LIST: action.data
+      };
+    case TICKET_DAY_LIST_FAILURE:
+      return {
+        ...state,
+        DAY_LIST_loading: false,
+        DAY_LIST_done: false,
+        DAY_LIST_error: true
+      };
+    case TICKET_DAY_SELECT:
+      return {
+        ...state,
+        DAY: action.data
+      };
+
 
 
 

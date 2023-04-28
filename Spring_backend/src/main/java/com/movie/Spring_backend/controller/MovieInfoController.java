@@ -3,10 +3,7 @@
 */
 package com.movie.Spring_backend.controller;
 
-import com.movie.Spring_backend.dto.MovieDto;
-import com.movie.Spring_backend.dto.MovieInfoDto;
-import com.movie.Spring_backend.dto.TheaterDto;
-import com.movie.Spring_backend.dto.TimeTableDto;
+import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.repository.MovieInfoRepository;
 import com.movie.Spring_backend.service.CinemaService;
 import com.movie.Spring_backend.service.MovieInfoService;
@@ -30,11 +27,15 @@ public class MovieInfoController {
 
     private final MovieInfoService movieInfoService;
     private final CinemaService cinemaService;
-    private final MovieService movieService;
     private final TheaterService theaterService;
-    private final MovieInfoRepository movieInfoRepository;
 
-    // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드
+    // 예매 페이지에서 조건에 맞는 상영정보의 상영날짜를 불러오는 메소드
+    @GetMapping("/normal/Ticket")
+    public ResponseEntity<List<MovieInfoDayDto>> TicketMovieInfoDay(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(movieInfoService.getTicketMovieInfoDay(requestMap));
+    }
+
+    // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드(상영시간표 페이지)
     @GetMapping("/normal/findDay")
     public ResponseEntity<List<MovieInfoDto>> movieInfoFindDay(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(movieInfoService.getMovieInfoDay(requestMap));
@@ -60,13 +61,15 @@ public class MovieInfoController {
 
 
 
+
+
+
+
     @GetMapping("/normal/movieinfo")
     public List<MovieInfoDto> getData() {
         return movieInfoService.findAllMiday();
 
     }
-
-
     //영화로 극장 검색
     //수정완
     @GetMapping("/normal/movieselect")

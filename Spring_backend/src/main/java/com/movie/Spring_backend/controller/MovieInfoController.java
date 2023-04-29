@@ -1,5 +1,6 @@
 /*
   23-04-22 ~ 23-04-24 상영시간표에 사용되는 메소드 수정(오병주)
+  23-04-27 ~ 23-04-29 예매페이지에 사용되는 메소드 수정(오병주)
 */
 package com.movie.Spring_backend.controller;
 
@@ -21,18 +22,21 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-// 무비 인포로 바까야할듯
-@RequestMapping("/infomovie")
+@RequestMapping("/MovieInfo")
 public class MovieInfoController {
 
     private final MovieInfoService movieInfoService;
-    private final CinemaService cinemaService;
-    private final TheaterService theaterService;
 
     // 예매 페이지에서 조건에 맞는 상영정보의 상영날짜를 불러오는 메소드
     @GetMapping("/normal/Ticket")
     public ResponseEntity<List<MovieInfoDayDto>> TicketMovieInfoDay(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(movieInfoService.getTicketMovieInfoDay(requestMap));
+    }
+
+    // 예매 페이지에서 영화, 극장, 날짜를 모두 골랐을경우 상영정보를 불러오는 메소드
+    @GetMapping("normal/Schedule")
+    public ResponseEntity<List<MovieInfoDto>> ScheduleMovieInfo(@RequestParam Map<String, String> requestMap){
+        return ResponseEntity.ok().body(movieInfoService.getScheduleMovieInfo(requestMap));
     }
 
     // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드(상영시간표 페이지)
@@ -51,94 +55,5 @@ public class MovieInfoController {
     @GetMapping("/normal/timeTableByTheater")
     public ResponseEntity<List<TimeTableDto>> TimeTableByTheater(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(movieInfoService.getTimeTableByTheater(requestMap));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @GetMapping("/normal/movieinfo")
-    public List<MovieInfoDto> getData() {
-        return movieInfoService.findAllMiday();
-
-    }
-    //영화로 극장 검색
-    //수정완
-    @GetMapping("/normal/movieselect")
-    public List<TheaterDto> findByMovie(@RequestParam Long id) {
-        return theaterService.findByTidIn(id);
-    }
-
-    //영화로 날짜 검색
-    //수정완
-    @GetMapping("/normal/movieselectday")
-    public List<MovieInfoDto> findByMovieToDay(@RequestParam Long id) {
-        return movieInfoService.findByMovieToDay(id);
-    }
-
-    //극장으로 날짜 검색
-    //수정완
-    @GetMapping("/normal/theaterday")
-    public List<MovieInfoDto> getTheaterDay(@RequestParam Long id) {
-        return movieInfoService.findByCinemaCidIn(id);
-    }
-
-    //극장으로 영화검색
-    //수정완
-    @GetMapping("/normal/theatertomovie")
-    public List<MovieDto> getData(@RequestParam Long id) {
-        return movieInfoService.findByTheater(id);
-    }
-
-    //날짜로 영화 검색
-    //수정완
-    @GetMapping("/normal/daytomovie")
-    public List<MovieDto> findByDayToMovie(@RequestParam Date miday) {
-        return movieInfoService.findByMovieableDisable(miday);
-    }
-
-    //날짜로 극장 검색
-    //수정완
-    @GetMapping("/normal/daytotheater")
-    public List<TheaterDto> findByDayToTheater(@RequestParam Date miday) {
-        return theaterService.findDayToTheater(miday);
-    }
-
-    //영화와 극장으로 날짜검색
-    //수정완
-    @GetMapping("/normal/movietheaterday")
-    public List<MovieInfoDto> findByMovieTheaterDay(@RequestParam Long tid, @RequestParam Long mid) {
-        return movieInfoService.findByMovieTheaterDay(tid, mid);
-    }
-
-    //날짜와 극장으로 영화를 검색
-    //수정완
-    @GetMapping("/normal/daytheatertomovie")
-    public List<MovieDto> findByDayTheaterToMovie(@RequestParam Date miday, @RequestParam Long tid) {
-        return movieInfoService.DayTheaterToMovie(miday,tid);
-    }
-
-
-    //날짜와 영화로 극장을 검색하는 메소드
-    //수정완
-    @GetMapping("/normal/daymovietotheater")
-    public List<TheaterDto> findByDayMovieToTheater(@RequestParam Date miday, @RequestParam Long mid){
-        return theaterService.findDayMovieToTheater(miday,mid);
-    }
-
-    //스케쥴을 불러오는 메소드
-    //영화, 극장, 날짜를 다 선택한 경우
-    @GetMapping("normal/Schedule")
-    public List<MovieInfoDto> findBySchedule(@RequestParam Date miday , @RequestParam Long mid, @RequestParam Long tid){
-        List<Long> cid = cinemaService.findByTheaterday(tid);
-        return movieInfoService.findBySchedule(miday,mid,tid);
     }
 }

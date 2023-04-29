@@ -27,6 +27,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+// PayMent로 수정
 @RequestMapping("/payment")
 
 public class PaymentController {

@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+// Seat로 수정
 @RequestMapping("/seat")
 public class SeatController {
 

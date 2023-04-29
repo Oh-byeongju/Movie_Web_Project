@@ -573,8 +573,8 @@ public class ManagerOneService {
                 .miday(movieInfo.getMiday())
                 .mistarttime(movieInfo.getMistarttime())
                 .miendtime(movieInfo.getMiendtime())
-                .allcount(movieInfo.getCinema().getCseat())
-                .count(movieInfo.getCntSeatInfo()).build());
+                .cntSeatAll(movieInfo.getCinema().getCseat())
+                .cntSeatInfo(movieInfo.getCntSeatInfo()).build());
     }
 
     // 상영정보를 추가하는 메소드

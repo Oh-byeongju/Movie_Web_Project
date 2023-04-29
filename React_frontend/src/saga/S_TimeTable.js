@@ -83,7 +83,7 @@ function* DaySearch(action) {
 
 // 날짜 조회 백엔드 호출
 async function callDaySearch(data) {
-  return await http.get("/infomovie/normal/findDay", {
+  return await http.get("/MovieInfo/normal/findDay", {
     params: {
       mid: data.mid,
       tarea: data.tarea,
@@ -116,7 +116,7 @@ function* MovieInfoByMovieSearch(action) {
 
 // 상영정보 조회(영화선택) 백엔드 호출
 async function callMovieInfoByMovieSearch(data) {
-  return await http.get("/infomovie/normal/timeTableByMovie", {
+  return await http.get("/MovieInfo/normal/timeTableByMovie", {
     params: {
       mid: data.mid,
 			miday: data.miday,
@@ -149,7 +149,7 @@ function* MovieInfoByTheaterSearch(action) {
 
 // 상영정보 조회(극장선택) 백엔드 호출
 async function callMovieInfoByTheaterSearch(data) {
-  return await http.get("/infomovie/normal/timeTableByTheater", {
+  return await http.get("/MovieInfo/normal/timeTableByTheater", {
     params: {
       tid: data.tid,
 			miday: data.miday

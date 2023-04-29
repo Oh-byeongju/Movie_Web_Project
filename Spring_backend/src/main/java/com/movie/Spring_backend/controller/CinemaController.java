@@ -33,9 +33,4 @@ public class CinemaController {
 
     private final CinemaService cinemaService;
 
-    @GetMapping("/normal/cinemaall")
-    public ResponseEntity<List<CinemaDto>> cinema() {
-        return ResponseEntity.ok().body(cinemaService.findall());
-    }
-
 }

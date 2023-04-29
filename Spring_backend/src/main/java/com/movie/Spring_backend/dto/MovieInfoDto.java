@@ -1,8 +1,5 @@
 package com.movie.Spring_backend.dto;
 
-import com.movie.Spring_backend.entity.CinemaEntity;
-import com.movie.Spring_backend.entity.MovieEntity;
-import com.movie.Spring_backend.entity.TheaterEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,73 +9,43 @@ import java.sql.Date;
 @Getter
 @NoArgsConstructor
 public class MovieInfoDto {
-
     private Long miid;
     private Date miday;
     private String mistarttime;
     private String miendtime;
-
-
-
     private Long cid;
-    private String type;
-    private String name;
-    private Integer allcount; //전체 좌석
-    private Integer count;   // 점유 좌석
-    private String area;
-    private String title;
-    private Long mid;
-
-    private Long tid;
-    private Integer time;
-    private String rating;
-    private String image;
-
-
+    private String cname;
+    private String ctype;
+    private Integer cntSeatAll; // 전체 좌석
+    private Integer cntSeatInfo; // 점유좌석
     private Boolean reserve; // 예매 가능 여부
+    private Long mid;
+    private Date mdate;
     private String mtitle;
+    private Long tid;
     private String tarea;
     private String tname;
-    private String cname;
-    private Date mdate;
-    private Integer cntSeatInfo;    // 점유좌석
 
     @Builder
-    public MovieInfoDto(Long miid, Date miday, String mistarttime, String miendtime, MovieEntity movie, CinemaEntity cinema,
-                        Long cid,  String name, String type,  Integer allcount,  Integer count ,String area,String title,Long mid,
-                        Long tid,Integer time,String rating,String image,
+    public MovieInfoDto(Long miid, Date miday, String mistarttime, String miendtime, Long cid, String cname, String ctype,
+                        Integer cntSeatAll, Integer cntSeatInfo, Boolean reserve, Long mid, Date mdate, String mtitle,
+                        Long tid, String tarea, String tname) {
 
-
-                        Boolean reserve, String mtitle, String tarea, String tname, String cname, Date mdate, Integer cntSeatInfo) {
-
-        this.miid= miid;
-        this.miday=miday;
-        this.mistarttime=mistarttime;
-        this.miendtime=miendtime;
-        this.cid=cid;
-        this.name=name;
-        this.type=type;
-        this.allcount=allcount;
-        this.count=count;
-        this.area=area;
-        this.title=title;
-        this.mid=mid;
-        this.tid=tid;
-        this.time=time;
-        this.rating=rating;
-        this.image=image;
-
-        this.reserve = reserve;
-        this.mtitle = mtitle;
-        this.tarea = tarea;
-        this.mdate = mdate;
-        this.cntSeatInfo = cntSeatInfo;
-
-
-
-        this.tname = tname;
+        this.miid = miid;
+        this.miday = miday;
+        this.mistarttime = mistarttime;
+        this.miendtime = miendtime;
+        this.cid = cid;
         this.cname = cname;
+        this.ctype = ctype;
+        this.cntSeatAll = cntSeatAll;
+        this.cntSeatInfo = cntSeatInfo;
+        this.reserve = reserve;
+        this.mid = mid;
+        this.mtitle = mtitle;
+        this.mdate = mdate;
+        this.tid = tid;
+        this.tarea = tarea;
+        this.tname = tname;
     }
-
-
 }

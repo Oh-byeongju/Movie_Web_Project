@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class MovieMapper {
 
-    // 전체 영화 페이지에 사용되는 mapping 메소드
+    // 전체 영화 페이지와 상영 예정작 페이지에 사용되는 mapping 메소드
     public List<MovieDto> toDtoAllORComingMovie(List<MovieEntity> ShowMovies, List<MovieEntity> NotShowMovies, Set<Long> MovieLikes, float AllReserveCnt) {
 
         List<MovieDto> result = new ArrayList<>();
@@ -63,7 +63,7 @@ public class MovieMapper {
         return result;
     }
 
-    // 현재상영작 페이지에 사용되는 mapping 메소드
+    // 현재 상영작 페이지에 사용되는 mapping 메소드
     public List<MovieDto> toDtoScreenMovie(List<MovieEntity> ShowMovies, Set<Long> MovieLikes, float AllReserveCnt) {
 
         List<MovieDto> result = new ArrayList<>();
@@ -149,6 +149,7 @@ public class MovieMapper {
                     .mid(m.getMid())
                     .mtitle(m.getMtitle())
                     .mrating(m.getMrating())
+                    .mgenre(m.getMgenre())
                     .mimagepath(m.getMimagepath())
                     .reserve(true).build());
             checkNum.add(m.getMid());
@@ -162,6 +163,7 @@ public class MovieMapper {
                         .mid(m.getMid())
                         .mtitle(m.getMtitle())
                         .mrating(m.getMrating())
+                        .mgenre(m.getMgenre())
                         .mimagepath(m.getMimagepath())
                         .reserve(false).build());
             }
@@ -310,50 +312,5 @@ public class MovieMapper {
                     .mimagepath(entity.getMimagepath())
                     .reserve(false).build();
         }
-    }
-
-
-    // 아래로 날리면 될듯
-    public MovieDto toAble(MovieEntity entity) {
-
-        // 예외처리
-        if (entity == null) {
-            return null;
-        }
-
-        return MovieDto.builder()
-                .mid(entity.getMid())
-                .mdir(entity.getMdir())
-                .mtitle(entity.getMtitle())
-                .mgenre(entity.getMgenre())
-                .mtime(entity.getMtime())
-                .mdate(entity.getMdate())
-                .mrating(entity.getMrating())
-                .mstory(entity.getMstory())
-                .mimagepath(entity.getMimagepath())
-                .mlikes(entity.getCntMovieLike())
-                .mscore(entity.getAvgScore()).build();
-    }
-
-    public MovieDto toDisable(MovieEntity entity) {
-
-        // 예외처리
-        if (entity == null) {
-            return null;
-        }
-
-        return MovieDto.builder()
-                .mid(entity.getMid())
-                .mdir(entity.getMdir())
-                .mtitle(entity.getMtitle())
-                .mgenre(entity.getMgenre())
-                .mtime(entity.getMtime())
-                .mdate(entity.getMdate())
-                .mrating(entity.getMrating())
-                .mstory(entity.getMstory())
-                .mimagepath(entity.getMimagepath())
-                .mlikes(entity.getCntMovieLike())
-                .mscore(entity.getAvgScore())
-                .build();
     }
 }

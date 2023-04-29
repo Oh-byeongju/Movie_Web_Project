@@ -11,7 +11,6 @@ import {
 } from "../../reducer/R_user_login";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import LoginLoading from "./LoginLoading";
-import * as ReserveLogin from "../Common_components/Function";
 import FindIDModal from "./FindIDModal";
 import FindPWModal from "./FindPWModal";
 
@@ -93,39 +92,21 @@ const LoginForm = () => {
 
   // 로그인의 성공 여부를 알리는 useEffect
   useEffect(() => {
-    console.log("login 페이지");
-    console.log(location);
-
     if (LOGIN_data.uname === "error!!") {
       alert("존재하지 않는 회원입니다.");
       dispatch({ type: USER_LOGIN_RESET });
       return;
     }
     // 로그인에 성공했을 경우 메인페이지 또는 이전 페이지로 넘어가게 함
-    if (LOGIN_data.uname !== "" && LOGIN_data.uname !== "error!!") {
+    if (LOGIN_data.uname !== '' && LOGIN_data.uname !== "error!!" ) {
       if (location.state === null || location.state.url === "/UserJoin") {
-        navigate(`/`);
-      } 
-      else if (location.state.pathname === "/reserve") {
-        console.log("reserve에서 왔니?");
-        if (
-          location.state.Day !== "" &&
-          location.state.movie !== "" &&
-          location.state.schedule !== "" &&
-          location.state.theater !== ""
-        ) {
-          ReserveLogin.f1(location.state, dispatch);
+        	navigate(`/`);
         }
-        navigate(location.state.pathname, { state: location.pathname });
-      } 
-      else if(location.state!==""){
-        navigate(location.state)
-      }
-      else {
-        navigate(`${location.state.url}`);
-      }
+        else {
+        	navigate(`${location.state.url}`);
+        }
     }
-  }, [LOGIN_data, location, location.state, navigate, dispatch]);
+  },[LOGIN_data, location.state, navigate, dispatch]);
 
   // 아이디 찾기 및 비밀번호 찾기 모달 상태관리
   const [findid, setfindid] = useState(false);

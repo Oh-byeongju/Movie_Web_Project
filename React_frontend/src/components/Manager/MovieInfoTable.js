@@ -127,7 +127,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
 		{
       title: '예매현황',
       width: 100,
-      render: (text, row) => <div> &nbsp; {row["count"]} / {row["allcount"]}</div>,
+      render: (text, row) => <div> &nbsp; {row["cntSeatInfo"]} / {row["cntSeatAll"]}</div>,
     },
     {
       title: '관리자',
@@ -200,7 +200,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
 
   // modify 버튼을 누를때 실행되는 함수
 	const ClickRowModify = useCallback((data) => {
-    if (data.count !== 0) {
+    if (data.cntSeatInfo !== 0) {
       alert('예매가 없는 상영정보만 수정이 가능합니다.');
       return;
     }

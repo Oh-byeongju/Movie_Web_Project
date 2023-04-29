@@ -10,11 +10,6 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { USER_MLIKE_REQUEST } from "../../reducer/movie";
 import { useLocation } from "react-router-dom";
-import {
-  SELECT_DAY_REQUEST,
-  SELECT_THEATER_REQUEST,
-  MOVIE_DATA,
-} from "../../reducer/R_ticket";
 
 const Movie = ({ movie }) => {
   // 반올림 없이 소수점 생성해주는 함수
@@ -38,20 +33,7 @@ const Movie = ({ movie }) => {
   const { MLIKE_error } = useSelector((state) => state.movie);
 
   const OnClickReserve = (data) => {
-    //allmovie(태초상태)
-    //영화 클릭시 날짜 극장 검색해주면 됨
-    dispatch({
-      type: SELECT_THEATER_REQUEST,
-      data: data.mid,
-    });
-    dispatch({
-      type: SELECT_DAY_REQUEST,
-      data: data.mid,
-    });
-    dispatch({
-      type: MOVIE_DATA,
-      data: data,
-    });
+   // 여기에 예매버튼 활성화 시키면됨 --> 다른 페이지에 있느놈들도(예매버튼 있으면 전부다)
   };
 
   // 사용자가 영화의 좋아요를 누를 때 호출되는 함수

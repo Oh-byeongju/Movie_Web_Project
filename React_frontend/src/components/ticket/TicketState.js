@@ -1,30 +1,40 @@
+/*
+	사용자가 선택한 영화 및 정보를 표시해주는 컴포넌트 2023-02-13 수정완(강경목)
+	23-04-29 예매 페이지 상태 컴포넌트 수정(오병주)
+*/
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
-import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
-import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
-import {
-  SELECT_SEAT_REQUEST,
-  SELECT_INFOSEAT_REQUEST,
-  CHECK_SEAT_REQUEST,
-} from "../../reducer/seat";
-import { useLocation, Link, useNavigate } from "react-router-dom";
-import { PAYMENT_REQUEST, RESERVE_LOGIN_PAGE } from "../../reducer/R_ticket";
-import * as Payment from "../Common_components/Function";
+import { useSelector, useDispatch,shallowEqual } from "react-redux";
+import { LeftCircleFilled, RightCircleFilled } from "@ant-design/icons";
+
+
+import { useLocation, useNavigate } from "react-router-dom";
+import { RESERVE_LOGIN_PAGE } from "../../reducer/R_ticket";
 import PaymentModal from "./PaymentModal";
 
-const TicketMore = ({ setPage, page }) => {
-  const { movieData, theaterData, DayData, scheduleData } = useSelector(
-    (state) => state.R_ticket
-  );
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
-  const { choiceSeat, choiceUser, price, 어른, 아이, 학생 } = useSelector(
+const TicketState = ({ setPage, page }) => {
+	const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+	// 필요한 리덕스 상태들
+	const { MOVIE, THEATER, DAY, MOVIEINFO, LOGIN_data } = useSelector(
+		state => ({
+			MOVIE: state.R_ticket.MOVIE,
+			THEATER: state.R_ticket.THEATER,
+			DAY: state.R_ticket.DAY,
+			MOVIEINFO: state.R_ticket.MOVIEINFO,
+			LOGIN_data: state.R_user_login.LOGIN_data
+		}),
+		shallowEqual
+	);
+
+
+  const { choiceSeat, price, 어른, 아이, 학생 } = useSelector(
     (state) => state.seat
   );
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  
   const { pathname } = useLocation();
-  //사용자가 선택한 영화 및 정보를 표시해주는 컴포넌트 2023-02-13 수정완(강경목)
+  
   //좌석 페이지로 넘어가야함 데이터와 함께
 
   const [isOpen, setIsOpen] = useState(false);
@@ -48,45 +58,23 @@ const TicketMore = ({ setPage, page }) => {
     };
   }, []);
 
-  //
-  function paymentRecord() {
-    const date = new window.Date().getTime();
-
-    const data = {
-      pg: "html5_inicis.INIpayTest", //pg사
-      payMethod: "card", //결제수단
-      oderNum: Payment.createOrderNum(), //주문번호
-      name: "결제 테스트", //결제이름
-      buyerEmail: "testemail@test.com", //구매자 이메일
-      buyerName: "홍길동", //구매자 이름
-      buyerTel: "010-1234-1234", //구매자 번호
-      buyerAddr: "부산광역시 ", //구매자 주소
-      amount: "100",
-    };
-    Payment.paymentCard(
-      data,
-      dispatch,
-      LOGIN_data.uid,
-      choiceSeat,
-      scheduleData.miid
-    );
-  }
+ 
   return (
     <TicketWrapper>
       <TicketStep page={page}>
-        {movieData !== "" ? (
+        {MOVIE !== "" ? (
           <MoviePoster>
             <Poster>
               <Img
                 className="imggg"
-                src={`${movieData.imagepath}`}
+                src={`${MOVIE.mimagepath}`}
                 alt="영화"
               />
             </Poster>
             <Title>
-              <span>{movieData.title}</span>
+              <span>{MOVIE.mtitle}</span>
             </Title>
-            <Title>{movieData.rating}세 관람가</Title>
+            <Title>{MOVIE.mrating}세 관람가</Title>
           </MoviePoster>
         ) : (
           <MoviePoster>
@@ -95,11 +83,11 @@ const TicketMore = ({ setPage, page }) => {
           </MoviePoster>
         )}
         <MovieTheater>
-          {theaterData !== "" ? (
+          {THEATER !== "" ? (
             <Name>
               <span>극장</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <span>
-                {theaterData.tarea} {theaterData.tname}점
+                {THEATER.tarea} {THEATER.tname}점
               </span>
             </Name>
           ) : (
@@ -109,13 +97,13 @@ const TicketMore = ({ setPage, page }) => {
           )}
           <Date>
             <span>일시</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span>{DayData.miday}</span>
+            <span>{DAY.miday}</span>
           </Date>
-          {scheduleData !== "" ? (
+          {MOVIEINFO !== "" ? (
             <Screen>
               <span>상영관</span>&nbsp;&nbsp;&nbsp;
               <span>
-                {scheduleData.type} {scheduleData.name}
+                {MOVIEINFO.type} {MOVIEINFO.name}
               </span>
             </Screen>
           ) : (
@@ -138,12 +126,12 @@ const TicketMore = ({ setPage, page }) => {
       {page ? (
         <>
           <MovieChoice onClick={() => setPage(false)}>
-            <ArrowCircleLeftIcon
+            <LeftCircleFilled
               style={{
-                width: "80px",
-                height: "80px",
-                left: "14px",
-                position: "absolute",
+								fontSize: "60px",
+								top: "10px",
+								left: "23px",
+								position: "absolute"
               }}
             />
             <p>영화선택</p>
@@ -164,14 +152,14 @@ const TicketMore = ({ setPage, page }) => {
               }
             }}
           >
-            <ArrowCircleRightIcon
-              style={{
-                width: "80px",
-                height: "80px",
-                left: "14px",
-                position: "absolute",
-              }}
-            />
+            <RightCircleFilled
+            style={{
+              fontSize: "60px",
+							top: "10px",
+              left: "23px",
+              position: "absolute",
+            }}
+          	/>
             <p>결제하기</p>
           </MovieSeat>
           {isOpen && <PaymentModal closeModal={openModalHandler} />}
@@ -190,10 +178,9 @@ const TicketMore = ({ setPage, page }) => {
                 navigate(`/UserLogin`, {
                   state: {
                     pathname: pathname,
-                    movie: movieData,
-                    theater: theaterData,
-                    Day: DayData,
-                    schedule: scheduleData,
+
+                    schedule: MOVIEINFO,
+										// 여기서 예매에 필요한 값들 던져주면됨
                   },
                 });
                 dispatch({
@@ -202,10 +189,8 @@ const TicketMore = ({ setPage, page }) => {
               }
             } else if (
               LOGIN_data !== "" &&
-              movieData !== "" &&
-              theaterData !== "" &&
-              DayData !== "" &&
-              scheduleData !== ""
+              // 여기서 예매에 필요한 값들 던져주면됨
+              MOVIEINFO !== ""
             ) {
               // setPage(true);
               // dispatch({
@@ -221,11 +206,11 @@ const TicketMore = ({ setPage, page }) => {
             }
           }}
         >
-          <ArrowCircleRightIcon
+          <RightCircleFilled
             style={{
-              width: "80px",
-              height: "80px",
-              left: "14px",
+              fontSize: "60px",
+							top: "10px",
+              left: "23px",
               position: "absolute",
             }}
           />
@@ -252,9 +237,9 @@ const TicketStep = styled.div`
   padding-top: 10px;
   padding-left: 150px;
   position: relative;
-
   left: ${(props) => (props.page === true ? "100px" : "0px")};
 `;
+
 const MoviePoster = styled.div`
   width: 180px;
   float: left;
@@ -374,4 +359,4 @@ const Screen = styled.div`
   line-height: 20px;
 `;
 
-export default TicketMore;
+export default TicketState;

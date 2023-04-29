@@ -15,33 +15,6 @@ import java.util.List;
 
 @Repository
 public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long> {
-
-    @Query("SELECT mi From MovieInfoEntity as mi where mi.mistarttime >= function('addtime', now(), '0:30:00')  Group by mi.miday Order by mi.miday ASC")
-    List<MovieInfoEntity> findAll();
-    @Query("SELECT mi From MovieInfoEntity as mi, MovieEntity as m Where mi.movie.mid= (:mid) " +
-            "and mi.mistarttime >= function('addtime', now(), '0:30:00') Group by mi.miday Order by mi.miday ASC ")
-    public List<MovieInfoEntity> findByMovieToDay(@Param("mid") Long mid);
-    //극장으로 날짜 검색할때 사용하는 메소드
-    @Query("SELECT mi From MovieInfoEntity as mi, CinemaEntity as c WHERE " +
-            "mi.mistarttime >= function('addtime', now(), '0:30:00') and mi.cinema.cid IN " +
-            "(select cid from c where tid= (:tid)) ORDER BY mi.miday ASC")
-    public List<MovieInfoEntity> findByCinemaCidIn(@Param("tid") Long tid);
-    //극장 영화로 day 검색
-    //select * from movie_information where mid =1 and cid in (select cid from movie_cinema where tid=1);
-    @Query("select info from MovieInfoEntity as info where info.movie.mid = :mid and " +
-            "info.mistarttime >= function('addtime', now(), '0:30:00') and " +
-            "info.cinema.cid in (select cinema.cid from CinemaEntity as cinema where cinema.theater.tid = :tid )")
-    public List<MovieInfoEntity> findByCinemaCidInAndMovieMid(@Param("mid") Long mid, @Param("tid") Long tid);
-    //스케줄 검색
-    @Query("select info from MovieInfoEntity as info where info.mistarttime >= function('addtime', now(), '0:30:00') and " +
-            "info.miday = :miday and info.movie.mid = :mid and info.cinema.cid in " +
-            "(select cinema.cid from CinemaEntity as cinema where cinema.theater.tid = :tid)")
-    public List<MovieInfoEntity> findBySchedule(@Param("miday") Date miday, @Param("mid") Long mid, @Param("tid") Long tid);
-
-
-
-
-
     // 현재 예매가 가능한 상영정보 조회 메소드(날짜 구할때 사용)
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi " +
             "WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') " +
@@ -57,6 +30,14 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "GROUP BY mi.miday " +
             "ORDER BY mi.miday ASC")
     List<MovieInfoEntity> findMovieInfoDay(@Param("movie") MovieEntity movie, @Param("tid") Long tid, @Param("tarea") String tarea);
+
+    // 영화 상영 스케줄 검색하는 메소드(예매 페이지)
+    @Query(value = "SELECT mi FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') AND " +
+            "mi.miday = :miday AND mi.movie = :movie AND mi.cinema IN " +
+            "(SELECT c FROM CinemaEntity as c WHERE c.theater = :theater) " +
+            "ORDER BY mi.mistarttime ASC")
+    @EntityGraph(attributePaths = {"cinema"})
+    List<MovieInfoEntity> findSchedule(@Param("miday") Date miday, @Param("movie") MovieEntity movie, @Param("theater") TheaterEntity theater);
 
     // 상영시간표에서 상영정보를 가져오는 메소드 (영화 선택)
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN CinemaEntity as ci ON mi.cinema = ci.cid " +
@@ -82,6 +63,7 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
     List<MovieInfoEntity> findInfoBeforeToday(@Param("movie") MovieEntity movie);
 
     // 이거 조인 빼버려도 될듯 --> 부질의로
+    // 조인건거 보니깐 조금 다름 부질의로 빼서 N+1생길수도 있음 확인바람
     // 특정 사용자가 예매후 관람이 끝난 영화 정보를 들고오는 메소드
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi LEFT OUTER JOIN mi.reservations rs " +
             "WHERE mi.miendtime <= NOW() AND rs.rstate = 1 AND rs.member = :member")

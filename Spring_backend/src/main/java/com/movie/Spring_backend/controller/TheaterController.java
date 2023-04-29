@@ -1,6 +1,5 @@
 package com.movie.Spring_backend.controller;
 
-import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.TheaterDto;
 import com.movie.Spring_backend.service.TheaterService;
 import lombok.RequiredArgsConstructor;
@@ -27,17 +26,6 @@ public class TheaterController {
     public ResponseEntity<List<TheaterDto>> TicketTheater(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(theaterService.getTicketTheater(requestMap));
     }
-
-
-
-
-
-
-    @GetMapping("/normal/area")
-    public List<TheaterDto> getData() {
-        return theaterService.getInfo();
-    }
-
 }
 
 

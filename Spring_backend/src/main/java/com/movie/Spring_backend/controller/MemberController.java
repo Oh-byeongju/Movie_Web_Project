@@ -20,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+// Member로 수정
 @RequestMapping("/member")
 public class MemberController {
 

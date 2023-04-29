@@ -3,15 +3,13 @@ import styled from "styled-components";
 import TicketMovieList from "../components/Ticket/TicketMovieList";
 import TicketTheaterList from "../components/Ticket/TicketTheaterList";
 import TicketDayList from "../components/Ticket/TicketDayList";
+import TicketSchedule from "../components/Ticket/TicketSchedule";
+import TicketState from "../components/Ticket/TicketState";
 
-
-import AllSchedule from "../components/Ticket/AllSchedule";
-
-import TicketMore from "../components/Ticket/TicketMore";
 import TopButton from "../components/Ticket/TopButton";
 import Seat from "../components/Ticket/Seat";
 import { useSelector, useDispatch } from "react-redux";
-import { RESET_RESERVE_PAGE } from "../reducer/R_ticket";
+
 import Complete from "../components/Ticket/Complete";
 import Loading from "../components/Common_components/Loading";
 
@@ -29,9 +27,7 @@ const Reserve = () => {
   useEffect(() => {
     return () => {
       console.log("페이지 나가니까 초기화 시키기");
-      dispatch({
-        type: RESET_RESERVE_PAGE,
-      })
+      
    
     };
     //페이지에서 컴포넌트가 사라질때 return()을 사용하면 실행시킬수있다 페이지 뒤로가기나 다른페이지에서 다시 올 때 사용하면 좋을거같다.
@@ -53,12 +49,12 @@ const Reserve = () => {
           <TicketMovieList />
           <TicketTheaterList/>
           <TicketDayList />
-          <AllSchedule />
+          <TicketSchedule />
           
         </BookinWrapper> 
       )}
       {payment_done? "" : 
-              <TicketMore setPage={setPage} page={page} />
+              <TicketState setPage={setPage} page={page} />
       }
     </Container>
   );

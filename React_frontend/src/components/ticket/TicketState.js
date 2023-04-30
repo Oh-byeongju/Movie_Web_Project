@@ -30,7 +30,7 @@ const TicketState = ({ setPage, page }) => {
 
 
   const { choiceSeat, price, 어른, 아이, 학생 } = useSelector(
-    (state) => state.seat
+    (state) => state.R_seat
   );
   
   const { pathname } = useLocation();
@@ -103,7 +103,7 @@ const TicketState = ({ setPage, page }) => {
             <Screen>
               <span>상영관</span>&nbsp;&nbsp;&nbsp;
               <span>
-                {MOVIEINFO.type} {MOVIEINFO.name}
+                {MOVIEINFO.ctype} {MOVIEINFO.cname}
               </span>
             </Screen>
           ) : (
@@ -192,15 +192,6 @@ const TicketState = ({ setPage, page }) => {
               // 여기서 예매에 필요한 값들 던져주면됨
               MOVIEINFO !== ""
             ) {
-              // setPage(true);
-              // dispatch({
-              //   type: SELECT_SEAT_REQUEST,
-              //   data: scheduleData.cid,
-              // });
-              // dispatch({
-              //   type: SELECT_INFOSEAT_REQUEST,
-              //   data: scheduleData.miid,
-              // });
               setPage(true);
               console.log("gg");
             }

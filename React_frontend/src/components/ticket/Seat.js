@@ -1,146 +1,175 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { Button, Space } from "antd";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { useSelector, useDispatch } from "react-redux";
 
+/*
+  23-04-30 예매 좌석 페이지 수정(오병주)
+*/
+import React, { useEffect, useState, useCallback } from "react";
+import styled from "styled-components";
+import { Button } from "antd";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import {
   SEAT_CHOICE,
   SEAT_REMOVE,
   USER_CHOICE,
   USER_REMOVE,
   PAGE_RESET,
-  SELECT_SEAT_REQUEST,
-} from "../../reducer/seat";
+  SEAT_LIST_REQUEST
+} from "../../reducer/R_seat";
 import SeatButton from "./SeatButton";
 
 const ButtonGroup = Button.Group;
 const Seat = () => {
-  const [numAdult, setNumAdult] = useState(0); //어른
-  const [numTeenager, setNumTeenager] = useState(0); //학생
-  const [numKid, setNumKid] = useState(0); //애기
-  const [selectedUser, setSelectedUser] = useState([]); //선택한 값
-  const [priceInfo, setPriceInfo] = useState([]); //값 더하기 //여기 배열로 값을 저장
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
+	const dispatch = useDispatch();
 
-  const {
-    choiceSeat,
-    selectseat,
-    total,
-    아이,
-    학생,
-    어른
-  } = useSelector((state) => state.seat);
-  const { movieData, theaterData, DayData, scheduleData } = useSelector(
-    (state) => state.R_ticket
-  );
-  //결국 데이터를 받아오려면 한번에 다 받아와야함{location: A1,A id:2}2,A3,A4,A5,A6~B1,B2,B3,B4,B5,B6 이런식
-  // 열의 차이를 줘야함 그리고 점유 확인, id값을 받아오고
-  const dispatch = useDispatch();
+	// 필요한 리덕스 상태들
+	const { MOVIEINFO, SEAT_LIST, LOGIN_data, Kid, Teenager, Adult, Total, ChoiceSeat } = useSelector(
+		state => ({
+			MOVIEINFO: state.R_ticket.MOVIEINFO,
+			SEAT_LIST: state.R_seat.SEAT_LIST,
+			LOGIN_data: state.R_user_login.LOGIN_data,
+			Kid: state.R_seat.Kid,
+			Teenager: state.R_seat.Teenager,
+			Adult: state.R_seat.Adult,
+			Total: state.R_seat.Total,
+			ChoiceSeat: state.R_seat.ChoiceSeat
+		}),
+		shallowEqual
+	);
 
-  useEffect(() => {
-    if (
-      LOGIN_data !== "" &&
-      movieData !== "" &&
-      theaterData !== "" &&
-      DayData !== "" &&
-      scheduleData !== ""
-    ) {
-      dispatch({
-        type: SELECT_SEAT_REQUEST,
-        data: { id: scheduleData.cid, miid: scheduleData.miid },
+	// 좌석 조회 useEffect
+	useEffect(() => {
+    if (LOGIN_data.uname !== '' && MOVIEINFO !== '') {
+      dispatch ({
+        type: SEAT_LIST_REQUEST,
+        data: { 
+					cid: MOVIEINFO.cid, 
+					miid: MOVIEINFO.miid 
+				},
       });
     }
+
+		
     dispatch({
-      type:PAGE_RESET
+      type: PAGE_RESET
     })
   
-  },
-   []);
-  const plusHandlerAdult = () => {
-    if (total < selectseat.length && total < 8) {
+  }, [LOGIN_data, MOVIEINFO, dispatch]);
+
+	// 버튼 useState
+	const [numKid, setNumKid] = useState(0); // 유아
+	const [numTeenager, setNumTeenager] = useState(0); // 학생
+  const [numAdult, setNumAdult] = useState(0); // 성인
+  
+	// 성인 인원을 늘릴때
+  const plusHandlerAdult = useCallback(() => {
+    if (Total < 8) {
       setNumAdult((prev) => prev + 1);
       dispatch({
         type: USER_CHOICE,
-        data: "어른",
-        price: 30,
+				data: {
+					type: "성인",
+					price: 30
+				}
       });
     }
-  };
+		else {
+			alert('1회 최대 8명까지 예약가능합니다.');
+		}
+  }, [Total, dispatch]);
 
-  const plusHandlerTeenager = () => {
-    if (total < selectseat.length && total < 8) {
-      setNumTeenager((prev) => prev + 1);
-      dispatch({
-        type: USER_CHOICE,
-        data: "학생",
-        price: 20,
-      });
-    }
-  };
-
-  const plusHandlerKid = () => {
-    if (total < selectseat.length && total < 8) {
-      setNumKid((prev) => prev + 1);
-      dispatch({
-        type: USER_CHOICE,
-        data: "아이",
-        price: 10,
-      });
-    }
-  };
-
-  const minusHandlerAdult = () => {
-    if (total <= choiceSeat.length) {
+	// 성인 인원을 줄일때
+	const minusHandlerAdult = useCallback(() => {
+    if (Total <= ChoiceSeat.length) {
       alert("선택한 좌석이 예매 인원 보다 많습니다.");
     } 
-    else if(어른===0){
-      alert('줄일수없습니다.')
-    }
     else if (numAdult) {
       setNumAdult((prev) => prev - 1);
       dispatch({
         type: USER_REMOVE,
-        data: "어른",
-        price: 30,
+				data: {
+					type: "성인",
+					price: 30
+				}
       });
     }
-  };
-  const minusHandlerTeenager = () => {
-    if (total <= choiceSeat.length) {
+  }, [Total, numAdult, ChoiceSeat, dispatch]);
+  
+	// 학생 인원 늘릴때
+  const plusHandlerTeenager = useCallback(() => {
+    if (Total < 8) {
+      setNumTeenager((prev) => prev + 1);
+      dispatch({
+        type: USER_CHOICE,
+				data: {
+					type: "학생",
+					price: 20
+				}
+      });
+    }
+		else {
+			alert('1회 최대 8명까지 예약가능합니다.');
+		}
+  }, [Total, dispatch]);
+
+	// 학생 인원 줄일때
+	const minusHandlerTeenager = useCallback(() => {
+    if (Total <= ChoiceSeat.length) {
       alert("선택한 좌석이 예매 인원 보다 많습니다.");
     } 
-    else if(학생===0){
-      alert('줄일수없습니다.')
-
-    }
     else if (numTeenager) {
       setNumTeenager((prev) => prev - 1);
       dispatch({
         type: USER_REMOVE,
-        data: "학생",
-        price: 20,
+        data: {
+					type: "학생",
+					price: 20
+				}
       });
     }
-  };
-  const minusHandlerKid = () => {
-    if(아이===0){
-      alert('줄일수없습니다.')
+  }, [Total, ChoiceSeat, numTeenager, dispatch]);
+
+	// 유아 인원 늘릴때
+  const plusHandlerKid = useCallback(() => {
+    if (Total < 8) {
+      setNumKid((prev) => prev + 1);
+      dispatch({
+        type: USER_CHOICE,
+        data: {
+					type: "유아",
+					price: 10
+				}
+      });
     }
-    else if (total <= choiceSeat.length) {
+		else {
+			alert('1회 최대 8명까지 예약가능합니다.');
+		}
+  }, [Total, dispatch]);
+
+  // 유아 인원 줄일때
+  const minusHandlerKid = useCallback(() => {
+		if (Total <= ChoiceSeat.length) {
       alert("선택한 좌석이 예매 인원 보다 많습니다.");
     } 
     else if (numKid) {
       setNumKid((prev) => prev - 1);
       dispatch({
         type: USER_REMOVE,
-        data: "아이",
-        price: 10,
+        data: {
+					type: "유아",
+					price: 10
+				}
       });
     }
-  };
+  }, [Total, ChoiceSeat, numKid, dispatch]);
+
+
+
+
+	// 아래 두놈 이사시켜야함
   const addSeats = (row) => {
-    if (total > choiceSeat.length) {
+
+		console.log(row);
+    if (Total > ChoiceSeat.length) {
       dispatch({
         type: SEAT_CHOICE,
         data: {
@@ -158,6 +187,9 @@ const Seat = () => {
       data: seat,
     });
   };
+
+
+
   return (
     <SeatWrapper>
       <SeatContent>
@@ -168,102 +200,48 @@ const Seat = () => {
           <NumberOfPeople>
             <NumberContainer>
               <People>
-                <span>유아</span>
+                <span>
+									유아
+								</span>
                 <ButtonGroup style={{ marginLeft: "15px" }}>
-                  <Button
-                    onClick={()=>{
-                      minusHandlerKid()
-                    }}
-                    disabled={아이===0?true:false}
-                    icon={<MinusOutlined />}
-                    style={{ width: "32px", height: "32px" }}
-                  />
-                  <Button
-                    value={numKid}
-                    style={{
-                      width: "52px",
-                      paddingLeft: "18px",
-                    }}
-                  >
+                  <Button onClick={minusHandlerKid} disabled={Kid === 0? true : false} icon={<MinusOutlined />} style={{ width: "32px", height: "32px" }}/>
+                  <Button value={numKid} style={{ width: "52px", paddingLeft: "18px" }}>
                     {numKid}
                   </Button>
-                  <Button
-                    onClick={plusHandlerKid}
-                    icon={<PlusOutlined />}
-                    style={{ width: "32px", height: "32px" }}
-                  />
+                  <Button onClick={plusHandlerKid} icon={<PlusOutlined />} style={{ width: "32px", height: "32px" }}/>
                 </ButtonGroup>
               </People>
               <People>
-                <span>학생</span>
+                <span>
+									학생
+								</span>
                 <ButtonGroup style={{ marginLeft: "15px" }}>
-                  <Button
-                    onClick={()=>{
-                      if(학생!==0){
-                      minusHandlerTeenager()
-                    }}
-                  }
-                  disabled={학생===0?true:false}
-
-                  icon={<MinusOutlined />}
-                    style={{ width: "32px", height: "32px" }}
-                  />
-                  <Button
-                    disable="disable"
-                    value={numTeenager}
-                    style={{
-                      width: "52px",
-                      paddingLeft: "18px",
-                    }}
-                  >
+                  <Button onClick={minusHandlerTeenager} disabled={Teenager === 0? true : false} icon={<MinusOutlined />} style={{ width: "32px", height: "32px" }}/>
+                  <Button value={numTeenager} style={{ width: "52px", paddingLeft: "18px" }}>
                     {numTeenager}
                   </Button>
-                  <Button
-                    onClick={plusHandlerTeenager}
-                    icon={<PlusOutlined />}
-                    style={{ width: "32px", height: "32px" }}
-                  />
+                  <Button onClick={plusHandlerTeenager} icon={<PlusOutlined />} style={{ width: "32px", height: "32px" }}/>
                 </ButtonGroup>
               </People>
               <People>
-                <span>어른</span>
+                <span>
+									성인
+								</span>
                 <ButtonGroup style={{ marginLeft: "15px" }}>
-                  <Button
-                    onClick={()=>{
-                      if(어른!==0){minusHandlerAdult()}}}
-                      disabled={어른===0?true:false}
-
-                    icon={<MinusOutlined />}
-                    style={{ width: "32px", height: "32px" }}
-                  />
-                  <Button
-                    disable="disable"
-                    value={numAdult}
-                    style={{
-                      width: "52px",
-                      paddingLeft: "18px",
-                    }}
-                  >
+                  <Button onClick={minusHandlerAdult} disabled={Adult === 0? true : false} icon={<MinusOutlined />} style={{ width: "32px", height: "32px" }}/>
+                  <Button value={numAdult} style={{ width: "52px", paddingLeft: "18px" }}>
                     {numAdult}
                   </Button>
-                  <Button
-                    onClick={plusHandlerAdult}
-                    icon={<PlusOutlined />}
-                    style={{ width: "32px", height: "32px" }}
-                  />
+                  <Button onClick={plusHandlerAdult} icon={<PlusOutlined />} style={{ width: "32px", height: "32px" }}/>
                 </ButtonGroup>
               </People>
             </NumberContainer>
           </NumberOfPeople>
-          <MovieInfo>
-            <Movie></Movie>
-          </MovieInfo>
         </PersonScreen>
         <ScreenSelect>
-          <Screen></Screen>
-
+          <Screen/>
           <SeetReserve>
-            {selectseat.map((seat, index) => {
+            {SEAT_LIST.map((seat, index) => {
               /*ocuppyseat.find((ocuppy) => {
                 if (
                   scheduleData.miid === ocuppy.miid &&
@@ -282,8 +260,8 @@ const Seat = () => {
                     seat={seat}
                     key={seat.sid}
                     addSeats={addSeats}
-                    is_reserved={seat.able}
-                    totalNumber={total}
+                    is_reserved={seat.reserve}
+                    totalNumber={Total}
                     removeSeats={removeSeats}
                   />
                 </div>
@@ -356,10 +334,8 @@ const PersonScreen = styled.div`
   display: inline-block;
   width: 100%;
 `;
-const MovieInfo = styled.div`
-  width: 100%;
-`;
-const Movie = styled.div``;
+
+
 const NumberOfPeople = styled.div`
   width: 100%;
 `;

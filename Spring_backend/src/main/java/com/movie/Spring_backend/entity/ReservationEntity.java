@@ -43,7 +43,7 @@ public class ReservationEntity {
     private MemberEntity member;
 
     // 일대다 관계 매핑
-    @OneToMany(mappedBy = "reserve",
+    @OneToMany(mappedBy = "reservation",
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<MovieInfoSeatEntity> infoSeats = new ArrayList<>();

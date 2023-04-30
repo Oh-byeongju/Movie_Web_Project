@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Select, Space } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { MANAGER_MOVIEINFO_MOVIE_LIST_REQUEST, MANAGER_MOVIEINFO_THEATER_LIST_REQUEST, MANAGER_MOVIEINFO_CINEMA_LIST_REQUEST, MANAGER_MOVIEINFO_LIST_REQUEST } from '../../reducer/R_manager_movieinfo';
+import { MANAGER_MOVIEINFO_MOVIE_LIST_REQUEST, MANAGER_MOVIEINFO_THEATER_LIST_REQUEST,
+	MANAGER_MOVIEINFO_THEATER_LIST_RESET, MANAGER_MOVIEINFO_CINEMA_LIST_REQUEST, MANAGER_MOVIEINFO_LIST_REQUEST } from '../../reducer/R_manager_movieinfo';
 import MovieInfoTable from './MovieInfoTable';
 import locale from 'antd/lib/locale/ko_KR';
 import { ConfigProvider } from 'antd';
@@ -19,13 +20,12 @@ const MovieInfo = () => {
 	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-  const { LOGIN_data, LOGIN_STATUS_done, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST, MOVIEINFO_CINEMA_LIST } = useSelector(
+  const { LOGIN_data, LOGIN_STATUS_done, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST } = useSelector(
     state => ({
       LOGIN_data: state.R_user_login.LOGIN_data,
 			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
       MOVIEINFO_MOVIE_LIST: state.R_manager_movieinfo.MOVIEINFO_MOVIE_LIST,
-			MOVIEINFO_THEATER_LIST: state.R_manager_movieinfo.MOVIEINFO_THEATER_LIST,
-			MOVIEINFO_CINEMA_LIST: state.R_manager_movieinfo.MOVIEINFO_CINEMA_LIST
+			MOVIEINFO_THEATER_LIST: state.R_manager_movieinfo.MOVIEINFO_THEATER_LIST
     }),
     shallowEqual
   );
@@ -39,7 +39,7 @@ const MovieInfo = () => {
 		}
 
 		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청(검색에 필요한 정보)
-		if (LOGIN_data.uid === 'manager' && MOVIEINFO_MOVIE_LIST.length === 0 && MOVIEINFO_THEATER_LIST.length === 0 && MOVIEINFO_CINEMA_LIST.length === 0) {
+		if (LOGIN_data.uid === 'manager') {
 		 	dispatch({
 			 	type: MANAGER_MOVIEINFO_MOVIE_LIST_REQUEST
 		 	});
@@ -66,7 +66,14 @@ const MovieInfo = () => {
 				}
 			});
 		}
- 	}, [LOGIN_data.uid, LOGIN_STATUS_done, MOVIEINFO_MOVIE_LIST, MOVIEINFO_THEATER_LIST, MOVIEINFO_CINEMA_LIST, dispatch, navigate]);
+
+		// 페이지 탈출할때 극장 목록은 리셋
+		return () => {
+      dispatch({
+				type: MANAGER_MOVIEINFO_THEATER_LIST_RESET
+			});
+    };
+ 	}, [LOGIN_data.uid, LOGIN_STATUS_done, dispatch, navigate]);
 
 	// 분리된 극장들 변수
 	const [seoulTheater, setseoulTheater] = useState('');

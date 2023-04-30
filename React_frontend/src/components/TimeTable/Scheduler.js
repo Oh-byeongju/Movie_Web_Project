@@ -26,33 +26,14 @@ const Scheduler = () =>{
 
 	// 모든 영화 및 극장 조회 useEffect
   useEffect(() => {
-		if (MOVIE_LIST.length === 0 && THEATER_LIST.length === 0) {
-			dispatch({
-				type: TIMETABLE_MOVIE_LIST_REQUEST
-			});
+		dispatch({
+			type: TIMETABLE_MOVIE_LIST_REQUEST
+		});
 
-			dispatch({
-				type: TIMETABLE_THEATER_LIST_REQUEST
-			})
-		}
-
-		// 페이지 탈출 시 초기화
-		return () => {
-			if (MOVIE_LIST.length !== 0) {
-				dispatch({
-					type: TIMETABLE_MOVIE_SELECT,
-					data: MOVIE_LIST[0]
-				});
-			}
-
-			if (THEATER_LIST.length !== 0) {
-				dispatch({
-					type: TIMETABLE_THEATER_SELECT,
-					data: THEATER_LIST[0]
-				});
-			}
-		}
-  }, [MOVIE_LIST, THEATER_LIST, dispatch]);
+		dispatch({
+			type: TIMETABLE_THEATER_LIST_REQUEST
+		})
+  }, [dispatch]);
 
 	// css를 위한 버튼 변수
 	const [moviebutton, setmoviebutton] = useState(true);

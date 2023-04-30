@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+/*eslint-disable*/
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import * as Payment from "../Common_components/Function";
-import seat, { CHECK_SEAT_REQUEST } from "../../reducer/seat";
+import seat, { CHECK_SEAT_REQUEST } from "../../reducer/R_seat";
 
 const PaymentModal = ({ closeModal }) => {
   const dispatch = useDispatch();
-  const { movieData, theaterData, DayData, scheduleData, payment_done } = useSelector(
+  const { MOVIE, THEATER, DayData, MOVIEINFO, payment_done } = useSelector(
     (state) => state.R_ticket
   );
   const {  아이, 학생, 어른, choiceSeat, price ,check_seat_error} = useSelector(
-    (state) => state.seat
+    (state) => state.R_seat
   );
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
 
@@ -42,7 +43,7 @@ const PaymentModal = ({ closeModal }) => {
       pg: "html5_inicis.INIpayTest", //pg사
       payMethod: "card", //결제수단
       oderNum: Payment.createOrderNum(), //주문번호
-      name: movieData.title, //결제이름
+      name: MOVIE.mtitle, //결제이름
       buyerEmail: "", //구매자 이메일
       buyerName: LOGIN_data.uname, //구매자 이름
       buyerTel: "010-1234-1234", //구매자 번호
@@ -54,7 +55,7 @@ const PaymentModal = ({ closeModal }) => {
       dispatch,
       LOGIN_data.uid,
       choiceSeat,
-      scheduleData.miid
+      MOVIEINFO.miid
       ,아이,학생,어른
     );
     
@@ -76,7 +77,7 @@ const PaymentModal = ({ closeModal }) => {
               </h5>
               <Content>
                 <Poster>
-                  <img src={`${movieData.imagepath}`}></img>
+                  <img src={`${MOVIE.mimagepath}`}></img>
                 </Poster>
                 <Table>
                   <caption>예매정보</caption>
@@ -84,27 +85,27 @@ const PaymentModal = ({ closeModal }) => {
                   <tbody>
                     <tr>
                       <th>영화명</th>
-                      <td>{movieData.title}</td>
+                      <td>{MOVIE.mtitle}</td>
                     </tr>
                     <tr>
                       <th>극장</th>
                       <td>
-                        {theaterData.tarea} &nbsp;
-                        {theaterData.tname}점
+                        {THEATER.tarea} &nbsp;
+                        {THEATER.tname}점
                       </td>
                     </tr>
                     <tr>
                       <th>상영관</th>
                       <td>
-                        {scheduleData.type} &nbsp;{scheduleData.name}
+                        {MOVIEINFO.ctype} &nbsp;{MOVIEINFO.cname}
                       </td>
                     </tr>
                     <tr>
                       <th>일시</th>
                       <td>
-                        {scheduleData.miday}&nbsp;&nbsp;
-                        {scheduleData.mistarttime.substring(11, 16)}~
-                        {scheduleData.miendtime.substring(11,16)}
+                        {MOVIEINFO.miday}&nbsp;&nbsp;
+                        {MOVIEINFO.mistarttime.substring(11, 16)}~
+                        {MOVIEINFO.miendtime.substring(11,16)}
                       </td>
                     </tr>
                     <tr>
@@ -208,7 +209,7 @@ const PaymentModal = ({ closeModal }) => {
                   type: CHECK_SEAT_REQUEST,
                   data: {
                     user:LOGIN_data.uid,
-                    name:scheduleData.miid,
+                    name:MOVIEINFO.miid,
                     age: seatnumber,
                   },
                 });
@@ -230,7 +231,7 @@ const PaymentModal = ({ closeModal }) => {
     </Container>
   );
 };
-export default PaymentModal;
+
 
 const Container = styled.div`
   position: fixed;
@@ -499,3 +500,5 @@ const FAIL = styled.button`
 
   color: #6e6e6e;
 `;
+
+export default PaymentModal;

@@ -10,7 +10,6 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 public class SeatEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sid;

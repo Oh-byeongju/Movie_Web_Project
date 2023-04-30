@@ -1,19 +1,17 @@
+/*
+  23-04-30 예매 좌석 페이지 수정(오병주)
+*/
 package com.movie.Spring_backend.service;
 
-import com.movie.Spring_backend.dto.MovieDto;
-import com.movie.Spring_backend.dto.MovieInfoDto;
 import com.movie.Spring_backend.dto.SeatDto;
 import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.exceptionlist.SeatOccupyException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
-import com.movie.Spring_backend.mapper.OcuppyMapper;
 import com.movie.Spring_backend.mapper.SeatMapper;
 import com.movie.Spring_backend.repository.MovieInfoSeatRepository;
 import com.movie.Spring_backend.repository.RedisSeatRepository;
 import com.movie.Spring_backend.repository.SeatRepository;
-import com.movie.Spring_backend.util.SortUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
@@ -33,70 +31,52 @@ public class SeatService {
     private final MovieInfoSeatRepository movieInfoSeatRepository;
     private final SeatMapper seatMapper;
 
-
-
+    // 특정 상영정보에 좌석정보를 가져오는 메소드
     @Transactional
+    public List<SeatDto> getSeatMovieInfo(HttpServletRequest request, Map<String, String> requestMap) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
 
-    public List<SeatDto> findBySeat(Long id,Long miid) {
+        // requestMap 안에 정보를 추출
+        Long cid = Long.valueOf(requestMap.get("cid"));
+        long miid = Long.parseLong(requestMap.get("miid"));
 
-        List<SeatEntity> allDatas = seatRepository.findByCinemaCid(id);  //전체 시트
-        List<MovieInfoSeatEntity> ocuppyDatas = movieInfoSeatRepository.findByInfoMovie(miid);
-        //인포 시트 //점유된 좌석
-        List<SeatEntity> ableDatas = new ArrayList<>();  //able 된 좌석 저장할 list
-        List<SeatEntity> disableDatas = new ArrayList<>();  //disable된 좌석 저장할 list
+        // 좌석정보 조회에 필요한 정보 Entity로 변환
+        CinemaEntity cinema = CinemaEntity.builder().cid(cid).build();
+        MovieInfoEntity movieInfo = MovieInfoEntity.builder().miid(miid).build();
 
+        // 상영관에 모든 좌석 및 점유좌석들 조회
+        List<SeatEntity> Seats = seatRepository.findByCinema(cinema);
+        List<MovieInfoSeatEntity> movieInfoSeats = movieInfoSeatRepository.findByMovieInfo(movieInfo);
+        List<RedisSeatEntity> redisSeats = redisSeatRepository.findAll();
 
-        List<RedisSeatEntity> datad = redisSeatRepository.findAll();
-        //레디스의 점유 좌석을 확인 하기 위한 list
-        List<OcuppyMapper> ocuppyMappers = new ArrayList<>();
-        //레디스의 점유 좌석을 매핑해줌
-        for (RedisSeatEntity r : datad) {
-            if (r != null) {//null 값 제외하고 받아옴
-                System.out.println(r.getKey());
-                String[] SeatNumber = r.getKey().split(","); //레디스의 데이터를 매핑해서 객체 형식으로 만듬
-                ocuppyMappers.add(new OcuppyMapper(Long.parseLong(SeatNumber[0].trim()),  Long.parseLong(SeatNumber[1].trim())));
-              }
-            //miid seatid로 추출해서 매핑
+        // 점유좌석번호 변수
+        List<Long> occupyNum = new ArrayList<>();
+
+        // mysql에 있는 상영정보에 대한 점유좌석번호 추출
+        for (MovieInfoSeatEntity mis : movieInfoSeats) {
+            occupyNum.add(mis.getSeat().getSid());
         }
 
+        // 레디스에 있는 상영정보에 대한 점유좌석번호 추출
+        for (RedisSeatEntity rs : redisSeats) {
+            // rs가 널이 아닐경우
+            if (rs != null) {
+                // 레디스 데이터 매핑
+                String [] SeatNumber = rs.getKey().split(",");
 
-        //try catch대신 bollean으로 for문돌림
-        for (SeatEntity s : allDatas) {
-            boolean check=false;
-            for (MovieInfoSeatEntity se : ocuppyDatas) {
-                if (s.getSid() == se.getSeat().getSid()) {  //점유된좌석이면 점유된 좌석 배열에 넣음
-                    ableDatas.add(s);
-                    check=true;
-                    break;
+                // 사용자가 예매하려는 상영정보의 점유좌석일경우 좌석번호를 추출
+                if (Long.parseLong(SeatNumber[0].trim()) == miid) {
+                    occupyNum.add(Long.parseLong(SeatNumber[1].trim()));
                 }
-
-            }
-            for(OcuppyMapper oc : ocuppyMappers){
-                if(miid.equals(oc.getMiid())){ //occupymapper의 miid와 먼저 비교
-                    if(s.getSid().equals(oc.getSeatid())){ //seatid 로 비교
-                        ableDatas.add(s);
-
-                        check=true;
-                        break;
-                    }
-                }
-
-            }
-            if(check==false){
-                disableDatas.add(s);  //점유된 좌석이 아닌것
             }
         }
-        List<SeatDto> able = ableDatas.stream().map((seat) -> seatMapper.toAble(seat, "able")).collect(Collectors.toList());
-        List<SeatDto> disable = disableDatas.stream().map((seat) -> seatMapper.toAble(seat, "disable")).collect(Collectors.toList());
-        //able과 disalbe로 dto 매핑후 합침
-        for (SeatDto seat : disable) {
-            able.add(seat);
-        }
-        Collections.sort(able, new SortUtil()); //이 함수는 뒤죽박죽인 자리를 순서대로 되돌려둠
-            return able;
-
-
+        // 정보를 매핑후 리턴
+        return Seats.stream().map(seat -> seatMapper.toDtoReserve(seat, occupyNum)).collect(Collectors.toList());
     }
+
+
+    // 유저이름 뽑을때 atk안에 있는거 뽑아서 쓰삼
     @Transactional
     public void setValues(String name, String age ,String user, HttpServletRequest request) {
         //name : miid , age : seatid
@@ -121,7 +101,8 @@ public class SeatService {
                 redisSeatRepository.save(redisSeatEntity);
 
             }
-        } else if (!datad.isEmpty()) {
+        }
+        else if (!datad.isEmpty()) {
             //여기서부턴 검사가 필요함
             //레디스에 값이 있음
             for (String k : SeatNumber) {
@@ -134,11 +115,13 @@ public class SeatService {
                 //seated가 null이면
                 if (seated.isEmpty()) {
                     System.out.println("키가 없다");
-                } else {
+                }
+                else {
                     //seated가 있는데 아이디값이 같으면 예외처리를 하지않고
                     if (user.equals(seated.get().getUser())) {
                         check=true;
-                    } else {
+                    }
+                    else {
                         //아이디값이 다르면 예외를 던진다.
                         check=true;
                         throw new SeatOccupyException("점유된 자리입니다.");
@@ -146,6 +129,7 @@ public class SeatService {
                 }
             }
         }
+
         if(check==false) {
             for (String k : SeatNumber) {
                 String keys = "";

@@ -43,7 +43,7 @@ const Reserve = () => {
 		}
 
 		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
-		if (LOGIN_data.uid === 'manager' && MOVIE_LIST.length === 0 && THEATER_LIST.length === 0) {
+		if (LOGIN_data.uid === 'manager') {
       dispatch({
         type: MANAGER_MOVIE_LIST_REQUEST
       });
@@ -52,23 +52,7 @@ const Reserve = () => {
 			})
     }
 
-		// 페이지 탈출 시 초기화
-		return () => {
-			if (MOVIE_LIST.length !== 0) {
-				dispatch({
-					type: MANAGER_MOVIE_SELECT,
-					data: MOVIE_LIST[0]
-				});
-			}
-
-			if (THEATER_LIST.length !== 0) {
-				dispatch({
-					type: MANAGER_THEATER_SELECT,
-					data: THEATER_LIST[0]
-				});
-			}
-		}
-  }, [LOGIN_data.uid, LOGIN_STATUS_done, MOVIE_LIST, THEATER_LIST, dispatch, navigate]);
+  }, [LOGIN_data.uid, LOGIN_STATUS_done, dispatch, navigate]);
 
 	// 예매기록 조회 useEffect (영화 선택)
   useEffect(()=> {

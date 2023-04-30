@@ -1,7 +1,5 @@
 package com.movie.Spring_backend.dto;
 
-import com.movie.Spring_backend.entity.CinemaEntity;
-import com.movie.Spring_backend.entity.ReservationEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,16 +9,12 @@ import lombok.NoArgsConstructor;
 public class SeatDto {
     private Long sid;
     private String sname;
-
-    private CinemaEntity cinema;
-
-    private String able;
+    private Boolean reserve; // 좌석 점유 여부
 
     @Builder
-    public SeatDto(Long sid ,String sname, CinemaEntity cinema,String able) {
-        this.sid=sid;
-        this.sname=sname;
-        this.cinema=cinema;
-        this.able=able;
+    public SeatDto(Long sid ,String sname, Boolean reserve) {
+        this.sid = sid;
+        this.sname = sname;
+        this.reserve = reserve;
     }
 }

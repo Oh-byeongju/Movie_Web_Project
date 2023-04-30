@@ -5,16 +5,10 @@
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.*;
-import com.movie.Spring_backend.repository.MovieInfoRepository;
-import com.movie.Spring_backend.service.CinemaService;
 import com.movie.Spring_backend.service.MovieInfoService;
-import com.movie.Spring_backend.service.MovieService;
-import com.movie.Spring_backend.service.TheaterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.*;
 
 //crossorigin 바꿔야함
 import java.util.List;

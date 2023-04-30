@@ -35,22 +35,12 @@ const DocumentLayout = () => {
 		}
 
 		 // 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
-		 if (LOGIN_data.uid === 'manager' && MOVIE_LIST_COMMENT.length === 0) {
+		 if (LOGIN_data.uid === 'manager') {
       dispatch({
         type: MANAGER_MOVIE_LIST_COMMENT_REQUEST
       });
     }
-
-		// 페이지 탈출 시 초기화
-		return () => {
-			if (MOVIE_LIST_COMMENT.length !== 0) {
-				dispatch({
-					type: MANAGER_MOVIE_COMMENT_SELECT,
-					data: MOVIE_LIST_COMMENT[0]
-				});
-			}
-		}
-  }, [LOGIN_data.uid, LOGIN_STATUS_done, MOVIE_LIST_COMMENT, navigate, dispatch]);
+  }, [LOGIN_data.uid, LOGIN_STATUS_done, navigate, dispatch]);
 
 	// 예매기록 조회 useEffect (영화 선택)
   useEffect(()=> {

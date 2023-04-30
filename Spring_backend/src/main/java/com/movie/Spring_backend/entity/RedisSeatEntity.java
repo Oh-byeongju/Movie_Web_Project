@@ -1,5 +1,6 @@
 package com.movie.Spring_backend.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,21 +11,17 @@ import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Getter
-@RedisHash(value = "seat", timeToLive = 200) //초단위
+@RedisHash(value = "seat", timeToLive = 600)
+@NoArgsConstructor
 public class RedisSeatEntity {
 
     @Id
     private String key;
-
-
-    @Column(nullable = false)
     private String user;
 
+    @Builder
     public RedisSeatEntity(String key, String user) {
         this.key = key;
-        this.user=user;
+        this.user = user;
     }
-
-
-
 }

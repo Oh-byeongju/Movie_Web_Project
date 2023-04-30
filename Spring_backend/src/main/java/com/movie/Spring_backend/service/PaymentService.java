@@ -97,8 +97,8 @@ public class PaymentService {
                    for(Long ss :sid){
                        MovieInfoSeatEntity movieInfoSeatEntity= MovieInfoSeatEntity.builder()
                                .seat(SeatEntity.builder().sid(ss).build())
-                               .info(info)
-                               .reserve(data)
+                               .movieInfo(info)
+                               .reservation(data)
                                .build();
                        infoseat.add(movieInfoSeatEntity);
                        String keys =miid + ", " + ss;
@@ -158,7 +158,7 @@ public class PaymentService {
             }
         }
         // 사용자가 예매했던 좌석정보 삭제
-        movieInfoSeatRepository.deleteByReserve(Reservation);
+        movieInfoSeatRepository.deleteByReservation(Reservation);
 
         // 사용자가 취소한 예매정보를 변경
         reservationRepository.UserReservationCancel(Reservation.getRid());

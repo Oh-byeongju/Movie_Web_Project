@@ -9,8 +9,14 @@ import java.util.List;
 
 @Repository
 public interface SeatRepository extends JpaRepository<SeatEntity,Long> {
-    List<SeatEntity> findByCinemaCid(Long id);
+    // 특정 상영관에 좌석을 조회하는 메소드
+    List<SeatEntity> findByCinema(CinemaEntity cinema);
 
     // 특정 상영관에 좌석을 제거하는 메소드
     void deleteByCinema(CinemaEntity cinema);
+
+
+
+    // (다하고 이거 제거)
+    List<SeatEntity> findByCinemaCid(Long id);
 }

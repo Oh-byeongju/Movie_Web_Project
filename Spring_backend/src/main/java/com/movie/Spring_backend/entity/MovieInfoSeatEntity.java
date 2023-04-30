@@ -1,5 +1,4 @@
 package com.movie.Spring_backend.entity;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,23 +15,22 @@ public class MovieInfoSeatEntity {
     private Long misid;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="sid") //조인할 컬럼 이름
+    @JoinColumn(name="sid")
     private SeatEntity seat;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="miid") //조인할 컬럼 이름
-    private MovieInfoEntity info;
+    @JoinColumn(name="miid")
+    private MovieInfoEntity movieInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="rid") //조인할 컬럼 이름
-    private ReservationEntity reserve;
+    @JoinColumn(name="rid")
+    private ReservationEntity reservation;
 
     @Builder
-    public MovieInfoSeatEntity(Long misid, SeatEntity seat, MovieInfoEntity info, ReservationEntity reserve) {
-        this.misid= misid;
-        this.seat=seat;
-        this.info=info;
-        this.reserve=reserve;
+    public MovieInfoSeatEntity(Long misid, SeatEntity seat, MovieInfoEntity movieInfo, ReservationEntity reservation) {
+        this.misid = misid;
+        this.seat = seat;
+        this.movieInfo = movieInfo;
+        this.reservation = reservation;
     }
-
 }

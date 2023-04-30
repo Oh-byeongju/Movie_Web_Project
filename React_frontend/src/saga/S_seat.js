@@ -1,44 +1,51 @@
+/*
+  23-04-30 예매 좌석 페이지 수정(오병주)
+*/
 import {
-  SELECT_SEAT_SUCCESS,
-  SELECT_SEAT_FAILURE,
-  SELECT_SEAT_REQUEST,
+	SEAT_LIST_REQUEST, SEAT_LIST_SUCCESS, SEAT_LIST_FAILURE,
+
   CHECK_SEAT_REQUEST,
   CHECK_SEAT_SUCCESS,
   CHECK_SEAT_FAILURE,
-} from "../reducer/seat";
+} from "../reducer/R_seat";
 import { all, takeLatest, fork, put, call } from "redux-saga/effects";
 import { http } from "../lib/http";
-async function selectSeatApi(data) {
-  return await http
-    .get("/seat/normal/infoseat", {
-      params: {
-        id: data.id,
-        miid: data.miid,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
 
-function* selectSeat(action) {
-  const result = yield call(selectSeatApi, action.data);
+// 좌석 조회 함수
+function* SeatSearch(action) {
+  const result = yield call(callSeatSearch, action.data);
   if (result.status === 200) {
     yield put({
-      type: SELECT_SEAT_SUCCESS,
-      data: result.data,
+      type: SEAT_LIST_SUCCESS,
+      data: result.data
     });
-  } else {
-    alert("실패");
+  } 
+  else {
     yield put({
-      type: SELECT_SEAT_FAILURE,
-      data: result.status,
+			type: SEAT_LIST_FAILURE
     });
   }
 }
+
+// 좌석 조회 백엔드 호출
+async function callSeatSearch(data) {
+  return await http.get("/seat/auth/MovieInfo", {
+    params: {
+			cid: data.cid,
+			miid: data.miid
+		}
+  })
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+
+
+
 
 async function checkSeatApi(data) {
   return await http
@@ -68,13 +75,15 @@ function* checkSeat(action) {
     });
   }
 }
-function* selectSeatSaga() {
-  yield takeLatest(SELECT_SEAT_REQUEST, selectSeat);
-}
-
 function* checkSeatSaga() {
   yield takeLatest(CHECK_SEAT_REQUEST, checkSeat);
 }
-export default function* seatSaga() {
-  yield all([fork(selectSeatSaga), fork(checkSeatSaga)]);
+
+function* SEAT_LIST() {
+  yield takeLatest(SEAT_LIST_REQUEST, SeatSearch);
+}
+
+
+export default function* S_seat() {
+  yield all([fork(SEAT_LIST), fork(checkSeatSaga)]);
 }

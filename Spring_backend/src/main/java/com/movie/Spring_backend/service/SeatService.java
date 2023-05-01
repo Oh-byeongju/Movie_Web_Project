@@ -1,5 +1,5 @@
 /*
-  23-04-30 예매 좌석 페이지 수정(오병주)
+  23-04-30 ~ 23-05-01 예매 좌석 페이지 수정(오병주)
 */
 package com.movie.Spring_backend.service;
 
@@ -11,6 +11,7 @@ import com.movie.Spring_backend.mapper.SeatMapper;
 import com.movie.Spring_backend.repository.MovieInfoSeatRepository;
 import com.movie.Spring_backend.repository.RedisSeatRepository;
 import com.movie.Spring_backend.repository.SeatRepository;
+import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class SeatService {
-    private final RedisTemplate redisTemplate; //redis
     private final JwtValidCheck jwtValidCheck;
-    private final RedisSeatRepository redisSeatRepository;
     private final SeatRepository seatRepository;
+    private final RedisSeatRepository redisSeatRepository;
     private final MovieInfoSeatRepository movieInfoSeatRepository;
     private final SeatMapper seatMapper;
 
@@ -75,75 +75,54 @@ public class SeatService {
         return Seats.stream().map(seat -> seatMapper.toDtoReserve(seat, occupyNum)).collect(Collectors.toList());
     }
 
-
-    // 유저이름 뽑을때 atk안에 있는거 뽑아서 쓰삼
+    // 예매 결제전 사용자가 선택한 자리의 점유 여부를 확인하는 메소드
     @Transactional
-    public void setValues(String name, String age ,String user, HttpServletRequest request) {
-        //name : miid , age : seatid
+    public void getSeatCheck(HttpServletRequest request, Map<String, String> requestMap) {
+        // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
-        boolean check = false;
-        System.out.println(age);
-        age = age.substring(0, age.length()-1);
-        String[] SeatNumber = age.split(",");
-        List<RedisSeatEntity> datad = redisSeatRepository.findAll();
-        //구조를 변경해야함
 
-        if (datad.isEmpty()) {//
-            //무조건 삽입을 해야함 데이터가 없으니까
-            //get()으로 검색이 가능함
-            for (String k : SeatNumber) {
-                System.out.println(k);
-                String keys = "";
-                keys = name + "," + k;
-                System.out.println(keys);
-                RedisSeatEntity redisSeatEntity = new RedisSeatEntity(keys, user);
-                //레디스에 데이터가 아무것도 없으니까 다른 검사 없이 삽입해준다.
-                redisSeatRepository.save(redisSeatEntity);
+        // requestMap 안에 정보를 추출
+        String temp_seat = requestMap.get("temp_seat");
+        long miid = Long.parseLong(requestMap.get("miid"));
 
+        // 프론트단에서 전달받은 좌석 번호 분리
+        List<String> SeatNumber = Arrays.asList(temp_seat.split(","));
+
+        // 점유 좌석 조회에 필요한 정보 Entity로 변환
+        MovieInfoEntity movieInfo = MovieInfoEntity.builder().miid(miid).build();
+
+        // 상영정보에 대한 점유좌석들 조회
+        List<MovieInfoSeatEntity> movieInfoSeats = movieInfoSeatRepository.findByMovieInfo(movieInfo);
+
+        // 사용자가 예매하려는 좌석이 이미 점유된 좌석일경우 예외처리(mysql)
+        for (MovieInfoSeatEntity mis : movieInfoSeats) {
+            if (SeatNumber.contains(mis.getSeat().getSid().toString())) {
+                throw new SeatOccupyException("이미 점유된 자리입니다.");
             }
         }
-        else if (!datad.isEmpty()) {
-            //여기서부턴 검사가 필요함
-            //레디스에 값이 있음
-            for (String k : SeatNumber) {
-                String keys = "";
-                keys = name + "," + k;
-                System.out.println(keys);
-                RedisSeatEntity redisSeatEntity = new RedisSeatEntity(keys, user);
-                //레디스 데이터를 키값으로 검사
-                Optional<RedisSeatEntity> seated = redisSeatRepository.findById(redisSeatEntity.getKey());
-                //seated가 null이면
-                if (seated.isEmpty()) {
-                    System.out.println("키가 없다");
-                }
-                else {
-                    //seated가 있는데 아이디값이 같으면 예외처리를 하지않고
-                    if (user.equals(seated.get().getUser())) {
-                        check=true;
-                    }
-                    else {
-                        //아이디값이 다르면 예외를 던진다.
-                        check=true;
-                        throw new SeatOccupyException("점유된 자리입니다.");
-                    }
+
+        // authentication 객체에서 아이디 확보 및 리스트 선언
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+        List<RedisSeatEntity> redisSeats = new ArrayList<>();
+
+        // 사용자가 예매하려는 좌석이 이미 점유된 좌석일경우 예외처리(redis)
+        for (String str : SeatNumber) {
+            // 레디스 key 생성
+            String key = miid + "," + str;
+
+            // 레디스 데이터를 키값으로 조회
+            Optional<RedisSeatEntity> seat = redisSeatRepository.findById(key);
+
+            // 조회한 데이터가 null이 아니면서 사용자가 현재페이지에서 점유한 자리가 아닐경우 예외처리
+            if (seat.isPresent()) {
+                if (!currentMemberId.equals(seat.get().getUser())) {
+                    throw new SeatOccupyException("이미 점유된 자리입니다.");
                 }
             }
+            // 현재 반복되고 있는 좌석번호 리스트에 삽입
+            redisSeats.add(RedisSeatEntity.builder().key(key).user(currentMemberId).build());
         }
-
-        if(check==false) {
-            for (String k : SeatNumber) {
-                String keys = "";
-                keys = name + "," + k;
-                System.out.println(keys);
-                RedisSeatEntity redisSeatEntity = new RedisSeatEntity(keys, user);
-                redisSeatRepository.save(redisSeatEntity);
-            }
-        }
+        // 사용자가 선택한 좌석정보 레디스에 저장
+        redisSeatRepository.saveAll(redisSeats);
     }
-    // 데이터 가져오기
-    public String getValues(){
-        SetOperations<String, Object> setOperations = redisTemplate.opsForSet();
-        return setOperations.toString();
-    }
-
 }

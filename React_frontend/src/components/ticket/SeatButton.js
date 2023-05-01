@@ -1,57 +1,77 @@
-/*eslint-disable*/
 /*
-  23-04-30 예매 좌석 페이지 수정(오병주)
+  23-04-30 ~ 23-05-01 예매 좌석 페이지 수정(오병주)
 */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch ,shallowEqual } from "react-redux";
+import { SEAT_CHOICE, SEAT_REMOVE } from "../../reducer/R_seat";
 
-const SeatButton = ({
-  seat,
-  addSeats,
-  totalNumber,
-  selectedRows,
-  is_reserved,
-  removeSeats,
-}) => {
+const SeatButton = ({ seat }) => {
+	const dispatch = useDispatch();
+
+	// 필요한 리덕스 상태들
+	const { Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error } = useSelector(
+		state => ({
+			Kid: state.R_seat.Kid,
+			Teenager: state.R_seat.Teenager,
+			Adult: state.R_seat.Adult,
+			Total: state.R_seat.Total,
+			ChoiceSeat: state.R_seat.ChoiceSeat,
+			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error
+		}),
+		shallowEqual
+	);
+
+	// 버튼에 대한 useState
   const [isChecked, setIschecked] = useState(true);
-  const {
-    selectinfoseat,
-    choiceSeat,
-    choiceUser,
-    check_seat_error,
-    어른,
-    학생,
-    아이,
-  } = useSelector((state) => state.R_seat);
 
-  useEffect(() => {
-    setIschecked(true);
-  }, [check_seat_error]);
+	// 점유좌석에 대한 오류가 생겼을경우 초기화 해주는 useEffect
+	useEffect(() => {
+		if (SEAT_CHECK_error) {
+			setIschecked(true);
+		}
+	}, [SEAT_CHECK_error]);
 
-  const checkedSeat = () => {
-    if (어른 + 아이 + 학생 > choiceSeat.length && isChecked) {
+	// 좌석 추가하는 함수
+	const addSeats = useCallback((seat) => {
+		if (Total > ChoiceSeat.length) {
+			dispatch({
+				type: SEAT_CHOICE,
+				data: {
+					seat_id: seat.sid,
+					location: seat.sname,
+				},
+			});
+		}
+	}, [ChoiceSeat, Total, dispatch]);
+
+	// 좌석 제거하는 함수
+	const removeSeats = useCallback((seat) => {
+		dispatch({
+			type: SEAT_REMOVE,
+			data: seat,
+		});
+	}, [dispatch]);
+
+	// 좌석 선택할때 실행되는 함수
+  const checkedSeat = useCallback(() => {
+    if (Kid + Teenager + Adult > ChoiceSeat.length && isChecked) {
       setIschecked((prev) => !prev);
-      console.log(totalNumber);
-    } else if (!isChecked) {
+    } 
+		else if (!isChecked) {
       setIschecked((prev) => !prev);
     }
-    console.log(selectedRows);
-    // // choiceSeat: state.choiceSeat.filter(
-    //   (seat) => seat.seat_id !== action.data
-    //   ),
-  };
+  }, [Kid, Teenager, Adult, ChoiceSeat, isChecked]);
+
   return (
     <>
       <SeatNumber
-        is_reserved={is_reserved} //able, disable
+        reserve={seat.reserve}
         isChecked={isChecked}
-        seatnum={seat.id}
         sid={seat.sid}
-        selectinfoseat={selectinfoseat}
         onClick={() => {
           checkedSeat();
-          isChecked && !is_reserved
+          isChecked && !seat.reserve
             ? addSeats(seat)
             : removeSeats(seat.sid);
         }}
@@ -66,14 +86,12 @@ const SeatNumber = styled.button`
   width: 40px;
   height: 40px;
   margin-bottom: 20px;
-  margin-right: ${(props) => (props.seatnum % 10 === 5 ? "40px" : "1px")};
+	margin-right: 1px;
   color: black;
   float: left;
-  background-color: ${(props) =>
-    props.is_reserved  ? "grey" : props.isChecked ? "lightblue" : ""};
-
-  border: none;
-  cursor: ${(props) => (props.is_reserved ? "default" : "pointer")};
+	border: none;
+  background-color: ${(props) => props.reserve  ? "grey" : props.isChecked ? "lightblue" : ""};
+  cursor: ${(props) => (props.reserve ? "default" : "pointer")};
 `;
 
 export default SeatButton;

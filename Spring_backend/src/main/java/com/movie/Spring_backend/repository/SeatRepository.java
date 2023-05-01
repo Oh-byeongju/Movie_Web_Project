@@ -14,9 +14,4 @@ public interface SeatRepository extends JpaRepository<SeatEntity,Long> {
 
     // 특정 상영관에 좌석을 제거하는 메소드
     void deleteByCinema(CinemaEntity cinema);
-
-
-
-    // (다하고 이거 제거)
-    List<SeatEntity> findByCinemaCid(Long id);
 }

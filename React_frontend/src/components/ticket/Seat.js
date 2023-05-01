@@ -1,28 +1,21 @@
 
 /*
-  23-04-30 예매 좌석 페이지 수정(오병주)
+  23-04-30 ~ 23-05-01 예매 좌석 페이지 수정(오병주)
 */
 import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { Button } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
-import {
-  SEAT_CHOICE,
-  SEAT_REMOVE,
-  USER_CHOICE,
-  USER_REMOVE,
-  PAGE_RESET,
-  SEAT_LIST_REQUEST
-} from "../../reducer/R_seat";
+import { SEAT_LIST_REQUEST, USER_CHOICE, USER_REMOVE } from "../../reducer/R_seat";
 import SeatButton from "./SeatButton";
-
 const ButtonGroup = Button.Group;
+
 const Seat = () => {
 	const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { MOVIEINFO, SEAT_LIST, LOGIN_data, Kid, Teenager, Adult, Total, ChoiceSeat } = useSelector(
+	const { MOVIEINFO, SEAT_LIST, LOGIN_data, Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error } = useSelector(
 		state => ({
 			MOVIEINFO: state.R_ticket.MOVIEINFO,
 			SEAT_LIST: state.R_seat.SEAT_LIST,
@@ -31,7 +24,8 @@ const Seat = () => {
 			Teenager: state.R_seat.Teenager,
 			Adult: state.R_seat.Adult,
 			Total: state.R_seat.Total,
-			ChoiceSeat: state.R_seat.ChoiceSeat
+			ChoiceSeat: state.R_seat.ChoiceSeat,
+			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error
 		}),
 		shallowEqual
 	);
@@ -47,16 +41,19 @@ const Seat = () => {
 				},
       });
     }
-
-		
-    dispatch({
-      type: PAGE_RESET
-    })
-  
   }, [LOGIN_data, MOVIEINFO, dispatch]);
 
+	// 점유좌석에 대한 오류가 생겼을경우 초기화 해주는 useEffect
+	useEffect(() => {
+		if (SEAT_CHECK_error) {
+			setNumKid(0);
+			setNumTeenager(0);
+			setNumAdult(0);
+		}
+	}, [SEAT_CHECK_error, dispatch]);
+
 	// 버튼 useState
-	const [numKid, setNumKid] = useState(0); // 유아
+	const [numKid, setNumKid] = useState(0); // 아이
 	const [numTeenager, setNumTeenager] = useState(0); // 학생
   const [numAdult, setNumAdult] = useState(0); // 성인
   
@@ -128,14 +125,14 @@ const Seat = () => {
     }
   }, [Total, ChoiceSeat, numTeenager, dispatch]);
 
-	// 유아 인원 늘릴때
+	// 아이 인원 늘릴때
   const plusHandlerKid = useCallback(() => {
     if (Total < 8) {
       setNumKid((prev) => prev + 1);
       dispatch({
         type: USER_CHOICE,
         data: {
-					type: "유아",
+					type: "아이",
 					price: 10
 				}
       });
@@ -145,7 +142,7 @@ const Seat = () => {
 		}
   }, [Total, dispatch]);
 
-  // 유아 인원 줄일때
+  // 아이 인원 줄일때
   const minusHandlerKid = useCallback(() => {
 		if (Total <= ChoiceSeat.length) {
       alert("선택한 좌석이 예매 인원 보다 많습니다.");
@@ -155,40 +152,12 @@ const Seat = () => {
       dispatch({
         type: USER_REMOVE,
         data: {
-					type: "유아",
+					type: "아이",
 					price: 10
 				}
       });
     }
   }, [Total, ChoiceSeat, numKid, dispatch]);
-
-
-
-
-	// 아래 두놈 이사시켜야함
-  const addSeats = (row) => {
-
-		console.log(row);
-    if (Total > ChoiceSeat.length) {
-      dispatch({
-        type: SEAT_CHOICE,
-        data: {
-          user_id: 1,
-          seat_id: row.sid,
-          location: row.sname,
-        },
-      });
-    }
-  };
-
-  const removeSeats = (seat) => {
-    dispatch({
-      type: SEAT_REMOVE,
-      data: seat,
-    });
-  };
-
-
 
   return (
     <SeatWrapper>
@@ -201,7 +170,7 @@ const Seat = () => {
             <NumberContainer>
               <People>
                 <span>
-									유아
+									아이
 								</span>
                 <ButtonGroup style={{ marginLeft: "15px" }}>
                   <Button onClick={minusHandlerKid} disabled={Kid === 0? true : false} icon={<MinusOutlined />} style={{ width: "32px", height: "32px" }}/>
@@ -241,32 +210,11 @@ const Seat = () => {
         <ScreenSelect>
           <Screen/>
           <SeetReserve>
-            {SEAT_LIST.map((seat, index) => {
-              /*ocuppyseat.find((ocuppy) => {
-                if (
-                  scheduleData.miid === ocuppy.miid &&
-                  seat.sid === ocuppy.seatid
-                ) {
-                  console.log(ocuppy.miid);
-                  is_reserved = true;
-
-                  //초기화시키기 점유된 영화가있을경우
-                }
-              });
-*/
-              return (
-                <div>
-                  <SeatButton
-                    seat={seat}
-                    key={seat.sid}
-                    addSeats={addSeats}
-                    is_reserved={seat.reserve}
-                    totalNumber={Total}
-                    removeSeats={removeSeats}
-                  />
+            {SEAT_LIST.map((seat) => 
+                <div key={seat.sid}>
+                  <SeatButton seat={seat}/>
                 </div>
-              );
-            })}
+            )}
           </SeetReserve>
         </ScreenSelect>
       </SeatContent>
@@ -281,6 +229,7 @@ const SeatWrapper = styled.div`
   height: 100%;
   padding-left: 10px;
 `;
+
 const SeatContent = styled.div`
   float: none;
   width: 100%;
@@ -304,6 +253,33 @@ const Title = styled.div`
   font-weight: bold;
 `;
 
+const PersonScreen = styled.div`
+  position: relative;
+  border-bottom: 2px solid #d4d3c9;
+  display: inline-block;
+  width: 100%;
+`;
+
+const NumberOfPeople = styled.div`
+  width: 100%;
+`;
+
+const NumberContainer = styled.div`
+  min-height: 52px;
+  padding: 10px 0 10px 20px;
+  background-color: #f2f4f5;
+  border: 1px solid #d8d9db;
+`;
+
+const People = styled.div`
+  display: block;
+  float: left;
+  position: relative;
+  left: 200px;
+  top: 10px;
+  padding-right: 30px;
+`;
+
 const ScreenSelect = styled.div`
   display: flex;
   min-height: 600px;
@@ -317,6 +293,7 @@ const SeetReserve = styled.div`
   position: absolute;
   top: 250px;
 `;
+
 const Screen = styled.div`
   background-color: #fff;
   position: absolute;
@@ -326,32 +303,6 @@ const Screen = styled.div`
   height: 80px;
   transform: rotateX(-20deg);
   box-shadow: 0 3px 10px rgb(255 255 255 / 70%);
-`;
-
-const PersonScreen = styled.div`
-  position: relative;
-  border-bottom: 2px solid #d4d3c9;
-  display: inline-block;
-  width: 100%;
-`;
-
-
-const NumberOfPeople = styled.div`
-  width: 100%;
-`;
-const NumberContainer = styled.div`
-  min-height: 52px;
-  padding: 10px 0 10px 20px;
-  background-color: #f2f4f5;
-  border: 1px solid #d8d9db;
-`;
-const People = styled.div`
-  display: block;
-  float: left;
-  position: relative;
-  left: 200px;
-  top: 10px;
-  padding-right: 30px;
 `;
 
 export default Seat;

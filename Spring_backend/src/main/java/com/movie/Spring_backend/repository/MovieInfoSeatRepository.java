@@ -15,27 +15,11 @@ import java.util.Optional;
 
 @Repository
 public interface MovieInfoSeatRepository extends JpaRepository<MovieInfoSeatEntity, Long> {
-
+    // 상영번호로 점유좌석을 불러오는 메소드
     List<MovieInfoSeatEntity> findByMovieInfo(MovieInfoEntity movieInfo);
 
 
-    // 이거 제거해도됨
-    @Query(value = "SELECT mis from MovieInfoSeatEntity as mis where mis.movieInfo.miid=(:miid)")
-    List<MovieInfoSeatEntity> findByInfoMovie(@Param("miid") Long miid);
-
-
-    @Query(value = "select count(mis.misid) >0 from MovieInfoSeatEntity as mis where mis.seat.sid IN (:sid) AND " +
-            "mis.movieInfo.miid=(:miid)")
-    boolean exists(@Param(value = "sid")List<Long> sid, @Param(value ="miid") Long miid);
-
-
-
-
-
-
-
-
-
+    // 여기 아래쪽에 innerjoin 써야할곳 많은듯함
 
 
     // 사용자가 예매한 영화의 좌석들을 가져오는 메소드(예매시간 순으로 내림차순, 아직 영화가 끝나지 않은 예매들)

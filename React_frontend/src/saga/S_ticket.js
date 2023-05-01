@@ -12,9 +12,6 @@ import {
 
 
 import {
-  SELECT_SCHEDULE_SUCCESS,
-  SELECT_SCHEDULE_FAILURE,
-  SELECT_SCHEDULE_REQUEST,
   PAYMENT_REQUEST,
   PAYMENT_SUCCESS,
   PAYMENT_FAILURE,
@@ -158,38 +155,6 @@ async function callMovieInfoSearch(data) {
 
 
 // 절취선
-async function selectScheduleApi(data) {
-  return await http
-    .get("/MovieInfo/normal/Schedule", {
-      params: {
-        miday: data.miday,
-        mid: data.mid,
-        tid: data.tid,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-
-function* selectSchedule(action) {
-  const result = yield call(selectScheduleApi, action.data);
-  if (result.status === 200) {
-    yield put({
-      type: SELECT_SCHEDULE_SUCCESS,
-      data: result.data,
-    });
-  } else {
-    alert("실패");
-    yield put({
-      type: SELECT_SCHEDULE_FAILURE,
-      data: result.status,
-    });
-  }
-}
 
 async function paymentApi(data) {
   return await http
@@ -240,9 +205,7 @@ function* MOVIEINFO_LIST() {
 
 
 //// 절취선
-function* selectScheduleSaga() {
-  yield takeLatest(SELECT_SCHEDULE_REQUEST, selectSchedule);
-}
+
 function* paymentSaga() {
   yield takeLatest(PAYMENT_REQUEST, payment);
 }
@@ -260,7 +223,6 @@ export default function* S_ticket() {
 
 
 		// 절취선
-    fork(selectScheduleSaga),
     fork(paymentSaga),
   ]);
 }

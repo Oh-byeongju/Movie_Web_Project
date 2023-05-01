@@ -1,127 +1,248 @@
-/*eslint-disable*/
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import * as Payment from "../Common_components/Function";
-import seat, { CHECK_SEAT_REQUEST } from "../../reducer/R_seat";
+import { SEAT_CHECK_REQUEST, SEAT_CHECK_RESET, SEAT_LIST_REQUEST, SEAT_PAGE_RESET } from "../../reducer/R_seat";
 
 const PaymentModal = ({ closeModal }) => {
   const dispatch = useDispatch();
-  const { MOVIE, THEATER, DayData, MOVIEINFO, payment_done } = useSelector(
-    (state) => state.R_ticket
-  );
-  const {  아이, 학생, 어른, choiceSeat, price ,check_seat_error} = useSelector(
-    (state) => state.R_seat
-  );
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
 
+	// 필요한 리덕스 상태들
+	const { MOVIE, THEATER, MOVIEINFO, LOGIN_data, Kid, Teenager, Adult, Price, ChoiceSeat, SEAT_CHECK_done, SEAT_CHECK_error } = useSelector(
+		state => ({
+			MOVIE: state.R_ticket.MOVIE,
+			THEATER: state.R_ticket.THEATER,
+			MOVIEINFO: state.R_ticket.MOVIEINFO,
+			LOGIN_data: state.R_user_login.LOGIN_data,
+			Kid: state.R_seat.Kid,
+			Teenager: state.R_seat.Teenager,
+			Adult: state.R_seat.Adult,
+			Price: state.R_seat.Price,
+			ChoiceSeat: state.R_seat.ChoiceSeat,
+			SEAT_CHECK_done: state.R_seat.SEAT_CHECK_done,
+			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error
+		}),
+		shallowEqual
+	);
+
+	// 모달창 스크롤 막는 useEffect
+	useEffect(() => {
+		document.body.style.cssText = `
+			position: fixed; 
+			top: -${window.scrollY}px;
+			overflow-y: scroll;
+			width: 100%;`;
+		return () => {
+			const scrollY = document.body.style.top;
+			document.body.style.cssText = '';
+			window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
+		};
+	}, []);
+
+	// 약관 동의 버튼 및 disable useState
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
-  const [check4, setCheck4] = useState(false);
+	const [disable, setDisable] = useState(false);
 
-  
-  // 체크박스 true / false 변경
-  const ClickCheck1 = (check1) => {
-    setCheck1(!check1);
-  };
-  const ClickCheck2 = (check2) => {
-    setCheck2(!check2);
-  };
-  const ClickCheck3 = (check3) => {
-    setCheck3(!check3);
-  };
-  const ClickCheck4 = (check4) => {
-    setCheck4(!check4);
-  };
 
-  const onClickPayment = () => {
+	// // 결제 버튼 누를때 수정할꺼
+  // const onClickPaymenttt = useCallback(() => {
+  //   const data = {
+  //     pg: "html5_inicis.INIpayTest", //pg사
+  //     payMethod: "card", //결제수단
+  //     oderNum: Payment.createOrderNum(), //주문번호
+  //     name: MOVIE.mtitle, //결제이름
+  //     buyerEmail: "", //구매자 이메일
+  //     buyerName: LOGIN_data.uname, //구매자 이름
+  //     buyerTel: "010-1234-1234", //구매자 번호
+  //     buyerAddr: "부산광역시 ", //구매자 주소
+  //     amount: Price, 
+  //   };
+  //   Payment.paymentCard(
+  //     data,
+  //     dispatch,
+  //     LOGIN_data.uid,
+  //     ChoiceSeat,
+  //     MOVIEINFO.miid,
+	// 		Kid,
+	// 		Teenager,
+	// 		Adult
+  //   );
+  // }, [Adult, ChoiceSeat, Kid, LOGIN_data.uid, LOGIN_data.uname, MOVIE.mtitle, MOVIEINFO.miid, Price, Teenager, dispatch]);
 
-    const date = new window.Date().getTime();
 
-    const data = {
-      pg: "html5_inicis.INIpayTest", //pg사
-      payMethod: "card", //결제수단
-      oderNum: Payment.createOrderNum(), //주문번호
-      name: MOVIE.mtitle, //결제이름
-      buyerEmail: "", //구매자 이메일
-      buyerName: LOGIN_data.uname, //구매자 이름
-      buyerTel: "010-1234-1234", //구매자 번호
-      buyerAddr: "부산광역시 ", //구매자 주소
-      amount:price, 
-    };
-    Payment.paymentCard(
-      data,
-      dispatch,
-      LOGIN_data.uid,
-      choiceSeat,
-      MOVIEINFO.miid
-      ,아이,학생,어른
-    );
-    
-  };
+	// 결제 버튼 누를때 실행되는 함수
+	const onClickPayment = useCallback(() => {
+		// 모든 약관에 동의했을경우
+		if (check1 && check2 && check3) {
+			// 사용자가 선택한 좌석번호 String으로 변환
+			var seatnumber = "";
+			ChoiceSeat.map((seat) => (seatnumber += seat.seat_id + ",")); 
+			seatnumber = seatnumber.slice(0, -1);
+
+			dispatch({
+				type: SEAT_CHECK_REQUEST,
+				data: {
+					temp_seat: seatnumber,
+        	miid: MOVIEINFO.miid
+				},
+			});
+
+			setDisable(true); //--> 이거 두번 못누르게 하려고 만들었는데 시원치않음 생각해보기
+		}
+		else {
+			alert('모든 약관에 동의해주세요.');
+		}
+	}, [check1, check2, check3, ChoiceSeat, MOVIEINFO, dispatch]);
+
+
+	// 내일할꺼
+	// 결제 넘어가기전에 --> 내가 점유한 자리는 뒤로갔다와도 잡을 수 있게 해야하나 고민해보기
+
+
+
+	// 점유좌석 조회 여부에 따른 useEffect
+	useEffect(()=> {
+		// 성공 케이스
+		if (SEAT_CHECK_done) {
+			const data = {
+				pg: "html5_inicis.INIpayTest", //pg사
+				payMethod: "card", //결제수단
+				oderNum: Payment.createOrderNum(), //주문번호
+				name: MOVIE.mtitle, //결제이름
+				buyerEmail: "", //구매자 이메일
+				buyerName: LOGIN_data.uname, //구매자 이름
+				buyerTel: "010-1234-1234", //구매자 번호
+				buyerAddr: "부산광역시 ", //구매자 주소
+				amount: Price, 
+			};
+			Payment.paymentCard(
+				data,
+				dispatch,
+				LOGIN_data.uid,
+				ChoiceSeat,
+				MOVIEINFO.miid,
+				Kid,
+				Teenager,
+				Adult
+			);
+			
+			dispatch({
+				type: SEAT_CHECK_RESET
+			});
+
+			// 이거 disable 풀어주는걸 저거 호출하는 저기서 해줘야할듯함(아임포트 호출하는곳에서)
+			setDisable(false);
+		}
+
+		// 실패 케이스(모달 닫고 상태 초기화)
+		if (SEAT_CHECK_error) {
+			alert('점유된 좌석을 선택하셨습니다. 좌석을 다시 선택해주세요.');
+
+			closeModal();
+
+			dispatch({
+				type: SEAT_CHECK_RESET
+			});
+
+			dispatch ({
+        type: SEAT_LIST_REQUEST,
+        data: { 
+					cid: MOVIEINFO.cid, 
+					miid: MOVIEINFO.miid 
+				},
+      });
+
+			dispatch({
+				type: SEAT_PAGE_RESET
+			});
+		}
+	}, [SEAT_CHECK_done, SEAT_CHECK_error, MOVIEINFO, closeModal, dispatch]);
+
+
+	
+
   return (
     <Container>
       <Background>
         <ModalBlock>
           <HeadModal>
             <TitleArea>
-              <h4>예매내역 확인</h4>
+              <h4>
+								예매정보 확인
+							</h4>
             </TitleArea>
           </HeadModal>
           <BodyModal>
             <ReserveInfo>
               <h5>
                 예매정보
-                <span>결제하시기 전 예매내역을 다시 한번 확인해주세요</span>
+                <span>
+									결제하시기 전 예매정보를 다시 한번 확인해주세요.
+								</span>
               </h5>
               <Content>
                 <Poster>
-                  <img src={`${MOVIE.mimagepath}`}></img>
+                  <img src={`${MOVIE.mimagepath}`} alt='Poster'/>
                 </Poster>
                 <Table>
-                  <caption>예매정보</caption>
-                  <thead></thead>
+                  <caption>
+										예매정보
+									</caption>
                   <tbody>
                     <tr>
-                      <th>영화명</th>
-                      <td>{MOVIE.mtitle}</td>
+                      <th>
+												영화명
+											</th>
+                      <td>
+												{MOVIE.mtitle}
+											</td>
                     </tr>
                     <tr>
-                      <th>극장</th>
+                      <th>
+												극장
+											</th>
                       <td>
-                        {THEATER.tarea} &nbsp;
-                        {THEATER.tname}점
+                        {THEATER.tarea} - {THEATER.tname}점
                       </td>
                     </tr>
                     <tr>
-                      <th>상영관</th>
+                      <th>
+												상영관
+											</th>
                       <td>
-                        {MOVIEINFO.ctype} &nbsp;{MOVIEINFO.cname}
+                        {MOVIEINFO.cname} ({MOVIEINFO.ctype})
                       </td>
                     </tr>
                     <tr>
-                      <th>일시</th>
+                      <th>
+												일시
+											</th>
                       <td>
-                        {MOVIEINFO.miday}&nbsp;&nbsp;
-                        {MOVIEINFO.mistarttime.substring(11, 16)}~
-                        {MOVIEINFO.miendtime.substring(11,16)}
+                        {MOVIEINFO.miday}&nbsp;&nbsp;{MOVIEINFO.mistarttime.substring(11, 16)} ~ {MOVIEINFO.miendtime.substring(11,16)}
                       </td>
                     </tr>
                     <tr>
-                      <th>인원</th>
+                      <th>
+												인원
+											</th>
                       <td>
-                        {아이 === 0 ? "" : <>아이 {아이}명 </>}
-                        {학생 === 0 ? "" : <>학생 {학생}명 </>}
-                        {어른 === 0 ? "" : <>어른 {어른}명 </>}
+                        {Kid === 0 ? null : (Teenager !== 0 || Adult !== 0) ? <>아이 {Kid}명,&nbsp;</> : <>아이 {Kid}명&nbsp;</>}
+                        {Teenager === 0 ? null : (Adult !== 0) ? <>학생 {Teenager}명,&nbsp;</> : <>학생 {Teenager}명&nbsp; </> }
+                        {Adult === 0 ? "" : <>성인 {Adult}명 </>}
                       </td>
                     </tr>
                     <tr>
-                      <th>좌석</th>
+                      <th>
+												좌석
+											</th>
                       <td>
-                        {choiceSeat.map((seat) => {
-                          return <>{seat.location}&nbsp;</>;
-                        })}
+                        {ChoiceSeat.map((seat, index) => 
+                          <span key={index}>
+														{seat.location}{index === ChoiceSeat.length - 1 ? null : ','}
+													</span>
+                        )}
                       </td>
                     </tr>
                   </tbody>
@@ -130,108 +251,71 @@ const PaymentModal = ({ closeModal }) => {
             </ReserveInfo>
             <PaymentInfo>
               <h5>
-                결제 정보
-                <span>결제하기 버튼을 클릭하시면 결제가 완료됩니다.</span>
+                결제정보
+                <span>
+									결제하기 버튼을 클릭하시면 결제 화면이 나옵니다.
+								</span>
               </h5>
               <InfoTable>
-                <caption>결제정보</caption>
-                <thead></thead>
+                <caption>
+									결제정보
+								</caption>
                 <tbody>
                   <tr>
-                    <th>결제금액</th>
+                    <th>
+											결제금액
+										</th>
                     <td>
-                    {price}원
+                    	{Price}원
                     </td>
                   </tr>
                   <tr>
-                    <th>결제수단</th>
+                    <th>
+											결제수단
+										</th>
                     <td>
-카드                    </td>
+											인터넷 결제  
+                  	</td>
                   </tr>
                 </tbody>
               </InfoTable>
             </PaymentInfo>
             <Agreement>
               <PaymentAgreement>
-                <AllCheck>
-                  <input
-                    type="checkbox"
-                    name="agree1"
-                    id="agree1"
-                    value={check1}
-                    onClick={() => ClickCheck1(check1)}
-                  />
+                <CheckLayout>
+                  <input type="checkbox" name="agree1" id="agree1" value={check1} onClick={() => setCheck1(!check1)}/>
                   <label htmlFor="agree1">
-                    결제대행서비스 약관에 모두 동의
+                    결제대행서비스 약관 동의
                   </label>
-                </AllCheck>
-                <AllCheck>
-                  <input
-                    type="checkbox"
-                    name="agree2"
-                    id="agree2"
-                    value={check2}
-                    onClick={() => ClickCheck2(check2)}
-                  />
-                  <label htmlFor="agree2">전자금융거래 이용약관</label>
-                </AllCheck>
-                <AllCheck>
-                  <input
-                    type="checkbox"
-                    name="agree3"
-                    id="agree3"
-                    value={check3}
-                    onClick={() => ClickCheck3(check3)}
-                  />
-                  <label htmlFor="agree3">개인정보 수집 이용약관</label>
-                </AllCheck>
+                </CheckLayout>
+                <CheckLayout>
+                  <input type="checkbox" name="agree2" id="agree2" value={check2} onClick={() => setCheck2(!check2)}/>
+                  <label htmlFor="agree2">
+										전자금융거래 이용약관 동의
+									</label>
+                </CheckLayout>
               </PaymentAgreement>
-              <PaymentAgreement>
-                <AllCheck>
-                  <input
-                    type="checkbox"
-                    name="agree4"
-                    id="agree4"
-                    value={check4}
-                    onClick={() => ClickCheck4(check4)}
-                  />
-                  <label htmlFor="agree4">상기 내용을 모두 확인했습니다.</label>
-                </AllCheck>
-              </PaymentAgreement>
+              <PaymentAgreement2>
+                <CheckLayout>
+                  <input type="checkbox" name="agree3" id="agree3" value={check3} onClick={() => setCheck3(!check3)}/>
+                  <label htmlFor="agree3">
+										결제 정보를 모두 확인했습니다.
+									</label>
+                </CheckLayout>
+              </PaymentAgreement2>
             </Agreement>
-
-            <Reserve onClick={() => {
-                  if(check1&&check2&&check3&&check4){
-                let seatnumber = " ";
-                choiceSeat.map((seat) => (seatnumber += seat.seat_id + ", ")); //레디스
-                console.log(seatnumber)
-                dispatch({
-                  type: CHECK_SEAT_REQUEST,
-                  data: {
-                    user:LOGIN_data.uid,
-                    name:MOVIEINFO.miid,
-                    age: seatnumber,
-                  },
-                });
-                if(check_seat_error===null){
-                onClickPayment()
-                }
-              closeModal()
-            }
-          else{
-            alert('모든 약관에 동의하세요')
-          }}
-              
-              
-              }>결제하기</Reserve>
-            <FAIL onClick={()=>closeModal()}>취소</FAIL>
+            <Reserve disabled={disable} onClick={onClickPayment}>
+							결제하기
+						</Reserve>
+            <Cancel disabled={disable} onClick={()=> closeModal()}>
+							취소
+						</Cancel>
           </BodyModal>
         </ModalBlock>
       </Background>
     </Container>
   );
 };
-
 
 const Container = styled.div`
   position: fixed;
@@ -258,41 +342,41 @@ const Background = styled.div`
 
 const ModalBlock = styled.div`
   position: absolute;
-  top: 3rem;
-  left: 15rem;
+  top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%); /* translate(x축,y축) */
   background-color: white;
   color: black;
-  width: 62rem;
-  height: 37rem;
+  width: 68rem;
+  height: 36.5rem;
   box-shadow: 1px 1px 1px 1px gray;
 `;
+
 const HeadModal = styled.div`
   position: relative;
   bottom: 29px;
-
   width: 100%;
   border-bottom: 4px solid #333;
-  height: 3rem !important;
+  height: 3.2rem !important;
   background-color: #333 !important;
   padding-top: 0 !important;
   padding-left: 0 !important;
   margin-bottom: 0 !important;
 `;
+
 const TitleArea = styled.div`
   display: block;
+
   h4 {
     float: none !important;
     width: auto !important;
     margin-right: 0 !important;
     background: none !important;
     color: #f2f0e5;
-
     border: 1px solid #707070;
     height: 35px !important;
     padding-top: 14px;
     padding-left: 20px;
-    font-family: Nanum Gothic, 나눔고딕, Apple SD Gothic Neo, AppleGothic, 돋움,
-      dotum, Sans-serif;
     font-size: 22px;
     line-height: 22px;
     letter-spacing: -1px;
@@ -303,51 +387,60 @@ const BodyModal = styled.div`
   position: relative;
   margin: 0 auto;
   bottom: 2rem;
-  padding: 40px 40px 20px 40px;
+  padding: 40px 40px 18.5px 40px;
   overflow: hidden;
   background-color: #f6f6f4;
   height: 81%;
 `;
+
 const ReserveInfo = styled.div`
-  width: 452px;
-  height: 257px;
+  width: 502px;
+  height: 278px;
   float: left;
   overflow: hidden;
   border-top: solid 2px #bebebd;
+
   h5 {
     display: block;
-    height: 35px;
-    line-height: 38px;
+    height: 42px;
+    line-height: 42px;
     margin: 0 0;
-    font-size: 18px;
+    font-size: 20px;
     padding: 0 0;
-    padding-left: 23px;
+    padding-left: 20px;
     border-bottom: solid 1px #bebebd;
   }
+
   span {
-    font-size: 12px;
+    font-size: 13.5px;
     padding-left: 20px;
   }
 `;
+
 const Content = styled.div`
-  padding: 20px 0 40px 0;
+  padding: 20px 0px 40px 7px;
   overflow: hidden;
 `;
+
 const Poster = styled.div`
   float: left;
-  width: 110px;
-  height: 158px;
-  line-height: 158px;
-  margin-right: 19px;
+  width: 125px;
+  height: 190px;
+  line-height: 190px;
+  margin-right: 20px;
+	margin-top: 3px;
   overflow: hidden;
+
   img {
-    width: 100px;
-    height: 158px;
+    width: 125px;
+    height: 190px;
   }
 `;
+
 const Table = styled.table`
   border: none;
   table-layout: fixed;
+
   caption {
     overflow: hidden;
     visibility: hidden;
@@ -356,27 +449,40 @@ const Table = styled.table`
     line-height: 0;
     font-size: 0;
   }
+
   tr {
-    height: 24px;
-    line-height: 24px;
+    height: 28px;
+    line-height: 28px;
 
     th {
-      width: 52px;
+      width: 55px;
       font-weight: normal;
       text-align: left;
+			font-size: 13px;
     }
+
     td {
-      width: 271px;
+      width: 279px;
       font-weight: bold;
       height: inherit;
       line-height: inherit;
       background: none;
+			font-size: 14px;
+
+			span {
+				&:first-child {
+					padding-left: 0;
+				}
+				font-size: 14px;
+				padding-left: 10px;
+  		}
     }
   }
 `;
+
 const PaymentInfo = styled.div`
-  width: 454px;
-  height: 257px;
+  width: 502px;
+  height: 278px;
   float: left;
   overflow: hidden;
   border-left: solid 1px #bebebd;
@@ -384,25 +490,26 @@ const PaymentInfo = styled.div`
 
   h5 {
     display: block;
-    height: 35px;
-    line-height: 38px;
+    height: 42px;
+    line-height: 42px;
     margin: 0 0;
     padding: 0 0;
-    padding-left: 23px;
+    padding-left: 20px;
     border-bottom: solid 1px #bebebd;
-    font-size: 18px;
+    font-size: 20px;
   }
   span {
-    font-size: 12px;
+    font-size: 13.5px;
     padding-left: 20px;
   }
 `;
+
 const InfoTable = styled.table`
   margin-top: 20px;
   margin-left: 20px;
   width: 434px;
   border: none;
-  margin-bottom: 10px;
+
   caption {
     overflow: hidden;
     visibility: hidden;
@@ -411,54 +518,81 @@ const InfoTable = styled.table`
     line-height: 0;
     font-size: 0;
   }
+
   tr {
-    height: 24px;
-    line-height: 24px;
+    height: 28px;
+    line-height: 28px;
     vertical-align: top;
+
     th {
       width: 58px;
       font-weight: normal;
+			font-size: 13px;
     }
-    .amount {
-      line-height: 22px;
-      color: #c62424;
-      font-size: 16px;
-      font-family: Verdana;
-      font-weight: bold;
-    }
+
     td {
+			font-size: 14px;
       width: 376px;
+			padding-left: 15px;
       height: inherit;
       line-height: inherit;        
       font-weight: bold;
       background: none;
-      span {
-      }
     }
   }
 `;
+
 const Agreement = styled.div`
   border-top: 1px solid rgb(204, 204, 204);
   padding-top: 15px;
   float: left;
   width: 100%;
-  margin-top: 16px;
-  padding-bottom: 19px;
-  height: 90px;
+  margin-top: 15px;
+  padding-bottom: 15px;
+  height: 70px;
   line-height: 13px;
   text-align: center;
   text-align: left;
 `;
+
 const PaymentAgreement = styled.div`
   float: left;
-  width: 46.6%;
+  width: 482px;
   height: 100%;
-  padding-left: 3%;
+  padding-left: 20px;
   border-right: 1px solid rgb(204, 204, 204);
   text-align: left;
+	font-size: 13px;
+
+	input {
+		margin-right: 6px;
+	}
+
+	label {
+		position: relative;
+		top: -1.5px;
+	}
 `;
 
-const AllCheck = styled.span`
+const PaymentAgreement2 = styled.div`
+  float: left;
+  width: 482px;
+  height: 100%;
+  padding-left: 20px;
+  text-align: left;
+	font-size: 13px;
+
+	input {
+		margin-right: 6px;
+	}
+
+	label {
+		position: relative;
+		top: -1.5px;
+	}
+`;
+
+const CheckLayout = styled.span`
   display: block;
   width: 410px;
   min-height: 15px;
@@ -467,37 +601,36 @@ const AllCheck = styled.span`
 
 const Reserve = styled.button`
   position: relative;
-  left: 20rem;
-  top: 2rem;
+  left: 23.4rem;
+  top: 1rem;
   cursor: pointer;
   border: none;
   display: inline-block;
   padding: 15px 30px;
   border-radius: 15px;
   font-family: "paybooc-Light", sans-serif;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
   text-decoration: none;
   font-weight: 600;
   transition: 0.25s;
   background-color: #f8e6e0;
   color: #6e6e6e;
 `;
-const FAIL = styled.button`
-  position: relative;
-  left: 22rem;
-  top: 2rem;
 
+const Cancel = styled.button`
+  position: relative;
+  left: 25.4rem;
+  top: 1rem;
   cursor: pointer;
   border: none;
   display: inline-block;
   padding: 15px 30px;
   border-radius: 15px;
   font-family: "paybooc-Light", sans-serif;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
   text-decoration: none;
   font-weight: 600;
   transition: 0.25s;
-
   color: #6e6e6e;
 `;
 

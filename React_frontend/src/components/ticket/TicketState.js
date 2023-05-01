@@ -2,14 +2,14 @@
 	사용자가 선택한 영화 및 정보를 표시해주는 컴포넌트 2023-02-13 수정완(강경목)
 	23-04-29 예매 페이지 상태 컴포넌트 수정(오병주)
 */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch,shallowEqual } from "react-redux";
 import { LeftCircleFilled, RightCircleFilled } from "@ant-design/icons";
-
-
-import { useLocation, useNavigate } from "react-router-dom";
+import { SEAT_PAGE_RESET } from "../../reducer/R_seat";
 import { RESERVE_LOGIN_PAGE } from "../../reducer/R_ticket";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import PaymentModal from "./PaymentModal";
 
 const TicketState = ({ setPage, page }) => {
@@ -17,22 +17,36 @@ const TicketState = ({ setPage, page }) => {
   const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE, THEATER, DAY, MOVIEINFO, LOGIN_data } = useSelector(
+	const { MOVIE, THEATER, DAY, MOVIEINFO, LOGIN_data, Kid, Teenager, Adult, Price, ChoiceSeat } = useSelector(
 		state => ({
 			MOVIE: state.R_ticket.MOVIE,
 			THEATER: state.R_ticket.THEATER,
 			DAY: state.R_ticket.DAY,
 			MOVIEINFO: state.R_ticket.MOVIEINFO,
-			LOGIN_data: state.R_user_login.LOGIN_data
+			LOGIN_data: state.R_user_login.LOGIN_data,
+			Kid: state.R_seat.Kid,
+			Teenager: state.R_seat.Teenager,
+			Adult: state.R_seat.Adult,
+			Price: state.R_seat.Price,
+			ChoiceSeat: state.R_seat.ChoiceSeat
 		}),
 		shallowEqual
 	);
 
+  // 영화 선택으로 넘어갈때 실행되는 함수
+	const backMovie = useCallback(() => {
+		if (!window.confirm('영화 선택화면으로 가시겠습니까? \n(선택한 좌석정보는 초기화 됩니다.)')) {
+			return;
+		}
+		setPage(false);
+		dispatch({
+			type: SEAT_PAGE_RESET
+		})
+	}, [setPage, dispatch]);
 
-  const { choiceSeat, price, 어른, 아이, 학생 } = useSelector(
-    (state) => state.R_seat
-  );
-  
+
+
+
   const { pathname } = useLocation();
   
   //좌석 페이지로 넘어가야함 데이터와 함께
@@ -116,16 +130,18 @@ const TicketState = ({ setPage, page }) => {
         <SeatMore>
           <Seat>
             좌석 :
-            {choiceSeat.map((seat) => {
-              return <span>&nbsp;{seat.location} </span>;
-            })}
+            {ChoiceSeat.map((seat, index) =>
+              <span key={index}>
+								&nbsp;{seat.location} 
+							</span>
+            )}
           </Seat>
-          <Price>총금액 : {price}</Price>
+          <PriceTag>총금액 : {Price === 0 ? '' : Price}</PriceTag>
         </SeatMore>
       </TicketStep>
       {page ? (
         <>
-          <MovieChoice onClick={() => setPage(false)}>
+          <MovieChoice onClick={backMovie}>
             <LeftCircleFilled
               style={{
 								fontSize: "60px",
@@ -138,11 +154,11 @@ const TicketState = ({ setPage, page }) => {
           </MovieChoice>
           <MovieSeat
             onClick={() => {
-              if (어른 + 아이 + 학생 > choiceSeat.length ) {
-                alert("관람인원과 선택 좌석 수가 동일하지 않습니다.");
+              if (Kid + Teenager + Adult > ChoiceSeat.length ) {
+                alert("관람인원과 선택 좌석수가 동일하지 않습니다.");
                 return;
               } 
-              else if( 어른 +아이+학생 ===0){
+              else if( Kid + Teenager + Adult === 0){
                 alert('인원 및 좌석을 선택해주세요')
               }
               else {
@@ -193,7 +209,6 @@ const TicketState = ({ setPage, page }) => {
               MOVIEINFO !== ""
             ) {
               setPage(true);
-              console.log("gg");
             }
           }}
         >
@@ -302,7 +317,7 @@ const Seat = styled.div`
   height: 10px;
   line-height: 20px;
 `;
-const Price = styled.div`
+const PriceTag = styled.div`
   display: block;
   margin-top: 14px;
   height: 10px;

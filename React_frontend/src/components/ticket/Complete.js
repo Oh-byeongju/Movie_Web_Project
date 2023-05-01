@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation, Link ,useNavigate} from "react-router-dom";
@@ -53,7 +54,7 @@ const Complete = ()=>{
                       <td>
                       {아이 === 0 ? "" : <>아이 {아이}명 </>}
                         {학생 === 0 ? "" : <>학생 {학생}명 </>}
-                        {어른 === 0 ? "" : <>어른 {어른}명 </>}
+                        {어른 === 0 ? "" : <>성인 {어른}명 </>}
                       </td>
                     </tr>
                     <tr>

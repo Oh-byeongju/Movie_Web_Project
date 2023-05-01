@@ -30,9 +30,6 @@ const ReserveList = () => {
 
 	// 예매 내역 조회 useEffect
 	useEffect(()=> {
-
-		console.log("저장된거" + RESERVE_SEARCH_Key);
-		console.log("새거" + location.key);
 		// 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청(뒤로가기시 리렌더링 안함)
 		if (LOGIN_data.uid !== 'No_login' && RESERVE_SEARCH_Key !== location.key) {
 			dispatch({

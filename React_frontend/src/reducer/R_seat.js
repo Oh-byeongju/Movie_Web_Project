@@ -1,9 +1,6 @@
 /*
-  23-04-30 예매 좌석 페이지 수정(오병주)
+  23-04-30 ~ 23-05-01 예매 좌석 페이지 수정(오병주)
 */
-// 좌석 페이지 초기화 리스트
-export const SEAT_PAGE_RESET = "SEAT_PAGE_RESET"
-
 // 좌석 목록 조회 리스트
 export const SEAT_LIST_REQUEST = "SEAT_LIST_REQUEST";
 export const SEAT_LIST_SUCCESS = "SEAT_LIST_SUCCESS";
@@ -17,21 +14,16 @@ export const USER_REMOVE = "USER_REMOVE";
 export const SEAT_CHOICE = "SEAT_CHOICE";
 export const SEAT_REMOVE = "SEAT_REMOVE";
 
+// 결제전 좌석 점유여부 확인 리스트
+export const SEAT_CHECK_REQUEST = "SEAT_CHECK_REQUEST";
+export const SEAT_CHECK_SUCCESS = "SEAT_CHECK_SUCCESS";
+export const SEAT_CHECK_FAILURE = "SEAT_CHECK_FAILURE";
+export const SEAT_CHECK_RESET = "SEAT_CHECK_RESET";
 
+// 좌석 페이지 초기화 리스트
+export const SEAT_PAGE_RESET = "SEAT_PAGE_RESET"
 
-
-export const PAGE_RESET = "PAGE_RESET";
-
-export const SELECT_SEAT_REQUEST = "SELECT_SEAT_REQUEST";
-export const SELECT_SEAT_SUCCESS = "SELECT_SEAT_SUCCESS";
-export const SELECT_SEAT_FAILURE = "SELECT_SEAT_FAILURE";
-
-export const CHECK_SEAT_REQUEST = "CHECK_SEAT_REQUEST";
-export const CHECK_SEAT_SUCCESS = "CHECK_SEAT_SUCCESS";
-export const CHECK_SEAT_FAILURE = "CHECK_SEAT_FAILURE";
-
-
-export const initalState = {
+const initalState = {
 	Kid: 0,
 	Teenager: 0,
 	Adult: 0,
@@ -44,47 +36,22 @@ export const initalState = {
   SEAT_LIST_error: false,
 	SEAT_LIST: [],
 
+	SEAT_CHECK_loading: false,
+  SEAT_CHECK_done: false,
+  SEAT_CHECK_error: false,
 
 
+	// 아래로 내꺼아님
   choiceSeat: [],
   어른: 0,
   학생: 0,
   아이: 0,
-
-  select_seat_loading: false,
-  select_seat_done: false,
-  select_seat_error: null,
-  selectseat: [],
-
-  
-  check_seat_loading: false,
-  check_seat_done: false,
-  check_seat_error: null,
   price: 0,
   total: 0,
-
-
-
-	// 얘 css에 안쓰이는거 확인되면 날려버리기
-	selectinfoseat: [],
-
 };
-
-
 
 const R_seat = (state = initalState, action) => {
   switch (action.type) {
-		// 좌석 페이지 초기화 케이스
-		case SEAT_PAGE_RESET:
-      return {
-        ...state,
-        Kid: 0,
-				Teenager: 0,
-				Adult: 0,
-				Price: 0,
-				Total: 0,
-				ChoiceSeat: []
-      };
 		// 좌석 조회 케이스들
     case SEAT_LIST_REQUEST:
       return {
@@ -114,7 +81,7 @@ const R_seat = (state = initalState, action) => {
 			var tmp_Teenager = state.Teenager;
 			var tmp_Kid = state.Kid;
 
-			if (action.data.type === "유아") {
+			if (action.data.type === "아이") {
 				tmp_Kid = state.Kid + 1;
 			} 
 			else if (action.data.type === "학생") {
@@ -136,7 +103,7 @@ const R_seat = (state = initalState, action) => {
 			var tmp_Teenager2 = state.Teenager;
 			var tmp_Kid2 = state.Kid;
 
-			if (action.data.type === "유아") {
+			if (action.data.type === "아이") {
 				tmp_Kid2 = state.Kid - 1;
 			} 
 			else if (action.data.type === "학생") {
@@ -177,74 +144,45 @@ const R_seat = (state = initalState, action) => {
 				...state,
 				ChoiceSeat: state.ChoiceSeat.filter((seat) => seat.seat_id !== action.data)
 			};
-
-
-
-
-
-
-
-    case PAGE_RESET:
+		// 결제전 좌석 점유여부 확인 케이스들
+    case SEAT_CHECK_REQUEST:
       return {
         ...state,
-        choiceSeat: [],
-        아이:0,
-        학생:0,
-        어른:0,
-        price: 0,
-        total: 0,
+        SEAT_CHECK_loading: true,
+        SEAT_CHECK_done: false,
+        SEAT_CHECK_error: false
       };
-   
-
-    
-
-    
-
-			
-    case SELECT_SEAT_REQUEST:
+    case SEAT_CHECK_SUCCESS:
       return {
         ...state,
-        select_seat_loading: true,
-        select_seat_done: false,
-        select_seat_error: null,
+        SEAT_CHECK_loading: false,
+        SEAT_CHECK_done: true,
+        SEAT_CHECK_error: false,
       };
-    case SELECT_SEAT_SUCCESS:
+    case SEAT_CHECK_FAILURE:
       return {
         ...state,
-        select_seat_loading: false,
-        select_seat_done: true,
-        select_seat_error: null,
-        selectseat: action.data,
+        SEAT_CHECK_loading: false,
+        SEAT_CHECK_done: false,
+        SEAT_CHECK_error: true
+      };	
+		case SEAT_CHECK_RESET:
+			return {
+        ...state,
+        SEAT_CHECK_loading: false,
+        SEAT_CHECK_done: false,
+        SEAT_CHECK_error: false
       };
-    case SELECT_SEAT_FAILURE:
+		// 좌석 페이지 초기화 케이스
+		case SEAT_PAGE_RESET:
       return {
         ...state,
-        select_seat_loading: false,
-        select_seat_done: false,
-        select_seat_error: null,
-      };
-
-    case CHECK_SEAT_REQUEST:
-      return {
-        ...state,
-        check_seat_loading: true,
-        check_seat_done: false,
-        check_seat_error: null,
-      };
-    case CHECK_SEAT_SUCCESS:
-      return {
-        ...state,
-        check_seat_loading: false,
-        check_seat_done: true,
-        check_seat_error: null,
-      };
-    case CHECK_SEAT_FAILURE:
-      return {
-        ...state,
-        check_seat_loading: false,
-        check_seat_done: false,
-        check_seat_error: action.error,
-        choiceSeat: [],
+        Kid: 0,
+				Teenager: 0,
+				Adult: 0,
+				Price: 0,
+				Total: 0,
+				ChoiceSeat: []
       };
     default:
       return state;

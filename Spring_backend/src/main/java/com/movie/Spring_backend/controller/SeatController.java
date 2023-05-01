@@ -1,5 +1,5 @@
 /*
-  23-04-30 예매 좌석 페이지 수정(오병주)
+  23-04-30 ~ 23-05-01 예매 좌석 페이지 수정(오병주)
 */
 package com.movie.Spring_backend.controller;
 
@@ -16,8 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-// Seat로 수정
-@RequestMapping("/seat")
+@RequestMapping("/Seat")
 public class SeatController {
 
     private final SeatService seatService;
@@ -28,20 +27,11 @@ public class SeatController {
         return ResponseEntity.ok().body(seatService.getSeatMovieInfo(request, requestMap));
     }
 
-
-
-
-
-    //responseentity 쓰기
-    @PostMapping("/normal/rediss")
-    public void startRedis(@RequestBody HashMap<String, String> body, HttpServletRequest request) {
-        seatService.setValues(body.get("name"), body.get("age"),body.get("user"), request);
-    }
-
-    @GetMapping("/normal/rediss")
-    public String startRedis() {
-
-         return seatService.getValues();
+    // 결제전 점유좌석의 여부를 확인하는 메소드
+    @PostMapping("/auth/Check")
+    public ResponseEntity<String> SeatCheck(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
+        seatService.getSeatCheck(request, requestMap);
+        return ResponseEntity.noContent().build();
     }
 }
 

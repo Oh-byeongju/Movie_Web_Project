@@ -25,6 +25,9 @@ export const TICKET_MOVIEINFO_LIST_SUCCESS = "TICKET_MOVIEINFO_LIST_SUCCESS";
 export const TICKET_MOVIEINFO_LIST_FAILURE = "TICKET_MOVIEINFO_LIST_FAILURE";
 export const TICKET_MOVIEINFO_SELECT = "TICKET_MOVIEINFO_SELECT";
 
+// 예매 페이지 초기화 리스트
+export const TICKET_PAGE_RESET = "TICKET_PAGE_RESET";
+
 const initalState = {
 	MOVIE_LIST_loading: false,
   MOVIE_LIST_done: false,
@@ -54,10 +57,6 @@ const initalState = {
 	// 아래로 수정	
 	// 아래로 수정
 
-  select_schedule_loading: false,
-  select_schedule_done: false,
-  select_schedule_error: null,
-
   payment_loading: false,
   payment_done: false,
   payment_error: null,
@@ -71,9 +70,6 @@ const initalState = {
 };
 
 
-export const SELECT_SCHEDULE_REQUEST = "SELECT_SCHEDULE_REQUEST";
-export const SELECT_SCHEDULE_SUCCESS = "SELECT_SCHEDULE_SUCCESS";
-export const SELECT_SCHEDULE_FAILURE = "SELECT_SCHEDULE_FAILURE";
 
 export const PAYMENT_REQUEST = "PAYMENT_REQUEST";
 export const PAYMENT_SUCCESS = "PAYMENT_SUCCESS";
@@ -202,35 +198,40 @@ const R_ticket = (state = initalState, action) => {
         ...state,
         MOVIEINFO: action.data
       };
+		// 예매 페이지 초기화 케이스
+		case TICKET_PAGE_RESET:
+			return {
+				...state,
+				MOVIE_LIST_loading: false,
+				MOVIE_LIST_done: false,
+				MOVIE_LIST_error: false,
+				MOVIE_LIST: [],
+				MOVIE: '',
+
+				THEATER_LIST_loading: false,
+				THEATER_LIST_done: false,
+				THEATER_LIST_error: false,
+				THEATER_LIST: [],
+				THEATER: '',
+
+				DAY_LIST_loading: false,
+				DAY_LIST_done: false,
+				DAY_LIST_error: false,
+				DAY_LIST: [],
+				DAY: '',
+
+				MOVIEINFO_LIST_loading: false,
+				MOVIEINFO_LIST_done: false,
+				MOVIEINFO_LIST_error: false,
+				MOVIEINFO_LIST: [],
+				MOVIEINFO: ''
+			}
 
 
 
 
+		
 			// 아래로 수정
-    case SELECT_SCHEDULE_REQUEST:
-      return {
-        ...state,
-        select_schedule_loading: true,
-        select_schedule_done: false,
-        select_schedule_error: null,
-        choiceDay: false,
-      };
-    case SELECT_SCHEDULE_SUCCESS:
-      return {
-        ...state,
-        select_schedule_loading: false,
-        select_schedule_done: true,
-        select_schedule_error: null,
-        selectSchedule: action.data,
-      };
-    case SELECT_SCHEDULE_FAILURE:
-      return {
-        ...state,
-        select_schedule_loading: false,
-        select_schedule_done: false,
-        select_schedule_error: null,
-      };
-
     case PAYMENT_REQUEST:
       return {
         ...state,

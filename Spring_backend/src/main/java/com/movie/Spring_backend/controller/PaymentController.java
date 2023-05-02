@@ -1,41 +1,30 @@
+/*
+  23-05-02 결제 페이지 수정(오병주)
+*/
 package com.movie.Spring_backend.controller;
 
-
-import com.movie.Spring_backend.dto.MovieDto;
-import com.movie.Spring_backend.entity.MemberEntity;
-
-
-import com.movie.Spring_backend.jwt.JwtValidCheck;
-import com.movie.Spring_backend.payment.Payment;
-import com.movie.Spring_backend.repository.MemberRepository;
-import com.movie.Spring_backend.repository.MovieInfoSeatRepository;
 import com.movie.Spring_backend.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 
 @RestController
 @RequiredArgsConstructor
-// PayMent로 수정
-@RequestMapping("/payment")
+@RequestMapping("/Payment")
 
 public class PaymentController {
 
     private final PaymentService paymentService;
 
-    //결제 완료 시
-    @PostMapping("/auth/payment")
+    // 아래꺼 리턴 해줘야함 예매번호!
+
+    // 결제 검증을 위한 메소드
+    @PostMapping("/auth/Check")
     public ResponseEntity<?> paymentComplete(@RequestBody Map<String, String> requestMap,
                                                   HttpServletRequest request, HttpSession session) throws IOException {
         // 1. 아임포트 API 키와 SECRET키로 토큰을 생성
@@ -44,8 +33,7 @@ public class PaymentController {
     }
 
     // 예매 취소를 위한 메소드
-    // update매핑으로 바꿔야할듯
-    @PostMapping("/auth/cancel/ReserveDetail/{rid}")
+    @PatchMapping("/auth/cancel/ReserveDetail/{rid}")
     public ResponseEntity<String> PaymentCancel(@PathVariable("rid") Long rid, HttpServletRequest request) {
         paymentService.CancelPayment(rid, request);
         return ResponseEntity.noContent().build();

@@ -33,5 +33,5 @@ jwt:
   secret: c3ByaW5nLWJvb3Qtc2VjdXJpdHktand0LXR1dG9yaWFsLWJqLXNwcmluZy1ib290LXNlY3VyaXR5LWp3dC10dXRvcmlhbAo=
 
 payment:
-  api: 6318322442646815
-  apiSecret: 9DmPIhwndq4OWlmvqn6OidLyeKAFzgvaH2lanPqPeNO4eRiYs6LndTU54IidSgRto5JDJpwcPGzcMAY5
+  api: 3664861278068200
+  apiSecret: GhpUhh8JQHOe0wOe9aUki6O4Pi423r1dOEIIC0ICJzfwPDXmsigDy5px7kiaGkLc2dvR53Pg5emdiK23

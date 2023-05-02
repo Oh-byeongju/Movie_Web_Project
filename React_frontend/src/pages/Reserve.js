@@ -11,17 +11,14 @@ import { TICKET_PAGE_RESET } from "../reducer/R_ticket";
 import { SEAT_PAGE_RESET } from "../reducer/R_seat";
 import { useSelector, useDispatch } from "react-redux";
 
+
 import Complete from "../components/Ticket/Complete";
-import Loading from "../components/Common_components/Loading";
 
 const Reserve = () => {
   //토글
   
   const dispatch = useDispatch();
-  const {payment_done,select_theater_loading} = useSelector((state)=>state.R_ticket);
-
-
-  // 영화 예매 페이지에 쓸모 없을수도 있지만 Spring boot 메소드가 겹쳐서 로그인 상태도 같이 묶어서 보냄
+  const {payment_done} = useSelector((state)=>state.R_ticket);
 
   // 예매 페이지 탈출 시 리덕스 초기화를 위한 useEffect
   useEffect(() => {
@@ -40,15 +37,14 @@ const Reserve = () => {
 
   //좌석 페이지에 가려면 URL이 바뀌지않고 컴포넌트만 이동시켜줘야함.
   const [page, setPage] = useState(false);
-  const [completed, setCompleted] = useState(false);
+
   return (
     <Container>
       <TopButton />
-      {select_theater_loading  ?<Loading /> : ""}
       {
       payment_done ? <Complete /> :
       page ? (
-        <Seat completed= {completed} setCompleted={setCompleted}/>
+        <Seat/>
       ) : (
         <BookinWrapper>
           <TicketMovieList />

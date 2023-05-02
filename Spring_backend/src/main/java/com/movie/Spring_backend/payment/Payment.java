@@ -1,19 +1,22 @@
+/*
+  23-05-02 결제 페이지 수정(오병주)
+*/
 package com.movie.Spring_backend.payment;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import lombok.Data;
+import com.movie.Spring_backend.dto.IamportDto;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
-@Service
+
+@Component
 public class Payment {
+
 
     @Value("${payment.api}")
     private String impKey;
@@ -21,17 +24,7 @@ public class Payment {
     @Value("${payment.apiSecret}")
     private String impSecret;
 
-    @Data
-    private class Response{
-        private PaymentInfo response;
-
-    }
-
-    @Data
-    private class PaymentInfo{
-        private int amount;
-        private String status;
-    }
+    // 이거 파일 자체를 util로 옮기든가 해야할듯
 
 
     //토큰 생성 메소드
@@ -96,12 +89,22 @@ public class Payment {
 
         Gson gson = new Gson();
 
-        Response response = gson.fromJson(br.readLine(), Response.class);
-        System.out.println(response);
+        IamportDto iamportDto = gson.fromJson(br.readLine(), IamportDto.class);
+
+
+        // 이거 매핑은됨
+        // Status가 paid 아니면 예외처리(canceled 이런거 있뜨라)
+        // emb_pg~~ 이거 kakaopay면 카카오페이, naverpay면 네이버페이 아니면 카드결제
+
+        System.out.println(iamportDto.getResponse().getAmount());
+        System.out.println(iamportDto.getResponse().getStatus());
+        System.out.println(iamportDto.getResponse().getEmb_pg_provider());
+
+
         br.close();
         conn.disconnect();
 
-        return response.getResponse().getAmount();
+        return iamportDto.getResponse().getAmount();
     }
 
 

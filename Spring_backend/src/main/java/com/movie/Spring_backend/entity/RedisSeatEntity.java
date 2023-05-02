@@ -11,7 +11,8 @@ import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Getter
-@RedisHash(value = "seat", timeToLive = 600)
+// 점유좌석 제한시간은 6분으로 지정
+@RedisHash(value = "seat", timeToLive = 360)
 @NoArgsConstructor
 public class RedisSeatEntity {
 

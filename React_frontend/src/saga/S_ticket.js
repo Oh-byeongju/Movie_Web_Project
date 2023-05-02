@@ -1,21 +1,16 @@
 /*
 	23-04-27 ~ 28 예매 페이지 수정(오병주)
+	23-05-02 결제 페이지 수정(오병주)
 */
 import { all, takeLatest, fork, put, call } from "redux-saga/effects";
 import { 
 	TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_LIST_SUCCESS, TICKET_MOVIE_LIST_FAILURE,
 	TICKET_THEATER_LIST_REQUEST, TICKET_THEATER_LIST_SUCCESS, TICKET_THEATER_LIST_FAILURE,
 	TICKET_DAY_LIST_REQUEST, TICKET_DAY_LIST_SUCCESS, TICKET_DAY_LIST_FAILURE,
-	TICKET_MOVIEINFO_LIST_REQUEST, TICKET_MOVIEINFO_LIST_SUCCESS, TICKET_MOVIEINFO_LIST_FAILURE 
+	TICKET_MOVIEINFO_LIST_REQUEST, TICKET_MOVIEINFO_LIST_SUCCESS, TICKET_MOVIEINFO_LIST_FAILURE,
+	TICKET_PAYMENT_REQUEST, TICKET_PAYMENT_SUCCESS, TICKET_PAYMENT_FAILURE,
 } from "../reducer/R_ticket";
 
-
-
-import {
-  PAYMENT_REQUEST,
-  PAYMENT_SUCCESS,
-  PAYMENT_FAILURE,
-} from "../reducer/R_ticket";
 import { http } from "../lib/http";
 
 // 영화 조회 함수
@@ -147,44 +142,31 @@ async function callMovieInfoSearch(data) {
   });
 }
 
-
-
-
-
-
-
-
-// 절취선
-
-async function paymentApi(data) {
-  return await http
-    .post("/payment/auth/payment", data)
-    .then((response) => {
-      console.log(response);
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-
-function* payment(action) {
-  const result = yield call(paymentApi, action.data);
-  if (result.status === 200) {
+// 결제 검증 요청 함수
+function* Payment(action) {
+  const result = yield call(callPayment, action.data);
+  if (result.status === 204) {
     yield put({
-      type: PAYMENT_SUCCESS,
-      data: result.data,
+      type: TICKET_PAYMENT_SUCCESS
     });
-  } else {
-    alert("실패");
+  } 
+  else {
     yield put({
-      type: PAYMENT_FAILURE,
-      data: result.status,
+			type: TICKET_PAYMENT_FAILURE
     });
   }
 }
-// 절취선
 
+// 결제 검증 요청 백엔드 호출
+async function callPayment(data) {
+  return await http.post("/Payment/auth/Check", data)
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
 function* MOVIE_LIST() {
   yield takeLatest(TICKET_MOVIE_LIST_REQUEST, MovieSearch);
@@ -202,17 +184,9 @@ function* MOVIEINFO_LIST() {
   yield takeLatest(TICKET_MOVIEINFO_LIST_REQUEST, MovieInfoSearch);
 }
 
-
-
-//// 절취선
-
-function* paymentSaga() {
-  yield takeLatest(PAYMENT_REQUEST, payment);
+function* PAYMENT() {
+  yield takeLatest(TICKET_PAYMENT_REQUEST, Payment);
 }
-// 절취선
-
-
-
 
 export default function* S_ticket() {
   yield all([
@@ -220,9 +194,6 @@ export default function* S_ticket() {
 		fork(THEATER_LIST),
 		fork(DAY_LIST),
 		fork(MOVIEINFO_LIST),
-
-
-		// 절취선
-    fork(paymentSaga),
+		fork(PAYMENT)
   ]);
 }

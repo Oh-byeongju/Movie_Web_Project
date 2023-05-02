@@ -1,5 +1,6 @@
 /*
   23-04-30 ~ 23-05-01 예매 좌석 페이지 수정(오병주)
+	23-05-02 결제 페이지 수정(오병주)
 */
 // 좌석 목록 조회 리스트
 export const SEAT_LIST_REQUEST = "SEAT_LIST_REQUEST";

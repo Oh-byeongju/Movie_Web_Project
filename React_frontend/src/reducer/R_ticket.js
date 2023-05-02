@@ -1,5 +1,6 @@
 /*
 	23-04-27 ~ 28 예매 페이지 리듀서 수정(오병주)
+  23-05-02 결제 페이지 리듀서 수정(오병주)
 */
 // 영화 목록 조회 리스트
 export const TICKET_MOVIE_LIST_REQUEST = "TICKET_MOVIE_LIST_REQUEST";
@@ -24,6 +25,11 @@ export const TICKET_MOVIEINFO_LIST_REQUEST = "TICKET_MOVIEINFO_LIST_REQUEST";
 export const TICKET_MOVIEINFO_LIST_SUCCESS = "TICKET_MOVIEINFO_LIST_SUCCESS";
 export const TICKET_MOVIEINFO_LIST_FAILURE = "TICKET_MOVIEINFO_LIST_FAILURE";
 export const TICKET_MOVIEINFO_SELECT = "TICKET_MOVIEINFO_SELECT";
+
+// 결제 검증 요청 리스트
+export const TICKET_PAYMENT_REQUEST = "TICKET_PAYMENT_REQUEST";
+export const TICKET_PAYMENT_SUCCESS = "TICKET_PAYMENT_SUCCESS";
+export const TICKET_PAYMENT_FAILURE = "TICKET_PAYMENT_FAILURE";
 
 // 예매 페이지 초기화 리스트
 export const TICKET_PAGE_RESET = "TICKET_PAGE_RESET";
@@ -53,36 +59,10 @@ const initalState = {
 	MOVIEINFO_LIST: [],
 	MOVIEINFO: '',
 
-
-	// 아래로 수정	
-	// 아래로 수정
-
-  payment_loading: false,
-  payment_done: false,
-  payment_error: null,
-  payment: "",
-  selectSchedule: [],
-  disableTheater: [],
-
-  //검색한 데이터들을 담아두기
-  scheduleData: "", //영화Info 데이터
-  reservepage: false,
+	PAYMENT_loading: false,
+  PAYMENT_done: false,
+  PAYMENT_error: false,
 };
-
-
-
-export const PAYMENT_REQUEST = "PAYMENT_REQUEST";
-export const PAYMENT_SUCCESS = "PAYMENT_SUCCESS";
-export const PAYMENT_FAILURE = "PAYMENT_FAILURE";
-////////////////////////////////////////밑은 데이터 모아두는 곳
-export const SCHEDULE_DATA = "SCHEDULE_DATA";
-
-//검색 데이터 초기화 하기
-
-
-
-export const RESET_RESERVE_PAGE = "RESET_RESERVE_PAGE";
-export const RESERVE_LOGIN_PAGE = "RESERVE_LOGIN_PAGE";
 
 const R_ticket = (state = initalState, action) => {
   switch (action.type) {
@@ -198,6 +178,28 @@ const R_ticket = (state = initalState, action) => {
         ...state,
         MOVIEINFO: action.data
       };
+		// 결제 검증 요청 케이스들
+    case TICKET_PAYMENT_REQUEST:
+      return {
+        ...state,
+        PAYMENT_loading: true,
+        PAYMENT_done: false,
+        PAYMENT_error: false
+      };
+    case TICKET_PAYMENT_SUCCESS:
+      return {
+        ...state,
+        PAYMENT_loading: false,
+        PAYMENT_done: true,
+        PAYMENT_error: false
+      };
+    case TICKET_PAYMENT_FAILURE:
+      return {
+        ...state,
+        PAYMENT_loading: false,
+        PAYMENT_done: false,
+        PAYMENT_error: true
+      };
 		// 예매 페이지 초기화 케이스
 		case TICKET_PAGE_RESET:
 			return {
@@ -224,68 +226,12 @@ const R_ticket = (state = initalState, action) => {
 				MOVIEINFO_LIST_done: false,
 				MOVIEINFO_LIST_error: false,
 				MOVIEINFO_LIST: [],
-				MOVIEINFO: ''
+				MOVIEINFO: '',
+
+				PAYMENT_loading: false,
+				PAYMENT_done: false,
+				PAYMENT_error: false
 			}
-
-
-
-
-		
-			// 아래로 수정
-    case PAYMENT_REQUEST:
-      return {
-        ...state,
-        payment_loading: true,
-        payment_done: false,
-        payment_error: null,
-      };
-    case PAYMENT_SUCCESS:
-      return {
-        ...state,
-        payment_loading: false,
-        payment_done: true,
-        payment_error: null,
-        payment: action.data,
-
-      };
-    case PAYMENT_FAILURE:
-      return {
-        ...state,
-        payment_loading: false,
-        payment_done: false,
-        payment_error: null,
-      };
-
-  
-
-
-    case SCHEDULE_DATA:
-      return {
-        ...state,
-        scheduleData: action.data,
-      };
-    
-
-    case RESET_RESERVE_PAGE:
-      const copydatare = [...state.allDay];
-      return {
-        ...state,
-        movieData: "",
-        choiceMovie: false,
-        theaterData: "",
-        choiceTheater: false,
-        DayData: "",
-        choiceDay: false,
-        selectDay: [...copydatare],
-        scheduleData: "",
-        payment:""
-      };
-
-    case RESERVE_LOGIN_PAGE:
-      return {
-        ...state,
-        reservepage: true,
-      };
     default:
       return state;
   }

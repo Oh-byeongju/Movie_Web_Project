@@ -2,14 +2,12 @@
 	사용자가 선택한 영화 및 정보를 표시해주는 컴포넌트 2023-02-13 수정완(강경목)
 	23-04-29 예매 페이지 상태 컴포넌트 수정(오병주)
 */
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch,shallowEqual } from "react-redux";
 import { LeftCircleFilled, RightCircleFilled } from "@ant-design/icons";
 import { SEAT_PAGE_RESET } from "../../reducer/R_seat";
-import { RESERVE_LOGIN_PAGE } from "../../reducer/R_ticket";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import PaymentModal from "./PaymentModal";
 
 const TicketState = ({ setPage, page }) => {
@@ -57,22 +55,6 @@ const TicketState = ({ setPage, page }) => {
     setIsOpen(!isOpen);
   };
 
-  //제이쿼리 대신 선언
-  //아임포트 불러오기
-  useEffect(() => {
-    const jquery = document.createElement("script");
-    jquery.src = "https://code.jquery.com/jquery-1.12.4.min.js";
-    const iamport = document.createElement("script");
-    iamport.src = "https://cdn.iamport.kr/js/iamport.payment-1.1.7.js";
-    document.head.appendChild(jquery);
-    document.head.appendChild(iamport);
-    return () => {
-      document.head.removeChild(jquery);
-      document.head.removeChild(iamport);
-    };
-  }, []);
-
- 
   return (
     <TicketWrapper>
       <TicketStep page={page}>
@@ -198,9 +180,6 @@ const TicketState = ({ setPage, page }) => {
                     schedule: MOVIEINFO,
 										// 여기서 예매에 필요한 값들 던져주면됨
                   },
-                });
-                dispatch({
-                  type: RESERVE_LOGIN_PAGE,
                 });
               }
             } else if (

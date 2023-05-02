@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+// 리프레시 토큰 제한시간은 7일로 지정
 @RedisHash(value = "RTK", timeToLive = 604800)
 @Getter
 @NoArgsConstructor

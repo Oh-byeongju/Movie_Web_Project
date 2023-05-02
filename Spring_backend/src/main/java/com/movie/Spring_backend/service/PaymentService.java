@@ -1,3 +1,6 @@
+/*
+  23-05-02 결제 페이지 수정(오병주)
+*/
 package com.movie.Spring_backend.service;
 
 import com.movie.Spring_backend.entity.*;
@@ -47,11 +50,11 @@ public class PaymentService {
 
         String token = payment.getToken();
         String User_id = SecurityUtil.getCurrentMemberId();
-        String impUid = requestMap.get("impUid"); //결제 정보
+        String impUid = requestMap.get("rpayid"); //결제 정보
         String miid = requestMap.get("miid");     //movieinfo_id
-        String pay = requestMap.get("amount");    //pay
-        String people = requestMap.get("people");
-        String ticket = requestMap.get("ticket");
+        String pay = requestMap.get("price");    //pay
+        String people = requestMap.get("temp_people");
+        String ticket = requestMap.get("rticket");
 
     String people2= RemoveLastChar.removeLast(people);
         String rpeople= RemoveLastChar.removeLast(people2);
@@ -64,7 +67,7 @@ public class PaymentService {
         // 현재 시간을 sql에 사용할 수 있게 매핑
         SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String day = DateFormat.format(nowDate);
-        String[] SeatNumber = requestMap.get("sid").split(",");
+        String[] SeatNumber = requestMap.get("temp_seat").split(",");
         List<Long> sid = new ArrayList<>();
         for(String s: SeatNumber){
             sid.add(Long.parseLong(s));
@@ -101,7 +104,7 @@ public class PaymentService {
                                .reservation(data)
                                .build();
                        infoseat.add(movieInfoSeatEntity);
-                       String keys =miid + ", " + ss;
+                       String keys =miid + "," + ss;
                        System.out.println(keys);
                        RedisSeatEntity redisSeatEntity = new RedisSeatEntity(keys, User_id);
                        redisSeatRepository.delete(redisSeatEntity);
@@ -109,10 +112,7 @@ public class PaymentService {
 
 
                    movieInfoSeatRepository.saveAll(infoseat);
-                    // MovieMember = MovieMemberEntity.builder()
-                    //    .umlike(true)
-                    //      .movie(movie)
-                    //        .member(member).build();
+
                     System.out.println("3333333333333");
 
                     return new ResponseEntity<>(data.getRid(), HttpStatus.OK);

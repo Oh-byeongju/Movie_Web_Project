@@ -50,7 +50,8 @@ public class SeatService {
         List<MovieInfoSeatEntity> movieInfoSeats = movieInfoSeatRepository.findByMovieInfo(movieInfo);
         List<RedisSeatEntity> redisSeats = redisSeatRepository.findAll();
 
-        // 점유좌석번호 변수
+        // authentication 객체에서 아이디 확보 및 리스트 선언
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
         List<Long> occupyNum = new ArrayList<>();
 
         // mysql에 있는 상영정보에 대한 점유좌석번호 추출
@@ -60,8 +61,8 @@ public class SeatService {
 
         // 레디스에 있는 상영정보에 대한 점유좌석번호 추출
         for (RedisSeatEntity rs : redisSeats) {
-            // rs가 널이 아닐경우
-            if (rs != null) {
+            // 레디스 정보가 null이 아니고 현재 사용자와 점유좌석에 있는 사용자 정보가 다를경우
+            if (rs != null && !currentMemberId.equals(rs.getUser())) {
                 // 레디스 데이터 매핑
                 String [] SeatNumber = rs.getKey().split(",");
 

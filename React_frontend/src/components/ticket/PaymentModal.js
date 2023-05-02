@@ -1,7 +1,10 @@
+/*
+  23-05-02 결제 페이지 수정(오병주)
+*/
 import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
-import * as Payment from "../Common_components/Function";
+import * as Payment from "../../lib/payment.js";
 import { SEAT_CHECK_REQUEST, SEAT_CHECK_RESET, SEAT_LIST_REQUEST, SEAT_PAGE_RESET } from "../../reducer/R_seat";
 
 const PaymentModal = ({ closeModal }) => {
@@ -43,34 +46,6 @@ const PaymentModal = ({ closeModal }) => {
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
-	const [disable, setDisable] = useState(false);
-
-
-	// // 결제 버튼 누를때 수정할꺼
-  // const onClickPaymenttt = useCallback(() => {
-  //   const data = {
-  //     pg: "html5_inicis.INIpayTest", //pg사
-  //     payMethod: "card", //결제수단
-  //     oderNum: Payment.createOrderNum(), //주문번호
-  //     name: MOVIE.mtitle, //결제이름
-  //     buyerEmail: "", //구매자 이메일
-  //     buyerName: LOGIN_data.uname, //구매자 이름
-  //     buyerTel: "010-1234-1234", //구매자 번호
-  //     buyerAddr: "부산광역시 ", //구매자 주소
-  //     amount: Price, 
-  //   };
-  //   Payment.paymentCard(
-  //     data,
-  //     dispatch,
-  //     LOGIN_data.uid,
-  //     ChoiceSeat,
-  //     MOVIEINFO.miid,
-	// 		Kid,
-	// 		Teenager,
-	// 		Adult
-  //   );
-  // }, [Adult, ChoiceSeat, Kid, LOGIN_data.uid, LOGIN_data.uname, MOVIE.mtitle, MOVIEINFO.miid, Price, Teenager, dispatch]);
-
 
 	// 결제 버튼 누를때 실행되는 함수
 	const onClickPayment = useCallback(() => {
@@ -88,64 +63,29 @@ const PaymentModal = ({ closeModal }) => {
         	miid: MOVIEINFO.miid
 				},
 			});
-
-			setDisable(true); //--> 이거 두번 못누르게 하려고 만들었는데 시원치않음 생각해보기
 		}
 		else {
 			alert('모든 약관에 동의해주세요.');
 		}
 	}, [check1, check2, check3, ChoiceSeat, MOVIEINFO, dispatch]);
 
-
-	// 내일할꺼
-	// 결제 넘어가기전에 --> 내가 점유한 자리는 뒤로갔다와도 잡을 수 있게 해야하나 고민해보기
-
-
-
 	// 점유좌석 조회 여부에 따른 useEffect
 	useEffect(()=> {
-		// 성공 케이스
+		// 성공 케이스(결제 요청 및 리덕스 초기화)
 		if (SEAT_CHECK_done) {
-			const data = {
-				pg: "html5_inicis.INIpayTest", //pg사
-				payMethod: "card", //결제수단
-				oderNum: Payment.createOrderNum(), //주문번호
-				name: MOVIE.mtitle, //결제이름
-				buyerEmail: "", //구매자 이메일
-				buyerName: LOGIN_data.uname, //구매자 이름
-				buyerTel: "010-1234-1234", //구매자 번호
-				buyerAddr: "부산광역시 ", //구매자 주소
-				amount: Price, 
-			};
-			Payment.paymentCard(
-				data,
-				dispatch,
-				LOGIN_data.uid,
-				ChoiceSeat,
-				MOVIEINFO.miid,
-				Kid,
-				Teenager,
-				Adult
-			);
-			
+			Payment.PaymentCall(MOVIE, LOGIN_data, Price, Kid, Teenager, Adult, ChoiceSeat, MOVIEINFO, dispatch);	
 			dispatch({
 				type: SEAT_CHECK_RESET
 			});
-
-			// 이거 disable 풀어주는걸 저거 호출하는 저기서 해줘야할듯함(아임포트 호출하는곳에서)
-			setDisable(false);
 		}
 
-		// 실패 케이스(모달 닫고 상태 초기화)
+		// 실패 케이스(모달 닫고 리덕스 상태 초기화)
 		if (SEAT_CHECK_error) {
 			alert('점유된 좌석을 선택하셨습니다. 좌석을 다시 선택해주세요.');
-
 			closeModal();
-
 			dispatch({
 				type: SEAT_CHECK_RESET
 			});
-
 			dispatch ({
         type: SEAT_LIST_REQUEST,
         data: { 
@@ -153,15 +93,11 @@ const PaymentModal = ({ closeModal }) => {
 					miid: MOVIEINFO.miid 
 				},
       });
-
 			dispatch({
 				type: SEAT_PAGE_RESET
 			});
 		}
-	}, [SEAT_CHECK_done, SEAT_CHECK_error, MOVIEINFO, closeModal, dispatch]);
-
-
-	
+	}, [SEAT_CHECK_done, SEAT_CHECK_error, MOVIE, LOGIN_data, Price, Kid, Teenager, Adult, MOVIEINFO, ChoiceSeat, closeModal, dispatch]);
 
   return (
     <Container>
@@ -271,12 +207,20 @@ const PaymentModal = ({ closeModal }) => {
                   </tr>
                   <tr>
                     <th>
-											결제수단
+											결제수단 
 										</th>
                     <td>
-											인터넷 결제  
+											인터넷 결제 (자동환불)
                   	</td>
                   </tr>
+									<tr>
+										<th>
+											환불시기
+										</th>
+										<td>
+											결제일 기준 3일이내
+										</td>
+									</tr>
                 </tbody>
               </InfoTable>
             </PaymentInfo>
@@ -304,10 +248,10 @@ const PaymentModal = ({ closeModal }) => {
                 </CheckLayout>
               </PaymentAgreement2>
             </Agreement>
-            <Reserve disabled={disable} onClick={onClickPayment}>
+            <Reserve onClick={onClickPayment}>
 							결제하기
 						</Reserve>
-            <Cancel disabled={disable} onClick={()=> closeModal()}>
+            <Cancel onClick={()=> closeModal()}>
 							취소
 						</Cancel>
           </BodyModal>

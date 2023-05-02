@@ -103,7 +103,7 @@ function* ReserveDrop(action) {
 // 사용자의 예매취소 백엔드 호출
 async function ReserveDropCall(data) {
   return await http
-    .post(`/payment/auth/cancel${data.pathname}`)
+    .patch(`/Payment/auth/cancel${data.pathname}`)
     .then((response) => {
       return response;
     })

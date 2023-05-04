@@ -10,7 +10,7 @@ import { SEAT_PAGE_RESET } from "../../reducer/R_seat";
 import { useLocation, useNavigate } from "react-router-dom";
 import PaymentModal from "./PaymentModal";
 
-const TicketState = ({ setPage, page }) => {
+const TicketState = ({ seatPage, setSeatPage }) => {
 	const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -36,11 +36,11 @@ const TicketState = ({ setPage, page }) => {
 		if (!window.confirm('영화 선택화면으로 가시겠습니까? \n(선택한 좌석정보는 초기화 됩니다.)')) {
 			return;
 		}
-		setPage(false);
+		setSeatPage(false);
 		dispatch({
 			type: SEAT_PAGE_RESET
 		})
-	}, [setPage, dispatch]);
+	}, [setSeatPage, dispatch]);
 
 
 
@@ -57,27 +57,31 @@ const TicketState = ({ setPage, page }) => {
 
   return (
     <TicketWrapper>
-      <TicketStep page={page}>
-        {MOVIE !== "" ? (
-          <MoviePoster>
-            <Poster>
-              <Img
-                className="imggg"
-                src={`${MOVIE.mimagepath}`}
-                alt="영화"
-              />
-            </Poster>
-            <Title>
-              <span>{MOVIE.mtitle}</span>
-            </Title>
-            <Title>{MOVIE.mrating}세 관람가</Title>
-          </MoviePoster>
-        ) : (
-          <MoviePoster>
-            <Poster></Poster>
-            <Title></Title>
-          </MoviePoster>
-        )}
+      <TicketStep seatPage={seatPage}>
+				<MoviePoster>
+					<Poster>
+						{MOVIE &&
+						<Img
+							className="imggg"
+							src={`${MOVIE.mimagepath}`}
+							alt="영화"
+						/>}
+					</Poster>
+					<Title>
+						{MOVIE &&
+						<span>
+							{MOVIE.mtitle}
+						</span>
+						}
+					</Title>
+					<Title>
+						{MOVIE &&
+						MOVIE.mrating + '세 관람가'
+						// 이거 청불 전체 이렇게 나오게 해야함
+						}
+					</Title>
+				</MoviePoster>
+      
         <MovieTheater>
           {THEATER !== "" ? (
             <Name>
@@ -121,7 +125,7 @@ const TicketState = ({ setPage, page }) => {
           <PriceTag>총금액 : {Price === 0 ? '' : Price}</PriceTag>
         </SeatMore>
       </TicketStep>
-      {page ? (
+      {seatPage ? (
         <>
           <MovieChoice onClick={backMovie}>
             <LeftCircleFilled
@@ -146,7 +150,6 @@ const TicketState = ({ setPage, page }) => {
               else {
           
                 openModalHandler();
-                //  paymentRecord();
               }
             }}
           >
@@ -164,6 +167,8 @@ const TicketState = ({ setPage, page }) => {
         </>
       ) : (
         <MovieSeat
+
+				// 여기에 나중에 할떄 상영일정을 골라주세요~ 이런식으로 하나 드가야함 하나라도 null 있으면
           onClick={() => {
             if (LOGIN_data.uid === "No_login") {
               if (
@@ -184,10 +189,10 @@ const TicketState = ({ setPage, page }) => {
               }
             } else if (
               LOGIN_data !== "" &&
-              // 여기서 예매에 필요한 값들 던져주면됨
+              // 넘어가는 위치
               MOVIEINFO !== ""
             ) {
-              setPage(true);
+              setSeatPage(true);
             }
           }}
         >
@@ -222,7 +227,7 @@ const TicketStep = styled.div`
   padding-top: 10px;
   padding-left: 150px;
   position: relative;
-  left: ${(props) => (props.page === true ? "100px" : "0px")};
+  left: ${(props) => (props.seatPage === true ? "100px" : "0px")};
 `;
 
 const MoviePoster = styled.div`

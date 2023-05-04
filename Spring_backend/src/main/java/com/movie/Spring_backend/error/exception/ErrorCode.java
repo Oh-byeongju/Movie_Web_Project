@@ -31,13 +31,14 @@ public enum ErrorCode {
     // Movie
     SELECT_IS_NONE(400, "MV001", "검색결과가 존재하지 않습니다."),
     OCCUPY_SEAT_NONE(406, "ST001", "점유된 좌석입니다"),
+    PAYMENT_NOT_CORRECT(400, "P001", "결제 기록이 올바르지 않습니다."),
     COMMENT_IS_NONE(400, "MC001", "관람평이 존재하지 않습니다."),
     COMMENT_IS_EXIST(400, "MC002", "작성된 관람평이 존재합니다."),
     WATCHING_IS_NONE(400, "MC003", "영화 관람기록이 없습니다."),
     RESERVE_IS_NONE(400, "MR001", "영화 예매기록이 없습니다."),
     MOVIEINFO_IS_EXIST(400, "MI001", "수정이 불가능한 상영정보입니다."),
 
-    // THEATER
+    // Theater
     CINEMA_IS_EXIST(400, "T001", "상영관이 존재합니다."),
     CINEMA_IS_NONE(400, "T002", "상영관이 존재하지 않습니다.");
 

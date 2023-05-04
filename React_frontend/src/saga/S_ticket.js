@@ -10,7 +10,6 @@ import {
 	TICKET_MOVIEINFO_LIST_REQUEST, TICKET_MOVIEINFO_LIST_SUCCESS, TICKET_MOVIEINFO_LIST_FAILURE,
 	TICKET_PAYMENT_REQUEST, TICKET_PAYMENT_SUCCESS, TICKET_PAYMENT_FAILURE,
 } from "../reducer/R_ticket";
-
 import { http } from "../lib/http";
 
 // 영화 조회 함수
@@ -145,14 +144,16 @@ async function callMovieInfoSearch(data) {
 // 결제 검증 요청 함수
 function* Payment(action) {
   const result = yield call(callPayment, action.data);
-  if (result.status === 204) {
+  if (result.status === 200) {
     yield put({
-      type: TICKET_PAYMENT_SUCCESS
+      type: TICKET_PAYMENT_SUCCESS,
+			data: result.data
     });
   } 
   else {
     yield put({
-			type: TICKET_PAYMENT_FAILURE
+			type: TICKET_PAYMENT_FAILURE,
+			data: result.data
     });
   }
 }

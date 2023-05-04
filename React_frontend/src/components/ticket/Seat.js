@@ -14,7 +14,7 @@ const Seat = () => {
 	const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { MOVIEINFO, SEAT_LIST, LOGIN_data, Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error } = useSelector(
+	const { MOVIEINFO, SEAT_LIST, LOGIN_data, Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error, PAYMENT } = useSelector(
 		state => ({
 			MOVIEINFO: state.R_ticket.MOVIEINFO,
 			SEAT_LIST: state.R_seat.SEAT_LIST,
@@ -24,7 +24,8 @@ const Seat = () => {
 			Adult: state.R_seat.Adult,
 			Total: state.R_seat.Total,
 			ChoiceSeat: state.R_seat.ChoiceSeat,
-			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error
+			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error,
+			PAYMENT: state.R_ticket.PAYMENT
 		}),
 		shallowEqual
 	);
@@ -32,6 +33,11 @@ const Seat = () => {
 	// 좌석 조회 useEffect
 	useEffect(() => {
     if (LOGIN_data.uname !== '' && MOVIEINFO !== '') {
+			// 스크롤 위치조정
+			window.scrollTo({
+				top: 100,
+				behavior: "smooth"});
+
       dispatch ({
         type: SEAT_LIST_REQUEST,
         data: { 
@@ -44,12 +50,12 @@ const Seat = () => {
 
 	// 점유좌석에 대한 오류가 생겼을경우 초기화 해주는 useEffect
 	useEffect(() => {
-		if (SEAT_CHECK_error) {
+		if (SEAT_CHECK_error || PAYMENT.status === 406) {
 			setNumKid(0);
 			setNumTeenager(0);
 			setNumAdult(0);
 		}
-	}, [SEAT_CHECK_error, dispatch]);
+	}, [SEAT_CHECK_error, PAYMENT.status, dispatch]);
 
 	// 버튼 useState
 	const [numKid, setNumKid] = useState(0); // 아이
@@ -207,14 +213,20 @@ const Seat = () => {
           </NumberOfPeople>
         </PersonScreen>
         <ScreenSelect>
-          <Screen/>
-          <SeetReserve>
+          <Screen>
+						<ScreenImg src="img/screen.png" alt='screen'/>
+					</Screen>
+          <SeatReserve>
             {SEAT_LIST.map((seat) => 
                 <div key={seat.sid}>
                   <SeatButton seat={seat}/>
                 </div>
             )}
-          </SeetReserve>
+          </SeatReserve>
+					<SeatInfo>
+						여기쯤 상영 어쩌고 저쩌고 해주면될듯 + 8장이상 금지 이런거 위에 말하거나 하고
+					</SeatInfo>
+					
         </ScreenSelect>
       </SeatContent>
     </SeatWrapper>
@@ -222,30 +234,26 @@ const Seat = () => {
 };
 
 const SeatWrapper = styled.div`
-  display: block;
-  min-height: 710px;
-  width: 930px;
+  display: flex;
+  width: 1100px;
   height: 100%;
   padding-left: 10px;
+	margin : 0 auto;
 `;
 
 const SeatContent = styled.div`
-  float: none;
   width: 100%;
-  min-height: 528px;
   position: relative;
   float: left;
   height: 100%;
-  margin-left: 2px;
   background-color: #f2f0e5;
   overflow: hidden;
-  left: 280px;
 `;
 
 const Title = styled.div`
   position: relative;
-  height: 33px;
-  line-height: 33px;
+  height: 34px;
+  line-height: 34px;
   text-align: center;
   background-color: #333333;
   color: white;
@@ -264,7 +272,7 @@ const NumberOfPeople = styled.div`
 `;
 
 const NumberContainer = styled.div`
-  min-height: 52px;
+  min-height: 45px;
   padding: 10px 0 10px 20px;
   background-color: #f2f4f5;
   border: 1px solid #d8d9db;
@@ -274,34 +282,49 @@ const People = styled.div`
   display: block;
   float: left;
   position: relative;
-  left: 200px;
-  top: 10px;
-  padding-right: 30px;
+  left: 224px;
+  top: 6px;
+  padding-right: 50px;
 `;
 
 const ScreenSelect = styled.div`
   display: flex;
-  min-height: 600px;
+  min-height: 430px;
   width: 100%;
 `;
 
-const SeetReserve = styled.div`
-  width: 420px;
-  height: 100%;
-  padding-left: 250px;
+const Screen = styled.div`
+	background: #fff;
   position: absolute;
-  top: 250px;
+  margin-top: 17px;
+  left: 50%;
+	transform: translate(-50%, 0);
+  width: 610px;
+  height: 52px;
 `;
 
-const Screen = styled.div`
-  background-color: #fff;
+const ScreenImg = styled.img`
+	width: 610px;
+	height: 27px;
+	border: 0;
+	text-align: center; 
+	padding-top: 13px;
+`;
+
+const SeatReserve = styled.div`
+  width: 460px;
   position: absolute;
-  margin-top: 30px;
-  left: 250px;
-  width: 420px;
-  height: 80px;
-  transform: rotateX(-20deg);
-  box-shadow: 0 3px 10px rgb(255 255 255 / 70%);
+	top: 198px;
+	left: 49.5%;
+	transform: translate(-50%, 0);
+`;
+
+const SeatInfo = styled.div`
+	width: 100px;
+	position: absolute;
+	top: 70%;
+	left: 80%;
+	transform: translate(-80%, 70%);
 `;
 
 export default Seat;

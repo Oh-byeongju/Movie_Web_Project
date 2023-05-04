@@ -18,8 +18,8 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     // 사용자 id와 영화정보 id를 이용하여 엔티티 조회하는 메소드 (예매 취소된것 제외)
     List<ReservationEntity> findByRstateTrueAndMemberAndMovieInfoIn(MemberEntity member, List<MovieInfoEntity> movieInfos);
 
-    //이거도 옵셔널 붙이고 수정해야할듯 내가한거아님
-    ReservationEntity findByRpayid(String rpayid);
+    // 결제 고유번호를 이용하여 예매기록 조회하는 메소드
+    Optional<ReservationEntity> findByRpayid(String rpayid);
 
     // 사용자가 예매한 영화 정보들을 가져오는 메소드(예매시간 순으로 내림차순, 아직 영화가 끝나지 않은 예매들)
     // 아래꺼도 movieInfocinema 지워도 되는걸로암

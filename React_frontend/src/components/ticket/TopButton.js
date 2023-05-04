@@ -1,10 +1,13 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const TopButton = () => {
-  const navigate= useNavigate();
+	// 예매 다시하기 버튼 누를떄
 
+	// 이거 그냥 초기화 dispatch 해주면될듯
+
+	
   const onReset = useCallback(() => {
     if (!window.confirm("예매 페이지를 초기화합니다.")) {
       return;
@@ -15,11 +18,13 @@ const TopButton = () => {
   return (
     <Nav>
       <Right>
-        <Schedule onClick={()=>{navigate('/timetable')}}>
-          <span>
-						상영 시간표
-					</span>
-        </Schedule>
+				<Link to="/TimeTable">
+					<Schedule>
+						<span>
+							상영 시간표
+						</span>
+					</Schedule>
+				</Link>
         <Rereserve onClick={onReset}>
           <span>
 						예매 다시하기
@@ -32,44 +37,43 @@ const TopButton = () => {
 
 const Nav = styled.div`
   position: relative;
-  height: 74px;
-  display: block;
+	width: 1100px;
+  height: 78px;
+	padding-left: 10px;
+	margin : 0 auto;
 	margin-bottom: 10px;
 `;
 
-const Right = styled.span`
-  position: absolute;
-  left: 74%;
-  top: 30px;
+const Right = styled.div`
+	float: right;
+	padding-top: 20px;
+	margin-right: 5px;
 `;
 
 const Schedule = styled.button`
   position: relative;
-  right: 25%;
-  bottom: 10px;
   border: none;
   display: inline-block;
   padding: 15px 30px;
   border-radius: 15px;
   cursor: pointer;
-  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
   text-decoration: none;
   font-weight: 600;
   transition: 0.25s;
   background-color: #f8e6e0;
   color: #6e6e6e;
+	margin-right: 15px;
 `;
 
 const Rereserve = styled.button`
   position: relative;
-  right: 19%;
-  bottom: 10px;
   cursor: pointer;
   border: none;
   display: inline-block;
   padding: 15px 30px;
   border-radius: 15px;
-  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
   text-decoration: none;
   font-weight: 600;
   transition: 0.25s;

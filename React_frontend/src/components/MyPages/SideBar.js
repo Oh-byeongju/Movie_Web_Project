@@ -35,7 +35,6 @@ const SideBar = () => {
 
 	// url에 따라 state 수정
 	useEffect(()=> {
-
 		setState (s => ({
 			...s,
 			Reserve: false,
@@ -72,7 +71,7 @@ const SideBar = () => {
 				return;
 			}
 			alert("로그인 이후 사용 가능한 페이지입니다.");
-			navigate(`/UserLogin`);
+			navigate('/UserLogin', {state: {url: '/Mypage/Reserve'}});
     }
   }, [LOGIN_STATUS_error, LOGIN_data.uname, LOGOUT_done, navigate, dispatch]);
 

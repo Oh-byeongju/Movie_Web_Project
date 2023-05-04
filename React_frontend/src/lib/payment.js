@@ -26,7 +26,6 @@ export const PaymentCall = (MOVIE, LOGIN_data, Price, Kid, Teenager, Adult, Choi
 	// 결제 요청할 데이터
 	const data = {
 		pg: "html5_inicis", // pg사(이니시스)
-		// pay_method: "card", // 결제수단
 		merchant_uid: CreateOrderNum(), // 주문번호
 		amount: Price, // 결제금액
 		name: MOVIE.mtitle, // 상품(영화)이름
@@ -40,8 +39,6 @@ export const PaymentCall = (MOVIE, LOGIN_data, Price, Kid, Teenager, Adult, Choi
 	IMP.request_pay(data, function(response) {
 		// 결제 성공시 로직
 		if (response.success) {
-			alert(JSON.stringify(response));
-
 			// 사용자가 선택한 관람 인원 String으로 변환
 			var people = "";
 			if (Kid !==0) {
@@ -63,7 +60,7 @@ export const PaymentCall = (MOVIE, LOGIN_data, Price, Kid, Teenager, Adult, Choi
 			const data = {
 				rpayid: response.imp_uid,
 				miid: MOVIEINFO.miid,
-				price: response.paid_amount,
+				price: Price,
 				temp_people: people,
 				temp_seat: seatnumber,
 				rticket: Kid + Teenager + Adult

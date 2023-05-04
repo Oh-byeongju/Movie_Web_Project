@@ -76,7 +76,7 @@ public class SeatService {
         return Seats.stream().map(seat -> seatMapper.toDtoReserve(seat, occupyNum)).collect(Collectors.toList());
     }
 
-    // 예매 결제전 사용자가 선택한 자리의 점유 여부를 확인하는 메소드
+    // 예매 결제전 사용자가 선택한 자리의 점유 여부를 확인하는 메소드(레디스를 사용하여 임시 좌석점유도 구현)
     @Transactional
     public void getSeatCheck(HttpServletRequest request, Map<String, String> requestMap) {
         // Access Token에 대한 유효성 검사

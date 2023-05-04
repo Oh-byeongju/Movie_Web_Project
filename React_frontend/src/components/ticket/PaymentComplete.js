@@ -1,83 +1,126 @@
-/*eslint-disable*/
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
-import { useLocation, Link ,useNavigate} from "react-router-dom";
+import { useSelector, shallowEqual } from "react-redux";
 
-const Complete = ()=>{
-  const { movieData, theaterData, DayData, scheduleData,payment } = useSelector(
-    (state) => state.R_ticket
-  );
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
-  const { choiceSeat, choiceUser, price, 어른, 아이, 학생 } = useSelector(
-    (state) => state.seat
-  );
-  const navigate= useNavigate();
-  const location = useLocation();
+const PaymentComplete = ()=>{
+
+	// 필요한 리덕스 상태들
+	const { MOVIE, THEATER, MOVIEINFO, Kid, Teenager, Adult, Price, ChoiceSeat, PAYMENT } = useSelector(
+		state => ({
+			MOVIE: state.R_ticket.MOVIE,
+			THEATER: state.R_ticket.THEATER,
+			DAY: state.R_ticket.DAY,
+			MOVIEINFO: state.R_ticket.MOVIEINFO,
+			Kid: state.R_seat.Kid,
+			Teenager: state.R_seat.Teenager,
+			Adult: state.R_seat.Adult,
+			Price: state.R_seat.Price,
+			ChoiceSeat: state.R_seat.ChoiceSeat,
+			PAYMENT: state.R_ticket.PAYMENT,
+		}),
+		shallowEqual
+	);
+
+	useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+
+	//움직인는거 링크to로 구현하기
+	// 결제 실패할때 alert뜨게 해야하는데
+
   return (
-        <CompleteWrapper>
-            <CompleteHead>
-            <Title>
-                예매완료
+		<CompleteWrapper>
+			<CompleteHead>
+				<Title>
+					예매완료
         </Title>
-
         <Content>
-            <h5>예매가 완료 되었습니다.</h5>
-                <Poster>
-                <img src={`${movieData.imagepath}`}></img>
-                </Poster>
-                <Table>
-                  <caption>예매정보</caption>
-                  <thead></thead>
-                  <tbody>
-                    <tr>
-                      <th>예매번호</th>
-                      <td style={{color:"red"}}>{payment}</td> 
-                    
-                    </tr>
-                    <tr>
-                      <th>영화</th>
-                      <td>{movieData.title}
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>극장</th>
-                      <td>{theaterData.tarea}&nbsp;{theaterData.tname}점
-                  </td>
-                    </tr>
-                    <tr>
-                      <th>일시</th>
-                      <td>
-{scheduleData.miday}&nbsp; {scheduleData.mistarttime}                      </td>
-                    </tr>
-                    <tr>
-                      <th>인원</th>
-                      <td>
-                      {아이 === 0 ? "" : <>아이 {아이}명 </>}
-                        {학생 === 0 ? "" : <>학생 {학생}명 </>}
-                        {어른 === 0 ? "" : <>성인 {어른}명 </>}
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>좌석</th>
-                      <td>
-                      {choiceSeat.map((seat) => {
-                          return <>{seat.location}&nbsp;</>;
-                        })}
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>결제금액</th>
-                      <td>
-                        <span style={{color:'red'}}>{price}</span>원
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-                <Check>예매확인/취소</Check>
-                <Reserve onClick={()=>window.location.replace('/')}>메인 페이지</Reserve>
-
-                <Agreement>
-              <PaymentAgreement>
+					<h5>
+						예매가 완료 되었습니다.
+					</h5>
+					<Poster>
+						<img src={`${MOVIE.mimagepath}`} alt='Poster'></img>
+					</Poster>
+					<Table>
+						<caption>
+							예매정보
+						</caption>
+						<tbody>
+							<tr>
+								<th>
+									예매번호
+								</th>
+								<td style={{color:"red"}}>
+									{PAYMENT.rid}
+								</td> 
+							</tr>
+							<tr>
+								<th>
+									영화
+								</th>
+								<td>
+									{MOVIE.mtitle}
+								</td>
+							</tr>
+							<tr>
+								<th>
+									극장
+								</th>
+								<td>
+									{THEATER.tarea} {THEATER.tname}점
+								</td>
+							</tr>
+							<tr>
+								<th>
+									일시
+								</th>
+								<td>
+									{MOVIEINFO.miday}&nbsp;{MOVIEINFO.mistarttime} 
+								</td>
+							</tr>
+							<tr>
+								<th>
+									인원
+								</th>
+								<td>
+									{Kid === 0 ? null : (Teenager !== 0 || Adult !== 0) ? <>아이 {Kid}명,&nbsp;</> : <>아이 {Kid}명&nbsp;</>}
+									{Teenager === 0 ? null : (Adult !== 0) ? <>학생 {Teenager}명,&nbsp;</> : <>학생 {Teenager}명&nbsp; </> }
+									{Adult === 0 ? "" : <>성인 {Adult}명 </>}
+								</td>
+							</tr>
+							<tr>
+								<th>
+									좌석
+								</th>
+								<td>
+									{ChoiceSeat.map((seat, index) => 
+										<span key={index}>
+											{seat.location}{index === ChoiceSeat.length - 1 ? null : ','}
+										</span>
+									)}
+								</td>
+							</tr>
+							<tr>
+								<th>
+									결제금액
+								</th>
+								<td>
+									<span style={{color:'red'}}>
+										{Price} 원
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</Table>
+					<Check>
+						예매확인/취소
+					</Check>
+					<Reserve onClick={()=>window.location.replace('/')}>
+						메인 페이지
+					</Reserve>
+					<Agreement>
+						<PaymentAgreement>
                예매 유의사항 
                <p>CJ ONE 포인트는 상영일 익일 적립됩니다 홈티켓 출력 시, 별도의 티켓 발권 없이 바로 입장 가능합니다<br /><br />
 
@@ -85,30 +128,27 @@ const Complete = ()=>{
                 영화 상영 스케줄은 영화관사정에 의해 변경될 수 있습니다.<br /><br />
                 비회원 예매하신 경우에는 예매내역이 이메일로 발송되지 않습니다.<br />
                </p>
-              </PaymentAgreement>
-            </Agreement>
-              </Content>
-              <Food>
-                <Pop><span style={{fontSize: '18px'}}>영화만 보시려구요?</span><br/>
-                <span style={{fontSize:'10px'}}>온라인 구매 시, 콤보 500원 더 할인해 드립니다!</span></Pop>
-                <Pop2><Img src={"img/pop/pop.jpg"} />CGV 콤보<br/> <span>8,000원</span>
-                <div className="gift">선물하기</div><div className="buy">구매하기</div></Pop2>
-                <Pop2><Img src={"img/pop/pop.jpg"} />나초콤보<br/> <span>10,000원</span>
-                <div className="gift">선물하기</div><div className="buy">구매하기</div>
-                </Pop2>
-                <Pop2><Img src={"img/pop/pop.jpg"} />오징어콤보<br/> <span>12,000원</span>
-                <div className="gift">선물하기</div><div className="buy">구매하기</div></Pop2>
-
-              </Food>
-
-            </CompleteHead>
-        </CompleteWrapper>
-    )
-}
-
+						</PaymentAgreement>
+					</Agreement>
+				</Content>
+				<Food>
+					<Pop><span style={{fontSize: '18px'}}>영화만 보시려구요?</span><br/>
+					<span style={{fontSize:'10px'}}>온라인 구매 시, 콤보 500원 더 할인해 드립니다!</span></Pop>
+					<Pop2><Img src={"img/pop/pop.jpg"} />CGV 콤보<br/> <span>8,000원</span>
+					<div className="gift">선물하기</div><div className="buy">구매하기</div></Pop2>
+					<Pop2><Img src={"img/pop/pop.jpg"} />나초콤보<br/> <span>10,000원</span>
+					<div className="gift">선물하기</div><div className="buy">구매하기</div>
+					</Pop2>
+					<Pop2><Img src={"img/pop/pop.jpg"} />오징어콤보<br/> <span>12,000원</span>
+					<div className="gift">선물하기</div><div className="buy">구매하기</div></Pop2>
+				</Food>
+			</CompleteHead>
+		</CompleteWrapper>
+	);
+};
 
 const CompleteWrapper= styled.div`
-display: block;
+	display: block;
   min-height: 710px;
   width: 930px;
   height: 100%;
@@ -187,6 +227,13 @@ const Table = styled.table`
       height: inherit;
       line-height: inherit;
       background: none;
+
+			span {
+				&:first-child {
+					padding-left: 0;
+				}
+				padding-left: 10px;
+  		}
     }
   }
 `;
@@ -322,4 +369,4 @@ line-height: 158px;
 margin-right: 19px;
 overflow: hidden;
 `
-export default Complete;
+export default PaymentComplete;

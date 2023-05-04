@@ -10,14 +10,15 @@ const SeatButton = ({ seat }) => {
 	const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error } = useSelector(
+	const { Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error, PAYMENT } = useSelector(
 		state => ({
 			Kid: state.R_seat.Kid,
 			Teenager: state.R_seat.Teenager,
 			Adult: state.R_seat.Adult,
 			Total: state.R_seat.Total,
 			ChoiceSeat: state.R_seat.ChoiceSeat,
-			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error
+			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error,
+			PAYMENT: state.R_ticket.PAYMENT
 		}),
 		shallowEqual
 	);
@@ -27,10 +28,10 @@ const SeatButton = ({ seat }) => {
 
 	// 점유좌석에 대한 오류가 생겼을경우 초기화 해주는 useEffect
 	useEffect(() => {
-		if (SEAT_CHECK_error) {
+		if (SEAT_CHECK_error || PAYMENT.status === 406) {
 			setIschecked(true);
 		}
-	}, [SEAT_CHECK_error]);
+	}, [SEAT_CHECK_error, PAYMENT.status]);
 
 	// 좌석 추가하는 함수
 	const addSeats = useCallback((seat) => {
@@ -83,9 +84,9 @@ const SeatButton = ({ seat }) => {
 };
 
 const SeatNumber = styled.button`
-  width: 40px;
-  height: 40px;
-  margin-bottom: 20px;
+  width: 45px;
+  height: 30px;
+  margin-bottom: 18px;
 	margin-right: 1px;
   color: black;
   float: left;

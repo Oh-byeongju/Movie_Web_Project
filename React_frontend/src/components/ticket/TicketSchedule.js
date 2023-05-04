@@ -103,8 +103,10 @@ const TicketSchedule = () => {
 const Schedule = styled.div`
   display: flex;
   flex-direction: column;
-  width: 480px;
+  width: 348px;
   border-right: 1px solid #d8d9db;
+	border-left: 1px solid #d8d9db;
+	margin-left: 1px;
   background-color: #f2f0e5;
 `;
 

@@ -13,6 +13,7 @@ import com.movie.Spring_backend.error.exception.BusinessException;
 import com.movie.Spring_backend.error.exception.EntityNotFoundException;
 import com.movie.Spring_backend.error.exception.ErrorCode;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
+import com.movie.Spring_backend.exceptionlist.ReserveNotFoundException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.mapper.MovieCommentMapper;
 import com.movie.Spring_backend.mapper.MovieMapper;
@@ -309,11 +310,11 @@ public class MyPageMovieService {
 
         // 사용자가 예매한 영화의 세부내역 조회
         ReservationEntity Reserve = reservationRepository.findMyPageReserveDetail(rid)
-                .orElseThrow(() -> new EntityNotFoundException("예매 기록이 존재하지 않습니다.", ErrorCode.RESERVE_IS_NONE));
+                .orElseThrow(() -> new ReserveNotFoundException("예매 기록이 존재하지 않습니다."));
 
         // 조회하려는 예매의 예매자 id가 현재 사용자의 id와 다를 경우 예외처리
         if (!Reserve.getMember().getUid().equals(currentMemberId)) {
-            throw new EntityNotFoundException("예매 기록이 존재하지 않습니다.", ErrorCode.RESERVE_IS_NONE);
+            throw new ReserveNotFoundException("예매 기록이 존재하지 않습니다.");
         }
 
         // 취소된 예매일 경우 좌석을 제외하고 매핑한 값을 리턴

@@ -30,6 +30,7 @@ export const TICKET_MOVIEINFO_SELECT = "TICKET_MOVIEINFO_SELECT";
 export const TICKET_PAYMENT_REQUEST = "TICKET_PAYMENT_REQUEST";
 export const TICKET_PAYMENT_SUCCESS = "TICKET_PAYMENT_SUCCESS";
 export const TICKET_PAYMENT_FAILURE = "TICKET_PAYMENT_FAILURE";
+export const TICKET_PAYMENT_RESET = "TICKET_PAYMENT_RESET";
 
 // 예매 페이지 초기화 리스트
 export const TICKET_PAGE_RESET = "TICKET_PAGE_RESET";
@@ -62,6 +63,7 @@ const initalState = {
 	PAYMENT_loading: false,
   PAYMENT_done: false,
   PAYMENT_error: false,
+	PAYMENT: '',
 };
 
 const R_ticket = (state = initalState, action) => {
@@ -191,14 +193,24 @@ const R_ticket = (state = initalState, action) => {
         ...state,
         PAYMENT_loading: false,
         PAYMENT_done: true,
-        PAYMENT_error: false
+        PAYMENT_error: false,
+				PAYMENT: action.data
       };
     case TICKET_PAYMENT_FAILURE:
       return {
         ...state,
         PAYMENT_loading: false,
         PAYMENT_done: false,
-        PAYMENT_error: true
+        PAYMENT_error: true,
+				PAYMENT: action.data
+      };
+		case TICKET_PAYMENT_RESET:
+			return {
+        ...state,
+        PAYMENT_loading: false,
+				PAYMENT_done: false,
+				PAYMENT_error: false,
+				PAYMENT: '',
       };
 		// 예매 페이지 초기화 케이스
 		case TICKET_PAGE_RESET:
@@ -230,7 +242,8 @@ const R_ticket = (state = initalState, action) => {
 
 				PAYMENT_loading: false,
 				PAYMENT_done: false,
-				PAYMENT_error: false
+				PAYMENT_error: false,
+				PAYMENT: ''
 			}
     default:
       return state;

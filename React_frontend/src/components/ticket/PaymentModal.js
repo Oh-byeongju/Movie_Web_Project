@@ -6,12 +6,14 @@ import styled from "styled-components";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import * as Payment from "../../lib/payment.js";
 import { SEAT_CHECK_REQUEST, SEAT_CHECK_RESET, SEAT_LIST_REQUEST, SEAT_PAGE_RESET } from "../../reducer/R_seat";
+import { TICKET_PAYMENT_RESET } from "../../reducer/R_ticket.js";
 
 const PaymentModal = ({ closeModal }) => {
   const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE, THEATER, MOVIEINFO, LOGIN_data, Kid, Teenager, Adult, Price, ChoiceSeat, SEAT_CHECK_done, SEAT_CHECK_error } = useSelector(
+	const { MOVIE, THEATER, MOVIEINFO, LOGIN_data, Kid, Teenager, Adult, 
+		Price, ChoiceSeat, SEAT_CHECK_done, SEAT_CHECK_error, PAYMENT_error, PAYMENT } = useSelector(
 		state => ({
 			MOVIE: state.R_ticket.MOVIE,
 			THEATER: state.R_ticket.THEATER,
@@ -23,7 +25,9 @@ const PaymentModal = ({ closeModal }) => {
 			Price: state.R_seat.Price,
 			ChoiceSeat: state.R_seat.ChoiceSeat,
 			SEAT_CHECK_done: state.R_seat.SEAT_CHECK_done,
-			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error
+			SEAT_CHECK_error: state.R_seat.SEAT_CHECK_error,
+			PAYMENT_error: state.R_ticket.PAYMENT_error,
+			PAYMENT: state.R_ticket.PAYMENT,
 		}),
 		shallowEqual
 	);
@@ -56,6 +60,7 @@ const PaymentModal = ({ closeModal }) => {
 			ChoiceSeat.map((seat) => (seatnumber += seat.seat_id + ",")); 
 			seatnumber = seatnumber.slice(0, -1);
 
+			// 좌석 점유 여부 백엔드요청
 			dispatch({
 				type: SEAT_CHECK_REQUEST,
 				data: {
@@ -78,7 +83,6 @@ const PaymentModal = ({ closeModal }) => {
 				type: SEAT_CHECK_RESET
 			});
 		}
-
 		// 실패 케이스(모달 닫고 리덕스 상태 초기화)
 		if (SEAT_CHECK_error) {
 			alert('점유된 좌석을 선택하셨습니다. 좌석을 다시 선택해주세요.');
@@ -98,6 +102,39 @@ const PaymentModal = ({ closeModal }) => {
 			});
 		}
 	}, [SEAT_CHECK_done, SEAT_CHECK_error, MOVIE, LOGIN_data, Price, Kid, Teenager, Adult, MOVIEINFO, ChoiceSeat, closeModal, dispatch]);
+
+	// 결제 실패에 따른 useEffect
+	useEffect(()=> {
+		if (PAYMENT_error) {
+			// 이미 점유된 좌석을 예매한 경우
+			if (PAYMENT.status === 406) {
+				alert('이미 점유된 좌석입니다. 다시 예매해주세요!');
+				// 모달 닫고 리덕스 상태 초기화
+				closeModal();
+				dispatch({
+					type: SEAT_CHECK_RESET
+				});
+				dispatch ({
+					type: SEAT_LIST_REQUEST,
+					data: { 
+						cid: MOVIEINFO.cid, 
+						miid: MOVIEINFO.miid 
+					},
+				});
+				dispatch({
+					type: SEAT_PAGE_RESET
+				});
+			}
+			// 스크립트 조작 또는 서버 문제일경우
+			if (PAYMENT.status === 400 || PAYMENT.status === 500) {
+				alert('결제에 실패했습니다. 다시 결제해주세요!');
+			}
+			// 결제 검증 상태 초기화
+			dispatch({
+				type: TICKET_PAYMENT_RESET
+			});
+		}
+	}, [PAYMENT_error, PAYMENT, closeModal, MOVIEINFO, dispatch]);
 
   return (
     <Container>

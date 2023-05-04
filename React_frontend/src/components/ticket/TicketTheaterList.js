@@ -141,14 +141,13 @@ const TicketTheaterList = () => {
 };
 
 const TheaterWrapper = styled.div`
-  width: 25%;
+  width: 298px;
   position: relative;
   float: left;
-  height: 528px;
-  margin-left: 2px;
+  height: 536px;
+  margin-left: 1px;
   background-color: #f2f0e5;
   overflow: hidden;
-  padding-right: 120px;
 `;
 
 const TheaterTitle = styled.div`

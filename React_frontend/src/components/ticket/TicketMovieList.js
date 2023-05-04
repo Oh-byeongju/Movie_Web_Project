@@ -1,3 +1,4 @@
+/*eslint-disable*/
 /*
 	23-04-28 예매 페이지 영화 컴포넌트 수정(오병주)
 */
@@ -19,6 +20,15 @@ const TicketMovieList = () => {
 		}),
 		shallowEqual
 	);
+
+	// 스크롤 위치 조정 useEffect
+	useEffect (()=> {
+		if (MOVIE !== '') {
+			window.scrollTo({
+				top: 100,
+				behavior: "smooth"});
+		}
+	}, []);
 
 	// 영화 조회 useEffect
   useEffect(() => {
@@ -82,7 +92,7 @@ const TicketMovieList = () => {
 const MovieWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 29%;
+  width: 350px;
   border-right: 1px solid #d8d9db;
   background-color: #f2f0e5;
 `;

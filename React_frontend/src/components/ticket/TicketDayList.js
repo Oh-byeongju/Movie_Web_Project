@@ -96,10 +96,10 @@ const Calender = styled.div`
   display: flex;
   flex-direction: column;
   height: 528px;
-  width: 91px;
-  border-right: 1px solid #d8d9db;
+  width: 99px;
+  border-left: 1px solid #d8d9db;
   background-color: #f2f0e5;
-  margin-left: 1px;
+	margin-left: 1px;
 `;
 
 const Header = styled.div`

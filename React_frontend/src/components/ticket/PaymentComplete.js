@@ -150,7 +150,7 @@ const PaymentComplete = ()=>{
 const CompleteWrapper= styled.div`
 	display: block;
   min-height: 710px;
-  width: 930px;
+  width: 1050px;
   height: 100%;
 `
 const CompleteHead= styled.div`

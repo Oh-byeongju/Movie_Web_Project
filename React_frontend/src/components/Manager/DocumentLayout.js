@@ -114,7 +114,7 @@ const DocumentLayout = () => {
 									<MovieContainer>
 										<ul>
 										{MOVIE_LIST_COMMENT.map((movie)=> 
-											<Movies key={movie.mid} movie={movie.mid} movieData={MOVIE_COMMENT}>
+											<Movies title={movie.mtitle} key={movie.mid} movie={movie.mid} movieData={MOVIE_COMMENT}>
 												<button onClick={()=> MovieClick(movie)}>       
 													{movie.mtitle}
 												</button>

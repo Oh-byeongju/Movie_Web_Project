@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { useSelector, useDispatch,shallowEqual } from "react-redux";
 import { LeftCircleFilled, RightCircleFilled } from "@ant-design/icons";
 import { SEAT_PAGE_RESET } from "../../reducer/R_seat";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PaymentModal from "./PaymentModal";
 
 const TicketState = ({ seatPage, setSeatPage }) => {
@@ -15,10 +15,11 @@ const TicketState = ({ seatPage, setSeatPage }) => {
   const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE, THEATER, DAY, MOVIEINFO, LOGIN_data, Kid, Teenager, Adult, Price, ChoiceSeat } = useSelector(
+	const { MOVIE, THEATER, AREA, DAY, MOVIEINFO, LOGIN_data, Kid, Teenager, Adult, Price, ChoiceSeat } = useSelector(
 		state => ({
 			MOVIE: state.R_ticket.MOVIE,
 			THEATER: state.R_ticket.THEATER,
+			AREA: state.R_ticket.AREA,
 			DAY: state.R_ticket.DAY,
 			MOVIEINFO: state.R_ticket.MOVIEINFO,
 			LOGIN_data: state.R_user_login.LOGIN_data,
@@ -42,13 +43,43 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 		})
 	}, [setSeatPage, dispatch]);
 
+	const goSeat = useCallback(()=> {
+		// 상영정보를 선택 안했을경우
+		if (MOVIEINFO === '') {
+			alert('상영시간을 선택해주세요.');
+			return;
+		}
+
+		// 로그인 여부에 따라 페이지 이동
+		if (LOGIN_data.uid === "No_login") {
+				// alert 취소
+				if (!window.confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?")) {
+					return;
+				}
+				// alert 확인(현재 정보를 전달해줌)
+				else {
+					navigate(`/UserLogin`, {
+						state: {
+							url: '/Reserve',
+							MOVIE: MOVIE,
+							THEATER: THEATER,
+							AREA: AREA,
+							DAY: DAY,
+							MOVIEINFO: MOVIEINFO
+						},
+					});
+				}
+			} 
+		else {
+			setSeatPage(true);
+		}
+	}, [AREA, DAY, LOGIN_data.uid, MOVIE, MOVIEINFO, THEATER, navigate, setSeatPage])
 
 
 
-  const { pathname } = useLocation();
+
   
   //좌석 페이지로 넘어가야함 데이터와 함께
-
   const [isOpen, setIsOpen] = useState(false);
 
   const openModalHandler = () => {
@@ -166,45 +197,11 @@ const TicketState = ({ seatPage, setSeatPage }) => {
           {isOpen && <PaymentModal closeModal={openModalHandler} />}
         </>
       ) : (
-        <MovieSeat
-
-				// 여기에 나중에 할떄 상영일정을 골라주세요~ 이런식으로 하나 드가야함 하나라도 null 있으면
-          onClick={() => {
-            if (LOGIN_data.uid === "No_login") {
-              if (
-                !window.confirm(
-                  "로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
-                )
-              ) {
-                return;
-              } else {
-                navigate(`/UserLogin`, {
-                  state: {
-                    pathname: pathname,
-
-                    schedule: MOVIEINFO,
-										// 여기서 예매에 필요한 값들 던져주면됨
-                  },
-                });
-              }
-            } else if (
-              LOGIN_data !== "" &&
-              // 넘어가는 위치
-              MOVIEINFO !== ""
-            ) {
-              setSeatPage(true);
-            }
-          }}
-        >
-          <RightCircleFilled
-            style={{
-              fontSize: "60px",
-							top: "10px",
-              left: "23px",
-              position: "absolute",
-            }}
-          />
-          <p>좌석선택</p>
+        <MovieSeat onClick={goSeat}>
+          <RightCircleFilled style={{ fontSize: "60px", top: "10px", left: "23px", position: "absolute"}}/>
+          <p>
+						좌석선택
+					</p>
         </MovieSeat>
       )}
     </TicketWrapper>

@@ -146,7 +146,6 @@ const MovieInfo = () => {
 		if (finish === null) {
 			return [dayjs(start, "YYYY-MM-DD"), null];
 		}
-
 		return [dayjs(start, "YYYY-MM-DD"), dayjs(finish, "YYYY-MM-DD")];
   }, []);
 

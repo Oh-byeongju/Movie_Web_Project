@@ -3,7 +3,7 @@
 */
 import React, { useEffect, useCallback } from "react";
 import styled from "styled-components";
-import { TICKET_DAY_LIST_REQUEST, TICKET_DAY_SELECT } from "../../reducer/R_ticket";
+import { TICKET_DAY_LIST_REQUEST, TICKET_DAY_SELECT, TICKET_DAY_RESET } from "../../reducer/R_ticket";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 
 // 날짜를 위한 변수
@@ -44,23 +44,26 @@ const TicketDayList = () => {
 				data: day
 			});
 		}
+		// 상영스케줄이 없을경우
 		else {
-			if (!window.confirm("선택한 날짜에 원하시는 상영스케줄이 없습니다. 계속하겠습니까?")) {
+			if (!window.confirm("선택한 날짜에 원하시는 상영스케줄이 없습니다.\n계속하겠습니까? (선택한 영화 및 극장이 해제됩니다.)")) {
 				return;
 			}
 			else {
-				console.log('여기 초기화');
+				dispatch({
+					type: TICKET_DAY_RESET,
+					data: day
+				});
 			}
 		}
   }, [dispatch]);
 
-	
-	// css위치 맞춰야함
-
   return (
     <Calender>
       <Header>
-				날짜
+				<p>
+					날짜
+				</p>
 			</Header>
 			<DayList>
 			{DAY_LIST.map((list, index) => 
@@ -95,8 +98,8 @@ const TicketDayList = () => {
 const Calender = styled.div`
   display: flex;
   flex-direction: column;
-  height: 528px;
-  width: 99px;
+  height: 536px;
+  width: 108px;
   border-left: 1px solid #d8d9db;
   background-color: #f2f0e5;
 	margin-left: 1px;
@@ -109,9 +112,15 @@ const Header = styled.div`
   line-height: 33px;
   text-align: center;
   font-size: 20px;
-  padding: 40px 0 0px 0px;
+  padding: 15px 8px 0px 0px;
   font-weight: bold;
-  top: -15px;
+  top: -12px;
+
+	p {
+		margin-top: 14px;
+    display: block;
+    position: relative;
+  }
 `;
 
 const DayList = styled.div`
@@ -124,11 +133,13 @@ const DayList = styled.div`
   align-items: center;
   text-align: center;
   overflow: auto;
+	margin-top: 10px;
 `;
 
 const YearMonthList = styled.div`
 	font-weight: 500;
   color: #1864ab;
+	padding-left: 5px;
 `;
 
 const Year = styled.div`
@@ -138,7 +149,7 @@ const Year = styled.div`
 const Month = styled.div`
   font-size: 30px;
 	line-height: 30px;
-	margin-bottom: 15px;
+	margin-bottom: 10px;
 `;
 
 const DaylistSector = styled.ul`
@@ -147,6 +158,8 @@ const DaylistSector = styled.ul`
 	margin: 0;
   cursor: pointer;
   list-style-type: none;
+	overflow-x: scroll;
+  overflow-x: hidden;
 
   .Sun {
     color: red !important;
@@ -176,6 +189,7 @@ const DaylistSector = styled.ul`
 
   .day {
     font-weight: bold;
+		margin-left: 3px;
   }
 
   .disable {
@@ -187,8 +201,9 @@ const DaylistSector = styled.ul`
 `;
 
 const Day = styled.li`
+	padding-left: 5px;
   padding-bottom: 10px;
-  width: 73px;
+  width: 86px;
   display: flex;
   float: left;
   background-color: ${(props) => props.select_day === props.day ? "gainsboro" : "#f2f0e5"};

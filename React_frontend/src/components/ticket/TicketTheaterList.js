@@ -5,17 +5,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import styled from "styled-components";
-import { TICKET_THEATER_LIST_REQUEST, TICKET_THEATER_SELECT } from "../../reducer/R_ticket";
+import { TICKET_THEATER_LIST_REQUEST, TICKET_THEATER_SELECT, TICKET_AREA_SELECT, TICKET_THEATER_RESET } from "../../reducer/R_ticket";
 
 const TicketTheaterList = () => {
   const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { THEATER_LIST, MOVIE, THEATER, DAY } = useSelector(
+	const { THEATER_LIST, MOVIE, THEATER, AREA, DAY } = useSelector(
 		state => ({
 			THEATER_LIST: state.R_ticket.THEATER_LIST,
 			MOVIE: state.R_ticket.MOVIE,
 			THEATER: state.R_ticket.THEATER,
+			AREA: state.R_ticket.AREA,
 			DAY: state.R_ticket.DAY
 		}),
 		shallowEqual
@@ -31,9 +32,6 @@ const TicketTheaterList = () => {
 			}
 		});
   }, [DAY, MOVIE, dispatch]);
-
-	// 선택된 지역 버튼 useState
-	const [selectTab, setSelectTab] = useState('seoul');
 
 	// 극장 관리 useState
 	const [theater, setTheater] = useState({
@@ -67,6 +65,14 @@ const TicketTheaterList = () => {
 		}));
 	}, [THEATER_LIST]);
 
+	// 지역을 선택하는 함수
+	const onClickArea = useCallback((area) => {
+		dispatch({
+			type: TICKET_AREA_SELECT,
+			data: area
+		});
+	}, [dispatch]);
+
 	// 극장을 선택하는 함수
   const onClickTheater = useCallback((theater) => {
 		// 상영스케줄이 존재할 경우
@@ -76,18 +82,19 @@ const TicketTheaterList = () => {
 				data: theater
 			});
 		}
+		// 상영스케줄이 없을경우
 		else {
-			if (!window.confirm("선택한 극장에 원하시는 상영스케줄이 없습니다. 계속하겠습니까?")) {
+			if (!window.confirm("선택한 극장에 원하시는 상영스케줄이 없습니다.\n계속하겠습니까? (선택한 영화 및 날짜가 해제됩니다.)")) {
 				return;
 			}
 			else {
-				console.log('여기 초기화');
+				dispatch({
+					type: TICKET_THEATER_RESET,
+					data: theater
+				});
 			}
 		}
   }, [dispatch]);
-
-	// css위치 맞추고 스크롤 조정해야함 --> 아래 styled component확인
-
 
   return (
     <TheaterWrapper>
@@ -103,34 +110,34 @@ const TicketTheaterList = () => {
       </TheaterSelector>
       <TheaterListWrapper>
 				<TheaterAreaList>
-					<TheaterArea onClick={()=> setSelectTab('seoul')} tab={selectTab === 'seoul'} >
+					<TheaterArea onClick={()=> onClickArea('seoul')} tab={AREA === 'seoul'} >
 						서울 ({seoul})
 					</TheaterArea>
-					<TheaterArea onClick={()=> setSelectTab('gyeonggi')} tab={selectTab === 'gyeonggi'}>
+					<TheaterArea onClick={()=> onClickArea('gyeonggi')} tab={AREA === 'gyeonggi'}>
 						경기 ({gyeonggi})
 					</TheaterArea>
-					<TheaterArea onClick={()=> setSelectTab('incheon')} tab={selectTab === 'incheon'}>
+					<TheaterArea onClick={()=> onClickArea('incheon')} tab={AREA === 'incheon'}>
 						인천 ({incheon})
 					</TheaterArea>
-					<TheaterArea onClick={()=> setSelectTab('busan')} tab={selectTab === 'busan'}>
+					<TheaterArea onClick={()=> onClickArea('busan')} tab={AREA === 'busan'}>
 						부산 ({busan})
 					</TheaterArea>
 				</TheaterAreaList>
 				<TheaterNameList>
 					<ul>
-						{selectTab === 'seoul' ? THEATER_LIST.map((theater)=> 
+						{AREA === 'seoul' ? THEATER_LIST.map((theater)=> 
 						theater.tarea === '서울' ? <TheaterLi className={theater.reserve ? "" : "disable"} key={theater.tid} onClick={()=> onClickTheater(theater)} select_theater={THEATER.tid} theater={theater.tid}> 
 						{theater.tname} </TheaterLi> : null) : null}
 
-						{selectTab === 'gyeonggi' ? THEATER_LIST.map((theater)=> 
+						{AREA === 'gyeonggi' ? THEATER_LIST.map((theater)=> 
 						theater.tarea === '경기' ? <TheaterLi className={theater.reserve ? "" : "disable"} key={theater.tid} onClick={()=> onClickTheater(theater)} select_theater={THEATER.tid} theater={theater.tid}> 
 						{theater.tname} </TheaterLi> : null) : null}
 
-						{selectTab === 'incheon' ? THEATER_LIST.map((theater)=> 
+						{AREA === 'incheon' ? THEATER_LIST.map((theater)=> 
 						theater.tarea === '인천' ? <TheaterLi className={theater.reserve ? "" : "disable"} key={theater.tid} onClick={()=> onClickTheater(theater)} select_theater={THEATER.tid} theater={theater.tid}> 
 						{theater.tname} </TheaterLi> : null) : null}
 
-						{selectTab === 'busan' ? THEATER_LIST.map((theater)=> 
+						{AREA === 'busan' ? THEATER_LIST.map((theater)=> 
 						theater.tarea === '부산' ? <TheaterLi className={theater.reserve ? "" : "disable"} key={theater.tid} onClick={()=> onClickTheater(theater)} select_theater={THEATER.tid} theater={theater.tid}> 
 						{theater.tname} </TheaterLi> : null) : null}
 					</ul>
@@ -141,7 +148,7 @@ const TicketTheaterList = () => {
 };
 
 const TheaterWrapper = styled.div`
-  width: 298px;
+  width: 280px;
   position: relative;
   float: left;
   height: 536px;
@@ -157,40 +164,32 @@ const TheaterTitle = styled.div`
   line-height: 33px;
   text-align: center;
   font-size: 20px;
-  padding: 20px 0 4px 20px;
+  padding: 15px 0 15px 8px;
   font-weight: bold;
-  top: -15px;
+  top: -12px;
 
   p {
+		margin-top: 14px;
     display: block;
     position: relative;
-    left: 60px;
   }
 `;
 
 const TheaterSelector = styled.div`
-  padding: 18px;
-  div {
-    border: 1px solid #d8d9db;
-    border-bottom: none;
-    height: 35px;
-    font-size: 16px;
-    text-align: center;
-    margin-top: 10;
-    padding-top: 6px;
-  }
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 `;
 
 const TheaterSelectorText = styled.div`
   border: 1px solid #d8d9db;
   border-bottom: none;
   height: 35px;
-  margin-left: 10px;
-  width: 240px;
+  margin-left: 20px;
+	margin-right: 20px;
   font-size: 16px;
   text-align: center;
-  margin-top: 10;
-  padding-top: 6px;
+  padding-top: 5px;
 `;
 
 const TheaterListWrapper = styled.div`
@@ -198,28 +197,26 @@ const TheaterListWrapper = styled.div`
 	position: relative;
   float: left;
   width: 100%;
-  height: 323px;
-  margin-top: 3px;
+  height: 403px;
+	padding-bottom: 10px;
 `;
 
 const TheaterAreaList = styled.ul`
+	padding-left: 20px;
+	padding-top: 10px;
   position: relative;
   float: left;
   width: 100%;
-	// 이거 height 맞춰보기
-	// 극장 추가하고 상영정보 몇개 넣어서 오버플로우 생기게 해봐야함
-	// 아마 여기 말고 css 바꿔서 아래쪽으로 넣어줘야 할거같긴함
   height: 350px;
-  margin-top: 3px;
-	overflow-x: scroll;
-  overflow-x: hidden;
+  margin-top: 5px;
 `;
 
 const TheaterArea = styled.li`
+	padding-left: 5px;
   clear: both;
   overflow: hidden;
   float: left;
-  width: 109px;
+  width: 104px;
   cursor: pointer;
   height: 31px;
   font-size: 14px;
@@ -230,15 +227,19 @@ const TheaterArea = styled.li`
 
 const TheaterNameList = styled.div`
   position: absolute;
-	height: 31px;
   font-size: 14px;
   line-height: 31px;
-  top: 0;
-  left: 110px;
+	margin-top: 5px;
+	padding-top: 10px;
+	padding-right: 8px;
+  left: 92px;
   cursor: pointer;
-  width: 160px;
+  width: 168px;
   height: 100%;
   font-weight: bold;
+	overflow-x: scroll;
+  overflow-x: hidden;
+  flex-direction: column;
 
 	ul {
 		list-style-type: none;
@@ -252,6 +253,12 @@ const TheaterNameList = styled.div`
 `;
 
 const TheaterLi = styled.li`
+	padding-left: 6px;
+	margin-bottom: 1px;
+	width: 118px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
   background-color: ${(props) => props.select_theater === props.theater  ? "#333333" : "#f2f0e5"};
   color: ${(props) => props.select_theater === props.theater ? "white" : "black"};
 `;

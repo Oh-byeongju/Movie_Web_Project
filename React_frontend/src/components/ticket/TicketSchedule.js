@@ -61,7 +61,7 @@ const TicketSchedule = () => {
       <ScheduleList>
         <Result>
           <TimeList>
-					{MOVIEINFO_LIST.map((movieInfo) => 
+					{MOVIE && THEATER && DAY && MOVIEINFO_LIST.map((movieInfo) => 
 						<Time key={movieInfo.miid} select_schedule={MOVIEINFO.miid} schedule={movieInfo.miid}>
               <Button onClick={() => onClickMovieInfo(movieInfo)}>
 								<WhiteSpace/>
@@ -86,8 +86,12 @@ const TicketSchedule = () => {
 										{movieInfo.ctype} {movieInfo.cname}
 									</Theater>
 									<Seat>
-										<Now>{movieInfo.cntSeatAll - movieInfo.cntSeatInfo}/</Now>
-										<All>{movieInfo.cntSeatAll}</All>
+										<Now>
+											{movieInfo.cntSeatAll - movieInfo.cntSeatInfo} /
+										</Now>
+										<All>
+											{movieInfo.cntSeatAll}
+										</All>
 									</Seat>
 								</Info>
               </Button>
@@ -103,7 +107,7 @@ const TicketSchedule = () => {
 const Schedule = styled.div`
   display: flex;
   flex-direction: column;
-  width: 348px;
+  width: 362px;
   border-right: 1px solid #d8d9db;
 	border-left: 1px solid #d8d9db;
 	margin-left: 1px;
@@ -117,20 +121,22 @@ const ScheduleTitle = styled.div`
   line-height: 33px;
   text-align: center;
   font-size: 20px;
-  padding: 20px 0 20px 20px;
+  padding: 15px 0 15px 10px;
   font-weight: bold;
-  top: -15px;
+  top: -12px;
+
   p {
+		margin-top: 14px;
     display: block;
     position: relative;
-    left: -10px;
+    left: -3px;
   }
 `;
 
 const ScheduleList = styled.div`
   overflow: hidden;
-  margin-top: 10px;
-  height: 430px;
+  margin-top: 5px;
+  height: 462px;
 `;
 
 const Result = styled.div`
@@ -172,7 +178,7 @@ const Button = styled.button`
 
 const WhiteSpace= styled.div`
   display: table-cell;
-  width: 30px;
+  width: 25px;
   height: 66px;
   padding: 10px 0 0 0;
   vertical-align: top;
@@ -189,14 +195,14 @@ const InfoTimes = styled.span`
 
 const StartTime = styled.strong`
   display: block;
-  font-size: 1.2em;
+  font-size: 1.25em;
   font-weight: 700;
 `;
 
 const EndTime = styled.em`
   display: block;
   padding: 3px 0 0 0;
-  font-size: 0.8667em;
+  font-size: 0.9em;
   font-weight: 300;
   font-style: normal;
 `;
@@ -205,28 +211,29 @@ const Title = styled.span`
   display: table-cell;
   width: 275px;
   padding: 10px 0;
+	padding-left: 5px;
   text-align: left;
 `;
 
 const Name = styled.strong`
   display: block;
-  font-weight: 400;
   padding: 0 5px 0 0;
-  line-height: 1.3;
+  line-height: 1.4;
   font-weight: 700;
+	font-size: 14px;
 `;
 
 const Genre = styled.strong`
   display: block;
-  padding-top: 7px;
-  font-size: 0.8em;
+  padding-top: 3px;
+  font-size: 0.85em;
 `;
 
 const Info = styled.div`
   display: table-cell;
   width: 110px;
-  padding: 0 5px 0 0;
-  font-size: 0.8em;
+  padding: 0 10px 0 0;
+  font-size: 0.85em;
   vertical-align: middle;
   text-align: right;
 `;
@@ -235,13 +242,13 @@ const Theater = styled.span`
   overflow: hidden;
   display: block;
   padding: 0;
-  line-height: 1.5;
+  line-height: 1.7;
 `;
 
 const Seat = styled.span`
   overflow: hidden;
   display: inline-block;
-  width: 60px;
+  width: 62px;
   height: 20px;
   padding: 0;
   text-align: center;

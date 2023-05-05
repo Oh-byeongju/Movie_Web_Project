@@ -188,7 +188,7 @@ const Reserve = () => {
 									<MovieContainer>
 										<ul>
 										{MOVIE_LIST.map((movie)=> 
-											<Movies key={movie.mid} movie={movie.mid} movieData={MOVIE}>
+											<Movies title={movie.mtitle} key={movie.mid} movie={movie.mid} movieData={MOVIE}>
 												<button onClick={()=> MovieClick(movie)}>       
 													{movie.mtitle}
 												</button>

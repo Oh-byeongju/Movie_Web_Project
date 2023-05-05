@@ -235,9 +235,9 @@ const Seat = () => {
 
 const SeatWrapper = styled.div`
   display: flex;
-  width: 1100px;
+  width: 1045px;
   height: 100%;
-  padding-left: 10px;
+  padding-left: 5px;
 	margin : 0 auto;
 `;
 

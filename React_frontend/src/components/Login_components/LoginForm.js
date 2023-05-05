@@ -5,10 +5,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  USER_LOGIN_REQUEST,
-  USER_LOGIN_RESET,
-} from "../../reducer/R_user_login";
+import { USER_LOGIN_REQUEST, USER_LOGIN_RESET } from "../../reducer/R_user_login";
+import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import LoginLoading from "./LoginLoading";
 import FindIDModal from "./FindIDModal";
@@ -88,7 +86,7 @@ const LoginForm = () => {
       type: USER_LOGIN_REQUEST,
       data: datas,
     });
-  }, [id, pw, check_type, dispatch]);
+  }, [id, pw, check_type,  dispatch]);
 
   // 로그인의 성공 여부를 알리는 useEffect
   useEffect(() => {
@@ -98,25 +96,44 @@ const LoginForm = () => {
       return;
     }
     // 로그인에 성공했을 경우 메인페이지 또는 이전 페이지로 넘어가게 함
-    if (LOGIN_data.uname !== '' && LOGIN_data.uname !== "error!!" ) {
+    if (LOGIN_data.uname !== '' && LOGIN_data.uname !== "error!!") {
       if (location.state === null || location.state.url === "/UserJoin") {
 				navigate(`/`);
       }
+			
 			else {
-				navigate(`${location.state.url}`);
+				navigate(location.state.url, {state: {url: '/UserLogin',}});
 			}
     }
-  },[LOGIN_data, location.state, navigate, dispatch]);
+  }, [LOGIN_data, location.state, navigate, dispatch]);
 
   // 아이디 찾기 및 비밀번호 찾기 모달 상태관리
   const [findid, setfindid] = useState(false);
   const [findpw, setfindpw] = useState(false);
 
+	// 예매 페이지에서 로그인하러 왔을경우 선택한 예매정보를 세팅해주는 useEffect
+	useEffect(()=> {
+		if (location.state.url === "/Reserve" && location.state.MOVIEINFO) {
+			dispatch({
+				type: TICKET_PAGE_SETTING,
+				data: {
+					movie: location.state.MOVIE,
+					theater: location.state.THEATER,
+					area: location.state.AREA,
+					day: location.state.DAY,
+					movieinfo: location.state.MOVIEINFO
+				}
+			});
+		}
+	}, [location, dispatch]);
+
   return (
     <>
       {LOGIN_loading ? <LoginLoading /> : null}
       <Layout>
-        <Title>회원 로그인</Title>
+        <Title>
+					회원 로그인
+				</Title>
         <Form>
           <CheckText></CheckText>
           <LoginId

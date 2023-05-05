@@ -10,25 +10,54 @@ import Seat from "../components/Ticket/Seat";
 import PaymentComplete from "../components/Ticket/PaymentComplete";
 import { TICKET_PAGE_RESET } from "../reducer/R_ticket";
 import { SEAT_PAGE_RESET } from "../reducer/R_seat";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 const Reserve = () => {
   const dispatch = useDispatch();
-	// 결제완료 리덕스 상태
-  const { PAYMENT_done } = useSelector((state)=> state.R_ticket);
+	const location = useLocation();
+
+	// 필요한 리덕스 상태들
+	const { TICKET_KEY, MOVIE, MOVIEINFO, PAYMENT_done } = useSelector(
+		state => ({
+			TICKET_KEY: state.R_ticket.TICKET_KEY,
+			MOVIE: state.R_ticket.MOVIE,
+			MOVIEINFO:  state.R_ticket.MOVIEINFO,
+			PAYMENT_done: state.R_ticket.PAYMENT_done
+		}),
+		shallowEqual
+	);
+
+	// 예매 페이지 초기값 설정이 필요한 경우 useEffect
+	useEffect(()=> {
+		if (location.key !== TICKET_KEY  && MOVIEINFO !== '' && !location.state) {
+			dispatch({
+				type: TICKET_PAGE_RESET,
+				data: location.key
+			});
+			return;
+		}
+
+		if (MOVIE !== '') {
+			window.scrollTo({
+				top: 100,
+				behavior: "smooth"});
+		}
+	}, []);
 
   // 예매 페이지 탈출 시 리덕스 초기화를 위한 useEffect
   useEffect(() => {
     return () => {
       dispatch({
-				type: TICKET_PAGE_RESET
+				type: TICKET_PAGE_RESET,
+				data: location.key
 			});
 
 			dispatch({
 				type: SEAT_PAGE_RESET
 			});
     };
-  }, [dispatch]);
+  }, [location, dispatch]);
 
   // 좌석 컴포넌트로 바꾸는 useState
   const [seatPage, setSeatPage] = useState(false);
@@ -57,10 +86,10 @@ const Container = styled.div`
 const BookinWrapper = styled.div`
   display: flex;
 	padding: 0;
-  width: 1110px;
+  width: 1050px;
   margin : 0 auto;
   box-sizing: border-box; 
-	padding-left: 10px;
+	padding-left: 5px;
 `;
 
 export default Reserve;

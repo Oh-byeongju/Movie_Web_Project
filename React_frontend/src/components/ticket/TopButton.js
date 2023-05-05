@@ -4,10 +4,6 @@ import { Link } from "react-router-dom";
 
 const TopButton = () => {
 	// 예매 다시하기 버튼 누를떄
-
-	// 이거 그냥 초기화 dispatch 해주면될듯
-
-	
   const onReset = useCallback(() => {
     if (!window.confirm("예매 페이지를 초기화합니다.")) {
       return;
@@ -37,7 +33,7 @@ const TopButton = () => {
 
 const Nav = styled.div`
   position: relative;
-	width: 1100px;
+	width: 1043px;
   height: 78px;
 	padding-left: 10px;
 	margin : 0 auto;

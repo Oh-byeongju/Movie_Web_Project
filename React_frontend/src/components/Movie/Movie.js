@@ -89,7 +89,7 @@ const Movie = ({ movie }) => {
               alt="rating"
               style={{ width: "30px", height: "30px" }}
             />
-            <span>{movie.mtitle}</span>
+            <span title={movie.mtitle}>{movie.mtitle}</span>
           </div>
           <div className="infomation">
             <span className="rate">

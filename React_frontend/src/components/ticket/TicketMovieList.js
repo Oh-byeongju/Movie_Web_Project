@@ -1,11 +1,10 @@
-/*eslint-disable*/
 /*
 	23-04-28 예매 페이지 영화 컴포넌트 수정(오병주)
 */
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import styled from "styled-components";
-import { TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_SELECT } from "../../reducer/R_ticket";
+import { TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_SELECT, TICKET_MOVIE_RESET } from "../../reducer/R_ticket";
 
 const TicketMovieList = () => {
   const dispatch = useDispatch();
@@ -20,15 +19,6 @@ const TicketMovieList = () => {
 		}),
 		shallowEqual
 	);
-
-	// 스크롤 위치 조정 useEffect
-	useEffect (()=> {
-		if (MOVIE !== '') {
-			window.scrollTo({
-				top: 100,
-				behavior: "smooth"});
-		}
-	}, []);
 
 	// 영화 조회 useEffect
   useEffect(() => {
@@ -50,17 +40,20 @@ const TicketMovieList = () => {
 				data: movie
 			});
 		}
+		// 상영스케줄이 없을경우
 		else {
-			if (!window.confirm("선택한 영화에 원하시는 상영스케줄이 없습니다. 계속하겠습니까?")) {
+			if (!window.confirm("선택한 영화에 원하시는 상영스케줄이 없습니다.\n계속하겠습니까? (선택한 극장 및 날짜가 해제됩니다.)")) {
 				return;
 			}
 			else {
-				console.log('여기 초기화');
+				dispatch({
+					type: TICKET_MOVIE_RESET,
+					data: movie
+				});
 			}
 		}
   }, [dispatch]);
 
-	// css 위치 맞춰야함
 	// 정렬 넣을꺼면 넣기
 
   return (
@@ -77,7 +70,7 @@ const TicketMovieList = () => {
       </MovieSelector>
       <MovieListWrapper>
         {MOVIE_LIST.map((movie) => 
-					<MovieList key={movie.mid} onClick={() => {onClickMovie(movie);}} select_movie={MOVIE.mid} movie={movie.mid}>
+					<MovieList title={movie.mtitle} key={movie.mid} onClick={() => {onClickMovie(movie);}} select_movie={MOVIE.mid} movie={movie.mid}>
             <MovieListMovieName className={movie.reserve ? "" : "disable"}>
               <Img src={`img/age/${movie.mrating}.png`} alt="영화" />
               {movie.mtitle}
@@ -92,7 +85,8 @@ const TicketMovieList = () => {
 const MovieWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 350px;
+  width: 300px;
+	border-left: 1px solid #d8d9db;
   border-right: 1px solid #d8d9db;
   background-color: #f2f0e5;
 `;
@@ -104,11 +98,12 @@ const MovieTitle = styled.div`
   line-height: 33px;
   text-align: center;
   font-size: 20px;
-  padding: 20px 0 20px 20px;
+  padding: 15px 0 15px 10px;
   font-weight: bold;
-  top: -15px;
+  top: -12px;
 
   p {
+		margin-top: 14px;
     display: block;
     position: relative;
     left: -4px;
@@ -126,17 +121,17 @@ const MovieSelectorText = styled.div`
   border-bottom: none;
   height: 35px;
   margin-left: 20px;
-  width: 240px;
+	margin-right: 20px;
   font-size: 16px;
   text-align: center;
-  margin-top: 10;
-  padding-top: 6px;
+  padding-top: 5px;
 `;
 
 const MovieListWrapper = styled.div`
-  padding: 10px 18px 0 20px;
-  height: 400px;
-  width: 235px;
+	margin-top: 5px;
+  padding: 10px 0px 10px 15px;
+	width: 271px;
+  height: 403px;
   display: flex;
   overflow-x: scroll;
   overflow-x: hidden;
@@ -146,7 +141,6 @@ const MovieListWrapper = styled.div`
 const MovieList = styled.div`
   clear: both;
   float: left;
-  width: 244px;
   height: 35px;
   line-height: 35px;
   margin-bottom: 1px;
@@ -164,16 +158,21 @@ const MovieList = styled.div`
 
 const MovieListMovieName = styled.div`
   font-size: 13px;
-  width: 174px;
   margin-left: 10px;
+	font-weight: 600;
+	width: 235px;
+	overflow: hidden;
+  text-overflow: ellipsis;
+	white-space: nowrap;
+	display: inline-block;
 `;
 
 const Img = styled.img`
   width: 23px;
   height: 20px;
   position: relative;
-  top: 3px;
-  padding-right: 10px;
+  top: 5px;
+  padding-right: 12px;
 `;
 
 export default TicketMovieList;

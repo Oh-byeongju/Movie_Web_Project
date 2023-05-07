@@ -55,6 +55,7 @@ const TicketMovieList = () => {
   }, [dispatch]);
 
 	// 정렬 넣을꺼면 넣기
+	// 다른곳에서 넘어왔을때 useRef로 스크롤 위치를 바꿔줘야하나 고민이 되기도함 --> 날짜도 마찬가지로
 
   return (
     <MovieWrapper>

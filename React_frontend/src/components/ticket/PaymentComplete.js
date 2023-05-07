@@ -26,8 +26,6 @@ const PaymentComplete = ()=>{
   }, []);
 
 
-	//움직인는거 링크to로 구현하기
-	// 결제 실패할때 alert뜨게 해야하는데
 
   return (
 		<CompleteWrapper>

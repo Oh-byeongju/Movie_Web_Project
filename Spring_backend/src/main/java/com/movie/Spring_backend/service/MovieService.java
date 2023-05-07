@@ -360,6 +360,8 @@ public class MovieService {
         return Movies.stream().map(movie -> MovieDto.builder()
                 .mid(movie.getMid())
                 .mtitle(movie.getMtitle())
+                .mgenre(movie.getMgenre())
+                .mrating(movie.getMrating())
                 .mimagepath(movie.getMimagepath()).build()).collect(Collectors.toList());
     }
 }

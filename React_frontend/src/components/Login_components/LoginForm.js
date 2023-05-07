@@ -102,7 +102,7 @@ const LoginForm = () => {
       }
 			
 			else {
-				navigate(location.state.url, {state: {url: '/UserLogin',}});
+				navigate(location.state.url, {state: {url: '/UserLogin'}});
 			}
     }
   }, [LOGIN_data, location.state, navigate, dispatch]);

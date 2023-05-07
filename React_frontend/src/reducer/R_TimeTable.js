@@ -6,7 +6,6 @@ export const TIMETABLE_MOVIE_LIST_REQUEST = "TIMETABLE_MOVIE_LIST_REQUEST";
 export const TIMETABLE_MOVIE_LIST_SUCCESS = "TIMETABLE_MOVIE_LIST_SUCCESS";
 export const TIMETABLE_MOVIE_LIST_FAILURE = "TIMETABLE_MOVIE_LIST_FAILURE";
 export const TIMETABLE_MOVIE_SELECT = "TIMETABLE_MOVIE_SELECT";
-export const TIMETABLE_AREA_SELECT = "TIMETABLE_AREA_SELECT";
 
 // 극장 목록 조회 리스트
 export const TIMETABLE_THEATER_LIST_REQUEST = "TIMETABLE_THEATER_LIST_REQUEST";
@@ -19,6 +18,12 @@ export const TIMETABLE_DAY_LIST_REQUEST = "TIMETABLE_DAY_LIST_REQUEST";
 export const TIMETABLE_DAY_LIST_SUCCESS = "TIMETABLE_DAY_LIST_SUCCESS";
 export const TIMETABLE_DAY_LIST_FAILURE = "TIMETABLE_DAY_LIST_FAILURE";
 export const TIMETABLE_DAY_SELECT = "TIMETABLE_DAY_SELECT";
+
+// 지역, 분류 선택 리스트
+export const TIMETABLE_AREA_SELECT = "TIMETABLE_AREA_SELECT";
+export const TIMETABLE_THEATER_AREA_SELECT = "TIMETABLE_THEATER_AREA_SELECT";
+export const TIMETABLE_SORT_SELECT = "TIMETABLE_SORT_SELECT";
+export const TIMETABLE_KEY_SELECT = "TIMETABLE_KEY_SELECT";
 
 // 상영정보 조회 리스트(영화선택)
 export const TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST = "TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST";
@@ -36,7 +41,6 @@ const initalState = {
   MOVIE_LIST_error: false,
 	MOVIE_LIST: [],
 	MOVIE: '',
-	AREA: '서울',
 
 	THEATER_LIST_loading: false,
   THEATER_LIST_done: false,
@@ -49,6 +53,13 @@ const initalState = {
   DAY_LIST_error: false,
 	DAY_LIST: [],
 	DAY: '',
+
+	AREA: '서울',
+	THEATER_AREA: 'seoul',
+	MOVIE_BUTTON: true,
+	THEATER_BUTTON: false,
+	CHANGE_STATE: true,
+	TIMETABLE_KEY: '',
 
 	MOVIEINFO_LIST_MOVIE_loading: false,
   MOVIEINFO_LIST_MOVIE_done: false,
@@ -90,13 +101,9 @@ const R_timeTable = (state = initalState, action) => {
     case TIMETABLE_MOVIE_SELECT:
       return {
         ...state,
-        MOVIE: action.data
+        MOVIE: action.data,
+				CHANGE_STATE: true
       };
-		case TIMETABLE_AREA_SELECT:
-			return {
-				...state,
-				AREA: action.data
-			};
 		// 극장 조회 케이스들
 		case TIMETABLE_THEATER_LIST_REQUEST:
 			return {
@@ -124,7 +131,8 @@ const R_timeTable = (state = initalState, action) => {
 		case TIMETABLE_THEATER_SELECT:
 			return {
 				...state,
-				THEATER: action.data
+				THEATER: action.data,
+				CHANGE_STATE: true
 			};
 		// 날짜 조회 케이스들
 		case TIMETABLE_DAY_LIST_REQUEST:
@@ -154,6 +162,31 @@ const R_timeTable = (state = initalState, action) => {
 			return {
 				...state,
 				DAY: action.data
+			};
+		// 지역, 분류 선택 케이스들
+		case TIMETABLE_AREA_SELECT:
+			return {
+				...state,
+				AREA: action.data,
+				CHANGE_STATE: true
+			};
+		case TIMETABLE_THEATER_AREA_SELECT:
+			return {
+				...state,
+				THEATER_AREA: action.data
+			};
+		case TIMETABLE_SORT_SELECT:
+			return {
+				...state,
+				MOVIE_BUTTON: action.data.movie,
+				THEATER_BUTTON: action.data.theater,
+				CHANGE_STATE: true
+			}
+		case TIMETABLE_KEY_SELECT:
+			return {
+				...state,
+				TIMETABLE_KEY: action.data,
+				CHANGE_STATE: false
 			};
 		// 상영정보 조회(영화선택) 케이스들
 		case TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST:

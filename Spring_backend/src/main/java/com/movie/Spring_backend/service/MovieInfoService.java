@@ -9,6 +9,8 @@ import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.mapper.CinemaMapper;
 import com.movie.Spring_backend.mapper.MovieInfoMapper;
 import com.movie.Spring_backend.repository.MovieInfoRepository;
+import com.movie.Spring_backend.repository.RedisSeatRepository;
+import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class MovieInfoService {
     private final MovieInfoRepository movieInfoRepository;
+    private final RedisSeatRepository redisSeatRepository;
     private final CinemaMapper cinemaMapper;
     private final MovieInfoMapper movieInfoMapper;
 
@@ -61,6 +64,7 @@ public class MovieInfoService {
         Date miday = Date.valueOf(requestMap.get("miday"));
         Long mid = Long.valueOf(requestMap.get("mid"));
         Long tid = Long.valueOf(requestMap.get("tid"));
+        String uid = requestMap.get("uid");
 
         // 상영정보 조회에 필요한 정보 Entity로 변환
         MovieEntity movie = MovieEntity.builder().mid(mid).build();
@@ -68,6 +72,27 @@ public class MovieInfoService {
 
         // 상영정보 조회
         List<MovieInfoEntity> movieInfos = movieInfoRepository.findSchedule(miday, movie, theater);
+
+        // 레디스 좌석 조회
+        List<RedisSeatEntity> redisSeats = redisSeatRepository.findAll();
+        HashMap<Long, Integer> occupyNum = new HashMap<>();
+
+        // 레디스에 있는 상영정보에 대한 점유좌석번호 추출
+        for (RedisSeatEntity rs : redisSeats) {
+            // 레디스 정보가 null이 아니고 현재 사용자와 점유좌석에 있는 사용자 정보가 다를경우
+            if (rs != null && !uid.equals(rs.getUser())) {
+                // 레디스 데이터 매핑
+                String [] SeatNumber = rs.getKey().split(",");
+
+                // HashMap Key로 현재 상영정보 번호가 존재하지 않을경우 Key를 삽입, 존재하면 값을 + 1
+                if (!occupyNum.containsKey(Long.parseLong(SeatNumber[0].trim()))) {
+                    occupyNum.put(Long.valueOf(SeatNumber[0].trim()), 1);
+                }
+                else {
+                    occupyNum.put(Long.valueOf(SeatNumber[0].trim()), occupyNum.get(Long.valueOf(SeatNumber[0].trim())) + 1);
+                }
+            }
+        }
 
         return movieInfos.stream().map(movieInfo -> MovieInfoDto.builder()
                 .miid(movieInfo.getMiid())
@@ -78,14 +103,14 @@ public class MovieInfoService {
                 .cname(movieInfo.getCinema().getCname())
                 .ctype(movieInfo.getCinema().getCtype())
                 .cntSeatAll(movieInfo.getCinema().getCseat())
-                .cntSeatInfo(movieInfo.getCntSeatInfo())
+                .cntSeatInfo(movieInfo.getCntSeatInfo() + occupyNum.getOrDefault(movieInfo.getMiid(), 0))
                 .build()).collect(Collectors.toList());
     }
 
     // 조건에 맞는 상영정보의 상영날짜를 구하는 메소드(상영 시간표 페이지)
     @Transactional
     public List<MovieInfoDto> getMovieInfoDay(Map<String, String> requestMap) {
-        // requestMap 데이터 추출 및 형변환
+        // requestMap 데이터 추출
         String mid = requestMap.get("mid");
         String tarea = requestMap.get("tarea");
         String tid = requestMap.get("tid");
@@ -113,10 +138,11 @@ public class MovieInfoService {
     // 영화, 상영날짜, 지역을 이용하여 상영정보를 검색하는 메소드(상영시간표 페이지)
     @Transactional
     public List<TimeTableDto> getTimeTableByMovie(Map<String, String> requestMap) {
-        // requestMap 데이터 추출 및 형변환
+        // requestMap 데이터 추출
         String mid = requestMap.get("mid");
         String miday = requestMap.get("miday");
         String tarea = requestMap.get("tarea");
+        String uid = requestMap.get("uid");
 
         // 상영정보 조회에 필요한 정보 Entity로 변환
         MovieEntity movie = MovieEntity.builder().mid(Long.valueOf(mid)).build();
@@ -138,8 +164,29 @@ public class MovieInfoService {
             }
         }
 
+        // 레디스 좌석 조회
+        List<RedisSeatEntity> redisSeats = redisSeatRepository.findAll();
+        HashMap<Long, Integer> occupyNum = new HashMap<>();
+
+        // 레디스에 있는 상영정보에 대한 점유좌석번호 추출
+        for (RedisSeatEntity rs : redisSeats) {
+            // 레디스 정보가 null이 아니고 현재 사용자와 점유좌석에 있는 사용자 정보가 다를경우
+            if (rs != null && !uid.equals(rs.getUser())) {
+                // 레디스 데이터 매핑
+                String [] SeatNumber = rs.getKey().split(",");
+
+                // HashMap Key로 현재 상영정보 번호가 존재하지 않을경우 Key를 삽입, 존재하면 값을 + 1
+                if (!occupyNum.containsKey(Long.parseLong(SeatNumber[0].trim()))) {
+                    occupyNum.put(Long.valueOf(SeatNumber[0].trim()), 1);
+                }
+                else {
+                    occupyNum.put(Long.valueOf(SeatNumber[0].trim()), occupyNum.get(Long.valueOf(SeatNumber[0].trim())) + 1);
+                }
+            }
+        }
+
         // 상영관별로 상영정보를 매핑
-        List<CinemaDto> cinemaDtoList = cinemaMapper.MappingCinemaUseTheater(CinemaID, MovieInfos);
+        List<CinemaDto> cinemaDtoList = cinemaMapper.MappingCinemaUseTheater(CinemaID, MovieInfos, occupyNum);
 
         // 극장별로 상영관 및 상영정보를 매핑
         return movieInfoMapper.MappingTimeTableByTheater(TheaterName, cinemaDtoList);
@@ -148,9 +195,10 @@ public class MovieInfoService {
     // 극장, 상영날짜를 이용하여 상영정보를 검색하는 메소드(상영시간표 페이지)
     @Transactional
     public List<TimeTableDto> getTimeTableByTheater(Map<String, String> requestMap) {
-        // requestMap 데이터 추출 및 형변환
+        // requestMap 데이터 추출
         String tid = requestMap.get("tid");
         String miday = requestMap.get("miday");
+        String uid = requestMap.get("uid");
 
         // 상영정보 조회에 필요한 정보 Entity로 변환
         TheaterEntity theater = TheaterEntity.builder().tid(Long.valueOf(tid)).build();
@@ -176,8 +224,29 @@ public class MovieInfoService {
             }
         }
 
+        // 레디스 좌석 조회
+        List<RedisSeatEntity> redisSeats = redisSeatRepository.findAll();
+        HashMap<Long, Integer> occupyNum = new HashMap<>();
+
+        // 레디스에 있는 상영정보에 대한 점유좌석번호 추출
+        for (RedisSeatEntity rs : redisSeats) {
+            // 레디스 정보가 null이 아니고 현재 사용자와 점유좌석에 있는 사용자 정보가 다를경우
+            if (rs != null && !uid.equals(rs.getUser())) {
+                // 레디스 데이터 매핑
+                String [] SeatNumber = rs.getKey().split(",");
+
+                // HashMap Key로 현재 상영정보 번호가 존재하지 않을경우 Key를 삽입, 존재하면 값을 + 1
+                if (!occupyNum.containsKey(Long.parseLong(SeatNumber[0].trim()))) {
+                    occupyNum.put(Long.valueOf(SeatNumber[0].trim()), 1);
+                }
+                else {
+                    occupyNum.put(Long.valueOf(SeatNumber[0].trim()), occupyNum.get(Long.valueOf(SeatNumber[0].trim())) + 1);
+                }
+            }
+        }
+
         // 상영관별로 상영정보를 매핑
-        List<CinemaDto> cinemaDtoList = cinemaMapper.MappingCinemaUseMovie(CinemaID, MovieInfos);
+        List<CinemaDto> cinemaDtoList = cinemaMapper.MappingCinemaUseMovie(CinemaID, MovieInfos, occupyNum);
 
         // 영화별로 상영관 및 상영정보를 매핑
         return movieInfoMapper.MappingTimeTableByMovie(MovieID, cinemaDtoList);

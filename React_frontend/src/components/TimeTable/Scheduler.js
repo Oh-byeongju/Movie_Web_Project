@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { PicCenterOutlined, BankOutlined } from "@ant-design/icons";
-import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_AREA_SELECT, TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_timeTable";
+import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_AREA_SELECT, TIMETABLE_THEATER_AREA_SELECT, TIMETABLE_SORT_SELECT, 
+	TIMETABLE_KEY_SELECT,	TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_timeTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { useLocation } from "react-router-dom";
 import TimeTableLoading from "./TimeTableLoading";
 import Time from "./Time";
 import MovieSchedule from "./MovieSchedule";
@@ -10,46 +12,76 @@ import TheaterSchedule from "./TheaterSchedule";
 
 const Scheduler = () =>{
 	const dispatch = useDispatch();
+	const location = useLocation();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE_LIST_loading, MOVIE_LIST, MOVIE, AREA, THEATER_LIST, THEATER } = useSelector(
+	const { MOVIE_LIST_loading, MOVIE_LIST, MOVIE, AREA, THEATER_AREA, THEATER_LIST, THEATER, 
+		TIMETABLE_KEY, MOVIE_BUTTON, THEATER_BUTTON } = useSelector(
 		state => ({
 			MOVIE_LIST_loading: state.R_timeTable.MOVIE_LIST_loading,
 			MOVIE_LIST: state.R_timeTable.MOVIE_LIST,
 			MOVIE: state.R_timeTable.MOVIE,
 			AREA: state.R_timeTable.AREA,
+			THEATER_AREA: state.R_timeTable.THEATER_AREA,
 			THEATER_LIST: state.R_timeTable.THEATER_LIST,
-			THEATER: state.R_timeTable.THEATER
+			THEATER: state.R_timeTable.THEATER,
+			TIMETABLE_KEY: state.R_timeTable.TIMETABLE_KEY,
+			MOVIE_BUTTON: state.R_timeTable.MOVIE_BUTTON,
+			THEATER_BUTTON: state.R_timeTable.THEATER_BUTTON,
 		}),
 		shallowEqual
 	);
 
-	// 모든 영화 및 극장 조회 useEffect
+	// 모든 영화 및 극장 조회(초기화 포함) useEffect
   useEffect(() => {
-		dispatch({
-			type: TIMETABLE_MOVIE_LIST_REQUEST
-		});
+		if (location.key !== TIMETABLE_KEY) {
+			dispatch({
+				type: TIMETABLE_MOVIE_LIST_REQUEST
+			});
+	
+			dispatch({
+				type: TIMETABLE_THEATER_LIST_REQUEST
+			});
 
-		dispatch({
-			type: TIMETABLE_THEATER_LIST_REQUEST
-		})
-  }, [dispatch]);
+			dispatch({
+				type: TIMETABLE_AREA_SELECT,
+				data: "서울"
+			});
 
-	// css를 위한 버튼 변수
-	const [moviebutton, setmoviebutton] = useState(true);
-	const [theaterbutton, settheaterbutton] = useState(false);
+			dispatch({
+				type: TIMETABLE_THEATER_AREA_SELECT,
+				data: "seoul"
+			});
+
+			dispatch({
+				type: TIMETABLE_SORT_SELECT,
+				data: {movie: true, theater: false}
+			})
+		}
+
+		return () => {
+      dispatch({
+				type: TIMETABLE_KEY_SELECT,
+				data: location.key
+			});
+    };
+  }, [TIMETABLE_KEY, location.key, dispatch]);
 
 	// 영화별 버튼 누를때
 	const onMovie = useCallback(() => {
-		setmoviebutton(true);
-		settheaterbutton(false);
-	}, []);
+		dispatch({
+			type: TIMETABLE_SORT_SELECT,
+			data: {movie: true, theater: false}
+		})
+	}, [dispatch]);
 
 	// 극장별 버튼 누를때
 	const onTheater = useCallback(() => {
-		setmoviebutton(false);
-		settheaterbutton(true);
-	}, [])
+		dispatch({
+			type: TIMETABLE_SORT_SELECT,
+			data: {movie: false, theater: true}
+		})
+	}, [dispatch])
 
 	// 영화 목록들 중 하나를 클릭할때
 	const MovieClick = useCallback((movie) => {
@@ -68,8 +100,13 @@ const Scheduler = () =>{
 		});
 	}, [dispatch]);
 
-	// 선택된 지역 버튼 useState
-	const [selectArea, setselectArea] = useState('seoul');
+	// 극장에 있는 지역 누를때 함수
+	const onTheaterArea = useCallback((name)=> {
+		dispatch({
+			type: TIMETABLE_THEATER_AREA_SELECT,
+			data: name
+		});
+	}, [dispatch]);
 
 	// 극장 관리 useState
 	const [theater, setTheater] = useState({
@@ -117,7 +154,7 @@ const Scheduler = () =>{
 				<MovieAreaChoice>  
 					<TabLeft>
 						<ul>
-							<li className={moviebutton ? "hover tab" : "tab"} onClick={onMovie}>
+							<li className={MOVIE_BUTTON ? "hover tab" : "tab"} onClick={onMovie}>
 								<div>
 									<i>
 										<PicCenterOutlined/>
@@ -125,7 +162,7 @@ const Scheduler = () =>{
 									영화
 								</div>
 							</li>
-							<li className={theaterbutton ? "hover tab" : "tab"} onClick={onTheater}>
+							<li className={THEATER_BUTTON ? "hover tab" : "tab"} onClick={onTheater}>
 								<div>
 									<i>
 										<BankOutlined/>
@@ -136,7 +173,7 @@ const Scheduler = () =>{
 						</ul>
 					</TabLeft> 
 					<TabCenter>
-					{moviebutton ? MOVIE_LIST_loading ? <TimeTableLoading/> :
+					{MOVIE_BUTTON ? MOVIE_LIST_loading ? <TimeTableLoading/> :
 						<MovieWrapper>
 							<ListSection>
 								<ScrollBar>
@@ -162,16 +199,16 @@ const Scheduler = () =>{
 							<Wrapper>
 								<ListChoice>
 									<ul>
-										<li onClick={()=> setselectArea('seoul')} className={selectArea === 'seoul' ? "tab menu"  : ""}>
+										<li onClick={()=> onTheaterArea('seoul')} className={THEATER_AREA === 'seoul' ? "tab menu"  : ""}>
 											서울 ({seoul})
 										</li>
-										<li onClick={()=> setselectArea('gyeonggi')} className={selectArea === 'gyeonggi' ? "tab menu"  : ""}>
+										<li onClick={()=> onTheaterArea('gyeonggi')} className={THEATER_AREA === 'gyeonggi' ? "tab menu"  : ""}>
 											경기 ({gyeonggi})
 										</li>
-										<li onClick={()=> setselectArea('incheon')} className={selectArea === 'incheon' ? "tab menu"  : ""}>
+										<li onClick={()=> onTheaterArea('incheon')} className={THEATER_AREA === 'incheon' ? "tab menu"  : ""}>
 											인천 ({incheon})
 										</li>
-										<li onClick={()=> setselectArea('busan')} className={selectArea === 'busan' ? "tab menu"  : ""}>
+										<li onClick={()=> onTheaterArea('busan')} className={THEATER_AREA === 'busan' ? "tab menu"  : ""}>
 											부산 ({busan})
 										</li>
 									</ul>
@@ -180,19 +217,19 @@ const Scheduler = () =>{
 									<ScrollBarT>
 										<TheaterContainer>
 											<ul>
-                       	{selectArea === 'seoul' ? THEATER_LIST.map((theater)=> 
+                       	{THEATER_AREA === 'seoul' ? THEATER_LIST.map((theater)=> 
 												theater.tarea === '서울' ? <TheaterLi key={theater.tid} onClick={()=> TheaterClick(theater)} tName={theater.tid} theater={THEATER.tid}> {theater.tname} </TheaterLi> 
 												: null) : null}
 
-												{selectArea === 'gyeonggi' ? THEATER_LIST.map((theater)=> 
+												{THEATER_AREA === 'gyeonggi' ? THEATER_LIST.map((theater)=> 
 												theater.tarea === '경기' ? <TheaterLi  key={theater.tid} onClick={()=> TheaterClick(theater)} tName={theater.tid} theater={THEATER.tid}> {theater.tname} </TheaterLi> 
 												: null) : null}
 
-												{selectArea === 'incheon' ? THEATER_LIST.map((theater)=> 
+												{THEATER_AREA === 'incheon' ? THEATER_LIST.map((theater)=> 
 												theater.tarea === '인천' ? <TheaterLi  key={theater.tid} onClick={()=> TheaterClick(theater)} tName={theater.tid} theater={THEATER.tid}> {theater.tname} </TheaterLi> 
 												: null) : null}
 
-												{selectArea === 'busan' ? THEATER_LIST.map((theater)=> 
+												{THEATER_AREA === 'busan' ? THEATER_LIST.map((theater)=> 
 												theater.tarea === '부산' ? <TheaterLi  key={theater.tid} onClick={()=> TheaterClick(theater)} tName={theater.tid} theater={THEATER.tid}> {theater.tname} </TheaterLi> 
 												: null) : null}
 							 				</ul>
@@ -203,8 +240,8 @@ const Scheduler = () =>{
 						</TheaterWrapper>}
 					</TabCenter>
 				</MovieAreaChoice>
-				<Time moviebutton={moviebutton} theaterbutton={theaterbutton}/>
-					{moviebutton ? <CityTab>   
+				<Time/>
+					{MOVIE_BUTTON ? <CityTab>   
 						<ul>
 						{movieArea.map((city, index)=> 
 							<City key={index} city={city} selectArea={AREA} onClick={()=> onMovieArea(city)}> 
@@ -214,7 +251,7 @@ const Scheduler = () =>{
 							</City>)}
 						</ul>
 					</CityTab> : null}
-					{moviebutton? <MovieSchedule/> : <TheaterSchedule/>}
+					{MOVIE_BUTTON ? <MovieSchedule/> : <TheaterSchedule/>}
 				</TimeTablePage>
 		</TimeTableWrapper>
 	);
@@ -476,6 +513,9 @@ const TheaterLi = styled.li`
 	padding: 0;
 	font-size: 20px;
 	line-height: 30px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 	cursor: pointer;
 
 	button {

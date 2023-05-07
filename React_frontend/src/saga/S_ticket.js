@@ -130,7 +130,8 @@ async function callMovieInfoSearch(data) {
     params: {
 			miday: data.miday,
 			mid: data.mid,
-			tid: data.tid
+			tid: data.tid,
+			uid: data.uid
 		}
   })
   .then((response) => {

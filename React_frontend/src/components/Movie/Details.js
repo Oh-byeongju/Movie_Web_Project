@@ -3,16 +3,18 @@
  23-02-15 페이지 css 수정(오병주)
 */
 import React, { useEffect, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { HeartOutlined, HeartFilled, StarFilled } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { DETAIL_MOVIE_REQUEST, USER_MLIKE_REQUEST  } from "../../reducer/movie";
+import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 import MovieSearchLoading from "./MovieSearchLoading";
 
 const Details = () => {
   const location = useLocation();  
   const dispatch = useDispatch();
+	const navigate = useNavigate();
 
   // 반올림 없이 소수점 생성해주는 함수
   const getNotRoundDecimalNumber = (number, decimalPoint = 1) => {
@@ -59,26 +61,50 @@ const Details = () => {
         mid: detailMovie.mid
       }
     })
-    
   }, [detailMovie.mid, LOGIN_data.uid, dispatch]);
 
   // UI에는 변경되지 않았지만 삭제된 영화 좋아요 누를 경우
   useEffect(()=> {
-
     if (MLIKE_error === detailMovie.mid) {
       alert("존재하지 않는 영화입니다.");
       window.location.assign('/');
     }
+  }, [MLIKE_error, detailMovie.mid, location.pathname]);
 
-  }, [MLIKE_error, detailMovie.mid, location.pathname])
+	// 예매 버튼을 누를경우 실행되는 함수
+	const onClickReserve = useCallback(()=> {
+		// 영화 정보
+		const temp_movie = {
+			mid: detailMovie.mid,
+			mtitle: detailMovie.mtitle,
+			mgenre: detailMovie.mgenre,
+			mrating: detailMovie.mrating,
+			mimagepath: detailMovie.mimagepath,
+			reserve: true
+		}
+		
+		// 예매페이지 세팅 후 넘어감
+		dispatch({
+			type: TICKET_PAGE_SETTING,
+			data: {
+				movie: temp_movie,
+				theater: '',
+				area: 'seoul',
+				day: '',
+				movieinfo: ''
+			}
+		});
+		navigate('/Reserve');
+
+	}, [detailMovie, dispatch, navigate]);
 
   // 감독 또는 배우 클릭시 링크 만드는 함수
-  const anchor = (value) => {
+  const anchor = useCallback((value) => {
     if (value === undefined) {
       return;
     }
     return "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=" + value.replace(',', '');;
-  }
+  }, []);
 
   return (
     <Container>
@@ -174,7 +200,7 @@ const Details = () => {
                     </span> 
                   </div>
                 </Likes>
-                <Ticket disabled={!detailMovie.reserve} reserve={detailMovie.reserve}>
+                <Ticket onClick={onClickReserve} disabled={!detailMovie.reserve} reserve={detailMovie.reserve}>
                   {detailMovie.reserve ? '예매' : '상영예정'}
                 </Ticket>         
               </Like>

@@ -6,12 +6,13 @@ import com.movie.Spring_backend.entity.MovieInfoEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
 public class CinemaMapper {
     // 상영관에 있는 상영정보 매핑해주는 메소드(상영시간표에 사용)
-    public List<CinemaDto> MappingCinemaUseTheater(List<Long> cinemaIds, List<MovieInfoEntity> entityList) {
+    public List<CinemaDto> MappingCinemaUseTheater(List<Long> cinemaIds, List<MovieInfoEntity> entityList, HashMap<Long, Integer> occupyNum) {
 
         List<CinemaDto> cinemas = new ArrayList<>();
         // 반복문 시작하는 위치
@@ -30,7 +31,7 @@ public class CinemaMapper {
                             .miid(entityList.get(i).getMiid())
                             .mistarttime(entityList.get(i).getMistarttime())
                             .miendtime(entityList.get(i).getMiendtime())
-                            .cntSeatInfo(entityList.get(i).getCntSeatInfo()).build());
+                            .cntSeatInfo(entityList.get(i).getCntSeatInfo() + occupyNum.getOrDefault(entityList.get(i).getMiid(), 0)).build());
                     // 반복문의 시작위치 조정을 위해 변수값 조정
                     start++;
                 }
@@ -45,6 +46,7 @@ public class CinemaMapper {
                     .cseat(entityList.get(start-1).getCinema().getCseat())
                     .ctype(entityList.get(start-1).getCinema().getCtype())
                     .cname(entityList.get(start-1).getCinema().getCname())
+                    .tid(entityList.get(start-1).getCinema().getTheater().getTid())
                     .tname(entityList.get(start-1).getCinema().getTheater().getTname())
                     .movieInfoDtoList(movieInfos).build());
         }
@@ -52,7 +54,7 @@ public class CinemaMapper {
     }
 
     // 상영관에 있는 상영정보 매핑해주는 메소드(상영시간표에 사용)
-    public List<CinemaDto> MappingCinemaUseMovie(List<Long> cinemaIds, List<MovieInfoEntity> entityList) {
+    public List<CinemaDto> MappingCinemaUseMovie(List<Long> cinemaIds, List<MovieInfoEntity> entityList, HashMap<Long, Integer> occupyNum) {
 
         List<CinemaDto> cinemas = new ArrayList<>();
         // 반복문 시작하는 위치 및 영화 Id
@@ -75,7 +77,7 @@ public class CinemaMapper {
                             .miid(entityList.get(i).getMiid())
                             .mistarttime(entityList.get(i).getMistarttime())
                             .miendtime(entityList.get(i).getMiendtime())
-                            .cntSeatInfo(entityList.get(i).getCntSeatInfo()).build());
+                            .cntSeatInfo(entityList.get(i).getCntSeatInfo() + occupyNum.getOrDefault(entityList.get(i).getMiid(), 0)).build());
                     // 반복문의 시작위치 조정을 위해 변수값 조정
                     start++;
                 }
@@ -94,6 +96,8 @@ public class CinemaMapper {
                     .mtitle(entityList.get(start-1).getMovie().getMtitle())
                     .mtime(entityList.get(start-1).getMovie().getMtime())
                     .mrating(entityList.get(start-1).getMovie().getMrating())
+                    .mgenre(entityList.get(start-1).getMovie().getMgenre())
+                    .mimagepath(entityList.get(start-1).getMovie().getMimagepath())
                     .movieInfoDtoList(movieInfos).build());
         }
         return cinemas;

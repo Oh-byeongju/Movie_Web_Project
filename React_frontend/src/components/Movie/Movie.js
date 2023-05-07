@@ -6,10 +6,11 @@
 import React, { useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { USER_MLIKE_REQUEST } from "../../reducer/movie";
 import { useLocation } from "react-router-dom";
+import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 
 const Movie = ({ movie }) => {
   // 반올림 없이 소수점 생성해주는 함수
@@ -28,13 +29,10 @@ const Movie = ({ movie }) => {
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
   const dispatch = useDispatch();
   const location = useLocation();
+	const navigate = useNavigate();
 
   // 영화 좋아요 실패 여부 상태
   const { MLIKE_error } = useSelector((state) => state.movie);
-
-  const OnClickReserve = (data) => {
-   // 여기에 예매버튼 활성화 시키면됨 --> 다른 페이지에 있느놈들도(예매버튼 있으면 전부다)
-  };
 
   // 사용자가 영화의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {
@@ -49,18 +47,42 @@ const Movie = ({ movie }) => {
         mid: movie.mid,
       }
     });
-
   }, [movie.mid, LOGIN_data.uid, dispatch]);
 
   // UI에는 변경되지 않았지만 삭제된 영화 좋아요 누를 경우
   useEffect(()=> {
-
     if (MLIKE_error === movie.mid) {
       alert("존재하지 않는 영화입니다.");
       window.location.replace(location.pathname);
     }
+  }, [MLIKE_error, movie.mid, location.pathname]);
 
-  }, [MLIKE_error, movie.mid, location.pathname])
+	// 예매 버튼을 누를경우 실행되는 함수
+	const onClickReserve = useCallback(()=> {
+		// 영화 정보
+		const temp_movie = {
+			mid: movie.mid,
+			mtitle: movie.mtitle,
+			mgenre: movie.mgenre,
+			mrating: movie.mrating,
+			mimagepath: movie.mimagepath,
+			reserve: true
+		}
+		
+		// 예매페이지 세팅 후 넘어감
+		dispatch({
+			type: TICKET_PAGE_SETTING,
+			data: {
+				movie: temp_movie,
+				theater: '',
+				area: 'seoul',
+				day: '',
+				movieinfo: ''
+			}
+		});
+		navigate('/Reserve');
+
+	}, [movie, dispatch, navigate]);
 
   return (
     <LI>
@@ -113,11 +135,9 @@ const Movie = ({ movie }) => {
                 : movie.mlikes}
             </span>
           </Like>
-          <Link to="/reserve" state={{ state: location.pathname }}>
-            <Ticket disabled={!movie.reserve} reserve={movie.reserve} onClick={() => OnClickReserve(movie)}>
-              {movie.reserve ? '예매' : '상영예정'}
-            </Ticket>
-          </Link>
+					<Ticket disabled={!movie.reserve} reserve={movie.reserve} onClick={onClickReserve}>
+						{movie.reserve ? '예매' : '상영예정'}
+					</Ticket>
         </Button>
       </div>
     </LI>

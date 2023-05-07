@@ -1,19 +1,23 @@
 import styled from "styled-components";
-import React, { useEffect }from "react";
+import React, { useCallback, useEffect }from "react";
 import { TIMETABLE_MOVIEINFO_LIST_MOVIE_REQUEST } from "../../reducer/R_timeTable";
+import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const MovieSchedule = () =>{
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE, DAY, AREA, DAY_LIST_loading, MOVIEINFO_LIST_MOVIE } = useSelector(
+	const { MOVIE, DAY, AREA, DAY_LIST_loading, MOVIEINFO_LIST_MOVIE, LOGIN_data } = useSelector(
 		state => ({
 			MOVIE: state.R_timeTable.MOVIE,
 			DAY: state.R_timeTable.DAY,
 			AREA: state.R_timeTable.AREA,
 			DAY_LIST_loading: state.R_timeTable.DAY_LIST_loading,
-			MOVIEINFO_LIST_MOVIE: state.R_timeTable.MOVIEINFO_LIST_MOVIE
+			MOVIEINFO_LIST_MOVIE: state.R_timeTable.MOVIEINFO_LIST_MOVIE,
+			LOGIN_data: state.R_user_login.LOGIN_data
 		}),
 		shallowEqual
 	);
@@ -26,11 +30,81 @@ const MovieSchedule = () =>{
 				data: {
 					mid: MOVIE.mid,
 					miday: DAY,
-					tarea: AREA
+					tarea: AREA,
+					uid: LOGIN_data.uid
 				}
 			});
 		}
-	}, [MOVIE, DAY, AREA, DAY_LIST_loading, dispatch]);
+	}, [MOVIE, DAY, AREA, DAY_LIST_loading, LOGIN_data, dispatch]);
+
+	// 예매하기 버튼 누를떄 실행되는 함수
+	const onClickReserve = useCallback((cinema, info)=> {
+		// 남은 좌석이 없을경우
+		if (cinema.cseat - info.cntSeatInfo === 0) {
+			alert('남은 좌석이 없습니다.');
+			return;
+		}
+		// 영화 정보
+		const temp_movie = {
+			mid: MOVIE.mid,
+			mtitle: MOVIE.mtitle,
+			mgenre: MOVIE.mgenre,
+			mrating: MOVIE.mrating,
+			mimagepath: MOVIE.mimagepath,
+			reserve: true
+		}
+		// 극장 정보
+		const temp_thater = {
+			tid: cinema.tid,
+			tarea: AREA,
+			tname: cinema.tname,
+			reserve: true
+		}
+		// 지역 정보
+		var eng_area = "";
+		if (AREA === '서울') {
+			eng_area = 'seoul';
+		}
+		if (AREA === '경기') {
+			eng_area = 'gyeonggi';
+		}
+		if (AREA === '인천') {
+			eng_area = 'incheon';
+		}
+		if (AREA === '부산') {
+			eng_area = 'busan';
+		}
+		// 날짜정보
+		const temp_day = {
+			miday: DAY,
+			reserve: true
+		}
+		// 상영정보
+		const temp_info = {
+			miid: info.miid,
+			miday: DAY,
+			mistarttime: info.mistarttime,
+			miendtime: info.miendtime,
+			cid: cinema.cid,
+			cname: cinema.cname,
+			cntSeatAll: cinema.cseat,
+			cntSeatInfo: info.cntSeatInfo,
+			ctype: cinema.ctype		
+		}
+		 
+		// 예매페이지 세팅 후 넘어감
+		dispatch({
+			type: TICKET_PAGE_SETTING,
+			data: {
+				movie: temp_movie,
+				theater: temp_thater,
+				area: eng_area,
+				day: temp_day,
+				movieinfo: temp_info
+			}
+		});
+		navigate('/Reserve', {state: {url: '/TimeTable'}});
+	}, [MOVIE, AREA, DAY, dispatch, navigate])
 
 	return (
 		<>
@@ -61,7 +135,7 @@ const MovieSchedule = () =>{
 									<tbody>
 										<tr>
 										{cinema.movieInfoDtoList.map((info)=>
-											<td key={info.miid}>
+											<td onClick={()=> onClickReserve(cinema, info)} key={info.miid}>
 												<div>
 													<span>
 														<p className='movietime'>

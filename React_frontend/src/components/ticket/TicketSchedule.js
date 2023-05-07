@@ -11,13 +11,14 @@ const TicketSchedule = () => {
   const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE, THEATER, DAY, MOVIEINFO, MOVIEINFO_LIST } = useSelector(
+	const { MOVIE, THEATER, DAY, MOVIEINFO, MOVIEINFO_LIST, LOGIN_data } = useSelector(
 		state => ({
 			MOVIE: state.R_ticket.MOVIE,
 			THEATER: state.R_ticket.THEATER,
 			DAY: state.R_ticket.DAY,
 			MOVIEINFO: state.R_ticket.MOVIEINFO,
-			MOVIEINFO_LIST: state.R_ticket.MOVIEINFO_LIST, 
+			MOVIEINFO_LIST: state.R_ticket.MOVIEINFO_LIST,
+			LOGIN_data: state.R_user_login.LOGIN_data
 		}),
 		shallowEqual
 	);
@@ -31,11 +32,12 @@ const TicketSchedule = () => {
 				data: {
 					miday: DAY.miday,
 					mid: MOVIE.mid,
-					tid: THEATER.tid
+					tid: THEATER.tid,
+					uid: LOGIN_data.uid
 				}
 			});
 		}
-  }, [MOVIE, DAY, THEATER, dispatch]);
+  }, [MOVIE, DAY, THEATER, MOVIEINFO, LOGIN_data, dispatch]);
 
 	// 상영정보를 선택하는 함수
   const onClickMovieInfo = useCallback((movieInfo) => {

@@ -527,6 +527,9 @@ const TheaterLi = styled.li`
 	padding: 0;
 	font-size: 20px;
 	line-height: 30px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 	cursor: pointer;
 
 	button {

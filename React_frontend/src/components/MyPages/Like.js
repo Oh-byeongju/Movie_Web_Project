@@ -4,14 +4,16 @@
 import React, { useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { HeartOutlined, HeartFilled, StarFilled } from "@ant-design/icons";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { USER_MLIKE_REQUEST } from '../../reducer/movie';
+import { TICKET_PAGE_SETTING } from '../../reducer/R_ticket';
 
 const Like= ({ movie }) => {
 	const location = useLocation();  
   const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	// 반올림 없이 소수점 생성해주는 함수
   const getNotRoundDecimalNumber = (number, decimalPoint = 1) => {
@@ -30,7 +32,6 @@ const Like= ({ movie }) => {
 
 	// 사용자가 영화의 좋아요를 누를 때 호출되는 함수
 	const LikeChange = useCallback(() => {
-
 		if (!window.confirm("좋아요를 취소하시겠습니까?")) {
       return;
     };
@@ -41,18 +42,41 @@ const Like= ({ movie }) => {
 				mid: movie.mid
 			}
 		})
-		
 	}, [movie.mid, dispatch]);
 
 	// UI에는 변경되지 않았지만 삭제된 영화 좋아요 누를 경우
 	useEffect(()=> {
-
 		if (MLIKE_error === movie.mid) {
 			alert("존재하지 않는 영화입니다.");
 			window.location.replace(location.pathname);
 		}
+	}, [MLIKE_error, movie.mid, location.pathname]);
 
-	}, [MLIKE_error, movie.mid, location.pathname])
+	// 예매 버튼을 누를경우 실행되는 함수
+	const onClickReserve = useCallback(()=> {
+		// 영화 정보
+		const temp_movie = {
+			mid: movie.mid,
+			mtitle: movie.mtitle,
+			mgenre: movie.mgenre,
+			mrating: movie.mrating,
+			mimagepath: movie.mimagepath,
+			reserve: true
+		}
+		
+		// 예매페이지 세팅 후 넘어감
+		dispatch({
+			type: TICKET_PAGE_SETTING,
+			data: {
+				movie: temp_movie,
+				theater: '',
+				area: 'seoul',
+				day: '',
+				movieinfo: ''
+			}
+		});
+		navigate('/Reserve');
+	}, [movie, dispatch, navigate]);
 
 	return (
 		<ContentDetail>
@@ -128,7 +152,7 @@ const Like= ({ movie }) => {
 								</span> 
 							</div>
 						</Likes>
-						<Ticket disabled={!movie.reserve} reserve={movie.reserve}>
+						<Ticket onClick={onClickReserve} disabled={!movie.reserve} reserve={movie.reserve}>
 							{movie.reserve ? '예매' : '상영예정'}
 						</Ticket>         
 					</Buttons>

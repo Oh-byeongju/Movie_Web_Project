@@ -120,7 +120,8 @@ async function callMovieInfoByMovieSearch(data) {
     params: {
       mid: data.mid,
 			miday: data.miday,
-      tarea: data.tarea
+      tarea: data.tarea,
+			uid: data.uid
 		}
   })
   .then((response) => {
@@ -152,7 +153,8 @@ async function callMovieInfoByTheaterSearch(data) {
   return await http.get("/MovieInfo/normal/timeTableByTheater", {
     params: {
       tid: data.tid,
-			miday: data.miday
+			miday: data.miday,
+			uid: data.uid
 		}
   })
   .then((response) => {

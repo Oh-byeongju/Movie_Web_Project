@@ -1,5 +1,6 @@
-import React,{ useState, useEffect, useCallback }from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/ko";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -25,45 +26,51 @@ for (var i = 0; i < 20; i++){
 	}
 }
 
-const Time = ({ moviebutton, theaterbutton })=> {
+const Time = ()=> {
 	const dispatch = useDispatch();
+	const location = useLocation();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE, AREA, THEATER, DAY_LIST, DAY } = useSelector(
+	const { MOVIE, AREA, THEATER, DAY_LIST, DAY, TIMETABLE_KEY, MOVIE_BUTTON, THEATER_BUTTON, CHANGE_STATE } = useSelector(
 		state => ({
 			MOVIE: state.R_timeTable.MOVIE,
 			AREA: state.R_timeTable.AREA,
 			THEATER: state.R_timeTable.THEATER,
 			DAY_LIST: state.R_timeTable.DAY_LIST,
-			DAY: state.R_timeTable.DAY
+			DAY: state.R_timeTable.DAY,
+			TIMETABLE_KEY: state.R_timeTable.TIMETABLE_KEY,
+			MOVIE_BUTTON: state.R_timeTable.MOVIE_BUTTON,
+			THEATER_BUTTON: state.R_timeTable.THEATER_BUTTON,
+			CHANGE_STATE: state.R_timeTable.CHANGE_STATE
 		}),
 		shallowEqual
 	);
 
 	// 날짜 조회 useEffect
 	useEffect(()=>{
-		// 영화 선택 페이지시 영화 기준으로 날짜를 검색
-		if (moviebutton && MOVIE !== '') {
-			dispatch({
-				type: TIMETABLE_DAY_LIST_REQUEST,
-				data: {
-					mid: MOVIE.mid,
-					tarea: AREA
-				}
-			});
+		if (location.key !== TIMETABLE_KEY || CHANGE_STATE) {
+			// 영화 선택 페이지시 영화 기준으로 날짜를 검색
+			if (MOVIE_BUTTON && MOVIE !== '') {
+				dispatch({
+					type: TIMETABLE_DAY_LIST_REQUEST,
+					data: {
+						mid: MOVIE.mid,
+						tarea: AREA
+					}
+				});
+			}
+			// 극장 선택 페이지시 극장을 기준으로 날짜를 검색
+			if (THEATER_BUTTON && THEATER !== '') {
+				dispatch({
+					type: TIMETABLE_DAY_LIST_REQUEST,
+					data: {
+						tarea: THEATER.tarea,
+						tid: THEATER.tid
+					}
+				});
+			}
 		}
-
-		// 극장 선택 페이지시 극장을 기준으로 날짜를 검색
-		if (theaterbutton && THEATER !== '') {
-			dispatch({
-				type: TIMETABLE_DAY_LIST_REQUEST,
-				data: {
-					tarea: THEATER.tarea,
-					tid: THEATER.tid
-				}
-			});
-		}
-	}, [moviebutton, theaterbutton, MOVIE, AREA, THEATER, dispatch]);
+	}, [location.key, TIMETABLE_KEY, CHANGE_STATE, MOVIE_BUTTON, THEATER_BUTTON, MOVIE, AREA, THEATER, dispatch]);
 
 	// 날짜간 간격 useState
 	const [marginleft, setMarginLeft] = useState(0);

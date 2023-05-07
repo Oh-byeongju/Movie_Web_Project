@@ -131,6 +131,8 @@ public class MovieInfoMapper {
                     .mtitle(entityList.get(start-1).getMtitle())
                     .mtime(entityList.get(start-1).getMtime())
                     .mrating(entityList.get(start-1).getMrating())
+                    .mgenre(entityList.get(start-1).getMgenre())
+                    .mimagepath(entityList.get(start-1).getMimagepath())
                     .cinemaDtoList(cinema).build());
         }
         return timeTables;

@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Scheduler from "../components/TimeTable/Scheduler";
+
 const TimeTable = () =>{
+	return (
+		<>
+			<Scheduler/>
+		</>
+	);
+};
 
-
-    return(
-        <>
-        <Scheduler />
-        </>
-    )
-}
 export default TimeTable;

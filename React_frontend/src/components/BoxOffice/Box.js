@@ -3,17 +3,16 @@
  23-02-08 사용자가 누른 Like 적용(오병주)
  23-02-15 페이지 css 수정(오병주)
 */
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { useCallback } from "react";
 import { USER_MLIKE_REQUEST } from "../../reducer/movie";
-import { Link } from "react-router-dom";
+import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
+import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 const Box = ({ movie }) => {
-
   // 반올림 없이 소수점 생성해주는 함수
   const getNotRoundDecimalNumber = (number, decimalPoint = 1) => {
     let num = typeof number === "number" ? String(number) : number;
@@ -30,6 +29,7 @@ const Box = ({ movie }) => {
   const { LOGIN_data } = useSelector((state) => state.R_user_login)
   const dispatch = useDispatch();
   const location = useLocation();
+	const navigate = useNavigate();
 
   // 영화 좋아요 실패 여부 상태
   const { MLIKE_error } = useSelector((state) => state.movie);
@@ -46,19 +46,43 @@ const Box = ({ movie }) => {
       data: {
         mid: movie.mid
       }
-    })
-
+    });
   }, [movie.mid, LOGIN_data.uid, dispatch]);
 
   // UI에는 변경되지 않았지만 삭제된 영화 좋아요 누를 경우
   useEffect(()=> {
-
     if (MLIKE_error === movie.mid) {
       alert("존재하지 않는 영화입니다.");
       window.location.replace(location.pathname);
     }
+  }, [MLIKE_error, movie.mid, location.pathname]);
 
-  }, [MLIKE_error, movie.mid, location.pathname])
+	// 예매 버튼을 누를경우 실행되는 함수
+	const onClickReserve = useCallback(()=> {
+		// 영화 정보
+		const temp_movie = {
+			mid: movie.mid,
+			mtitle: movie.mtitle,
+			mgenre: movie.mgenre,
+			mrating: movie.mrating,
+			mimagepath: movie.mimagepath,
+			reserve: true
+		}
+		
+		// 예매페이지 세팅 후 넘어감
+		dispatch({
+			type: TICKET_PAGE_SETTING,
+			data: {
+				movie: temp_movie,
+				theater: '',
+				area: 'seoul',
+				day: '',
+				movieinfo: ''
+			}
+		});
+		navigate('/Reserve');
+
+	}, [movie, dispatch, navigate]);
 
   return (
     <LI>
@@ -91,7 +115,7 @@ const Box = ({ movie }) => {
               {movie.mlikes > 999 ? getNotRoundDecimalNumber(movie.mlikes / 1000) + "K" : movie.mlikes}
             </span>
           </Like>
-          <Ticket>
+          <Ticket onClick={onClickReserve}>
             예매
           </Ticket>
         </Button>

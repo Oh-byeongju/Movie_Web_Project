@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import TicketMovieList from "../components/Ticket/TicketMovieList";
@@ -57,7 +58,7 @@ const Reserve = () => {
 				type: SEAT_PAGE_RESET
 			});
     };
-  }, [location, dispatch]);
+  }, []);
 
   // 좌석 컴포넌트로 바꾸는 useState
   const [seatPage, setSeatPage] = useState(false);

@@ -50,10 +50,19 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 			return;
 		}
 
+		// 여기에 30분 체크 있어야함
+		// 넘기기전에 30분 체크해주고 일단 좌석고르는거 넘어가면 인정해주는걸로
+
+		// 남은 좌석이 없을경우
+		if (MOVIEINFO.cntSeatAll - MOVIEINFO.cntSeatInfo === 0) {
+			alert('남은 좌석이 없습니다.');
+			return;
+		}
+
 		// 로그인 여부에 따라 페이지 이동
 		if (LOGIN_data.uid === "No_login") {
 				// alert 취소
-				if (!window.confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?")) {
+				if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
 					return;
 				}
 				// alert 확인(현재 정보를 전달해줌)

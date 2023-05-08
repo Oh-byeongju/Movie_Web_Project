@@ -73,7 +73,10 @@ const initalState = {
   PAYMENT_error: false,
 	PAYMENT: '',
 
-	TICKET_KEY: ''
+	RESERVE_SORT: true,
+	LIKE_SORT: false,
+	TICKET_KEY: '',
+	SETTING_STATE: false
 };
 
 const R_ticket = (state = initalState, action) => {
@@ -291,7 +294,8 @@ const R_ticket = (state = initalState, action) => {
 				PAYMENT_error: false,
 				PAYMENT: '',
 
-				TICKET_KEY: action.data
+				TICKET_KEY: action.data,
+				SETTING_STATE: false
 			}
 		// 예매 페이지 설정 케이스
 		case TICKET_PAGE_SETTING:
@@ -301,7 +305,8 @@ const R_ticket = (state = initalState, action) => {
 				THEATER: action.data.theater,
 				AREA: action.data.area,				
 				DAY: action.data.day,
-				MOVIEINFO: action.data.movieinfo
+				MOVIEINFO: action.data.movieinfo,
+				SETTING_STATE: true
 			}
     default:
       return state;

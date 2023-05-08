@@ -1,7 +1,7 @@
 /*
 	23-04-28 예매 페이지 영화 컴포넌트 수정(오병주)
 */
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import styled from "styled-components";
 import { TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_SELECT, TICKET_MOVIE_RESET } from "../../reducer/R_ticket";
@@ -10,12 +10,15 @@ const TicketMovieList = () => {
   const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE_LIST, MOVIE, THEATER, DAY } = useSelector(
+	const { MOVIE_LIST, MOVIE, THEATER, DAY, RESERVE_SORT, LIKE_SORT, SETTING_STATE } = useSelector(
 		state => ({
 			MOVIE_LIST: state.R_ticket.MOVIE_LIST,
 			MOVIE: state.R_ticket.MOVIE,
 			THEATER: state.R_ticket.THEATER,
-			DAY: state.R_ticket.DAY
+			DAY: state.R_ticket.DAY,
+			RESERVE_SORT: state.R_ticket.RESERVE_SORT,
+			LIKE_SORT: state.R_ticket.LIKE_SORT,
+			SETTING_STATE: state.R_ticket.SETTING_STATE
 		}),
 		shallowEqual
 	);
@@ -53,9 +56,40 @@ const TicketMovieList = () => {
 			}
 		}
   }, [dispatch]);
+	
+	// 영화 선택 스크롤 변수
+	const element = document.getElementById('check');
+	const [refCheck, setRefCheck] = useState(false);
 
-	// 정렬 넣을꺼면 넣기
-	// 다른곳에서 넘어왔을때 useRef로 스크롤 위치를 바꿔줘야하나 고민이 되기도함 --> 날짜도 마찬가지로
+	// 스크롤 조정 useEffect
+	useEffect(()=> {
+		if (SETTING_STATE && !refCheck && MOVIE_LIST && element) {
+			var cnt = 0;
+			var height = 0;
+
+			// 현재 선택된 영화의 위쪽에 있는 영화 개수 체크
+			for (var i = 0; i < MOVIE_LIST.length; i++) {
+				if (MOVIE.mid === MOVIE_LIST[i].mid) {
+					break;
+				}
+				else {
+					cnt++;
+				}
+			}
+			
+			// 영화 개수에 따른 변수조정
+			if (cnt !== 0) {
+				height = 10 + (cnt * 35);
+			}
+
+			// 스크롤 이동
+			element.scrollTo({
+				top: height,
+				behavior: "auto"});
+
+			setRefCheck(true);
+		}
+	}, [SETTING_STATE, refCheck, MOVIE, MOVIE_LIST, element]);
 
   return (
     <MovieWrapper>
@@ -66,12 +100,17 @@ const TicketMovieList = () => {
       </MovieTitle>
       <MovieSelector>
         <MovieSelectorText>
-					전체
+					<button className={RESERVE_SORT ? " active" : ""}>
+						예매순
+					</button>
+					<button className={LIKE_SORT ? " active" : ""}>
+						공감순
+					</button>
 				</MovieSelectorText>
       </MovieSelector>
-      <MovieListWrapper>
+      <MovieListWrapper id='check'>
         {MOVIE_LIST.map((movie) => 
-					<MovieList title={movie.mtitle} key={movie.mid} onClick={() => {onClickMovie(movie);}} select_movie={MOVIE.mid} movie={movie.mid}>
+					<MovieList title={movie.mtitle} key={movie.mid} onClick={() => onClickMovie(movie)} select_movie={MOVIE.mid} movie={movie.mid}>
             <MovieListMovieName className={movie.reserve ? "" : "disable"}>
               <Img src={`img/age/${movie.mrating}.png`} alt="영화" />
               {movie.mtitle}
@@ -126,6 +165,27 @@ const MovieSelectorText = styled.div`
   font-size: 16px;
   text-align: center;
   padding-top: 5px;
+
+	button:first-child {
+		margin-right: 15px;
+	}
+
+	button {
+		margin-top: 4px;
+		content: "";
+		cursor: pointer;
+		position: relative;
+		background: #f2f0e5;
+		border: none;
+		color: #999;
+		font-size: 16px;
+		font-weight: 500;
+		width: 80px;
+	}
+
+	.active {
+ 		color: #000;
+	}
 `;
 
 const MovieListWrapper = styled.div`

@@ -150,8 +150,10 @@ const LI = styled.li`
   width: 245px;
   height: 450px;
   padding-bottom: 15px;
+
   .banner_img {
     position: relative;
+
     .middle {
       transition: 0.5s ease;
       opacity: 0;
@@ -162,9 +164,11 @@ const LI = styled.li`
       -ms-transform: translate(-50%, -50%);
       text-align: center;
     }
+
     &:hover .img2 {
       filter: brightness(0.3);
     }
+
     &:hover .middle {
       opacity: 1;
     }
@@ -205,6 +209,7 @@ const TextScore = styled.div`
   cursor: pointer;
   border-color: #fff;
   font-weight: 500;
+
   span {
     font-size: 1.5em;
     color: #00cccc;
@@ -214,6 +219,7 @@ const Des = styled.div`
   .title {
     display: block;
     padding-top: 10px;
+
     span {
       display: inline-block;
       overflow: hidden;
@@ -228,8 +234,10 @@ const Des = styled.div`
       top: -2px;
     }
   }
+
   .infomation {
     display: block;
+
     .rate {
       position: relative;
       display: inline-block;
@@ -237,6 +245,7 @@ const Des = styled.div`
       font-weight: 400;
       margin: 0 7px 0 0;
       padding: 0 8px 0 0;
+
       ::after {
         content: "";
         display: block;
@@ -249,6 +258,7 @@ const Des = styled.div`
         background-color: #d8d9db;
       }
     }
+		
     .date {
       position: relative;
       display: inline-block;

@@ -96,13 +96,21 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
             "ORDER BY m.cntMovieLike DESC")
     List<MovieEntity> findComingMoviesLikeDESC(@Param("title") String title);
 
-    // 예매 페이지에서 조건에 맞는 영화 조회 메소드
+    // 예매 페이지에서 조건에 맞는 영화 조회 메소드(예매순)
     @Query(value = "SELECT m FROM MovieEntity as m WHERE m.mid IN " +
             "(SELECT DISTINCT mi.movie FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') " +
             "AND (:miday is null or mi.miday = :miday) AND mi.cinema IN " +
             "(SELECT ci.cid FROM CinemaEntity as ci WHERE (:theater is null or ci.theater = :theater))) " +
             "ORDER BY m.cntreserve DESC")
-    List<MovieEntity> findMovieOnTicket(@Param("miday") Date miday, @Param("theater") TheaterEntity theater);
+    List<MovieEntity> findMovieOnTicketReserveDESC(@Param("miday") Date miday, @Param("theater") TheaterEntity theater);
+
+    // 예매 페이지에서 조건에 맞는 영화 조회 메소드(좋아요 순)
+    @Query(value = "SELECT m FROM MovieEntity as m WHERE m.mid IN " +
+            "(SELECT DISTINCT mi.movie FROM MovieInfoEntity as mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00') " +
+            "AND (:miday is null or mi.miday = :miday) AND mi.cinema IN " +
+            "(SELECT ci.cid FROM CinemaEntity as ci WHERE (:theater is null or ci.theater = :theater))) " +
+            "ORDER BY m.cntMovieLike DESC")
+    List<MovieEntity> findMovieOnTicketLikeDESC(@Param("miday") Date miday, @Param("theater") TheaterEntity theater);
 
     // 사용자가 관람평을 작성할 수 있는 영화 검색 (관람객 평점 기준으로 내림차순)
     @Query("SELECT m FROM MovieEntity as m " +

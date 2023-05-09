@@ -4,7 +4,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import styled from "styled-components";
-import { TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_SELECT, TICKET_MOVIE_RESET } from "../../reducer/R_ticket";
+import { TICKET_MOVIE_LIST_REQUEST, TICKET_MOVIE_SORT_SELECT, TICKET_MOVIE_SELECT, TICKET_MOVIE_RESET } from "../../reducer/R_ticket";
 
 const TicketMovieList = () => {
   const dispatch = useDispatch();
@@ -29,10 +29,11 @@ const TicketMovieList = () => {
 			type: TICKET_MOVIE_LIST_REQUEST,
 			data: {
 				miday: DAY.miday,
-				tid: THEATER.tid
+				tid: THEATER.tid,
+				sort: RESERVE_SORT
 			}
 		});
-  }, [DAY, THEATER, dispatch]);
+  }, [DAY, RESERVE_SORT, THEATER, dispatch]);
 
   // 영화를 선택하는 함수
   const onClickMovie = useCallback((movie) => {
@@ -56,9 +57,25 @@ const TicketMovieList = () => {
 			}
 		}
   }, [dispatch]);
+
+	// 예매순 버튼 누를때
+	const onReserve = useCallback(() => {
+		dispatch({
+			type: TICKET_MOVIE_SORT_SELECT,
+			data: {reserve: true, like: false}
+		})
+	}, [dispatch]);
+
+	// 공감순 버튼 누를때
+	const onLike = useCallback(() => {
+		dispatch({
+			type: TICKET_MOVIE_SORT_SELECT,
+			data: {reserve: false, like: true}
+		})
+	}, [dispatch]);
 	
 	// 영화 선택 스크롤 변수
-	const element = document.getElementById('check');
+	const element = document.getElementById('MovieList');
 	const [refCheck, setRefCheck] = useState(false);
 
 	// 스크롤 조정 useEffect
@@ -100,15 +117,15 @@ const TicketMovieList = () => {
       </MovieTitle>
       <MovieSelector>
         <MovieSelectorText>
-					<button className={RESERVE_SORT ? " active" : ""}>
+					<button className={RESERVE_SORT ? " active" : ""} onClick={onReserve}>
 						예매순
 					</button>
-					<button className={LIKE_SORT ? " active" : ""}>
+					<button className={LIKE_SORT ? " active" : ""} onClick={onLike}>
 						공감순
 					</button>
 				</MovieSelectorText>
       </MovieSelector>
-      <MovieListWrapper id='check'>
+      <MovieListWrapper id='MovieList'>
         {MOVIE_LIST.map((movie) => 
 					<MovieList title={movie.mtitle} key={movie.mid} onClick={() => onClickMovie(movie)} select_movie={MOVIE.mid} movie={movie.mid}>
             <MovieListMovieName className={movie.reserve ? "" : "disable"}>
@@ -185,6 +202,7 @@ const MovieSelectorText = styled.div`
 
 	.active {
  		color: #000;
+		font-weight: 600;
 	}
 `;
 

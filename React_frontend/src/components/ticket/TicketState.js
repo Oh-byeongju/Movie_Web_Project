@@ -15,13 +15,15 @@ const TicketState = ({ seatPage, setSeatPage }) => {
   const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
-	const { MOVIE, THEATER, AREA, DAY, MOVIEINFO, LOGIN_data, Kid, Teenager, Adult, Price, ChoiceSeat } = useSelector(
+	const { MOVIE, THEATER, AREA, DAY, MOVIEINFO, RESERVE_SORT, LIKE_SORT, LOGIN_data, Kid, Teenager, Adult, Price, ChoiceSeat } = useSelector(
 		state => ({
 			MOVIE: state.R_ticket.MOVIE,
 			THEATER: state.R_ticket.THEATER,
 			AREA: state.R_ticket.AREA,
 			DAY: state.R_ticket.DAY,
 			MOVIEINFO: state.R_ticket.MOVIEINFO,
+			RESERVE_SORT: state.R_ticket.RESERVE_SORT,
+			LIKE_SORT: state.R_ticket.LIKE_SORT,
 			LOGIN_data: state.R_user_login.LOGIN_data,
 			Kid: state.R_seat.Kid,
 			Teenager: state.R_seat.Teenager,
@@ -32,17 +34,7 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 		shallowEqual
 	);
 
-  // 영화 선택으로 넘어갈때 실행되는 함수
-	const backMovie = useCallback(() => {
-		if (!window.confirm('영화 선택화면으로 가시겠습니까? \n(선택한 좌석정보는 초기화 됩니다.)')) {
-			return;
-		}
-		setSeatPage(false);
-		dispatch({
-			type: SEAT_PAGE_RESET
-		})
-	}, [setSeatPage, dispatch]);
-
+	// 좌석선택 버튼 누를경우 실행되는 함수
 	const goSeat = useCallback(()=> {
 		// 상영정보를 선택 안했을경우
 		if (MOVIEINFO === '') {
@@ -50,8 +42,16 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 			return;
 		}
 
-		// 여기에 30분 체크 있어야함
-		// 넘기기전에 30분 체크해주고 일단 좌석고르는거 넘어가면 인정해주는걸로
+		// 현재 시간에서 30분을 더한 값과 영화 시작시간 값
+		var now = new Date();
+		now.setMinutes(now.getMinutes() + 30);
+		const starttime = new Date(MOVIEINFO.mistarttime);
+
+		// 현재 시간에 30분을 더한값이 영화 시작시간보다 클경우 예매를 막는 if문
+		if (now > starttime) {
+			alert("영화 시작 30분전까지 예매가 가능합니다.");
+			return;
+		}
 
 		// 남은 좌석이 없을경우
 		if (MOVIEINFO.cntSeatAll - MOVIEINFO.cntSeatInfo === 0) {
@@ -74,7 +74,9 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 							THEATER: THEATER,
 							AREA: AREA,
 							DAY: DAY,
-							MOVIEINFO: MOVIEINFO
+							MOVIEINFO: MOVIEINFO,
+							RESERVE_SORT: RESERVE_SORT,
+							LIKE_SORT: LIKE_SORT
 						},
 					});
 				}
@@ -82,12 +84,23 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 		else {
 			setSeatPage(true);
 		}
-	}, [AREA, DAY, LOGIN_data.uid, MOVIE, MOVIEINFO, THEATER, navigate, setSeatPage])
+	}, [AREA, DAY, LOGIN_data.uid, MOVIE, MOVIEINFO, THEATER, RESERVE_SORT, LIKE_SORT, navigate, setSeatPage]);
+
+  // 영화 선택으로 넘어갈때 실행되는 함수
+	const backMovie = useCallback(() => {
+		if (!window.confirm('영화 선택화면으로 가시겠습니까? \n(선택한 좌석정보는 초기화 됩니다.)')) {
+			return;
+		}
+		setSeatPage(false);
+		dispatch({
+			type: SEAT_PAGE_RESET
+		})
+	}, [setSeatPage, dispatch]);
+
+	
 
 
-
-
-  
+	
   //좌석 페이지로 넘어가야함 데이터와 함께
   const [isOpen, setIsOpen] = useState(false);
 
@@ -135,10 +148,10 @@ const TicketState = ({ seatPage, setSeatPage }) => {
               <span>극장</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </Name>
           )}
-          <Date>
+          <Time>
             <span>일시</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <span>{DAY.miday}</span>
-          </Date>
+          </Time>
           {MOVIEINFO !== "" ? (
             <Screen>
               <span>상영관</span>&nbsp;&nbsp;&nbsp;
@@ -342,7 +355,7 @@ const Name = styled.div`
   line-height: 20px;
 `;
 
-const Date = styled.div`
+const Time = styled.div`
   display: block;
   margin-top: 14px;
   height: 10px;

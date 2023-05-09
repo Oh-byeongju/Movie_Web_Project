@@ -30,10 +30,11 @@ function* MovieSearch(action) {
 
 // 영화 조회 백엔드 호출
 async function callMovieSearch(data) {
-  return await http.get("/movie/normal/TicketReserveDESC", {
+  return await http.get("/movie/normal/Ticket", {
     params: {
 			miday: data.miday,
-      tid: data.tid
+      tid: data.tid,
+			sort: data.sort
 		}
   })
   .then((response) => {

@@ -77,7 +77,9 @@ const Box = ({ movie }) => {
 				theater: '',
 				area: 'seoul',
 				day: '',
-				movieinfo: ''
+				movieinfo: '',
+				reserve: true,
+				like: false
 			}
 		});
 		navigate('/Reserve');

@@ -100,7 +100,6 @@ const LoginForm = () => {
       if (location.state === null || location.state.url === "/UserJoin") {
 				navigate(`/`);
       }
-			
 			else {
 				navigate(location.state.url, {state: {url: '/UserLogin'}});
 			}
@@ -121,7 +120,9 @@ const LoginForm = () => {
 					theater: location.state.THEATER,
 					area: location.state.AREA,
 					day: location.state.DAY,
-					movieinfo: location.state.MOVIEINFO
+					movieinfo: location.state.MOVIEINFO,
+					reserve: location.state.RESERVE_SORT,
+					like: location.state.LIKE_SORT
 				}
 			});
 		}

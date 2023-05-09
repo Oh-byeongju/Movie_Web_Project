@@ -7,6 +7,7 @@ export const TICKET_MOVIE_LIST_REQUEST = "TICKET_MOVIE_LIST_REQUEST";
 export const TICKET_MOVIE_LIST_SUCCESS = "TICKET_MOVIE_LIST_SUCCESS";
 export const TICKET_MOVIE_LIST_FAILURE = "TICKET_MOVIE_LIST_FAILURE";
 export const TICKET_MOVIE_SELECT = "TICKET_MOVIE_SELECT";
+export const TICKET_MOVIE_SORT_SELECT = "TICKET_MOVIE_SORT_SELECT";
 export const TICKET_MOVIE_RESET = "TICKET_MOVIE_RESET";
 
 // 극장 목록 조회 리스트
@@ -110,6 +111,12 @@ const R_ticket = (state = initalState, action) => {
         MOVIE: action.data,
 				MOVIEINFO: ''
       };
+		case TICKET_MOVIE_SORT_SELECT:
+			return {
+				...state,
+				RESERVE_SORT: action.data.reserve,
+				LIKE_SORT: action.data.like,
+			};
 		case TICKET_MOVIE_RESET:
 			return {
         ...state,
@@ -294,6 +301,8 @@ const R_ticket = (state = initalState, action) => {
 				PAYMENT_error: false,
 				PAYMENT: '',
 
+				RESERVE_SORT: true,
+				LIKE_SORT: false,
 				TICKET_KEY: action.data,
 				SETTING_STATE: false
 			}
@@ -306,6 +315,8 @@ const R_ticket = (state = initalState, action) => {
 				AREA: action.data.area,				
 				DAY: action.data.day,
 				MOVIEINFO: action.data.movieinfo,
+				RESERVE_SORT: action.data.reserve,
+				LIKE_SORT: action.data.like,
 				SETTING_STATE: true
 			}
     default:

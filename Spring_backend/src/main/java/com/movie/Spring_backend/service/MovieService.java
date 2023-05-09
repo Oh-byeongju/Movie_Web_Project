@@ -324,10 +324,11 @@ public class MovieService {
     }
 
     // 예매 페이지에서 조건에 맞는 영화를 가져오는 메소드
-    public List<MovieDto> getTicketMovieReserveDESC(Map<String, String> requestMap) {
+    public List<MovieDto> getTicketMovie(Map<String, String> requestMap) {
         // requestMap 안에 정보를 추출
         String miday = requestMap.get("miday");
         String tid = requestMap.get("tid");
+        String sort = requestMap.get("sort");
 
         // 프론트단에서 날짜를 선택 안했을경우 파라미터를 null로 주기위한 과정
         Date day = null;
@@ -341,11 +342,26 @@ public class MovieService {
             theater = TheaterEntity.builder().tid(Long.valueOf(tid)).build();
         }
 
-        // 영화 테이블에서 조건에 맞는 영화들 조회(예매율 순으로 내림차순)
-        List<MovieEntity> conditionMovie = movieRepository.findMovieOnTicket(day, theater);
+        // 리턴할 리스트 초기화
+        List<MovieEntity> conditionMovie;
+        List<MovieEntity> allMovie;
 
-        // 영화 테이블에서 현재 예매가 가능한 영화들 조회(예매율 순으로 내림차순)
-        List<MovieEntity> allMovie = movieRepository.findShowMoviesReserveDESC("");
+        // 예매순으로 정렬
+        if (sort.equals("true")) {
+            // 영화 테이블에서 조건에 맞는 영화들 조회(예매율 순으로 내림차순)
+            conditionMovie = movieRepository.findMovieOnTicketReserveDESC(day, theater);
+
+            // 영화 테이블에서 현재 예매가 가능한 영화들 조회(예매율 순으로 내림차순)
+            allMovie = movieRepository.findShowMoviesReserveDESC("");
+        }
+        // 좋아요순으로 정렬
+        else {
+            // 영화 테이블에서 조건에 맞는 영화들 조회(좋아요 순으로 내림차순)
+            conditionMovie = movieRepository.findMovieOnTicketLikeDESC(day, theater);
+
+            // 영화 테이블에서 현재 예매가 가능한 영화들 조회(좋아요 순으로 내림차순)
+            allMovie = movieRepository.findShowMoviesLikeDESC("");
+        }
 
         // 검색한 영화목록 리턴
         return movieMapper.toDtoTicketMovie(conditionMovie, allMovie);

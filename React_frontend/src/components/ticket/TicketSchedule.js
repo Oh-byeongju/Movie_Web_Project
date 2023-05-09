@@ -37,7 +37,7 @@ const TicketSchedule = () => {
 				}
 			});
 		}
-  }, [MOVIE, DAY, THEATER, MOVIEINFO, LOGIN_data, dispatch]);
+  }, [MOVIE, DAY, THEATER, LOGIN_data, dispatch]);
 
 	// 상영정보를 선택하는 함수
   const onClickMovieInfo = useCallback((movieInfo) => {

@@ -52,7 +52,6 @@ const ReserveDetail = () => {
 
 	// 예매 상태를 다시 확인하는 useEffect
 	useEffect(()=> {
-		
 		// 예매기록이 존재하지 않을 경우
 		if (RESERVE_DETAIL_error) {
 			alert("존재하지 않는 예매입니다.");

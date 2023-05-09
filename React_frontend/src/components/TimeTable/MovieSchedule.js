@@ -100,7 +100,9 @@ const MovieSchedule = () =>{
 				theater: temp_thater,
 				area: eng_area,
 				day: temp_day,
-				movieinfo: temp_info
+				movieinfo: temp_info,
+				reserve: true,
+				like: false
 			}
 		});
 		navigate('/Reserve', {state: {url: '/TimeTable'}});

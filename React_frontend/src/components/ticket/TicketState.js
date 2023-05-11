@@ -97,20 +97,40 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 		})
 	}, [setSeatPage, dispatch]);
 
-	
-
-
-	
-  //좌석 페이지로 넘어가야함 데이터와 함께
+	// 결제 모달 useState
   const [isOpen, setIsOpen] = useState(false);
-
   const openModalHandler = () => {
     setIsOpen(!isOpen);
   };
 
+	// 결제하기 버튼 누를때 실행되는 함수
+	const goPayment = useCallback(()=> {
+		if (Kid + Teenager + Adult > ChoiceSeat.length ) {
+			alert("관람인원과 선택 좌석수가 동일하지 않습니다.");
+			return;
+		} 
+		else if( Kid + Teenager + Adult === 0){
+			alert('인원 및 좌석을 선택해주세요')
+		}
+		else {
+			setIsOpen(!isOpen);
+		}
+	}, [Kid, Teenager, Adult, ChoiceSeat, isOpen]);
+
+
+	// width는 맞춤 그걸로 이제 안에꺼들 나눠주면됨
+
   return (
     <TicketWrapper>
       <TicketStep seatPage={seatPage}>
+				<BackButton>
+					{seatPage && <MovieChoice onClick={backMovie}>
+						<LeftCircleFilled style={{ fontSize: "60px", top: "10px", left: "23px", position: "absolute"}}/>
+						<p>
+							영화선택
+						</p>
+					</MovieChoice>}
+				</BackButton>
 				<MoviePoster>
 					<Poster>
 						{MOVIE &&
@@ -124,47 +144,41 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 						{MOVIE &&
 						<span>
 							{MOVIE.mtitle}
-						</span>
-						}
+						</span>}
 					</Title>
 					<Title>
-						{MOVIE &&
-						MOVIE.mrating + '세 관람가'
-						// 이거 청불 전체 이렇게 나오게 해야함
-						}
+						{MOVIE && MOVIE.mrating === '0' ? '전체 이용가' : MOVIE && MOVIE.mrating === '18' ? '청소년 관람불가' 
+						: MOVIE && MOVIE.mrating + '세 이용가'}
 					</Title>
 				</MoviePoster>
-      
         <MovieTheater>
-          {THEATER !== "" ? (
-            <Name>
-              <span>극장</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span>
-                {THEATER.tarea} {THEATER.tname}점
-              </span>
-            </Name>
-          ) : (
-            <Name>
-              <span>극장</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </Name>
-          )}
+					<Name>
+						<span>
+							극장
+						</span>
+						{THEATER &&
+						<span>
+							{THEATER.tarea} {THEATER.tname}점
+						</span>}
+					</Name>
           <Time>
-            <span>일시</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span>{DAY.miday}</span>
+            <span>
+							일시
+						</span>
+						{DAY &&
+            <span>
+							{DAY.miday}
+						</span>}
           </Time>
-          {MOVIEINFO !== "" ? (
-            <Screen>
-              <span>상영관</span>&nbsp;&nbsp;&nbsp;
-              <span>
-                {MOVIEINFO.ctype} {MOVIEINFO.cname}
-              </span>
-            </Screen>
-          ) : (
-            <Screen>
-              <span>상영관</span>&nbsp;&nbsp;&nbsp;
-              <span></span>
-            </Screen>
-          )}
+					<Screen>
+						<span>
+							상영관
+						</span>
+						{MOVIEINFO &&
+						<span>
+							{MOVIEINFO.ctype} {MOVIEINFO.cname}
+						</span>}
+					</Screen>
         </MovieTheater>
         <SeatMore>
           <Seat>
@@ -175,57 +189,29 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 							</span>
             )}
           </Seat>
-          <PriceTag>총금액 : {Price === 0 ? '' : Price}</PriceTag>
+          <PriceTag>
+						총금액 : {Price === 0 ? '' : Price}
+					</PriceTag>
         </SeatMore>
-      </TicketStep>
-      {seatPage ? (
-        <>
-          <MovieChoice onClick={backMovie}>
-            <LeftCircleFilled
-              style={{
-								fontSize: "60px",
-								top: "10px",
-								left: "23px",
-								position: "absolute"
-              }}
-            />
-            <p>영화선택</p>
-          </MovieChoice>
-          <MovieSeat
-            onClick={() => {
-              if (Kid + Teenager + Adult > ChoiceSeat.length ) {
-                alert("관람인원과 선택 좌석수가 동일하지 않습니다.");
-                return;
-              } 
-              else if( Kid + Teenager + Adult === 0){
-                alert('인원 및 좌석을 선택해주세요')
-              }
-              else {
-          
-                openModalHandler();
-              }
-            }}
-          >
-            <RightCircleFilled
-            style={{
-              fontSize: "60px",
-							top: "10px",
-              left: "23px",
-              position: "absolute",
-            }}
-          	/>
-            <p>결제하기</p>
-          </MovieSeat>
-          {isOpen && <PaymentModal closeModal={openModalHandler} />}
-        </>
-      ) : (
-        <MovieSeat onClick={goSeat}>
-          <RightCircleFilled style={{ fontSize: "60px", top: "10px", left: "23px", position: "absolute"}}/>
-          <p>
-						좌석선택
-					</p>
-        </MovieSeat>
-      )}
+				<GoButton>
+					{seatPage ?
+					<>
+						<MovieSeat onClick={goPayment}>
+							<RightCircleFilled style={{ fontSize: "60px", top: "10px", left: "23px", position: "absolute"}}/>
+							<p>
+								결제하기
+							</p>
+						</MovieSeat>
+						{isOpen && <PaymentModal closeModal={openModalHandler}/>}
+					</> : 
+					<MovieSeat onClick={goSeat}>
+						<RightCircleFilled style={{ fontSize: "60px", top: "10px", left: "23px", position: "absolute"}}/>
+						<p>
+							좌석선택
+						</p>
+					</MovieSeat>}
+				</GoButton>
+			</TicketStep>
     </TicketWrapper>
   );
 };
@@ -233,7 +219,6 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 const TicketWrapper = styled.div`
   position: relative;
   width: 100%;
-  min-width: 996px;
   height: 128px;
   background-color: #1d1d1c;
   color: white;
@@ -241,12 +226,38 @@ const TicketWrapper = styled.div`
 
 const TicketStep = styled.div`
   margin: 0 auto;
-  width: 996px;
+  width: 1045px;
+	padding-left: 5px;
   height: 108px;
   padding-top: 10px;
-  padding-left: 150px;
   position: relative;
-  left: ${(props) => (props.seatPage === true ? "100px" : "0px")};
+`;
+
+const BackButton = styled.div`
+	width: 150px;
+  float: left;
+  height: 108px;
+  padding-right: 2px;
+  padding-left: 20px;
+  position: relative;
+  font-weight: bold;
+  border-right: 1px solid grey;
+`;
+
+const MovieChoice = styled.div`
+  overflow: hidden;
+  position: absolute;
+  left: 50px;
+  width: 106px;
+  height: 108px;
+  cursor: pointer;
+
+  p {
+    position: absolute;
+    bottom: -10px;
+    left: 23px;
+    font-weight: bold;
+  }
 `;
 
 const MoviePoster = styled.div`
@@ -261,6 +272,7 @@ const MoviePoster = styled.div`
   font-weight: bold;
   border-right: 1px solid grey;
 `;
+
 const Poster = styled.span`
   float: left;
   width: 74px;
@@ -269,10 +281,18 @@ const Poster = styled.span`
   margin-right: 11px;
   overflow: hidden;
 `;
+
+const Img = styled.img`
+  width: 100%;
+  height: 100%;
+  display: inline;
+`;
+
 const Title = styled.div`
   margin-top: 14px;
   color: white;
 `;
+
 const MovieTheater = styled.div`
   width: 150px;
   float: left;
@@ -280,74 +300,11 @@ const MovieTheater = styled.div`
   padding-left: 20px;
   border-right: 1px solid grey;
   font-weight: bold;
-
   position: relative;
   color: #cccccc;
   font-size: 12px;
 `;
 
-const MovieChoice = styled.div`
-  overflow: hidden;
-  position: absolute;
-  top: 10px;
-  left: 100px;
-  width: 106px;
-  height: 108px;
-  cursor: pointer;
-  margin-left: 180px;
-  p {
-    position: absolute;
-    bottom: -10px;
-    left: 23px;
-    font-weight: bold;
-  }
-`;
-const SeatMore = styled.div`
-  width: 240px;
-  float: left;
-  height: 108px;
-  padding-right: 2px;
-  border-right: 1px solid grey;
-  font-weight: bold;
-  position: relative;
-  color: #cccccc;
-  font-size: 12px;
-  padding-left: 10px;
-`;
-const Seat = styled.div`
-  display: block;
-  margin-top: 14px;
-  height: 10px;
-  line-height: 20px;
-`;
-const PriceTag = styled.div`
-  display: block;
-  margin-top: 14px;
-  height: 10px;
-  line-height: 20px;
-`;
-const MovieSeat = styled.div`
-  overflow: hidden;
-  position: absolute;
-  top: 10px;
-  right: 300px;
-  width: 106px;
-  height: 108px;
-  cursor: pointer;
-
-  p {
-    position: absolute;
-    bottom: -10px;
-    left: 23px;
-    font-weight: bold;
-  }
-`;
-
-const Img = styled.img`
-  width: 100%;
-  height: 100%;
-  display: inline;
-`;
 const Name = styled.div`
   display: block;
   margin-top: 14px;
@@ -361,11 +318,65 @@ const Time = styled.div`
   height: 10px;
   line-height: 20px;
 `;
+
 const Screen = styled.div`
   display: block;
   margin-top: 14px;
   height: 10px;
   line-height: 20px;
+`;
+
+const SeatMore = styled.div`
+  width: 240px;
+  float: left;
+  height: 108px;
+  padding-right: 2px;
+  border-right: 1px solid grey;
+  font-weight: bold;
+  position: relative;
+  color: #cccccc;
+  font-size: 12px;
+  padding-left: 10px;
+`;
+
+const Seat = styled.div`
+  display: block;
+  margin-top: 14px;
+  height: 10px;
+  line-height: 20px;
+`;
+
+const PriceTag = styled.div`
+  display: block;
+  margin-top: 14px;
+  height: 10px;
+  line-height: 20px;
+`;
+
+const GoButton = styled.div`
+	width: 150px;
+  float: left;
+  height: 108px;
+  padding-right: 2px;
+  padding-left: 20px;
+  position: relative;
+  font-weight: bold;
+`;
+
+const MovieSeat = styled.div`
+  overflow: hidden;
+  position: absolute;
+  width: 106px;
+	left: 50px;
+  height: 108px;
+  cursor: pointer;
+
+  p {
+    position: absolute;
+    bottom: -10px;
+    left: 23px;
+    font-weight: bold;
+  }
 `;
 
 export default TicketState;

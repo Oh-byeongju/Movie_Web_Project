@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useSelector, shallowEqual } from "react-redux";
+import { Link } from "react-router-dom";
 
 const PaymentComplete = ()=>{
-
 	// 필요한 리덕스 상태들
 	const { MOVIE, THEATER, MOVIEINFO, Kid, Teenager, Adult, Price, ChoiceSeat, PAYMENT } = useSelector(
 		state => ({
@@ -21,15 +21,14 @@ const PaymentComplete = ()=>{
 		shallowEqual
 	);
 
+	// 스크롤 제일위로 올리는 useEffect
 	useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-
-
+	
   return (
 		<CompleteWrapper>
-			<CompleteHead>
+			<Complete>
 				<Title>
 					예매완료
         </Title>
@@ -38,24 +37,21 @@ const PaymentComplete = ()=>{
 						예매가 완료 되었습니다.
 					</h5>
 					<Poster>
-						<img src={`${MOVIE.mimagepath}`} alt='Poster'></img>
+						<img src={`${MOVIE.mimagepath}`} alt='Poster'/>
 					</Poster>
 					<Table>
-						<caption>
-							예매정보
-						</caption>
 						<tbody>
 							<tr>
 								<th>
 									예매번호
 								</th>
-								<td style={{color:"red"}}>
+								<td style={{color: 'red'}}>
 									{PAYMENT.rid}
 								</td> 
 							</tr>
 							<tr>
 								<th>
-									영화
+									영화명
 								</th>
 								<td>
 									{MOVIE.mtitle}
@@ -63,23 +59,23 @@ const PaymentComplete = ()=>{
 							</tr>
 							<tr>
 								<th>
-									극장
+									관람극장
 								</th>
 								<td>
-									{THEATER.tarea} {THEATER.tname}점
+									{THEATER.tarea}-{THEATER.tname}점 {MOVIEINFO.cname}
 								</td>
 							</tr>
 							<tr>
 								<th>
-									일시
+									관람일시
 								</th>
 								<td>
-									{MOVIEINFO.miday}&nbsp;{MOVIEINFO.mistarttime} 
+									{MOVIEINFO.miday}&nbsp;&nbsp;{MOVIEINFO.mistarttime.substring(11, 16)} ~ {MOVIEINFO.miendtime.substring(11,16)}
 								</td>
 							</tr>
 							<tr>
 								<th>
-									인원
+									관람인원
 								</th>
 								<td>
 									{Kid === 0 ? null : (Teenager !== 0 || Adult !== 0) ? <>아이 {Kid}명,&nbsp;</> : <>아이 {Kid}명&nbsp;</>}
@@ -89,7 +85,7 @@ const PaymentComplete = ()=>{
 							</tr>
 							<tr>
 								<th>
-									좌석
+									관람좌석
 								</th>
 								<td>
 									{ChoiceSeat.map((seat, index) => 
@@ -104,70 +100,62 @@ const PaymentComplete = ()=>{
 									결제금액
 								</th>
 								<td>
-									<span style={{color:'red'}}>
+									<span style={{color: 'red'}}>
 										{Price} 원
 									</span>
 								</td>
 							</tr>
 						</tbody>
 					</Table>
-					<Check>
-						예매확인/취소
-					</Check>
-					<Reserve onClick={()=>window.location.replace('/')}>
-						메인 페이지
-					</Reserve>
+					<Link to="/Mypage/Reserve" style={{marginRight: "25px"}}>
+						<Check>
+							예매확인 / 취소
+						</Check>
+					</Link>
+					<Link to="/">
+						<Reserve>
+							메인 페이지
+						</Reserve>
+					</Link>
 					<Agreement>
 						<PaymentAgreement>
-               예매 유의사항 
-               <p>CJ ONE 포인트는 상영일 익일 적립됩니다 홈티켓 출력 시, 별도의 티켓 발권 없이 바로 입장 가능합니다<br /><br />
-
-                그 외에는 신분증 소지 후, 티켓판매 혹은 매표소에서 티켓을 발권 받으셔야 합니다.<br /><br />
-                영화 상영 스케줄은 영화관사정에 의해 변경될 수 있습니다.<br /><br />
-                비회원 예매하신 경우에는 예매내역이 이메일로 발송되지 않습니다.<br />
-               </p>
+							<span>
+								예매 유의사항
+							</span>
+							<p>
+								결제 취소는 영화 시작 30분전까지 가능합니다.<br/><br/>
+								모든 결제는 테스트로 진행되며 결제일 기준으로 3일이내 결제금액이 환불됩니다.<br/><br/>
+								결제 내역은 마이페이지에서 확인 가능합니다.
+							</p>
 						</PaymentAgreement>
 					</Agreement>
 				</Content>
-				<Food>
-					<Pop><span style={{fontSize: '18px'}}>영화만 보시려구요?</span><br/>
-					<span style={{fontSize:'10px'}}>온라인 구매 시, 콤보 500원 더 할인해 드립니다!</span></Pop>
-					<Pop2><Img src={"img/pop/pop.jpg"} />CGV 콤보<br/> <span>8,000원</span>
-					<div className="gift">선물하기</div><div className="buy">구매하기</div></Pop2>
-					<Pop2><Img src={"img/pop/pop.jpg"} />나초콤보<br/> <span>10,000원</span>
-					<div className="gift">선물하기</div><div className="buy">구매하기</div>
-					</Pop2>
-					<Pop2><Img src={"img/pop/pop.jpg"} />오징어콤보<br/> <span>12,000원</span>
-					<div className="gift">선물하기</div><div className="buy">구매하기</div></Pop2>
-				</Food>
-			</CompleteHead>
+			</Complete>
 		</CompleteWrapper>
 	);
 };
 
-const CompleteWrapper= styled.div`
-	display: block;
-  min-height: 710px;
-  width: 1050px;
+const CompleteWrapper = styled.div`
+  width: 1045px;
   height: 100%;
-`
-const CompleteHead= styled.div`
-float: none;
+  padding-left: 5px;
+	margin : 0 auto;
+  min-height: 650px;
+`;
+
+const Complete = styled.div`
   width: 100%;
-  min-height: 528px;
+  min-height: 625px;
   position: relative;
-  float: left;
   height: 100%;
-  margin-left: 2px;
   background-color: #f2f0e5;
   overflow: hidden;
-  left: 280px;
-`
-const Title = styled.div`
+`;
 
+const Title = styled.div`
   position: relative;
-  height: 33px;
-  line-height: 33px;
+  height: 34px;
+  line-height: 34px;
   text-align: center;
   background-color: #333333;
   color: white;
@@ -175,62 +163,62 @@ const Title = styled.div`
 `;
 
 const Content = styled.div`
-width:35rem;
-  overflow: hidden;
-  height:38rem;
-  float:left;
-  padding-left:60px;
-  font-size:12px;
-  h5{
-    font-size :25px;
-    text-align:center;
-}
+	width: 900px;
+  height: 590px;
+  float: left;
+  padding-left: 70px;
+  font-size: 13px;
+	overflow: hidden;
+
+  h5 {
+    font-size: 25px;
+    text-align: center;
+		margin-top: 30px;
+		margin-bottom: 30px;
+	}
 `;
+
 const Poster = styled.div`
   float: left;
-  width: 110px;
-  height: 158px;
-  line-height: 158px;
-  margin-right: 19px;
+  width: 160px;
+  height: 240px;
+  line-height: 240px;
+  margin-right: 25px;
   overflow: hidden;
+
   img {
-    width: 100px;
-    height: 158px;
+    width: 160px;
+    height: 240px;
   }
 `;
 
 const Table = styled.table`
   border: none;
   table-layout: fixed;
-  caption {
-    overflow: hidden;
-    visibility: hidden;
-    width: 0;
-    height: 0;
-    line-height: 0;
-    font-size: 0;
-  }
+
   tr {
-    height: 24px;
-    line-height: 24px;
+    height: 31px;
+    line-height: 31px;
 
     th {
-      width: 60px;
+      width: 75px;
       font-weight: normal;
       text-align: left;
     }
+
     td {
-      width: 271px;
+      width: 280px;
       font-weight: bold;
       height: inherit;
       line-height: inherit;
       background: none;
+			font-size: 14px;
 
 			span {
 				&:first-child {
 					padding-left: 0;
 				}
-				padding-left: 10px;
+				padding-left: 6px;
   		}
     }
   }
@@ -238,133 +226,61 @@ const Table = styled.table`
 
 const Reserve = styled.button`
   position: relative;
-  top: 2rem;
   cursor: pointer;
   border: none;
   display: inline-block;
-  color:white;
-    width:10rem;
-    height:3rem;
+  color: white;
+	width: 10rem;
+	height: 3rem;
   border-radius: 5px;
-  font-family: "paybooc-Light", sans-serif;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
   text-decoration: none;
   font-weight: 600;
   transition: 0.25s;
   background-color: #392f31;
-  margin-right:20px;
 `;
+
 const Check = styled.button`
-position: relative;
-top: 2rem;
-cursor: pointer;
-border: none;
-display: inline-block;
-width:10rem;
-height:3rem;
-border-radius: 5px;
-font-family: "paybooc-Light", sans-serif;
-box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-text-decoration: none;
-font-weight: 600;
-transition: 0.25s;
-background-color: #800000;
-
-color: white;
-margin-right:20px;
-
+	position: relative;
+	cursor: pointer;
+	border: none;
+	display: inline-block;
+	width: 10rem;
+	height: 3rem;
+	border-radius: 5px;
+	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
+	text-decoration: none;
+	font-weight: 600;
+	transition: 0.25s;
+	background-color: #800000;
+	color: white;
+	margin-top: 28px;
 `;
-
 
 const Agreement = styled.div`
   border-top: 1px solid rgb(204, 204, 204);
-  padding-top:20px;
+  padding-top: 20px;
   float: left;
   width: 100%;
-  margin-top: 60px;
+  margin-top: 30px;
   padding-bottom: 19px;
   height: 90px;
   line-height: 13px;
   text-align: center;
   text-align: left;
 `;
+
 const PaymentAgreement = styled.div`
   float: left;
   width: 100%;
   height: 100%;
-  padding-left: 3%;
+  padding-left: 5px;
   text-align: left;
-  
-  
-  `;
-const Food = styled.div`
-  height:30rem;
-  width:28%;  
-  float:left;
-  margin-top:5%;  
-  margin-left:20px;
-  border: 1px solid rgb(204, 204, 204);
+	
+	span {
+		font-size: 14px;
+		font-weight: bold;
+	}
+`;
 
-`
-const Pop = styled.div`
-
-width:80%;
-margin-left:1.6rem; 
-height:4.95rem;
-padding-top:25px;
-border-bottom: 1px solid rgb(204, 204, 204);
-font-weight:bold;
-font-size:15px;
-`
-const Pop2= styled.div`
-width:80%;
-margin-left:1.6rem; 
-height:4.95rem;
-padding-top:20px;
-padding-bottom:25px;
-border-bottom: 1px solid rgb(204, 204, 204);
-font-weight:bold;
-font-size:15px;
-span{
-  color:red;
-  width:100px;
-  font-size:12px;
-  float:left;
-  padding-top:5px;
-}
-.gift{
-  font-size:11px;
-  margin-top:5px;
-  margin-right:3px;
-  padding-top:5px;
-  float:left;
-  width:3rem;
-  height:1rem;
-  border-radius:5px;
-  text-align:center;
-  color:#392f31;
-  border: 1px solid #392f31;
-}
-.buy{
-  font-size:11px;
-  margin-top:5px;
-  margin-right:3px;
-  padding-top:5px;
-  float:left;
-  width:3rem;
-  height:1rem;
-  border-radius:5px;
-  text-align:center;
-color: red;
-  border: 1px solid  red;
-}
-`
-const Img = styled.img`
-float: left;
-width: 80px;
-height: 80px;
-line-height: 158px;
-margin-right: 19px;
-overflow: hidden;
-`
 export default PaymentComplete;

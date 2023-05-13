@@ -82,7 +82,7 @@ const SideBar = () => {
 			</SideTitle>
 			<SideUL>
 				<li>
-					<Link to="/Mypage/Reserve"className={"btn" + (Reserve ? " active" : "")}>
+					<Link to="/Mypage/Reserve" className={"btn" + (Reserve ? " active" : "")}>
 						예매내역
 						<span>
 							<RightOutlined/>

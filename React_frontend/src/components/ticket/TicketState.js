@@ -117,12 +117,9 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 		}
 	}, [Kid, Teenager, Adult, ChoiceSeat, isOpen]);
 
-
-	// width는 맞춤 그걸로 이제 안에꺼들 나눠주면됨
-
   return (
     <TicketWrapper>
-      <TicketStep seatPage={seatPage}>
+      <TicketStep>
 				<BackButton>
 					{seatPage && <MovieChoice onClick={backMovie}>
 						<LeftCircleFilled style={{ fontSize: "60px", top: "10px", left: "23px", position: "absolute"}}/>
@@ -157,8 +154,8 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 							극장
 						</span>
 						{THEATER &&
-						<span>
-							{THEATER.tarea} {THEATER.tname}점
+						<span className="value">
+							{THEATER.tarea}-{THEATER.tname}점
 						</span>}
 					</Name>
           <Time>
@@ -166,7 +163,7 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 							일시
 						</span>
 						{DAY &&
-            <span>
+            <span className="value">
 							{DAY.miday}
 						</span>}
           </Time>
@@ -175,22 +172,22 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 							상영관
 						</span>
 						{MOVIEINFO &&
-						<span>
-							{MOVIEINFO.ctype} {MOVIEINFO.cname}
+						<span className="value">
+							{MOVIEINFO.cname}({MOVIEINFO.ctype})
 						</span>}
 					</Screen>
         </MovieTheater>
         <SeatMore>
           <Seat>
-            좌석 :
+            좌석 :&nbsp;
             {ChoiceSeat.map((seat, index) =>
               <span key={index}>
-								&nbsp;{seat.location} 
+								&nbsp;{seat.location}{index === ChoiceSeat.length - 1 ? null : ','}
 							</span>
             )}
           </Seat>
           <PriceTag>
-						총금액 : {Price === 0 ? '' : Price}
+						총금액 :&nbsp; {Price === 0 ? '' : Price + '원'}
 					</PriceTag>
         </SeatMore>
 				<GoButton>
@@ -226,7 +223,7 @@ const TicketWrapper = styled.div`
 
 const TicketStep = styled.div`
   margin: 0 auto;
-  width: 1045px;
+  width: 1025px;
 	padding-left: 5px;
   height: 108px;
   padding-top: 10px;
@@ -234,20 +231,19 @@ const TicketStep = styled.div`
 `;
 
 const BackButton = styled.div`
-	width: 150px;
+	width: 149px;
   float: left;
   height: 108px;
-  padding-right: 2px;
   padding-left: 20px;
   position: relative;
   font-weight: bold;
-  border-right: 1px solid grey;
+	border-right: 1px solid grey;
 `;
 
 const MovieChoice = styled.div`
   overflow: hidden;
   position: absolute;
-  left: 50px;
+  left: 23px;
   width: 106px;
   height: 108px;
   cursor: pointer;
@@ -261,14 +257,13 @@ const MovieChoice = styled.div`
 `;
 
 const MoviePoster = styled.div`
-  width: 180px;
+  width: 209px;
   float: left;
   height: 108px;
-  padding-right: 2px;
   padding-left: 20px;
   position: relative;
   color: #cccccc;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: bold;
   border-right: 1px solid grey;
 `;
@@ -294,7 +289,7 @@ const Title = styled.div`
 `;
 
 const MovieTheater = styled.div`
-  width: 150px;
+  width: 169px;
   float: left;
   height: 108px;
   padding-left: 20px;
@@ -302,7 +297,11 @@ const MovieTheater = styled.div`
   font-weight: bold;
   position: relative;
   color: #cccccc;
-  font-size: 12px;
+  font-size: 12.5px;
+
+	.value {
+		margin-left: 10px;
+	}
 `;
 
 const Name = styled.div`
@@ -327,16 +326,15 @@ const Screen = styled.div`
 `;
 
 const SeatMore = styled.div`
-  width: 240px;
+  width: 244px;
+	padding-left: 20px;
   float: left;
   height: 108px;
-  padding-right: 2px;
   border-right: 1px solid grey;
   font-weight: bold;
   position: relative;
   color: #cccccc;
-  font-size: 12px;
-  padding-left: 10px;
+  font-size: 12.5px;
 `;
 
 const Seat = styled.div`
@@ -357,7 +355,6 @@ const GoButton = styled.div`
 	width: 150px;
   float: left;
   height: 108px;
-  padding-right: 2px;
   padding-left: 20px;
   position: relative;
   font-weight: bold;
@@ -367,7 +364,7 @@ const MovieSeat = styled.div`
   overflow: hidden;
   position: absolute;
   width: 106px;
-	left: 50px;
+	left: 40px;
   height: 108px;
   cursor: pointer;
 

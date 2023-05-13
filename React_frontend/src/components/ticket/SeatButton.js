@@ -91,7 +91,7 @@ const SeatNumber = styled.button`
   color: black;
   float: left;
 	border: none;
-  background-color: ${(props) => props.reserve  ? "grey" : props.isChecked ? "lightblue" : ""};
+  background-color: ${(props) => props.reserve  ? "grey" : props.isChecked ? "lightblue" : "white"};
   cursor: ${(props) => (props.reserve ? "default" : "pointer")};
 `;
 

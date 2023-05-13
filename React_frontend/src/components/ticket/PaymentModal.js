@@ -455,7 +455,7 @@ const Table = styled.table`
 					padding-left: 0;
 				}
 				font-size: 14px;
-				padding-left: 10px;
+				padding-left: 7px;
   		}
     }
   }

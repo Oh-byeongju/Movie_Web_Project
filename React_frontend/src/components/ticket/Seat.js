@@ -14,8 +14,9 @@ const Seat = () => {
 	const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { MOVIEINFO, SEAT_LIST, LOGIN_data, Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error, PAYMENT } = useSelector(
+	const { MOVIE, MOVIEINFO, SEAT_LIST, LOGIN_data, Kid, Teenager, Adult, Total, ChoiceSeat, SEAT_CHECK_error, PAYMENT } = useSelector(
 		state => ({
+			MOVIE: state.R_ticket.MOVIE,
 			MOVIEINFO: state.R_ticket.MOVIEINFO,
 			SEAT_LIST: state.R_seat.SEAT_LIST,
 			LOGIN_data: state.R_user_login.LOGIN_data,
@@ -61,16 +62,16 @@ const Seat = () => {
 	const [numKid, setNumKid] = useState(0); // 아이
 	const [numTeenager, setNumTeenager] = useState(0); // 학생
   const [numAdult, setNumAdult] = useState(0); // 성인
-  
-	// 성인 인원을 늘릴때
-  const plusHandlerAdult = useCallback(() => {
+
+	// 아이 인원 늘릴때
+  const plusHandlerKid = useCallback(() => {
     if (Total < 8) {
-      setNumAdult((prev) => prev + 1);
+      setNumKid((prev) => prev + 1);
       dispatch({
         type: USER_CHOICE,
-				data: {
-					type: "성인",
-					price: 30
+        data: {
+					type: "아이",
+					price: 10
 				}
       });
     }
@@ -79,22 +80,22 @@ const Seat = () => {
 		}
   }, [Total, dispatch]);
 
-	// 성인 인원을 줄일때
-	const minusHandlerAdult = useCallback(() => {
-    if (Total <= ChoiceSeat.length) {
+  // 아이 인원 줄일때
+  const minusHandlerKid = useCallback(() => {
+		if (Total <= ChoiceSeat.length) {
       alert("선택한 좌석이 예매 인원 보다 많습니다.");
     } 
-    else if (numAdult) {
-      setNumAdult((prev) => prev - 1);
+    else if (numKid) {
+      setNumKid((prev) => prev - 1);
       dispatch({
         type: USER_REMOVE,
-				data: {
-					type: "성인",
-					price: 30
+        data: {
+					type: "아이",
+					price: 10
 				}
       });
     }
-  }, [Total, numAdult, ChoiceSeat, dispatch]);
+  }, [Total, ChoiceSeat, numKid, dispatch]);
   
 	// 학생 인원 늘릴때
   const plusHandlerTeenager = useCallback(() => {
@@ -130,15 +131,15 @@ const Seat = () => {
     }
   }, [Total, ChoiceSeat, numTeenager, dispatch]);
 
-	// 아이 인원 늘릴때
-  const plusHandlerKid = useCallback(() => {
+	// 성인 인원 늘릴때
+  const plusHandlerAdult = useCallback(() => {
     if (Total < 8) {
-      setNumKid((prev) => prev + 1);
+      setNumAdult((prev) => prev + 1);
       dispatch({
         type: USER_CHOICE,
-        data: {
-					type: "아이",
-					price: 10
+				data: {
+					type: "성인",
+					price: 30
 				}
       });
     }
@@ -147,23 +148,23 @@ const Seat = () => {
 		}
   }, [Total, dispatch]);
 
-  // 아이 인원 줄일때
-  const minusHandlerKid = useCallback(() => {
-		if (Total <= ChoiceSeat.length) {
+	// 성인 인원 줄일때
+	const minusHandlerAdult = useCallback(() => {
+    if (Total <= ChoiceSeat.length) {
       alert("선택한 좌석이 예매 인원 보다 많습니다.");
     } 
-    else if (numKid) {
-      setNumKid((prev) => prev - 1);
+    else if (numAdult) {
+      setNumAdult((prev) => prev - 1);
       dispatch({
         type: USER_REMOVE,
-        data: {
-					type: "아이",
-					price: 10
+				data: {
+					type: "성인",
+					price: 30
 				}
       });
     }
-  }, [Total, ChoiceSeat, numKid, dispatch]);
-
+  }, [Total, numAdult, ChoiceSeat, dispatch]);
+	
   return (
     <SeatWrapper>
       <SeatContent>
@@ -177,31 +178,31 @@ const Seat = () => {
                 <span>
 									아이
 								</span>
-                <ButtonGroup style={{ marginLeft: "15px" }}>
+                <ButtonGroup style={{ marginLeft: "10px" }}>
                   <Button onClick={minusHandlerKid} disabled={Kid === 0? true : false} icon={<MinusOutlined />} style={{ width: "32px", height: "32px" }}/>
                   <Button value={numKid} style={{ width: "52px", paddingLeft: "18px" }}>
                     {numKid}
                   </Button>
-                  <Button onClick={plusHandlerKid} icon={<PlusOutlined />} style={{ width: "32px", height: "32px" }}/>
+                  <Button disabled={MOVIE.mrating !== '0'} onClick={plusHandlerKid} icon={<PlusOutlined />} style={{ width: "32px", height: "32px" }}/>
                 </ButtonGroup>
               </People>
               <People>
                 <span>
 									학생
 								</span>
-                <ButtonGroup style={{ marginLeft: "15px" }}>
+                <ButtonGroup style={{ marginLeft: "10px" }}>
                   <Button onClick={minusHandlerTeenager} disabled={Teenager === 0? true : false} icon={<MinusOutlined />} style={{ width: "32px", height: "32px" }}/>
                   <Button value={numTeenager} style={{ width: "52px", paddingLeft: "18px" }}>
                     {numTeenager}
                   </Button>
-                  <Button onClick={plusHandlerTeenager} icon={<PlusOutlined />} style={{ width: "32px", height: "32px" }}/>
+                  <Button disabled={MOVIE.mrating === '18'} onClick={plusHandlerTeenager} icon={<PlusOutlined />} style={{ width: "32px", height: "32px" }}/>
                 </ButtonGroup>
               </People>
               <People>
                 <span>
 									성인
 								</span>
-                <ButtonGroup style={{ marginLeft: "15px" }}>
+                <ButtonGroup style={{ marginLeft: "10px" }}>
                   <Button onClick={minusHandlerAdult} disabled={Adult === 0? true : false} icon={<MinusOutlined />} style={{ width: "32px", height: "32px" }}/>
                   <Button value={numAdult} style={{ width: "52px", paddingLeft: "18px" }}>
                     {numAdult}
@@ -224,9 +225,30 @@ const Seat = () => {
             )}
           </SeatReserve>
 					<SeatInfo>
-						여기쯤 상영 어쩌고 저쩌고 해주면될듯 + 8장이상 금지 이런거 위에 말하거나 하고
+						<SeatInfoUl>
+							<SeatInfoLi>
+								<div className="possibleSeat">
+								</div>
+								<em>
+									예매가능
+								</em>
+							</SeatInfoLi>
+							<SeatInfoLi>
+								<div className="selSeat">
+								</div>
+								<em>
+									선택좌석
+								</em>
+							</SeatInfoLi>
+							<SeatInfoLi>
+								<div className="useSeat">
+								</div>
+								<em>
+									예매불가
+								</em>
+							</SeatInfoLi>
+						</SeatInfoUl>
 					</SeatInfo>
-					
         </ScreenSelect>
       </SeatContent>
     </SeatWrapper>
@@ -282,9 +304,9 @@ const People = styled.div`
   display: block;
   float: left;
   position: relative;
-  left: 224px;
+  left: 208px;
   top: 6px;
-  padding-right: 50px;
+  padding-right: 52px;
 `;
 
 const ScreenSelect = styled.div`
@@ -297,8 +319,8 @@ const Screen = styled.div`
 	background: #fff;
   position: absolute;
   margin-top: 17px;
-  left: 50%;
-	transform: translate(-50%, 0);
+  left: 53%;
+	transform: translate(-53%, 0);
   width: 610px;
   height: 52px;
 `;
@@ -315,16 +337,61 @@ const SeatReserve = styled.div`
   width: 460px;
   position: absolute;
 	top: 198px;
-	left: 49.5%;
-	transform: translate(-50%, 0);
+	left: 51%;
+	transform: translate(-51%, 0);
 `;
 
 const SeatInfo = styled.div`
-	width: 100px;
+	width: 80px;
 	position: absolute;
-	top: 70%;
-	left: 80%;
-	transform: translate(-80%, 70%);
+	top: 29%;
+	left: 97%;
+	transform: translate(-97%, 29%);
+`;
+
+const SeatInfoUl = styled.ul`
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+`;
+
+const SeatInfoLi = styled.li`
+	box-sizing: border-box;
+	margin-top: 10px;
+	margin-left: 4px;
+	margin-bottom: 10px;
+
+	div {
+		overflow: hidden;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: middle;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+		margin-right: 6px;
+	}
+
+	.possibleSeat {
+		background-color: lightblue;
+	}
+
+	.selSeat {
+		background-color: white;
+	}
+
+	.useSeat {
+		background-color: grey;
+	}
+
+	em {
+		color: black;
+    font-size: 12px;
+		font-style: normal;
+	}
 `;
 
 export default Seat;

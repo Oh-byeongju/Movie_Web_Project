@@ -53,7 +53,7 @@ function App() {
           <Route path="/Board/search/:target/:title/:page" element={<BoardSearch />} ></Route>
         </Route>
         <Route element={<Mypage />}>
-          <Route path="/Mypage/Reserve" element={<MyPageReserve x/>}></Route>
+          <Route path="/Mypage/Reserve" element={<MyPageReserve />}></Route>
           <Route path="/Mypage/Cancel" element={<MyPageCancel />}></Route>
           <Route path="/Mypage/Finish" element={<MyPageFinish />}></Route>
           <Route path="/Mypage/ReserveDetail/:id" element={<MyPageReserveDetail />}></Route>

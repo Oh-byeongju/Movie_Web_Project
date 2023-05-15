@@ -3,7 +3,6 @@ import styled from "styled-components";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import { useSelector ,useDispatch} from "react-redux";
-import axios from "axios";
 import { http } from "../../lib/http";
 import { BOARD_WRITE_REQUEST } from "../../reducer/Board";
 import { useNavigate } from "react-router-dom";
@@ -222,7 +221,6 @@ background-color: #fff;
 border: 1px solid #dddfe4;
 width: 154px;
 height: 48px;
-}
 `
 const Success =styled.button`
 float: right;

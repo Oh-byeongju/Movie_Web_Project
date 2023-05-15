@@ -27,7 +27,7 @@ public class BoardCommentDto  {
     private MemberEntity member;
     private String uid;
     private Long bid;
-    private Long parent;
+    private Integer parent;
     private Integer commentcount;
     private Integer commentlike;
     private Integer commentUnlike;
@@ -37,7 +37,7 @@ public class BoardCommentDto  {
 
     @Builder
     public BoardCommentDto(Long bcid, String bcdate,String bccomment, BoardEntity board,Long bid,
-                              MemberEntity member, String uid, Long parent,
+                              MemberEntity member, String uid, Integer parent,
                            Integer commentcount,Integer commentlike,Integer commentUnlike,boolean likes,
                            boolean unlikes
 
@@ -65,7 +65,7 @@ public class BoardCommentDto  {
         this.bccomment=com.getBccomment();
         this.bid=com.getBoard().getBid();
         this.uid=com.getMember().getUid();
-        this.parent=com.getParent();
+        this.parent=com.getBcparent();
         this.commentcount=com.getCommentcount();
     }
 }

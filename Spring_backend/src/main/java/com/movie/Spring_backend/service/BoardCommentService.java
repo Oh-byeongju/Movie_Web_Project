@@ -72,8 +72,8 @@ public class BoardCommentService {
             count++;
             CommentMapper dto = new CommentMapper(com,liked,unliked);
             map.put(dto.getBcid(),dto);
-            if(com.getParent()!=null){
-                map.get(com.getParent()).getChild().add(dto);
+            if(com.getBcparent()!=null){
+                map.get(com.getBcparent()).getChild().add(dto);
             }
             else{
                 result.add(dto);
@@ -119,8 +119,8 @@ public class BoardCommentService {
             count++;
             CommentMapper dto = new CommentMapper(com,liked,unliked);
             map.put(dto.getBcid(),dto);
-            if(com.getParent()!=null){
-                map.get(com.getParent()).getChild().add(dto);
+            if(com.getBcparent()!=null){
+                map.get(com.getBcparent()).getChild().add(dto);
             }
             else{
                 result.add(dto);
@@ -164,7 +164,7 @@ public class BoardCommentService {
                     .bcdate(day)
                     .bccomment(text)
                     .board(boardId)
-                    .parent(Long.valueOf(parentcomment))
+                    .bcparent(Math.toIntExact(Long.parseLong(parentcomment)))
                     .member(member).build();
             boardCommentRepository.save(comment);
         }
@@ -186,7 +186,7 @@ public class BoardCommentService {
         jwtValidCheck.JwtCheck(request, "ATK");
 
         String comment = requestMap.get("comment");
-        List<BoardCommentEntity> datas = boardCommentRepository.commentParent(Long.valueOf(comment));
+        List<BoardCommentEntity> datas = boardCommentRepository.commentParent(Math.toIntExact(Long.parseLong(comment)));
         for(BoardCommentEntity data : datas){
             boardCommentRepository.delete(data);
 
@@ -216,32 +216,32 @@ public class BoardCommentService {
         BoardLikeEntity boardUnLike = boardLikeRepository.findByCommentUnLike(Long.valueOf(board), User_id, Long.valueOf(comment));
         BoardLikeEntity boardLikeEntity;
         boardLikeEntity = BoardLikeEntity.builder().
-                blike(Integer.valueOf(like))
+                bllike(true)
                 .board(bid)
                 .comment(boardCommentEntity)
-                .bunlike(Integer.valueOf(unlike))
+                .blunlike(false)
                 .member(member)
                 .build();
         if(boardLike==null && like.equals("1")) {
             System.out.println("추가");
             if(boardUnLike!=null){
-                boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id,0,1, Long.valueOf(comment));
+                boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id, Long.valueOf(comment));
             }
             boardLikeRepository.save(boardLikeEntity);
         }
         else if(boardUnLike==null && unlike.equals("1")){
             if(boardLike!=null){
-                boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id,1,0, Long.valueOf(comment));
+                boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id,Long.valueOf(comment));
 
             }
             boardLikeRepository.save(boardLikeEntity);
         }
         else if (boardUnLike!=null && unlike.equals("1")){
-            boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id,0,1, Long.valueOf(comment));
+            boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id,Long.valueOf(comment));
         }
         else{
             System.out.println("삭제");
-            boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id,1,0, Long.valueOf(comment));
+            boardLikeRepository.CommentDeleted(Long.valueOf(board),User_id,Long.valueOf(comment));
         }
         BoardCommentEntity datas = boardCommentRepository.booleanCheck(Long.valueOf(comment));
 

@@ -15,56 +15,54 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "board_comment")
 public class BoardCommentEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bcid;
 
-    @Column
-    private String bcdate;
-
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String bccomment;
 
+    @Column(nullable = false)
+    private String bcdate;
+
+    // 계층형 구조를 위한 컬럼
+    private Integer bcparent;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="bid") //조인할 컬럼 이름
+    @JoinColumn(name="bid")
     private BoardEntity board;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="uid") //조인할 컬럼 이름
+    @JoinColumn(name="uid")
     private MemberEntity member;
-
-    //계층형 구조를 위한 컬럼
-    @Column
-    private Long parent;
 
     @Formula("(select count(comment.bcid) from board_comment comment where comment.bid = bid)")
     private Integer commentcount;
 
     @Formula("(select count(boardlike.blid) from board_like boardlike where boardlike.bid= bid and boardlike.bcid = bcid " +
-            "and boardlike.blike = 1)")
+            "and boardlike.bllike = true)")
     private Integer commentlike;
 
     @Formula("(select count(boardlike.blid) from board_like boardlike where boardlike.bid= bid and boardlike.bcid = bcid " +
-            "and boardlike.bunlike = 1)")
+            "and boardlike.blunlike = true)")
     private Integer commentUnlike;
 
     @OneToMany(mappedBy = "comment",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardLikeEntity> likes = new ArrayList<>();
 
-
     @Builder
-    public BoardCommentEntity(Long bcid, String bcdate,String bccomment, BoardEntity board,
-                              MemberEntity member,Long parent, Integer commentcount,Integer commentlike,Integer commentUnlike) {
-        this.bcid=bcid;
+    public BoardCommentEntity(Long bcid, String bccomment, String bcdate, Integer bcparent, BoardEntity board, MemberEntity member,
+                              Integer commentcount, Integer commentlike, Integer commentUnlike, List<BoardLikeEntity> likes) {
+        this.bcid = bcid;
+        this.bccomment = bccomment;
         this.bcdate = bcdate;
-        this.bccomment=bccomment;
-        this.board=board;
-        this.member=member;
-        this.parent=parent;
-        this.commentcount=commentcount;
-        this.commentlike=commentlike;
-        this.commentUnlike=commentUnlike;
+        this.bcparent = bcparent;
+        this.board = board;
+        this.member = member;
+        this.commentcount = commentcount;
+        this.commentlike = commentlike;
+        this.commentUnlike = commentUnlike;
+        this.likes = likes;
     }
 }

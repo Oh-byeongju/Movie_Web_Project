@@ -58,7 +58,7 @@ public class CommentMapper {
         this.bccomment=com.getBccomment();
         this.board=com.getBoard().getBid();
         this.member=com.getMember().getUid();
-        this.parent=com.getParent();
+        this.parent= Long.valueOf(com.getBcparent());
         this.commentlike=com.getCommentlike();
         this.likes=likes;
         this.unlikes=unlikes;

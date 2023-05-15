@@ -1,3 +1,6 @@
+/*
+  23-05-03 결제 페이지 수정(오병주)
+*/
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useSelector, shallowEqual } from "react-redux";

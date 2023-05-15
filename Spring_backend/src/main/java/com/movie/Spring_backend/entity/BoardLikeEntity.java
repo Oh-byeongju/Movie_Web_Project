@@ -12,16 +12,13 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name= "board_like")
 public class BoardLikeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long blid;
 
-    @Column
-    private Integer blike;
+    private boolean bllike;
 
-    @Column
-    private Integer bunlike;
+    private boolean blunlike;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="bid")
@@ -38,17 +35,15 @@ public class BoardLikeEntity {
     @Formula("(select count(boardlike.blid) from board_like boardlike where boardlike.bcid = null)")
     private Integer likethis;
 
-
     @Builder
-    public BoardLikeEntity(Long blid, Integer blike, Integer bunlike, BoardEntity board, BoardCommentEntity comment,
-                           MemberEntity member,Integer likethis){
-        this.blid=blid;
-        this.blike=blike;
-        this.bunlike=bunlike;
-        this.board=board;
-        this.comment=comment;
-        this.member=member;
-        this.likethis=likethis;
-
+    public BoardLikeEntity(Long blid, boolean bllike, boolean blunlike, BoardEntity board, BoardCommentEntity comment,
+                           MemberEntity member, Integer likethis) {
+        this.blid = blid;
+        this.bllike = bllike;
+        this.blunlike = blunlike;
+        this.board = board;
+        this.comment = comment;
+        this.member = member;
+        this.likethis = likethis;
     }
 }

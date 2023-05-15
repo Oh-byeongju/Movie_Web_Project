@@ -1,209 +1,216 @@
-import React from "react"
+/*
+  23-05-15 게시물 페이지 수정(오병주)
+*/
+import React, { useCallback } from "react"
 import styled from "styled-components"
 import { useSelector } from "react-redux";
-import { useLocation,useNavigate, Link, useParams } from "react-router-dom";
+import { useLocation, useNavigate, Link, useParams } from "react-router-dom";
 
-const SideBar = () =>{
-    const menus = [
-        { name: "자유 게시판", path: "popular" },
-        { name: "영화 뉴스", path: "news" },
-        { name: "인터뷰", path: "interview" },
-      ];
-      const { LOGIN_data } = useSelector((state) => state.R_user_login);
-      const navigate = useNavigate();
-      const {page,category, free} = useParams();
-      const location = useLocation();
-      const handleChange = (data)=>{
-        navigate(`/board/list/${data}/all/1`)
-      }
-      return(
-        <SideBarWrapper>
-                <SideBarContent>
-                    <SideBarMenu>
+const menus = [
+	{ name: "자유 게시판", path: "popular" },
+	{ name: "영화 뉴스", path: "news" },
+	{ name: "영화 토론", path: "interview" }
+];
 
-                      <Info>
-                        <div>
-                      {LOGIN_data.uid!=="No_login"?
+const SideBar = () => {
+	const navigate = useNavigate();
+	const location = useLocation();
+	const { category } = useParams();
 
-                        <AccountInfo>
-                            <User><div className="name">{LOGIN_data.uid}</div>
-                                  <div className="level">레벨 2</div>
-                            </User>
-                            <InfoSideBar>
-                                <div className="item"
-                                onClick={()=>
-                                {
-                                    navigate(`/board/list/myinfo/all/1`)
+	// 로그인 리덕스 상태
+	const { LOGIN_data } = useSelector((state) => state.R_user_login);
+	
+	// 카테고리 누를때 실행되는 함수
+	const handleChange = useCallback((data)=>{
+		navigate(`/Board/list/${data}/all/1`)
+	}, [navigate]);
 
-                                }}>
-                                    <a >내가 쓴 글</a>
-                                </div>
-                                <div className="item write"
-                                onClick={()=>{
-                                    navigate('board/write')
-                                }}>
-                                    <a>글 쓰기</a>
-                                </div>
-                            </InfoSideBar>
-                        </AccountInfo>
-                        :
-                        <Login
-                        onClick={()=>{
-                            if (LOGIN_data.uid === "No_login") {
-                                if (
-                                  !window.confirm(
-                                    "로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
-                                  )
-                                ) {
-                                  return;
-                                } else {
-                                  navigate(`/UserLogin`,{state:location})
-                                }
-                        }
-                        }}
-                        >
-                            <a>로그인</a>
-                        </Login>
-                        }
-</div>
-                      </Info>
-                        <Title>
-                            커뮤니티
-                            <ul>
-                                {menus.map((data)=>
-                                 <Li
-                                 pathname={data.path}
-                                category={category}
-                                 onClick={()=>{
-                                    handleChange(data.path)
-                                 }}><a>{data.name}</a></Li>
-                                
-                                )}
-                               
-                            </ul>
-                        </Title>
-                    </SideBarMenu>
-                </SideBarContent>
-            </SideBarWrapper>
-    )
-}
+	return (
+		<SideBarWrapper>
+			<SideBarContent>
+				<SideBarHeader>
+				{LOGIN_data.uid === "No_login" ?
+					<Login>
+						<Link to={`/UserLogin`} state={{ url: location.pathname}}>
+							<span>
+								로그인
+							</span>
+						</Link>
+					</Login> :
+					<>
+						<User>
+							<div className="id">
+								{LOGIN_data.uid}
+							</div>
+							<div className="name">
+								{LOGIN_data.uname}
+							</div>
+						</User>
+						<InfoSideBar>
+							<Link to="/board/list/myinfo/all/1" className="item">
+								<span>
+									내가 쓴 글
+								</span>
+							</Link>
+							<Link to="/board/write" className="item write">
+								<span>
+									글 쓰기
+								</span>
+							</Link>
+						</InfoSideBar>
+					</>}
+				</SideBarHeader>
+				<SideMenu>
+					<Title>
+						커뮤니티
+					</Title>
+					<MenuList>
+						{menus.map((data, index)=>
+						<Li key={index} pathname={data.path} category={category} onClick={()=>{handleChange(data.path)}}>
+							<span>
+								{data.name}
+							</span>
+						</Li>
+						)}		
+					</MenuList>
+				</SideMenu>
+			</SideBarContent>
+		</SideBarWrapper>
+	);
+};
 
 const SideBarWrapper = styled.div`
-    width: 250px;
-    position: relative;
-    left:20px;
-    float:left;
-    
-`
+	width: 270px;
+	position: relative;
+	float: left;   
+`;
+
 const SideBarContent = styled.div`
-`
+	border: 1px solid #ebeef1;
+`;
 
+const SideBarHeader = styled.div`
+	padding: 20px;
+	border-bottom: 1px solid #ebeef1;
+`;
 
-const SideBarMenu = styled.div`
-    border : 1px solid #ebeef1;
-    padding: 9px 16px 8px;
-    `
-
-const Title =styled.div`
-    padding-bottom: 8px;
-    line-height: 15px;
-    font-size: 12px;
-    color: #7b858e;
-    ul{
-        list-style-type:none;
-    }
-`
-const Li = styled.li`
-line-height: 17px;
-            font-size: 14px;
-            color: #1e2022;
-            border-radius: 4px;
-            cursor:pointer;
-            position:relative;
-            left:-20px;
-            a{
-                padding:8px 12px 7px;
-                display:block;
-            }
-            
-background-color: ${(props)=>
-    props.pathname === props.category ?"grey" : ""}
-}
-`
-const Info = styled.div`
-padding-bottom:20px;
-
-
-`
-const AccountInfo= styled.div`
-padding-bottom: 16px;
-`
 const User = styled.div`
-    float: left;
-    width: calc(100% - 62px);
-    margin-left: 8px;
-    padding-bottom:20px;
-    .name{
-        line-height: 17px;
-        font-size: 14px;
-        font-weight: 700;
-        color: #1e2022;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .level{
-        margin-top: 4px;
-        line-height: 15px;
-        font-size: 12px;
-        color: #16ae81;
-    }
-`
-const InfoSideBar = styled.div`
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-    .item{
-        padding-left: 0;
-        display: table-cell;
-        padding-right: 4px;
-        cursor:pointer;
-        a{
-            display: block;
-            box-sizing: border-box;
-            text-align: center;
-            padding: 11px 0 10px;
-            line-height: 17px;
-            font-size: 14px;
-            background: transparent;
-            border-color: #46cfa7;
-            color: #46cfa7;
-            text-decoration: none;
-            border-radius: 4px;
-            border: 1px solid #46cfa7;
-        }
-    }
-    .write{
-        background-color: #46cfa7;
-        border-radius: 4px;
+	float: left;
+	margin-left: 5px;
+	padding-bottom: 15px;
 
-       a{ color:white;
-    }}
-`
-const Login= styled.div`
-padding-right: 0;
-padding-left: 0;
-a{
-    display: block;
-    padding: 11px 0 10px;
-    line-height: 17px;
-    font-size: 14px;
-    box-sizing: border-box;
-    text-align: center;
-    background-color: #46cfa7;
-    color: #fff;
-    border-radius: 4px;
-    border: 1px solid #46cfa7;
-}
-`
+	.id {
+		line-height: 17px;
+		font-size: 14px;
+		font-weight: 700;
+		color: #1e2022;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.name {
+		margin-top: 4px;
+		line-height: 18px;
+		font-size: 12px;
+		color: #16ae81;
+	}
+`;
+
+const InfoSideBar = styled.div`
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+
+	.item {
+		padding-left: 0;
+		display: table-cell;
+		padding-right: 4px;
+		cursor: pointer;
+		text-decoration-line: none;
+
+		span {
+			display: block;
+			box-sizing: border-box;
+			text-align: center;
+			padding: 11px 0 10px;
+			line-height: 17px;
+			font-size: 14px;
+			background: transparent;
+			border-color: #46cfa7;
+			color: #46cfa7;
+			text-decoration: none;
+			border-radius: 4px;
+			border: 1px solid #46cfa7;
+		}
+  }
+
+	.write {
+		background-color: #46cfa7;
+		border-radius: 4px;
+
+		span {
+			color: white;
+		}
+	}
+`;
+
+const Login = styled.div`
+	padding-right: 0;
+	padding-left: 0;
+	cursor: pointer;
+
+	a {
+		text-decoration-line: none;
+	}
+
+	span {
+		display: block;
+		padding: 11px 0 10px;
+		line-height: 17px;
+		font-size: 14px;
+		box-sizing: border-box;
+		text-align: center;
+		background-color: #46cfa7;
+		color: #fff;
+		border-radius: 4px;
+		border: 1px solid #46cfa7;
+	}
+`;
+
+const SideMenu = styled.div`
+	padding: 9px 16px 8px;
+`;
+
+const Title = styled.div`
+	padding-top: 4px;
+	padding-bottom: 6px;
+	line-height: 15px;
+	font-size: 12px;
+	color: #7b858e;
+`;
+
+const MenuList = styled.ul`
+	padding-left: 0;
+	margin-top: 8px;
+	margin-bottom: 16px;
+	list-style-type: none;
+`;
+
+const Li = styled.li`
+	line-height: 17px;
+	font-size: 14px;
+	color: #1e2022;
+	border-radius: 4px;
+	cursor: pointer;
+	position: relative;
+	background-color: ${(props)=> props.pathname === props.category ? "#E2E2E2;" : ""};
+	font-weight: ${(props)=> props.pathname === props.category ? "600" : "500"};
+
+	span {
+		padding: 8px 12px 7px;
+		display: block;
+	}
+`;
+
 export default SideBar

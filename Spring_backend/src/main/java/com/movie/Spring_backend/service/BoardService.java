@@ -38,9 +38,6 @@ public class BoardService {
     private final EntityManagerFactory entityManagerFactory;
 
 
-
-    //매
-
     //게시글을 전체 불러오는 메소드 ,최신순
     @Transactional
     public Page<BoardDto> PaginationBid(Integer index,String category){
@@ -52,7 +49,7 @@ public class BoardService {
 
            return pages.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                     .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                   .thumb(data.getThumb()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).
+                   .thumb(data.getBthumbnail()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).
                     build());
     }
     //게시글 전체 불러오는 메소드, top순
@@ -63,7 +60,7 @@ public class BoardService {
         Page<BoardEntity> pages = boardRepository.PaginationIndex(page, category);
         return pages.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                 .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .thumb(data.getThumb()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
+                .thumb(data.getBthumbnail()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
     }
     //게시글 전체 불러오는 메소드, 좋아요순
 
@@ -75,7 +72,7 @@ public class BoardService {
 
         return datas.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                 .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .thumb(data.getThumb()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
+                .thumb(data.getBthumbnail()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
 
     }
 
@@ -88,7 +85,7 @@ public class BoardService {
 
         return datas.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                 .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .thumb(data.getThumb()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
+                .thumb(data.getBthumbnail()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
 
     }
 
@@ -138,7 +135,7 @@ public class BoardService {
         Page<BoardEntity> pages = boardRepository.SearchTitle(page, title);
         return pages.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                 .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .thumb(data.getThumb()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
+                .thumb(data.getBthumbnail()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
     }
 
     //페이지내 이름으로 검색하는 메소드
@@ -148,7 +145,7 @@ public class BoardService {
         Page<BoardEntity> pages = boardRepository.SearchUid(page, uid);
         return pages.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                 .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .thumb(data.getThumb()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
+                .thumb(data.getBthumbnail()).blike(data.getLike()).bunlike(data.getBunlike()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
     }
 
     //게시판에 글을 작성하는 메소드
@@ -170,8 +167,9 @@ public class BoardService {
 
         Date nowDate = new Date();
 
-        SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String day = DateFormat.format(nowDate);
+
         MemberEntity member = MemberEntity.builder().uid(User_id).build();
         BoardEntity Board;
 
@@ -190,12 +188,12 @@ public class BoardService {
             if(state.equals("insert")) {
                 Board = BoardEntity.builder()
                         .btitle(title)
-                        .bdate(day)
+                        .bdate(java.sql.Date.valueOf(day))
                         .bdetail(detail)
                         .bcategory(category)
                         .bclickindex(0)
                         .member(member)
-                        .thumb(imgTag)
+                        .bthumbnail(imgTag)
                         .build();
                 boardRepository.save(Board);
             }
@@ -205,7 +203,7 @@ public class BoardService {
                 entityManager.getTransaction().begin();
                 BoardEntity transboard = boardRepository.findByUpdate(board);
 
-                transboard.updateBoard(Long.valueOf(id), title,detail,day,category,imgTag);
+                transboard.updateBoard(Long.valueOf(id), title,detail, java.sql.Date.valueOf(day), category,imgTag);
                 entityManager.getTransaction().commit();  //트렌잭션이 끝나도 아무런 업데이트가 일어나지 않는다.
                 System.out.println("update");
             }
@@ -232,9 +230,9 @@ public class BoardService {
         BoardLikeEntity boardUnLike = boardLikeRepository.findByUnLike(Long.valueOf(board), User_id);
         BoardLikeEntity boardLikeEntity;
         boardLikeEntity = BoardLikeEntity.builder().
-                blike(Integer.valueOf(like))
+                bllike(true)
                 .board(bid)
-                .bunlike(Integer.valueOf(unlike))
+                .blunlike(false)
                 .member(member)
                 .build();
         //좋아요 추가
@@ -242,7 +240,7 @@ public class BoardService {
             System.out.println("추가");
             //싫어요가 된 상태
             if(boardUnLike != null){
-                boardLikeRepository.Deleted(Long.valueOf(board),User_id,0,1);
+                boardLikeRepository.Deleted(Long.valueOf(board),User_id);
             }
             boardLikeRepository.save(boardLikeEntity);
         }
@@ -253,20 +251,20 @@ public class BoardService {
         else if(boardUnLike==null && unlike.equals("1")){
             if(boardLike!=null){
                 //좋아요가 된상태
-                boardLikeRepository.Deleted(Long.valueOf(board),User_id,1,0);
+                boardLikeRepository.Deleted(Long.valueOf(board),User_id);
             }
             boardLikeRepository.save(boardLikeEntity);
         }
 
         //안좋아요 제거
         else if (boardUnLike!=null && unlike.equals("1")){
-            boardLikeRepository.Deleted(Long.valueOf(board),User_id,0,1);
+            boardLikeRepository.Deleted(Long.valueOf(board),User_id);
         }
 
         //좋아요 제거
         else{
             System.out.println("삭제");
-            boardLikeRepository.Deleted(Long.valueOf(board),User_id,1,0);
+            boardLikeRepository.Deleted(Long.valueOf(board),User_id);
         }
         BoardEntity datas = boardRepository.booleanCheck(Long.valueOf(board));
 

@@ -155,7 +155,7 @@ public class BoardService {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
         String User_id = SecurityUtil.getCurrentMemberId();
-        String id = requestMap.get("id").trim();
+
 
         String title = requestMap.get("title").trim();
         String detail = requestMap.get("detail").trim();
@@ -198,15 +198,15 @@ public class BoardService {
                 boardRepository.save(Board);
             }
 
-            else if (state.equals("update")){
-                BoardEntity board = BoardEntity.builder().bid(Long.valueOf(id)).build();
-                entityManager.getTransaction().begin();
-                BoardEntity transboard = boardRepository.findByUpdate(board);
-
-                transboard.updateBoard(Long.valueOf(id), title,detail, java.sql.Date.valueOf(day), category,imgTag);
-                entityManager.getTransaction().commit();  //트렌잭션이 끝나도 아무런 업데이트가 일어나지 않는다.
-                System.out.println("update");
-            }
+//            else if (state.equals("update")){
+//                BoardEntity board = BoardEntity.builder().bid(Long.valueOf(id)).build();
+//                entityManager.getTransaction().begin();
+//                BoardEntity transboard = boardRepository.findByUpdate(board);
+//
+//                transboard.updateBoard(Long.valueOf(id), title,detail, java.sql.Date.valueOf(day), category,imgTag);
+//                entityManager.getTransaction().commit();  //트렌잭션이 끝나도 아무런 업데이트가 일어나지 않는다.
+//                System.out.println("update");
+//            }
     }
 
     //좋아요 구현 메소드

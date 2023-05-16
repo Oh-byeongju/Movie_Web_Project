@@ -1,13 +1,14 @@
 import React from "react";
-import Content from "../components/Board/Content";
-import ContentHeader from "../components/Board/ContentHeader";
-const BoardList =()=>{
-    return(
-        <>
-        <ContentHeader />
+import ContentListHeader from "../components/Board/ContentListHeader";
+import ContentList from "../components/Board/ContentList";
 
-        <Content />
-        </>
-    )
-}
+const BoardList = () => {
+	return (
+		<>
+			<ContentListHeader/>
+			<ContentList/>
+    </>
+  );
+};
+
 export default BoardList;

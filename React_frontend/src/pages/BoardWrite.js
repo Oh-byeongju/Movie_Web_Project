@@ -1,11 +1,12 @@
 import React from "react";
-import Writing from "../components/Board/Writing";
-const BoardWrite = ()=>{
-    return(
-        <>
-    <Writing />
-      </>
-    )
-}
+import ContentWriting from "../components/Board/ContentWriting";
+
+const BoardWrite = () => {
+	return(
+		<>
+    	<ContentWriting />
+		</>
+	);
+};
 
 export default BoardWrite;

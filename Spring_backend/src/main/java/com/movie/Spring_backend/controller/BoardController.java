@@ -19,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+// Board 로 수정
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;

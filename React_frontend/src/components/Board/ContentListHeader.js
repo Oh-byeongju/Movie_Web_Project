@@ -14,7 +14,7 @@ const menu = [
 ];
 const selectList = ["제목", "작성자"];
 
-const ContentHeader = ()=>{
+const ContentListHeader = ()=>{
 	const navigate = useNavigate();
 	const {category, free} = useParams();
     
@@ -252,4 +252,4 @@ const Search = styled.div`
 	}
 `;
 
-export default ContentHeader;
+export default ContentListHeader;

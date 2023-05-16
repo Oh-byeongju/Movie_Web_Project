@@ -44,7 +44,7 @@ const Header = styled.div`
 const ContentWrapper = styled.div`
 	display: flex;
 	width: 1050px;
-	padding: 50px 0px 80px;
+	padding: 50px 0px 50px;
 	margin: 0px auto;
 	flex-direction: row;
 	-webkit-box-pack: justify;

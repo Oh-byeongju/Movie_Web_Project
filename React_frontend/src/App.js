@@ -22,7 +22,7 @@ import TimeTable from "./pages/TimeTable";
 import Board from "./pages/Board";
 import BoardList from "./pages/BoardList";
 import BoardWrite from "./pages/BoardWrite";
-import BoardCard from "./pages/BoardCard";
+import BoardPost from "./pages/BoardPost";
 import BoardSearch from "./pages/BoardSearch";
 import ManagerUser from "./pages/ManagerUser";
 import ManagerReserve from "./pages/ManagerReserve";
@@ -48,7 +48,7 @@ function App() {
         <Route element={<Board />}>
           <Route path="/Board/list/:category/:free/:page" element={<BoardList />}></Route>
           <Route path="/Board/write" element={<BoardWrite />}></Route>
-          <Route path="/Board/content/:id/:title" element={<BoardCard />}></Route>
+          <Route path="/Board/content/:id/:title" element={<BoardPost />}></Route>
           <Route path="/Board/content/:id/:title/edit" element={<BoardEdit />}></Route>
           <Route path="/Board/search/:target/:title/:page" element={<BoardSearch />} ></Route>
         </Route>

@@ -1,42 +1,96 @@
-import { call, all, takeLatest, fork, put, select, delay } from "redux-saga/effects";
-import { http } from "../lib/http";
-import { useNavigate } from "react-router-dom";
-import { BOARD_READ_FAILURE, BOARD_READ_REQUEST, BOARD_READ_SUCCESS, 
+/*
+	23-05-19 게시물 페이지 수정(오병주)
+*/
+import { call, all, takeLatest, fork, put } from "redux-saga/effects";
+import { 
+	BOARD_LIST_REQUEST, BOARD_LIST_SUCCESS, BOARD_LIST_FAILURE,
+	BOARD_CONTENT_REQUEST, BOARD_CONTENT_SUCCESS, BOARD_CONTENT_FAILURE,
+
+	// 아래로 날리기
   BOARD_WRITE_FAILURE, BOARD_WRITE_REQUEST, BOARD_WRITE_SUCCESS, 
-  CONTENT_READ_FAILURE, CONTENT_READ_REQUEST, CONTENT_READ_SUCCESS 
-,BOARD_SEARCH_REQUEST, BOARD_SEARCH_SUCCESS, BOARD_SEARCH_FAILURE
-, CONTENT_DELETE_REQUEST,CONTENT_DELETE_SUCCESS,CONTENT_DELETE_FAILURE, COMMENT_WRITE_REQUEST, COMMENT_WRITE_SUCCESS, COMMENT_WRITE_FAILURE, COMMENT_READ_SUCCESS, COMMENT_READ_FAILURE, COMMENT_READ_REQUEST
-,LIKE_REQUEST,LIKE_FAILURE,LIKE_SUCCESS, COMMENT_DELETE_SUCCESS, COMMENT_DELETE_FAILURE, COMMENT_DELETE_REQUEST, COMMENT_LIKE_SUCCESS, COMMENT_LIKE_FAILURE, COMMENT_LIKE_REQUEST} from "../reducer/Board";
-import { M_COMMENT_READ_REQUEST } from "../reducer/R_manager_board";
+ BOARD_SEARCH_REQUEST, BOARD_SEARCH_SUCCESS, BOARD_SEARCH_FAILURE, CONTENT_DELETE_REQUEST,CONTENT_DELETE_SUCCESS,CONTENT_DELETE_FAILURE, COMMENT_WRITE_REQUEST, COMMENT_WRITE_SUCCESS, COMMENT_WRITE_FAILURE, COMMENT_READ_SUCCESS, COMMENT_READ_FAILURE, COMMENT_READ_REQUEST,LIKE_REQUEST,LIKE_FAILURE,LIKE_SUCCESS, COMMENT_DELETE_SUCCESS, COMMENT_DELETE_FAILURE, COMMENT_DELETE_REQUEST, COMMENT_LIKE_SUCCESS, COMMENT_LIKE_FAILURE, COMMENT_LIKE_REQUEST
+} from "../reducer/R_board";
+import { http } from "../lib/http";
 
-//게시판 읽기
-async function BoardReadApi(data) {
-  return await http
-    .get(`/board/normal/boardall?category=${data.category}&sort=${data.sort}&page=${data.page}`)
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-
-function* BoardRead(action) {
-  console.log(action)
-  const result = yield call(BoardReadApi, action.data);
-
-  if (result.status === 200) { 
+// 게시물 조회 함수
+function* AllBoard(action) {
+  const result = yield call(callAllBoard, action.data);
+  if (result.status === 200) {
     yield put({
-      type: BOARD_READ_SUCCESS,
-      data:result.data
+      type: BOARD_LIST_SUCCESS,
+      data: result.data
     });
-  } else {
+  } 
+  else {
     yield put({
-      type: BOARD_READ_FAILURE,
-      data: result.status,
-    });   
+			type: BOARD_LIST_FAILURE
+    });
   }
 }
+
+// 게시물 조회 백엔드 호출
+async function callAllBoard(data) {
+	return await http.get("/Board/normal/allBoard", {
+    params: {
+			category: data.category,
+      sort: data.sort,
+			page: data.page
+		}
+	})
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+// 게시물 상세조회 함수
+function* BoardContent(action) {
+  const result = yield call(callBoardContent, action.data);
+  if (result.status === 200) {
+    yield put({
+      type: BOARD_CONTENT_SUCCESS,
+      data: result.data
+    });
+  } 
+  else {
+    yield put({
+			type: BOARD_CONTENT_FAILURE
+    });
+  }
+}
+
+// 게시물 상세조회 백엔드 호출
+async function callBoardContent(data) {
+	return await http.get("/Board/normal/content", {
+    params: {
+			bid: data.bid,
+			uid: data.uid
+		}
+	})
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// 아래로 날리기
+
+
 
 //게시판 검색
 async function BoardSearchApi(data) {
@@ -72,34 +126,7 @@ function* BoardSearch(action) {
   }
 }
 
-//게시판 상세 페이지
-async function ContentReadApi(data) {
-  return await http
-    .get(`/board/normal/content/${data.id}/${data.title}`)
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
 
-function* ContentRead(action) {
-  console.log(action)
-  const result = yield call(ContentReadApi, action.data);
-  console.log(result)
-  if (result.status === 200) { 
-    yield put({
-      type: CONTENT_READ_SUCCESS,
-      data:result.data
-    });
-  } else {
-    yield put({
-      type: CONTENT_READ_FAILURE,
-      data: result.status,
-    });   
-  }
-}
 //게시판 삭제
 async function ContentDeleteApi(data) {
   return await http
@@ -306,8 +333,27 @@ function* CommentWrite(action) {
         });   
       }
     }
-  
+// 위로 날리기
 
+
+
+function* BOARD_LIST() {
+	yield takeLatest(BOARD_LIST_REQUEST, AllBoard);
+}
+
+function* BOARD_CONTENT() {
+	yield takeLatest(BOARD_CONTENT_REQUEST, BoardContent);
+}
+
+
+
+
+
+
+
+
+
+// 아래로 날리기
   function* BoardWriteSaga() {
     yield takeLatest(BOARD_WRITE_REQUEST, BoardWrite);
   }
@@ -316,17 +362,13 @@ function* CommentWrite(action) {
     yield takeLatest(BOARD_SEARCH_REQUEST, BoardSearch);
   }
   
-  function* ContentWriteSaga() {
-    yield takeLatest(CONTENT_READ_REQUEST, ContentRead);
-  }
+ 
 
   function* ContentDeleteSaga() {
     yield takeLatest(CONTENT_DELETE_REQUEST, ContentDelete);
   }
 
-  function* BoardReadSaga() {
-    yield takeLatest(BOARD_READ_REQUEST, BoardRead);
-  }
+ 
 
   function* CommentReadSaga() {
     yield takeLatest(COMMENT_READ_REQUEST, CommentRead);
@@ -347,7 +389,12 @@ function* CommentWrite(action) {
     yield takeLatest(COMMENT_DELETE_REQUEST, Delete);
   }
   
-  export default function* BoardSaga() {
-    yield all([fork(BoardWriteSaga),fork(BoardReadSaga),fork(ContentWriteSaga),fork(BoardSearchSaga),fork(ContentDeleteSaga),
+  export default function* S_board() {
+    yield all([fork(BOARD_LIST), fork(BOARD_CONTENT),
+
+			//아래로 날리기
+			
+			
+			fork(BoardWriteSaga),fork(BoardSearchSaga),fork(ContentDeleteSaga),
     fork(CommentWriteSaga),fork(CommentReadSaga),fork(LikeSaga),fork(DeleteSaga),fork(CommentLikeSaga)]);
   }

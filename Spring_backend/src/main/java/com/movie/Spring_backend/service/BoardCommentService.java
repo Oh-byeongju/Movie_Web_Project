@@ -54,8 +54,8 @@ public class BoardCommentService {
         for(BoardCommentEntity com : comment){
             boolean liked = false;
             boolean unliked=false;
-            BoardLikeEntity checklike = boardLikeRepository.findByCommentLike(Long.valueOf(bid), User_id, com.getBcid());
-            BoardLikeEntity checkunlike = boardLikeRepository.findByCommentUnLike(Long.valueOf(bid), User_id, com.getBcid());
+            BoardLikeEntity checklike = boardLikeRepository.findByCommentLike(bid, User_id, com.getBcid());
+            BoardLikeEntity checkunlike = boardLikeRepository.findByCommentUnLike(bid, User_id, com.getBcid());
 
             if (checklike == null) {
                 liked=false;
@@ -218,7 +218,7 @@ public class BoardCommentService {
         boardLikeEntity = BoardLikeEntity.builder().
                 bllike(true)
                 .board(bid)
-                .comment(boardCommentEntity)
+                .boardcomment(boardCommentEntity)
                 .blunlike(false)
                 .member(member)
                 .build();

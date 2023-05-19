@@ -1,16 +1,17 @@
+/*eslint-disable*/
 import React, { useEffect ,useState} from "react";
 import styled from "styled-components";
 import { SearchOutlined, CaretUpOutlined } from "@ant-design/icons";
 import { Pagination } from "@mui/material";
 import { useLocation, useNavigate, useParams,Link } from "react-router-dom";
 import { useDispatch ,useSelector} from "react-redux"
-import { BOARD_SEARCH_REQUEST } from "../../reducer/Board";
+import { BOARD_SEARCH_REQUEST } from "../../reducer/R_board";
 
 const Search = () =>{
     const dispatch= useDispatch();
     const navigate=  useNavigate();
     const { title,target, page} = useParams();
-    const {board , board_search_loading, board_search_done} = useSelector((state)=>state.Board);
+    const {board , board_search_loading, board_search_done} = useSelector((state)=>state.R_board);
     
     const selectList = ["제목", "작성자"];
     const [Selected, setSelected] = useState("title");

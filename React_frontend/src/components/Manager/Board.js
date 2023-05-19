@@ -5,14 +5,14 @@ import { useDispatch ,useSelector} from "react-redux";
 import { Table, Input ,Modal,Form} from 'antd';
 import { BOARD_DELETE_LOADING, BOARD_READ_LOADING, BOARD_SELECT_LOADING, M_COMMENT_READ_REQUEST } from "../../reducer/R_manager_board";
 import styled from "styled-components";
-import { COMMENT_DELETE_REQUEST } from "../../reducer/Board";
+import { COMMENT_DELETE_REQUEST } from "../../reducer/R_board";
 const { Search } = Input;
 
 const Board = () =>{
     const dispatch = useDispatch();
    
     const { board,board_delete_done,comment} = useSelector((state)=>state.R_manager_board)
-    const {comment_delete_done} = useSelector((state)=>state.Board)
+    const {comment_delete_done} = useSelector((state)=>state.R_board)
 
     useEffect(()=>{
         dispatch({

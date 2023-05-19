@@ -6,36 +6,36 @@ import styled from "styled-components";
 import { CaretUpOutlined } from "@ant-design/icons";
 import { Pagination } from 'antd';
 import { useDispatch ,useSelector} from "react-redux"
-import { BOARD_READ_REQUEST } from "../../reducer/Board";
+import { BOARD_LIST_REQUEST } from "../../reducer/R_board";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import * as date from "../../lib/date.js";
 
 const ContentList = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { category, free, page } = useParams();
-	const { board } = useSelector((state) => state.Board);
+	const { category, sort, page } = useParams();
+	const { BOARD_LIST } = useSelector((state) => state.R_board);
 
 	// 페이지네이션 변경 함수
 	const handleChange = useCallback((page) => {
-		navigate(`/Board/list/${category}/${free}/${page}`);
-	}, [category, free, navigate]);
+		navigate(`/Board/list/${category}/${sort}/${page}`);
+	}, [category, sort, navigate]);
 
 	// 페이지에 따른 게시물 요청 useEffect
 	useEffect(()=>{
 		dispatch({
-			type:BOARD_READ_REQUEST,
+			type: BOARD_LIST_REQUEST,
 			data: {
 				page: page-1,
 				category: category,
-				sort: free
+				sort: sort
 			}
 		});
-	}, [page, category, free, dispatch]);
+	}, [page, category, sort, dispatch]);
 
 	return (
 		<ContentWrapper>
-		{board.content && board.content.map((data, index)=>
+		{BOARD_LIST.content && BOARD_LIST.content.map((data, index)=>
 			<Card key={index}>
 				<Number>
 					<CaretUpOutlined twoToneColor="grey"/>
@@ -68,10 +68,10 @@ const ContentList = () => {
 						{data.uid}
 					</div>
 				</Item>
-				<Thumbnail onClick={()=> console.log('여기 넘어가게끔 수정해라')} dangerouslySetInnerHTML={{__html:data.thumb}}>
+				<Thumbnail onClick={()=> console.log('여기 넘어가게끔 수정해라')} dangerouslySetInnerHTML={{__html:data.bthumbnail}}>
 				</Thumbnail>
 			</Card>)}
-			<CustomPagination current={parseInt(page)} total={board.totalElements} defaultPageSize={20} showSizeChanger={false} hideOnSinglePage={true} onChange={handleChange}/>
+			<CustomPagination current={parseInt(page)} total={BOARD_LIST.totalElements} defaultPageSize={20} showSizeChanger={false} hideOnSinglePage={true} onChange={handleChange}/>
 		</ContentWrapper>
 	);
 };

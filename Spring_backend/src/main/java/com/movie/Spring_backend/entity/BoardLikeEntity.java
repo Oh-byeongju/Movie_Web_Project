@@ -26,7 +26,7 @@ public class BoardLikeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="bcid")
-    private BoardCommentEntity comment;
+    private BoardCommentEntity boardcomment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="uid")
@@ -36,13 +36,13 @@ public class BoardLikeEntity {
     private Integer likethis;
 
     @Builder
-    public BoardLikeEntity(Long blid, boolean bllike, boolean blunlike, BoardEntity board, BoardCommentEntity comment,
+    public BoardLikeEntity(Long blid, boolean bllike, boolean blunlike, BoardEntity board, BoardCommentEntity boardcomment,
                            MemberEntity member, Integer likethis) {
         this.blid = blid;
         this.bllike = bllike;
         this.blunlike = blunlike;
         this.board = board;
-        this.comment = comment;
+        this.boardcomment = boardcomment;
         this.member = member;
         this.likethis = likethis;
     }

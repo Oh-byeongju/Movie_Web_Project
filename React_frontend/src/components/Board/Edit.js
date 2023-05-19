@@ -1,18 +1,19 @@
+/*eslint-disable*/
 import React ,{useRef, useState,useMemo, useEffect}from "react";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import { useSelector ,useDispatch} from "react-redux";
 import { http } from "../../lib/http";
-import { BOARD_WRITE_REQUEST} from "../../reducer/Board";
+import { BOARD_WRITE_REQUEST} from "../../reducer/R_board";
 import { useNavigate,useLocation } from "react-router-dom";
 const Edit =  () => {
     const { state } = useLocation();
     const dispatch = useDispatch();
     const navigate =useNavigate();
     const { LOGIN_data } = useSelector((state) => state.R_user_login);
-    const {board_write_done} = useSelector((state)=>state.Board)
-    const selectList = ["자유 게시판", "영화 뉴스", "인터뷰", "동영상"];
+    const {board_write_done} = useSelector((state)=>state.R_board)
+    const selectList = ["자유 게시판", "영화 뉴스", "영화 토론", "동영상"];
     const [Selected, setSelected] = useState(state.category);
   
     //select option 가져오기

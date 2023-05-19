@@ -357,7 +357,7 @@ public class ManagerMemberService {
         List<BoardEntity> boardEntities =boardRepository.findAll();
         return boardEntities.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                 .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .thumb(data.getBthumbnail()).uid(data.getMember().getUid()).
+                .bthumbnail(data.getBthumbnail()).uid(data.getMember().getUid()).
                 build()).collect(Collectors.toList());
 
     }
@@ -368,7 +368,7 @@ public class ManagerMemberService {
             List<BoardEntity> datas = boardRepository.ManagerUid(text);
             return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                     .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                    .thumb(data.getBthumbnail()).uid(data.getMember().getUid()).
+                    .bthumbnail(data.getBthumbnail()).uid(data.getMember().getUid()).
                     build()).collect(Collectors.toList());
         }
 
@@ -376,7 +376,7 @@ public class ManagerMemberService {
             List<BoardEntity> datas = boardRepository.ManagerTitle(text);
             return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
                     .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                    .thumb(data.getBthumbnail()).uid(data.getMember().getUid()).
+                    .bthumbnail(data.getBthumbnail()).uid(data.getMember().getUid()).
                     build()).collect(Collectors.toList());
         }
         return null;

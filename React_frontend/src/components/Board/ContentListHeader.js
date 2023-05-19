@@ -10,13 +10,13 @@ import { useSelector } from "react-redux";
 const menu = [
 	{icon: QrcodeOutlined, sort: '최신순', category: 'all'},
 	{icon: FireTwoTone, sort: '인기', category: 'like'},
-	{icon: StarTwoTone, sort: 'TOP', category: 'top'}
+	{icon: StarTwoTone, sort: '조회순', category: 'top'}
 ];
 const selectList = ["제목", "작성자"];
 
 const ContentListHeader = ()=>{
 	const navigate = useNavigate();
-	const {category, free} = useParams();
+	const {category, sort} = useParams();
     
 	// 로그인 리덕스 상태
 	const { LOGIN_data } = useSelector((state) => state.R_user_login);
@@ -82,8 +82,8 @@ const ContentListHeader = ()=>{
 			<SubMenu>
 				<SubMenuHeader category={category}>
 					<h2>
-						{category === "popular" ? "자유 게시판" : category === "news" ? "영화 뉴스": 
-						category === "interview" ? "인터뷰" : category === "myinfo" ? "내 게시글" : ""}   
+						{category === "free" ? "자유 게시판" : category === "news" ? "영화 뉴스": 
+						category === "debate" ? "영화 토론" : category === "myinfo" ? "내 게시글" : ""}   
 					</h2>
 					{category !== "myinfo" && 
 					<ul className="header">
@@ -95,9 +95,9 @@ const ContentListHeader = ()=>{
 					<SubMenuFooter>
             <ul>
 							{menu.map((data, index) =>
-              <Li key={index} category={data.category} data={free}>
+              <Li key={index} category={data.category} data={sort}>
 								<Link to={`/Board/list/${category}/${data.category}/1`} onClick={()=>setText("")}>
-									<data.icon style={{fontSize:'25px', position:'relative', top:'4px', paddingRight:'5px'}} twoToneColor={free === data.category ? "green" : "#97a0a7"}/>
+									<data.icon style={{fontSize:'25px', position:'relative', top:'4px', paddingRight:'5px'}} twoToneColor={sort === data.category ? "green" : "#97a0a7"}/>
 									{data.sort}
 								</Link> 
               </Li>)}

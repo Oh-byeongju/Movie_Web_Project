@@ -40,7 +40,10 @@ public enum ErrorCode {
 
     // Theater
     CINEMA_IS_EXIST(400, "T001", "상영관이 존재합니다."),
-    CINEMA_IS_NONE(400, "T002", "상영관이 존재하지 않습니다.");
+    CINEMA_IS_NONE(400, "T002", "상영관이 존재하지 않습니다."),
+
+    // Board
+    BOARD_IS_NONE(400, "B001", "게시물이 존재하지 않습니다.");
 
     private final String code;
     private final String message;

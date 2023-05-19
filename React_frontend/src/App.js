@@ -46,7 +46,7 @@ function App() {
         <Route path="/Comingmovie" element={<ComingMovie />}></Route>
         <Route path="/Moviedetail/:id" element={<MovieDetail />}></Route>
         <Route element={<Board />}>
-          <Route path="/Board/list/:category/:free/:page" element={<BoardList />}></Route>
+          <Route path="/Board/list/:category/:sort/:page" element={<BoardList />}></Route>
           <Route path="/Board/write" element={<BoardWrite />}></Route>
           <Route path="/Board/content/:id/:title" element={<BoardPost />}></Route>
           <Route path="/Board/content/:id/:title/edit" element={<BoardEdit />}></Route>

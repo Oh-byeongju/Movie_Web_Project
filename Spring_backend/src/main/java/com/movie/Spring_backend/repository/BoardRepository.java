@@ -1,6 +1,7 @@
 package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.BoardEntity;
+import com.movie.Spring_backend.entity.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,30 +15,28 @@ import java.util.List;
 @Repository
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
-    //게시글 번호와 타이틀명으로 검색하는 메소드
-    @Query("select board from BoardEntity as board where bid = :bid and btitle like :btitle")
-    BoardEntity findByContent(@Param("bid") Long bid,@Param("btitle")String btitle);
 
-    //게시글번호로 검색
-    @Query("select board from BoardEntity as board where board = :board")
-    BoardEntity findByUpdate(@Param("board") BoardEntity board);
+    // 게시물 조회 메소드(최신순)
+    Page<BoardEntity> findByBcategoryOrderByBidDesc(String category, Pageable pageable);
 
-    //게시글의 조회수를 올려주는 메소드
+    // 게시물 조회 메소드(인기순)
+    @Query("SELECT board FROM BoardEntity AS board WHERE board.bcategory = :category ORDER BY board.like DESC")
+    Page<BoardEntity> findByBcategoryOrderByBlikeDesc(@Param("category") String category, Pageable pageable);
+
+    // 게시물 조회 메소드(조회순)
+    Page<BoardEntity> findByBcategoryOrderByBclickindexDesc(String category, Pageable pageable);
+
+    // 게시글의 조회수를 올려주는 메소드
     @Modifying
-    @Query("update BoardEntity as board set board.bclickindex=board.bclickindex+1 where board.bid= :bid")
+    @Query("UPDATE BoardEntity AS board SET board.bclickindex = board.bclickindex+1 WHERE board.bid = :bid")
     void updateViews(@Param("bid") Long bid);
 
-    //페이지 네이션을 위한 메소드 ,번호순
-    @Query("select board from BoardEntity as board where board.bcategory = :category order by bid desc")
-    Page<BoardEntity> PaginationBid(Pageable pageable , @Param("category") String category);
 
-    //페이지 네이션을 위한 메소드 ,top순
-    @Query("select board from BoardEntity as board where board.bcategory = :category order by bclickindex desc, bid desc")
-    Page<BoardEntity> PaginationIndex(Pageable pageable, @Param("category") String category);
+    // 아래로 날려
 
-    //페이지 네이션 위한 메소드 , 좋아요순
-    @Query("select board from BoardEntity as board where board.bcategory = :category order by board.like desc")
-    Page<BoardEntity> LikesTop(Pageable pageable,@Param("category") String category);
+
+
+
 
     //페이지 네이션 위한 메소드 , 인기순
     @Query("select board from BoardEntity as board where btitle LIKE %:title% order by bid desc")

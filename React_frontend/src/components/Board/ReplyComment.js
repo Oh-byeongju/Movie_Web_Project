@@ -1,9 +1,10 @@
+/*eslint-disable*/
 import React ,{useEffect, useState}from "react";
 import styled from "styled-components";
 import CommentText from "./CommentText";
 import { MessageOutlined} from "@ant-design/icons";
 import { useDispatch,useSelector } from "react-redux";
-import { COMMENT_DELETE_REQUEST} from "../../reducer/Board";
+import { COMMENT_DELETE_REQUEST} from "../../reducer/R_board";
 import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 import { useNavigate,useParams } from "react-router-dom";
 const ReplyComment = ({idd,child,bid,member}) =>

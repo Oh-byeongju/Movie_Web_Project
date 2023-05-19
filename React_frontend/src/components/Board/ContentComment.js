@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { SyncOutlined, LoadingOutlined, CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector} from "react-redux"
-import { COMMENT_LIKE_REQUEST, COMMENT_READ_REQUEST, COMMENT_WRITE_REQUEST } from "../../reducer/Board";
+import { COMMENT_LIKE_REQUEST, COMMENT_READ_REQUEST, COMMENT_WRITE_REQUEST } from "../../reducer/R_board";
 import ReplyComment from "./ReplyComment";
 import * as date from "../../lib/date.js";
 
@@ -16,7 +16,7 @@ const ContentComment = () =>{
 
 	// 로그인 리덕스 상태
 	const { LOGIN_data } = useSelector((state) => state.R_user_login);
-	const {content, comment, comment_read_loading} = useSelector((state)=>state.Board)
+	const {content, comment, comment_read_loading} = useSelector((state)=>state.R_board)
 
 	// 댓글 정렬 상태
 	const menu = [{name:'최신순', type:"new"}, {name:'인기순', type:"top"}];

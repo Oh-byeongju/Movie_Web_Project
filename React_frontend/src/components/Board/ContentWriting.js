@@ -8,7 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 import ImageResize from 'quill-image-resize';
 import { useDispatch } from "react-redux";
 import { http } from "../../lib/http";
-import { BOARD_WRITE_REQUEST } from "../../reducer/Board";
+import { BOARD_WRITE_REQUEST } from "../../reducer/R_board";
 import { useLocation, useNavigate } from "react-router-dom";
 Quill.register('modules/ImageResize', ImageResize);
 
@@ -129,7 +129,7 @@ const ContentWriting = () => {
 	// 취소버튼 누를때 실행되는 함수
 	const onCancel = useCallback(()=> {
 		if (location.state && location.state.url === '/UserLogin') {
-			navigate('/Board/list/popular/all/1');
+			navigate('/Board/list/free/all/1');
 		}
 		else {
 			navigate(-1);

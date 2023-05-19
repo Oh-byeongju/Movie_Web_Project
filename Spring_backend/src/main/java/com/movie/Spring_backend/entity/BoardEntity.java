@@ -41,7 +41,7 @@ public class BoardEntity {
     @JoinColumn(name="uid")
     private MemberEntity member;
 
-    // 이게 blike 되야할듯
+    // 이게 blikes이런식으로 되야할듯 되야할듯 아래에 있는likes도 바꾸삼 다대일인가 묶인거
     @Formula("(select count(boardlike.blid) from board_like boardlike where boardlike.bid = bid and boardlike.bllike = true " +
             "and boardlike.bcid is null)")
     private Integer like;

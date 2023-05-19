@@ -47,7 +47,7 @@ public class BoardCommentEntity {
             "and boardlike.blunlike = true)")
     private Integer commentUnlike;
 
-    @OneToMany(mappedBy = "comment",
+    @OneToMany(mappedBy = "boardcomment",
             fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardLikeEntity> likes = new ArrayList<>();
 

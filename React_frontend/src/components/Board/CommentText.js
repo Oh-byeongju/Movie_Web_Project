@@ -1,9 +1,10 @@
+/*eslint-disable*/
 import React ,{useState}from "react";
 import styled from "styled-components";
-import { COMMENT_WRITE_REQUEST } from "../../reducer/Board";
+import { COMMENT_WRITE_REQUEST } from "../../reducer/R_board";
 import { useDispatch ,useSelector} from "react-redux";
 const CommentText =({id,idtext}) =>{
-    const {content} = useSelector((state)=>state.Board)
+    const {content} = useSelector((state)=>state.R_board)
     const [text, setText] =useState("");
     const [count, setCount]  = useState(0)
     const onChangeText =(e)=>{

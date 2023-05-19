@@ -6,31 +6,37 @@ import styled from "styled-components";
 import { LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled, EyeOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector} from "react-redux"
-import { CONTENT_DELETE_REQUEST, CONTENT_READ_REQUEST, LIKE_REQUEST } from "../../reducer/Board";
+import { BOARD_CONTENT_REQUEST, CONTENT_DELETE_REQUEST, LIKE_REQUEST } from "../../reducer/R_board";
 import * as date from "../../lib/date.js";
 
 const ContentPost = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const {id, title} = useParams();
+	const { id } = useParams();
 
 	// 로그인 리덕스 상태
+	const { LOGIN_STATUS_done } = useSelector((state) => state.R_user_login);
 	const { LOGIN_data } = useSelector((state) => state.R_user_login);
-	// 디비 고치고 이거 밀기
-  const {content} = useSelector((state)=>state.Board)
+	// 게시물 리덕스 상태
+  const { BOARD_CONTENT } = useSelector((state)=>state.R_board);
    
+	// 게시물 상세조회 useEffect
 	useEffect(()=>{
-		dispatch({
-			type: CONTENT_READ_REQUEST,
-			data: {
-				id: id,
-				title: title
-			}
-		});
-	}, [id, title, dispatch]);
+		if (LOGIN_STATUS_done) {
+			dispatch({
+				type: BOARD_CONTENT_REQUEST,
+				data: {
+					bid: id,
+					uid: LOGIN_data.uid
+				}
+			});
+		}
+	}, [LOGIN_STATUS_done, id, LOGIN_data.uid, dispatch]);
 
+
+
+	// 콜백붙이기
 	const onClickLike = () =>{
-
 		if (LOGIN_data.uid === "No_login") {
 			alert('로그인이 필요한 서비스입니다.');
 			return;
@@ -42,11 +48,12 @@ const ContentPost = () => {
 						like:1,
 						unlike:0,
 						uid:LOGIN_data.uid,
-						board:content.bid
+						board:BOARD_CONTENT.bid
 				}
 		})
 	}
 
+	// 콜백붙이기
 	const onClickUnLike =()=>{
 		if (LOGIN_data.uid === "No_login") {
 			alert('로그인이 필요한 서비스입니다.');
@@ -58,7 +65,7 @@ const ContentPost = () => {
 							unlike:1,
 							like:0,
 							uid:LOGIN_data.uid,
-							board:content.bid
+							board:BOARD_CONTENT.bid
 					}
 			})
 	}
@@ -72,7 +79,7 @@ const ContentPost = () => {
 		dispatch({
 			type: CONTENT_DELETE_REQUEST,
 			data: {
-				bid: content.bid
+				bid: BOARD_CONTENT.bid
 			}
 		})
 
@@ -80,8 +87,8 @@ const ContentPost = () => {
 
 		// 아래쪽에 좋아요 싫어요도 css는 먹여놨고 디비접근은 구현해야함
 
-		navigate('/board/list/popular/all/1');
-	}, [content.bid, dispatch, navigate]);
+		navigate('/board/list/free/all/1');
+	}, [BOARD_CONTENT.bid, dispatch, navigate]);
 
 	// 게시글을 수정하는 함수
 	const onClickEdit = useCallback(()=> {
@@ -90,70 +97,70 @@ const ContentPost = () => {
 		} 
 
 		navigate('edit', {state: {
-			id: content.bid,
-			title: content.btitle,
-			content: content.bdetail,
-			category: content.bcategory
+			id: BOARD_CONTENT.bid,
+			title: BOARD_CONTENT.btitle,
+			content: BOARD_CONTENT.bdetail,
+			category: BOARD_CONTENT.bcategory
 		}});
-	}, [content.bid, content.btitle, content.bdetail, content.bcategory, navigate]);
+	}, [BOARD_CONTENT.bid, BOARD_CONTENT.btitle, BOARD_CONTENT.bdetail, BOARD_CONTENT.bcategory, navigate]);
         
 	return (
 		<Content>
 			<Aricle>
 				<Header>
 					<Title>
-						{content.btitle}
+						{BOARD_CONTENT.btitle}
 					</Title>
 					<SubTitle>
 						<MetaListLeft>
 							<div className="category">
-								{content.bcategory}
+								{BOARD_CONTENT.bcategory}
 							</div>
 							<div className="time">
-								{date.detailDate(new Date(content.bdate))}
+								{date.detailDate(new Date(BOARD_CONTENT.bdate))}
 							</div>
 							<div className="name">
-								{content.uid}
+								{BOARD_CONTENT.uid}
 							</div>
 						</MetaListLeft>
 						<MetaListRight>
 							<div className="inq">
 								<EyeOutlined style={{position:'relative', top:'-2px', paddingRight: "6px"}}/>
 								<span>
-									{content.bclickindex}
+									{BOARD_CONTENT.bclickindex}
 								</span>
 							</div>
 							<div className="comment">
-								댓글 {content.commentcount}
+								댓글 {BOARD_CONTENT.commentcount}
 							</div>
 							<div className="top">
-								추천 {content.blike}
+								추천 {BOARD_CONTENT.likes}
 							</div>
 						</MetaListRight>
 					</SubTitle>
 				</Header>   
 				<ContentWrapper>
-					<ArticleContent dangerouslySetInnerHTML={{__html:content.bdetail}}/>
+					<ArticleContent dangerouslySetInnerHTML={{__html:BOARD_CONTENT.bdetail}}/>
 					<AricleBox>
 						<Vote>
 							<ArticleVote>
-								<button className={"up"} onClick={onClickLike}>
+								<button className="up" onClick={onClickLike}>
 									<span className="like">
-										{false ? <LikeFilled style={{fontSize:"15px", color:"#46cea6"}}/> : <LikeOutlined style={{fontSize:"15px"}}/>}
+										{BOARD_CONTENT.blike ? <LikeFilled style={{fontSize:"15px", color:"#46cea6"}}/> : <LikeOutlined style={{fontSize:"15px"}}/>}
 									</span>
 									<span className="number">
-										{content.blike}
+										{BOARD_CONTENT.likes}
 									</span>
 								</button>
-								<button className={"down"} onClick={onClickUnLike}>
+								<button className="down" onClick={onClickUnLike}>
 									<span className="like">
-										{true ? <DislikeFilled style={{fontSize:"15px", color:"#f95a53"}}/> : <DislikeOutlined style={{fontSize:"15px"}}/>}
+										{BOARD_CONTENT.bunlike ? <DislikeFilled style={{fontSize:"15px", color:"#f95a53"}}/> : <DislikeOutlined style={{fontSize:"15px"}}/>}
 									</span>
 									<span className="number">
-										{content.bunlike}
+										{BOARD_CONTENT.unlikes}
 									</span>
 								</button>
-								{LOGIN_data.uid === content.uid ?
+								{LOGIN_data.uid === BOARD_CONTENT.uid ?
 								<>
 									<div className="delete" onClick={onClickDelete}>
 										<DeleteOutlined/>

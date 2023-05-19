@@ -1,6 +1,10 @@
+/*
+  23-05-19 게시물 관련 컨트롤러 수정(오병주)
+*/
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.BoardDto;
+import com.movie.Spring_backend.dto.MemberDto;
 import com.movie.Spring_backend.entity.BoardEntity;
 import com.movie.Spring_backend.entity.BoardLikeEntity;
 import com.movie.Spring_backend.service.BoardService;
@@ -19,70 +23,29 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-// Board 로 수정
-@RequestMapping("/board")
+@RequestMapping("/Board")
 public class BoardController {
     private final BoardService boardService;
 
-    //게시판에 글을 불러오는 컨트롤러
-    @GetMapping("/normal/boardall")
-    public ResponseEntity<Page<BoardDto>> BoardWrite(@RequestParam("page") String page ,@RequestParam("sort") String sort,@RequestParam("category") String category ) {
-
-        //최신순, 전체
-        if(category.equals("popular") && sort.equals("all")){
-            return ResponseEntity.ok().body(boardService.PaginationBid(Integer.valueOf(page),"자유 게시판"));
-        }
-
-        //인기순, 전체
-        else if(category.equals("popular") &&sort.equals("top")){
-            return ResponseEntity.ok().body(boardService.PaginationIndex(Integer.valueOf(page),"자유 게시판"));
-        }
-
-        //좋아요순, 전체
-        else if(category.equals("popular") &&sort.equals("like")){
-            return ResponseEntity.ok().body(boardService.PaginationTop(Integer.valueOf(page),"자유 게시판"));
-        }
-
-        //전체순, 뉴스
-        else if(category.equals("news") && sort.equals("all")){
-            return ResponseEntity.ok().body(boardService.PaginationBid(Integer.valueOf(page),"영화 뉴스"));
-        }
-
-        //인기순, 뉴스
-        else if(category.equals("news") &&sort.equals("top")){
-            return ResponseEntity.ok().body(boardService.PaginationIndex(Integer.valueOf(page),"영화 뉴스"));
-        }
-
-        //좋아요순, 인기
-        else if(category.equals("news") &&sort.equals("like")){
-            return ResponseEntity.ok().body(boardService.PaginationTop(Integer.valueOf(page),"영화 뉴스"));
-        }
-        //전체순, 인터뷰
-        else if(category.equals("interview") && sort.equals("all")){
-            return ResponseEntity.ok().body(boardService.PaginationBid(Integer.valueOf(page),"인터뷰"));
-        }
-
-        //인기순, 인터뷰
-        else if(category.equals("interview") &&sort.equals("top")){
-            return ResponseEntity.ok().body(boardService.PaginationIndex(Integer.valueOf(page),"인터뷰"));
-        }
-
-        //좋아요순, 인터뷰
-        else if(category.equals("interview") &&sort.equals("like")){
-            return ResponseEntity.ok().body(boardService.PaginationTop(Integer.valueOf(page),"인터뷰"));
-        }
-        else if(category.equals("myinfo")){
-            return ResponseEntity.ok().body(boardService.selectInfo(Integer.valueOf(page)));
-        }
-        return null;
+    // 게시물 조회 컨트롤러
+    @GetMapping("/normal/allBoard")
+    public ResponseEntity<Page<BoardDto>> AllBoard(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(boardService.getBoard(requestMap));
     }
 
-    //게시판 상세 페이지 , 주소는 id/title로 지정
-    @GetMapping("/normal/content/{id}/{title}")
-    public ResponseEntity <BoardDto> BoardContent(@PathVariable Long id, @PathVariable String title){
-
-        return ResponseEntity.ok().body(boardService.findByContent(id,title));
+    // 게시판 상세조회 컨트롤러
+    @GetMapping("/normal/content")
+    public ResponseEntity<BoardDto> BoardContent(@RequestParam Map<String, String> requestMap){
+        return ResponseEntity.ok().body(boardService.getBoardDetail(requestMap));
     }
+
+
+
+
+
+    // 아래로 날려
+
+
 
     //게시판내에서 검색하는 메소드
     @GetMapping("/normal/search")

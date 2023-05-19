@@ -139,7 +139,7 @@ const TopButtons = () => {
                   커뮤니티
                 </div>
                 <div className="category">    
-                  <Link to="/Board/list/popular/all/1">게시판</Link>
+                  <Link to="/Board/list/free/all/1">게시판</Link>
                 </div>
               </div>
               <div className="menu_category">

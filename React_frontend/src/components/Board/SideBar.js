@@ -7,9 +7,9 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate, Link, useParams } from "react-router-dom";
 
 const menus = [
-	{ name: "자유 게시판", path: "popular" },
+	{ name: "자유 게시판", path: "free" },
 	{ name: "영화 뉴스", path: "news" },
-	{ name: "영화 토론", path: "interview" }
+	{ name: "영화 토론", path: "debate" }
 ];
 
 const SideBar = () => {

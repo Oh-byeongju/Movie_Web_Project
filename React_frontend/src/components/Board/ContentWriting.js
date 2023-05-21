@@ -1,12 +1,12 @@
 /*
   23-05-16 게시물 페이지 수정(오병주)
 */
-import React, { useRef, useState, useMemo, useCallback } from "react";
+import React, { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import ReactQuill, { Quill } from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import ImageResize from 'quill-image-resize';
-import { useDispatch } from "react-redux";
+import { useSelector ,useDispatch, shallowEqual } from "react-redux";
 import { http } from "../../lib/http";
 import { BOARD_WRITE_REQUEST } from "../../reducer/R_board";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -17,6 +17,15 @@ const ContentWriting = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const quillRef = useRef();
+
+	// 필요한 리덕스 상태들
+  const { BOARD_WRITE_done, BOARD_WRITE_error } = useSelector(
+    state => ({
+      BOARD_WRITE_done: state.R_board.BOARD_WRITE_done,
+			BOARD_WRITE_error: state.R_board.BOARD_WRITE_error
+    }),
+    shallowEqual
+  ); 
 
 	// 카테고리 지정
 	const selectList = ["자유 게시판", "영화 뉴스", "영화 토론"];
@@ -49,20 +58,19 @@ const ContentWriting = () => {
 			const formData = new FormData();
 
 			if (file) {
-					formData.append("multipartFiles", file[0]);
+				formData.append("multipartFiles", file[0]);
 			}
 
 			// file 데이터 담아서 서버에 전달하여 이미지 업로드
-			const res = await http.post('http://localhost:8080/v2/normal/uploadImage', formData);
+			const res = await http.post('http://localhost:8080/Board/auth/uploadImage', formData);
 
 			if (quillRef.current) {
 				// 현재 Editor 커서 위치에 서버로부터 전달받은 이미지 불러오는 url을 이용하여 이미지 태그 추가
-				const index = (quillRef.current.getEditor().getSelection() ).index;
+				const index = (quillRef.current.getEditor().getSelection()).index;
 
 				const quillEditor = quillRef.current.getEditor();
 				quillEditor.setSelection(index, 1);
-
-				quillEditor.clipboard.dangerouslyPasteHTML(index, `<img src=${res.data} alt=${'alt text'} />`);
+				quillEditor.clipboard.dangerouslyPasteHTML(index, `<img src=${res.data.image} alt='이미지'/>`);
 			}
 		}
 	};
@@ -115,12 +123,11 @@ const ContentWriting = () => {
 		} 
 		else {
 			dispatch({
-				type:BOARD_WRITE_REQUEST,
+				type: BOARD_WRITE_REQUEST,
 				data:{
-					title:title,
-					detail:Board_Content,
-					category:Selected,
-					state:"insert"
+					title: title,
+					detail: Board_Content,
+					category: Selected
 				}
 			});
 		}
@@ -136,9 +143,18 @@ const ContentWriting = () => {
 		}
 	}, [location, navigate]);
 
+	// 게시글 작성 성공 여부에 따른 useEffect
+	useEffect(()=> {
+		if (BOARD_WRITE_done) {
+			alert('게시글이 작성되었습니다.');
+			window.location.assign(`/Board/list/${Selected === '자유 게시판' ? 'free' : Selected === '영화 뉴스' ? 'news' : 'debate'}/all/1`);
+		}
 
-	// 위에꺼 성공 결과에 따라 어디로 날리는 useEffect ㅎ있어야함
-	// 게시글 작성하는거도 바꾸긴 해야함
+		if (BOARD_WRITE_error) {
+			alert('게시글 작성에 실패했습니다.');
+			window.location.replace('/Board/write');
+		}
+	}, [BOARD_WRITE_done, BOARD_WRITE_error, Selected, navigate]);
 
   return (
 		<ContentWrapper>       

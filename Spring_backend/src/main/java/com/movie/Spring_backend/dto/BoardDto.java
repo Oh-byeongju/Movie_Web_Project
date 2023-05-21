@@ -12,7 +12,7 @@ public class BoardDto {
     private Long bid;
     private String btitle;
     private String bdetail;
-    private Date bdate;
+    private String bdate;
     private Integer bclickindex;
     private String bcategory;
     private String bthumbnail;
@@ -22,10 +22,11 @@ public class BoardDto {
     private Integer commentcount;
     private boolean blike;
     private boolean bunlike;
+    private String image;
 
     @Builder
-    public BoardDto(Long bid, String btitle, String bdetail, Date bdate, Integer bclickindex, String bcategory, String bthumbnail,
-                    String uid, Integer likes, Integer unlikes, Integer commentcount, boolean blike, boolean bunlike) {
+    public BoardDto(Long bid, String btitle, String bdetail, String bdate, Integer bclickindex, String bcategory, String bthumbnail,
+                    String uid, Integer likes, Integer unlikes, Integer commentcount, boolean blike, boolean bunlike, String image) {
         this.bid = bid;
         this.btitle = btitle;
         this.bdetail = bdetail;
@@ -39,5 +40,6 @@ public class BoardDto {
         this.commentcount = commentcount;
         this.blike = blike;
         this.bunlike = bunlike;
+        this.image = image;
     }
 }

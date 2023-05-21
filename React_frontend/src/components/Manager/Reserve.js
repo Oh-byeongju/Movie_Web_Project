@@ -199,7 +199,7 @@ const Reserve = () => {
 							</ListSection>
 							<Poster>
 								<Info> 
-									<img src={`/${MOVIE.mimagepath}`} style={{width:"100%" ,height:"100%"}} alt ='Poster'/>
+									<img src={`/${MOVIE.mimagepath}`} style={{width:"100%", height:"100%"}} alt ='Poster'/>
 								</Info>
 							</Poster>
 						</MovieWrapper> :

@@ -47,12 +47,12 @@ const SideBar = () => {
 							</div>
 						</User>
 						<InfoSideBar>
-							<Link to="/board/list/myinfo/all/1" className="item">
+							<Link to="/Board/list/myinfo/content/1" className="item">
 								<span>
 									내가 쓴 글
 								</span>
 							</Link>
-							<Link to="/board/write" className="item write">
+							<Link to="/Board/write" className="item write">
 								<span>
 									글 쓰기
 								</span>

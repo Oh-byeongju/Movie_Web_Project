@@ -1,7 +1,7 @@
 /*
   23-05-15 게시물 페이지 수정(오병주)
 */
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { EditTwoTone, FireTwoTone, StarTwoTone, QrcodeOutlined, SearchOutlined } from "@ant-design/icons";
 import { useNavigate, Link, useParams } from "react-router-dom";
@@ -14,12 +14,21 @@ const menu = [
 ];
 const selectList = ["제목", "작성자"];
 
-const ContentListHeader = ()=>{
+const ContentListHeader = () => {
 	const navigate = useNavigate();
-	const {category, sort} = useParams();
+	const { category, sort } = useParams();
     
 	// 로그인 리덕스 상태
+	const { LOGIN_STATUS_done } = useSelector((state) => state.R_user_login);
 	const { LOGIN_data } = useSelector((state) => state.R_user_login);
+
+	// 로그인 기록이 없을경우 내 게시물 접근제한 useEffect
+	useEffect(() => {
+		if (LOGIN_STATUS_done && LOGIN_data.uid === 'No_login' && category === 'myinfo') {
+			alert('로그인이후 사용가능한 페이지입니다.');
+			navigate('/Board/list/free/all/1');
+		}
+	}, [LOGIN_STATUS_done, LOGIN_data.uid, category, navigate]);
     
 	// 검색 조건 상태
 	const [Selected, setSelected] = useState("title");

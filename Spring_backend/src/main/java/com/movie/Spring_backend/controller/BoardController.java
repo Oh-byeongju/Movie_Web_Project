@@ -1,5 +1,5 @@
 /*
-  23-05-19 게시물 관련 컨트롤러 수정(오병주)
+  23-05-19 ~ 21 게시물 관련 컨트롤러 수정(오병주)
 */
 package com.movie.Spring_backend.controller;
 
@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -39,13 +40,25 @@ public class BoardController {
         return ResponseEntity.ok().body(boardService.getBoardDetail(requestMap));
     }
 
+    // 이미지를 저장하는 컨트롤러
+    @PostMapping("/auth/uploadImage")
+    public ResponseEntity<BoardDto> BoardImage(HttpServletRequest request, @RequestPart(required = false) MultipartFile multipartFiles) {
+        return  ResponseEntity.ok().body(boardService.ImageUpload(request, multipartFiles));
+    }
+
+    // 게시판에 글을 작성하는 컨트롤러
+    @PostMapping("/auth/boardWrite")
+    public ResponseEntity<String> BoardWrite(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
+        boardService.BoardWrite(request, requestMap);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 
 
 
     // 아래로 날려
-
-
 
     //게시판내에서 검색하는 메소드
     @GetMapping("/normal/search")
@@ -64,12 +77,6 @@ public class BoardController {
         return null;
     }
 
-    //게시판에 글을 작성하는 컨트롤러
-    @PostMapping("/auth/boardwrite")
-    public ResponseEntity<String> BoardWrite(@RequestBody Map<String, String> requestMap, HttpServletRequest request) {
-        boardService.BoardWrite(requestMap, request);
-        return ResponseEntity.noContent().build();
-    }
 
     //게시물 삭제 기능
     @PostMapping("/auth/delete")
@@ -85,7 +92,4 @@ public class BoardController {
 
 
     }
-
-
-
 }

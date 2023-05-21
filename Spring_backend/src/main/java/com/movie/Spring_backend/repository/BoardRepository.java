@@ -26,6 +26,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     // 게시물 조회 메소드(조회순)
     Page<BoardEntity> findByBcategoryOrderByBclickindexDesc(String category, Pageable pageable);
 
+    // 게시물 조회 메소드(내 게시물)
+    Page<BoardEntity> findByMemberOrderByBidDesc(MemberEntity member, Pageable pageable);
+
     // 게시글의 조회수를 올려주는 메소드
     @Modifying
     @Query("UPDATE BoardEntity AS board SET board.bclickindex = board.bclickindex+1 WHERE board.bid = :bid")

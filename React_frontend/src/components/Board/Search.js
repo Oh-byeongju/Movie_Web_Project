@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import React, { useEffect ,useState} from "react";
 import styled from "styled-components";
 import { SearchOutlined, CaretUpOutlined } from "@ant-design/icons";
@@ -8,6 +7,15 @@ import { useDispatch ,useSelector} from "react-redux"
 import { BOARD_SEARCH_REQUEST } from "../../reducer/R_board";
 
 const Search = () =>{
+
+
+
+
+
+
+
+
+	// 서치부터 고치면 될듯
     const dispatch= useDispatch();
     const navigate=  useNavigate();
     const { title,target, page} = useParams();

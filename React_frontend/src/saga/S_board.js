@@ -1,13 +1,14 @@
 /*
-	23-05-19 게시물 페이지 수정(오병주)
+	23-05-19 ~ 21 게시물 페이지 수정(오병주)
 */
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
 	BOARD_LIST_REQUEST, BOARD_LIST_SUCCESS, BOARD_LIST_FAILURE,
 	BOARD_CONTENT_REQUEST, BOARD_CONTENT_SUCCESS, BOARD_CONTENT_FAILURE,
+	BOARD_WRITE_REQUEST, BOARD_WRITE_SUCCESS, BOARD_WRITE_FAILURE,
 
 	// 아래로 날리기
-  BOARD_WRITE_FAILURE, BOARD_WRITE_REQUEST, BOARD_WRITE_SUCCESS, 
+
  BOARD_SEARCH_REQUEST, BOARD_SEARCH_SUCCESS, BOARD_SEARCH_FAILURE, CONTENT_DELETE_REQUEST,CONTENT_DELETE_SUCCESS,CONTENT_DELETE_FAILURE, COMMENT_WRITE_REQUEST, COMMENT_WRITE_SUCCESS, COMMENT_WRITE_FAILURE, COMMENT_READ_SUCCESS, COMMENT_READ_FAILURE, COMMENT_READ_REQUEST,LIKE_REQUEST,LIKE_FAILURE,LIKE_SUCCESS, COMMENT_DELETE_SUCCESS, COMMENT_DELETE_FAILURE, COMMENT_DELETE_REQUEST, COMMENT_LIKE_SUCCESS, COMMENT_LIKE_FAILURE, COMMENT_LIKE_REQUEST
 } from "../reducer/R_board";
 import { http } from "../lib/http";
@@ -34,6 +35,7 @@ async function callAllBoard(data) {
     params: {
 			category: data.category,
       sort: data.sort,
+			uid: data.uid,
 			page: data.page
 		}
 	})
@@ -77,6 +79,32 @@ async function callBoardContent(data) {
   });
 }
 
+// 게시판 작성 함수
+function* BoardWrite(action) {
+	const result = yield call(callBoardWrite, action.data);
+	if (result.status === 204) { 
+		yield put({
+			type: BOARD_WRITE_SUCCESS
+		});
+	} 
+	else {
+		yield put({
+			type: BOARD_WRITE_FAILURE
+		});   
+	}
+}
+
+// 게시판 작성 백엔드 호출
+async function callBoardWrite(data) {
+	return await http.post("/Board/auth/boardWrite", data)
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
+}
+
 
 
 
@@ -95,7 +123,7 @@ async function callBoardContent(data) {
 //게시판 검색
 async function BoardSearchApi(data) {
   return await http
-    .get("/board/normal/search",{
+    .get("/Board/normal/search",{
     params:{
       page:data.page,
       category:data.category,
@@ -157,34 +185,7 @@ function* ContentDelete(action) {
     });   
   }
 }
-//게시판 쓰기
-async function BoardWriteApi(data) {
-    return await http
-      .post("/board/auth/boardwrite",data)
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
-  
-  function* BoardWrite(action) {
-    console.log(action)
-    const result = yield call(BoardWriteApi, action.data);
-  
-    if (result.status === 204) { 
-      yield put({
-        type: BOARD_WRITE_SUCCESS,
-      });
-      alert("수정완료되었습니다.")
-    } else {
-      yield put({
-        type: BOARD_WRITE_FAILURE,
-        data: result.status,
-      });   
-    }
-  }
+
    //댓글 쓰기
 async function CommentReadApi(data) {
   return await http
@@ -345,6 +346,9 @@ function* BOARD_CONTENT() {
 	yield takeLatest(BOARD_CONTENT_REQUEST, BoardContent);
 }
 
+function* BOARD_WRITE() {
+	yield takeLatest(BOARD_WRITE_REQUEST, BoardWrite);
+}
 
 
 
@@ -354,9 +358,6 @@ function* BOARD_CONTENT() {
 
 
 // 아래로 날리기
-  function* BoardWriteSaga() {
-    yield takeLatest(BOARD_WRITE_REQUEST, BoardWrite);
-  }
 
   function* BoardSearchSaga() {
     yield takeLatest(BOARD_SEARCH_REQUEST, BoardSearch);
@@ -390,11 +391,11 @@ function* BOARD_CONTENT() {
   }
   
   export default function* S_board() {
-    yield all([fork(BOARD_LIST), fork(BOARD_CONTENT),
+    yield all([fork(BOARD_LIST), fork(BOARD_CONTENT), fork(BOARD_WRITE),
 
 			//아래로 날리기
 			
 			
-			fork(BoardWriteSaga),fork(BoardSearchSaga),fork(ContentDeleteSaga),
+			fork(BoardSearchSaga),fork(ContentDeleteSaga),
     fork(CommentWriteSaga),fork(CommentReadSaga),fork(LikeSaga),fork(DeleteSaga),fork(CommentLikeSaga)]);
   }

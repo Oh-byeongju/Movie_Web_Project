@@ -1,5 +1,5 @@
 /*
-	23-05-19 게시물 페이지 리듀서 수정(오병주)
+	23-05-19 ~ 21 게시물 페이지 리듀서 수정(오병주)
 */
 // 게시물 목록 조회 리스트
 export const BOARD_LIST_REQUEST = "BOARD_LIST_REQUEST";
@@ -11,10 +11,16 @@ export const BOARD_CONTENT_REQUEST = "BOARD_CONTENT_REQUEST";
 export const BOARD_CONTENT_SUCCESS = "BOARD_CONTENT_SUCCESS";
 export const BOARD_CONTENT_FAILURE = "BOARD_CONTENT_FAILURE";
 
+// 게시물 작성 리스트
+export const BOARD_WRITE_REQUEST = "BOARD_WRITE_REQUEST"
+export const BOARD_WRITE_SUCCESS = "BOARD_WRITE_SUCCESS"
+export const BOARD_WRITE_FAILURE = "BOARD_WRITE_FAILURE"
+
+
+
+
 
 //// 아래로 날리기
-
-
   export const BOARD_SEARCH_REQUEST = "BOARD_SEARCH_REQUEST"
   export const BOARD_SEARCH_SUCCESS = "BOARD_SEARCH_SUCCESS"
   export const BOARD_SEARCH_FAILURE = "BOARD_SEARCH_FAILURE"
@@ -23,9 +29,6 @@ export const BOARD_CONTENT_FAILURE = "BOARD_CONTENT_FAILURE";
   export const CONTENT_DELETE_SUCCESS = "CONTENT_DELETE_SUCCESS"
   export const CONTENT_DELETE_FAILURE = "CONTENT_DELETE_FAILURE"
 
-  export const BOARD_WRITE_REQUEST = "BOARD_WRITE_REQUEST"
-  export const BOARD_WRITE_SUCCESS = "BOARD_WRITE_SUCCESS"
-  export const BOARD_WRITE_FAILURE = "BOARD_WRITE_FAILURE"
 
   export const BOARD_DELETE_REQUEST = "BOARD_DELETE_REQUEST"
   export const BOARD_DELETE_SUCCESS = "BOARD_DELETE_SUCCESS"
@@ -65,6 +68,10 @@ const initalState = {
   BOARD_CONTENT_done: false,
   BOARD_CONTENT_error: false,
 	BOARD_CONTENT: [],
+
+	BOARD_WRITE_loading: false,
+  BOARD_WRITE_done: false,
+  BOARD_WRITE_error: false,
 
 
 
@@ -173,7 +180,28 @@ const R_board = (state = initalState, action) => {
         BOARD_CONTENT_done: false,
         BOARD_CONTENT_error: true
       };
-
+		// 게시물 작성 케이스들
+		case BOARD_WRITE_REQUEST:
+			return {
+				...state,
+				BOARD_WRITE_loading: true,
+				BOARD_WRITE_done: false,
+				BOARD_WRITE_error: false
+			};
+		case BOARD_WRITE_SUCCESS:
+			return {
+				...state,
+				BOARD_WRITE_loading: false,
+				BOARD_WRITE_done: true,
+				BOARD_WRITE_error: false
+			};
+		case BOARD_WRITE_FAILURE:
+			return {
+				...state,
+				BOARD_WRITE_loading: false,
+				BOARD_WRITE_done: false,
+				BOARD_WRITE_error: true
+			};
 
 
 
@@ -226,27 +254,7 @@ const R_board = (state = initalState, action) => {
 							content_delete_error:action.error,
 			}  
 
-			case BOARD_WRITE_REQUEST:
-					return{
-							...state,
-							board_write_loading:true,
-							board_write_done:false,
-							board_write_error:null,
-					}
-			case BOARD_WRITE_SUCCESS:
-					return{
-									...state,
-									board_write_loading:false,
-									board_write_done:true,
-									board_write_error:null,
-							}
-			case BOARD_WRITE_FAILURE:
-					return{
-							...state,
-							board_write_loading:false,
-							board_write_done:false,
-							board_write_error:action.error,
-					}  
+			
 				
 					
 			case BOARD_DELETE_REQUEST:

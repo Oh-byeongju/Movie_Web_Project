@@ -14,6 +14,10 @@ const ContentList = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { category, sort, page } = useParams();
+
+	// 로그인 리덕스 상태
+	const { LOGIN_data } = useSelector((state) => state.R_user_login);
+	// 게시물 리스트 리덕스 상태
 	const { BOARD_LIST } = useSelector((state) => state.R_board);
 
 	// 페이지네이션 변경 함수
@@ -26,12 +30,13 @@ const ContentList = () => {
 		dispatch({
 			type: BOARD_LIST_REQUEST,
 			data: {
-				page: page-1,
 				category: category,
-				sort: sort
+				sort: sort,
+				uid: LOGIN_data.uid,
+				page: page-1
 			}
 		});
-	}, [page, category, sort, dispatch]);
+	}, [page, category, sort, LOGIN_data.uid, dispatch]);
 
 	return (
 		<ContentWrapper>
@@ -44,7 +49,7 @@ const ContentList = () => {
 					</div>
 				</Number>
 				<Detail>
-					<Link to={`/Board/content/${data.bid}/${data.btitle}`}>
+					<Link to={`/Board/content/${category}/${data.bid}/${data.btitle}`}>
 						<div>
 							<span>
 								{data.btitle}
@@ -68,7 +73,8 @@ const ContentList = () => {
 						{data.uid}
 					</div>
 				</Item>
-				<Thumbnail onClick={()=> console.log('여기 넘어가게끔 수정해라')} dangerouslySetInnerHTML={{__html:data.bthumbnail}}>
+				<Thumbnail>
+					<Link to={`/Board/content/${data.bid}/${data.btitle}`} dangerouslySetInnerHTML={{__html:data.bthumbnail}}/>
 				</Thumbnail>
 			</Card>)}
 			<CustomPagination current={parseInt(page)} total={BOARD_LIST.totalElements} defaultPageSize={20} showSizeChanger={false} hideOnSinglePage={true} onChange={handleChange}/>
@@ -196,13 +202,16 @@ const Item = styled.div`
 const Thumbnail = styled.div`
 	display: table-cell;
 	padding-right: 20px;
-	width: 70px;
+	width: 73px;
 	vertical-align: middle;
-	cursor: pointer;
+	
+	div {
+		cursor: pointer;
+	}
 
 	img {
 		display: block;
-		width: 70px;
+		width: 73px;
 		height: 62px;
 		-o-object-fit: cover;
 		object-fit: cover;
@@ -213,6 +222,7 @@ const Thumbnail = styled.div`
 const CustomPagination = styled(Pagination)`
 	position: relative;
 	text-align: center;
+	border-top: 1px solid #ebeef1;
 	height: 60px;
 	line-height: 55px;
 `;

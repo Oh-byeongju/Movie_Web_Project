@@ -1,5 +1,5 @@
 /*
-  23-05-19 게시물 관련 서비스 수정(오병주)
+  23-05-19 ~ 21 게시물 관련 서비스 수정(오병주)
 */
 package com.movie.Spring_backend.service;
 
@@ -9,16 +9,20 @@ import com.movie.Spring_backend.exceptionlist.BoardNotFoundException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.repository.BoardLikeRepository;
 import com.movie.Spring_backend.repository.BoardRepository;
+import com.movie.Spring_backend.util.DateUtil;
 import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -31,7 +35,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final JwtValidCheck jwtValidCheck;
     private final BoardLikeRepository boardLikeRepository;
-    private final EntityManagerFactory entityManagerFactory;
 
     // 게시물 조회 메소드
     @Transactional
@@ -39,6 +42,7 @@ public class BoardService {
         // requestMap 안에 정보를 추출
         String category = requestMap.get("category");
         String sort = requestMap.get("sort");
+        String uid = requestMap.get("uid");
         int page = Integer.parseInt(requestMap.get("page"));
 
         // 페이지네이션을 위한 정보
@@ -61,6 +65,10 @@ public class BoardService {
         // 게시물 조회
         Page<BoardEntity> board;
         switch (sort) {
+            // 최신순
+            case "all":
+                board = boardRepository.findByBcategoryOrderByBidDesc(search_category, PageInfo);
+                break;
             // 인기순
             case "like":
                 board = boardRepository.findByBcategoryOrderByBlikeDesc(search_category, PageInfo);
@@ -69,9 +77,9 @@ public class BoardService {
             case "top":
                 board = boardRepository.findByBcategoryOrderByBclickindexDesc(search_category, PageInfo);
                 break;
-            // 최신순
+            // 내 게시물
             default:
-                board = boardRepository.findByBcategoryOrderByBidDesc(search_category, PageInfo);
+                board = boardRepository.findByMemberOrderByBidDesc(MemberEntity.builder().uid(uid).build(), PageInfo);
         }
 
         return board.map(data -> BoardDto.builder()
@@ -131,8 +139,70 @@ public class BoardService {
                 .bunlike(unlike).build();
     }
 
+    // 게시물 작성시 이미지 저장 메소드
+    public BoardDto ImageUpload(HttpServletRequest request, MultipartFile multipartFiles) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
 
+        // 원본 이미지명
+        String originFileName = multipartFiles.getOriginalFilename();
+        // 저장될 이미지명
+        String newFilename = System.currentTimeMillis() + originFileName;
+        // 이미지 파일 저장할 경로
+        String IMAGE_PATH = "C:/Users/OBJ/PROJECT/Movie_Project_final/React_frontend/public/img/board";
 
+        try {
+            // 이미지를 저장
+            File file = new File(IMAGE_PATH, newFilename);
+            multipartFiles.transferTo(file);
+        }
+        catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패");
+        }
+
+        // 저장된 이미지 경로를 return
+        return BoardDto.builder().image("http://localhost:3000/img/board/" + newFilename).build();
+    }
+
+    // 게시판에 글을 작성하는 메소드
+    @Transactional
+    public void BoardWrite(HttpServletRequest request, Map<String, String> requestMap) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // requestMap 안에 정보를 추출
+        String title = requestMap.get("title").trim();
+        String detail = requestMap.get("detail").trim();
+        String category = requestMap.get("category").trim();
+
+        // 게시물 삽입에 필요한 정보 Entity로 변환
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
+
+        // 썸네일 정보 가공
+        String imgTag = "<img src=\"http://localhost:3000/img/board/post_hidden.jpg\">";
+        Pattern pattern = Pattern.compile("<img[^>]*src=[\"']?([^>\"']+)[\"']?[^>]*>");
+        Matcher match = pattern.matcher(detail);
+
+        // 게시물 내에 이미지 태그를 찾으면
+        if (match.find()) {
+            // 게시물 내용 중 첫번째 이미지 태그를 뽑은 후 변수에 할당
+            imgTag = match.group(0);
+        }
+
+        // 게시물 저장
+        boardRepository.save(BoardEntity.builder()
+                .btitle(title)
+                .bdate(DateUtil.getNow())
+                .bdetail(detail)
+                .bcategory(category)
+                .bclickindex(0)
+                .member(member)
+                .bthumbnail(imgTag)
+                .build());
+    }
 
 
 
@@ -158,67 +228,7 @@ public class BoardService {
                 .bthumbnail(data.getBthumbnail()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
     }
 
-    //게시판에 글을 작성하는 메소드
-    @Transactional
-    public void BoardWrite(Map<String, String> requestMap, HttpServletRequest request) {
 
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-        String User_id = SecurityUtil.getCurrentMemberId();
-
-
-        String title = requestMap.get("title").trim();
-        String detail = requestMap.get("detail").trim();
-        String category = requestMap.get("category").trim();
-        String state = requestMap.get("state").trim();
-
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-
-        // 이거 date util로 날려야할듯
-        Date nowDate = new Date();
-
-        SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String day = DateFormat.format(nowDate);
-
-        MemberEntity member = MemberEntity.builder().uid(User_id).build();
-        BoardEntity Board;
-
-        Pattern pattern  =  Pattern.compile("<img[^>]*src=[\"']?([^>\"']+)[\"']?[^>]*>");
-            Matcher match = pattern.matcher(detail);
-
-            String imgTag;
-
-            if (match.find()) { // 이미지 태그를 찾았다면,,
-                imgTag = match.group(0); // 글 내용 중에 첫번째 이미지 태그를 뽑아옴.
-            } else {
-                imgTag = null;
-            }
-            System.out.println("imgTag : " + imgTag);
-
-            if(state.equals("insert")) {
-                Board = BoardEntity.builder()
-                        .btitle(title)
-                        .bdate(java.sql.Date.valueOf(day))
-                        .bdetail(detail)
-                        .bcategory(category)
-                        .bclickindex(0)
-                        .member(member)
-                        .bthumbnail(imgTag)
-                        .build();
-                boardRepository.save(Board);
-            }
-
-//            else if (state.equals("update")){
-//                BoardEntity board = BoardEntity.builder().bid(Long.valueOf(id)).build();
-//                entityManager.getTransaction().begin();
-//                BoardEntity transboard = boardRepository.findByUpdate(board);
-//
-//                transboard.updateBoard(Long.valueOf(id), title,detail, java.sql.Date.valueOf(day), category,imgTag);
-//                entityManager.getTransaction().commit();  //트렌잭션이 끝나도 아무런 업데이트가 일어나지 않는다.
-//                System.out.println("update");
-//            }
-    }
 
     //좋아요 구현 메소드
     //comment_like

@@ -48,7 +48,7 @@ function App() {
         <Route element={<Board />}>
           <Route path="/Board/list/:category/:sort/:page" element={<BoardList />}></Route>
           <Route path="/Board/write" element={<BoardWrite />}></Route>
-          <Route path="/Board/content/:id/:title" element={<BoardPost />}></Route>
+          <Route path="/Board/content/:category/:id/:title" element={<BoardPost />}></Route>
           <Route path="/Board/content/:id/:title/edit" element={<BoardEdit />}></Route>
           <Route path="/Board/search/:target/:title/:page" element={<BoardSearch />} ></Route>
         </Route>

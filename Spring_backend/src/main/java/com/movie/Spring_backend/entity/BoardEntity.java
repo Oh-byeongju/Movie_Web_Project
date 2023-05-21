@@ -15,7 +15,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Table(name = "board")
-@DynamicUpdate      //더티 체킹
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +27,7 @@ public class BoardEntity {
     private String bdetail;
 
     @Column(nullable = false)
-    private Date bdate;
+    private String bdate;
 
     private Integer bclickindex;
 
@@ -64,7 +63,7 @@ public class BoardEntity {
     private List<BoardLikeEntity> likes = new ArrayList<>();
 
     @Builder
-    public BoardEntity(Long bid, String btitle, String bdetail, Date bdate, Integer bclickindex, String bcategory,
+    public BoardEntity(Long bid, String btitle, String bdetail, String bdate, Integer bclickindex, String bcategory,
                        String bthumbnail, MemberEntity member, Integer like, Integer bunlike, Integer commentcount,
                        List<BoardCommentEntity> comment, List<BoardLikeEntity> likes) {
         this.bid = bid;
@@ -80,14 +79,5 @@ public class BoardEntity {
         this.commentcount = commentcount;
         this.comment = comment;
         this.likes = likes;
-    }
-
-    public void updateBoard(Long bid, String btitle, String bdetail, Date bdate, String bcategory, String bthumbnail){
-        this.bid=bid;
-        this.btitle=btitle;
-        this.bdetail=bdetail;
-        this.bdate=bdate;
-        this.bcategory=bcategory;
-        this.bthumbnail = bthumbnail;
     }
 }

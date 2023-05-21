@@ -55,5 +55,4 @@ public class DateUtil {
 
         return DateFormat.format(cal.getTime());
     }
-
 }

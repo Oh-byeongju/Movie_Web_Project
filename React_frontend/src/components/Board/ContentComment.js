@@ -16,7 +16,7 @@ const ContentComment = () =>{
 
 	// 로그인 리덕스 상태
 	const { LOGIN_data } = useSelector((state) => state.R_user_login);
-	const {content, comment, comment_read_loading} = useSelector((state)=>state.R_board)
+	const {BOARD_CONTENT, comment, comment_read_loading} = useSelector((state)=>state.R_board)
 
 	// 댓글 정렬 상태
 	const menu = [{name:'최신순', type:"new"}, {name:'인기순', type:"top"}];
@@ -35,7 +35,6 @@ const ContentComment = () =>{
 			}
 		});
 	}, [id, type, dispatch]);
-
 
 	// 댓글 내용 상태
 	const [text, setText] = useState("");
@@ -60,11 +59,11 @@ const ContentComment = () =>{
 			data: {
 				text: text,
 				parent: "",
-				bid: content.bid,
+				bid: BOARD_CONTENT.bid,
 			}
 		});
 		// 결과에 따라 useEffect 만들어야함
-	}, [dispatch, text, content.bid]);
+	}, [dispatch, text, BOARD_CONTENT.bid]);
        
 	// 새로고침 함수
 	const onClickRefresh = useCallback(()=> {

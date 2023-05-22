@@ -26,8 +26,11 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     // 게시물 조회 메소드(조회순)
     Page<BoardEntity> findByBcategoryOrderByBclickindexDesc(String category, Pageable pageable);
 
-    // 게시물 조회 메소드(내 게시물)
+    // 게시물 조회 메소드(내 게시물 및 아이디검색)
     Page<BoardEntity> findByMemberOrderByBidDesc(MemberEntity member, Pageable pageable);
+
+    // 게시물 조회 메소드(제목으로 검색)
+    Page<BoardEntity> findByBtitleContainsOrderByBidDesc(String title, Pageable pageable);
 
     // 게시글의 조회수를 올려주는 메소드
     @Modifying
@@ -35,20 +38,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     void updateViews(@Param("bid") Long bid);
 
 
+
+
     // 아래로 날려
-
-
-
-
-
-    //페이지 네이션 위한 메소드 , 인기순
-    @Query("select board from BoardEntity as board where btitle LIKE %:title% order by bid desc")
-    Page<BoardEntity> SearchTitle(Pageable pageable, @Param("title") String title);
-
-    //게시판 검색 ,uid
-    @Query("select board from BoardEntity as board where board.member.uid =:uid  order by bid desc")
-    Page<BoardEntity> SearchUid(Pageable pageable, @Param("uid") String uid);
-
     @Query("select board from BoardEntity as board where bid = :bid ")
     BoardEntity booleanCheck(@Param("bid") Long bid);
 

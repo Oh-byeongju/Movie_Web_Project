@@ -2,7 +2,7 @@ import React from "react";
 import ContentWriting from "../components/Board/ContentWriting";
 
 const BoardWrite = () => {
-	return(
+	return (
 		<>
     	<ContentWriting />
 		</>

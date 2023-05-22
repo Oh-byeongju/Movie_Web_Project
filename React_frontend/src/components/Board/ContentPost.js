@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled, EyeOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector} from "react-redux"
-import { BOARD_CONTENT_REQUEST, CONTENT_DELETE_REQUEST, LIKE_REQUEST } from "../../reducer/R_board";
+import { BOARD_CONTENT_REQUEST, BOARD_LIKE_REQUEST, CONTENT_DELETE_REQUEST } from "../../reducer/R_board";
 import * as date from "../../lib/date.js";
 
 const ContentPost = () => {
@@ -33,42 +33,37 @@ const ContentPost = () => {
 		}
 	}, [LOGIN_STATUS_done, id, LOGIN_data.uid, dispatch]);
 
-
-
-	// 콜백붙이기
-	const onClickLike = () =>{
+	// 좋아요 버튼 누를때 함수
+	const onClickLike = useCallback(() => {
 		if (LOGIN_data.uid === "No_login") {
 			alert('로그인이 필요한 서비스입니다.');
 			return;
 		}
 
 		dispatch({
-				type:LIKE_REQUEST,
-				data:{
-						like:1,
-						unlike:0,
-						uid:LOGIN_data.uid,
-						board:BOARD_CONTENT.bid
-				}
+			type: BOARD_LIKE_REQUEST,
+			data: {
+				bid: BOARD_CONTENT.bid,
+        state: 'like'
+			}
 		})
-	}
+	}, [BOARD_CONTENT.bid, LOGIN_data.uid, dispatch]);
 
-	// 콜백붙이기
-	const onClickUnLike =()=>{
+	// 싫어요 버튼 누를때 함수
+	const onClickUnLike = useCallback(() => {
 		if (LOGIN_data.uid === "No_login") {
 			alert('로그인이 필요한 서비스입니다.');
 			return;
 		}
-			dispatch({
-					type:LIKE_REQUEST,
-					data:{
-							unlike:1,
-							like:0,
-							uid:LOGIN_data.uid,
-							board:BOARD_CONTENT.bid
-					}
-			})
-	}
+
+		dispatch({
+			type: BOARD_LIKE_REQUEST,
+			data: {
+				bid: BOARD_CONTENT.bid,
+        state: 'unlike'
+			}
+		})
+	}, [BOARD_CONTENT.bid, LOGIN_data.uid, dispatch]);
 
 	// 게시글을 삭제하는 함수
 	const onClickDelete = useCallback(()=> {

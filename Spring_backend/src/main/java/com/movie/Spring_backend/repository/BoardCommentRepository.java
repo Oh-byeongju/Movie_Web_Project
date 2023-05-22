@@ -15,9 +15,7 @@ import java.util.List;
 @Repository
 public interface BoardCommentRepository extends JpaRepository<BoardCommentEntity, Long> {
 
-    //댓글을 불러오는 메소드 , 최신순
-    @Query("select bc from BoardCommentEntity as bc where bc.board.bid = :bid order by bcid desc")
-    public List<BoardCommentEntity> findByComment(@Param("bid") Long bid);
+
 
     @Query("select bc from BoardCommentEntity as bc where bc.board.bid = :bid ORDER BY bc.commentlike desc, bc.bcparent DESC NULLS FIRST, bcid desc")
     public List<BoardCommentEntity> findByCommentlike(@Param("bid") Long bid);

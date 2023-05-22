@@ -1,5 +1,5 @@
 /*
-  23-05-19 ~ 21 게시물 관련 컨트롤러 수정(오병주)
+  23-05-19 ~ 22 게시물 관련 컨트롤러 수정(오병주)
 */
 package com.movie.Spring_backend.controller;
 
@@ -34,6 +34,12 @@ public class BoardController {
         return ResponseEntity.ok().body(boardService.getBoard(requestMap));
     }
 
+    // 게시물 검색 컨트롤러
+    @GetMapping("/normal/search")
+    public ResponseEntity<Page<BoardDto>> BoardSearch(@RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(boardService.getSearchBoard(requestMap));
+    }
+
     // 게시판 상세조회 컨트롤러
     @GetMapping("/normal/content")
     public ResponseEntity<BoardDto> BoardContent(@RequestParam Map<String, String> requestMap){
@@ -43,7 +49,7 @@ public class BoardController {
     // 이미지를 저장하는 컨트롤러
     @PostMapping("/auth/uploadImage")
     public ResponseEntity<BoardDto> BoardImage(HttpServletRequest request, @RequestPart(required = false) MultipartFile multipartFiles) {
-        return  ResponseEntity.ok().body(boardService.ImageUpload(request, multipartFiles));
+        return ResponseEntity.ok().body(boardService.ImageUpload(request, multipartFiles));
     }
 
     // 게시판에 글을 작성하는 컨트롤러
@@ -53,43 +59,23 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-
+    // 좋아요 기능을 구현한 컨트롤러
+    @PostMapping("/auth/like")
+    public ResponseEntity<BoardDto> BoardLike(HttpServletRequest request, @RequestBody Map<String, String> requestMap){
+        return ResponseEntity.ok().body(boardService.onLike(request, requestMap));
+    }
 
 
 
 
     // 아래로 날려
 
-    //게시판내에서 검색하는 메소드
-    @GetMapping("/normal/search")
-    public ResponseEntity<Page<BoardDto>> Search(@RequestParam("page") String page, @RequestParam("title") String title,@RequestParam("category") String category){
-        System.out.println(page);
-        System.out.println(title);
-        System.out.println(category);
-
-        if(category.equals("title")) {
-            return ResponseEntity.ok().body(boardService.SearchTitle(Integer.valueOf(page), title));
-        }
-        else if(category.equals("name")){
-            return ResponseEntity.ok().body(boardService.SearchUid(Integer.valueOf(page), title));
-
-        }
-        return null;
-    }
-
-
     //게시물 삭제 기능
+    // delete 매핑임
     @PostMapping("/auth/delete")
     public void DeleteBoard(@RequestBody Map<String, String> requestMap, HttpServletRequest request)  {
         boardService.deleteBoard(requestMap,request);
     }
 
-    //좋아요 기능 구현
-    @PostMapping("/auth/like")
-    public BoardDto Like(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
 
-            return boardService.like(requestMap, request);
-
-
-    }
 }

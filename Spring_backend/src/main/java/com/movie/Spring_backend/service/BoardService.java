@@ -1,5 +1,5 @@
 /*
-  23-05-19 ~ 21 게시물 관련 서비스 수정(오병주)
+  23-05-19 ~ 22 게시물 관련 서비스 수정(오병주)
 */
 package com.movie.Spring_backend.service;
 
@@ -14,6 +14,7 @@ import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,6 +81,36 @@ public class BoardService {
             // 내 게시물
             default:
                 board = boardRepository.findByMemberOrderByBidDesc(MemberEntity.builder().uid(uid).build(), PageInfo);
+        }
+
+        return board.map(data -> BoardDto.builder()
+                .bid(data.getBid())
+                .btitle(data.getBtitle())
+                .bdate(data.getBdate())
+                .bcategory(data.getBcategory())
+                .bthumbnail(data.getBthumbnail())
+                .uid(data.getMember().getUid())
+                .commentcount(data.getCommentcount()).build());
+    }
+
+    // 게시물 검색 메소드
+    @Transactional
+    public Page<BoardDto> getSearchBoard(Map<String, String> requestMap) {
+        // requestMap 안에 정보를 추출
+        String category = requestMap.get("category");
+        String title = requestMap.get("title").trim();
+        int page = Integer.parseInt(requestMap.get("page"));
+
+        // 페이지네이션을 위한 정보
+        PageRequest PageInfo = PageRequest.of(page, 20);
+
+        // 게시물 조회
+        Page<BoardEntity> board;
+        if (category.equals("title")) {
+            board = boardRepository.findByBtitleContainsOrderByBidDesc(title, PageInfo);
+        }
+        else {
+            board = boardRepository.findByMemberOrderByBidDesc(MemberEntity.builder().uid(title).build(), PageInfo);
         }
 
         return board.map(data -> BoardDto.builder()
@@ -204,110 +235,117 @@ public class BoardService {
                 .build());
     }
 
-
-
-
-    // 아래로 날려
-    //페이지내 제목으로 검색하는 메소드
+    // 좋아요 구현 메소드
     @Transactional
-    public Page<BoardDto> SearchTitle(Integer index, String title){
-        PageRequest page = PageRequest.of(index,20);   //(페이지 순서, 단일 페이지 크기)
-        Page<BoardEntity> pages = boardRepository.SearchTitle(page, title);
-        return pages.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .bthumbnail(data.getBthumbnail()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
-    }
-
-    //페이지내 이름으로 검색하는 메소드
-    @Transactional
-    public Page<BoardDto> SearchUid(Integer index, String uid){
-        PageRequest page = PageRequest.of(index,20);   //(페이지 순서, 단일 페이지 크기)
-        Page<BoardEntity> pages = boardRepository.SearchUid(page, uid);
-        return pages.map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .bthumbnail(data.getBthumbnail()).commentcount(data.getCommentcount()).uid(data.getMember().getUid()).build());
-    }
-
-
-
-    //좋아요 구현 메소드
-    //comment_like
-    //like
-    @Transactional
-    public BoardDto like(Map<String, String> requestMap,HttpServletRequest request){
+    public BoardDto onLike(HttpServletRequest request, Map<String, String> requestMap){
+        // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        boolean liked= false;
-        boolean unliked = false;
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
 
-        String like = requestMap.get("like");
-        String unlike = requestMap.get("unlike");
-        String User_id = SecurityUtil.getCurrentMemberId();
-        String board = requestMap.get("board");
+        // requestMap 안에 정보를 추출
+        Long bid = Long.valueOf(requestMap.get("bid"));
+        String state = requestMap.get("state");
 
-        BoardEntity bid = BoardEntity.builder().bid(Long.valueOf(board)).build();
-        MemberEntity member = MemberEntity.builder().uid(User_id).build();
-        BoardLikeEntity boardLike = boardLikeRepository.findByLike(Long.valueOf(board), User_id);
-        BoardLikeEntity boardUnLike = boardLikeRepository.findByUnLike(Long.valueOf(board), User_id);
+        // 좋아요에 필요한 정보 Entity로 변환
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
+        BoardEntity board = boardRepository.findById(bid).orElseThrow(() -> new BoardNotFoundException("게시물이 존재하지 않습니다."));
+
+        // 사용자 좋아요, 싫어요 정보 조회 및 가공
+        BoardLikeEntity checkLike = boardLikeRepository
+                .findByBoardAndMemberAndBllikeTrueAndBoardcommentIsNull(board, member).orElse(null);
+        BoardLikeEntity checkUnlike = boardLikeRepository
+                .findByBoardAndMemberAndBlunlikeTrueAndBoardcommentIsNull(board, member).orElse(null);
+
         BoardLikeEntity boardLikeEntity;
-        boardLikeEntity = BoardLikeEntity.builder().
-                bllike(true)
-                .board(bid)
-                .blunlike(false)
-                .member(member)
-                .build();
-        //좋아요 추가
-        if(boardLike==null && like.equals("1")) {
-            System.out.println("추가");
-            //싫어요가 된 상태
-            if(boardUnLike != null){
-                boardLikeRepository.Deleted(Long.valueOf(board),User_id);
+        // 사용자가 좋아요를 눌렀을 경우
+        if (state.equals("like")) {
+            boardLikeEntity = BoardLikeEntity.builder()
+                    .bllike(true)
+                    .board(board)
+                    .blunlike(false)
+                    .member(member)
+                    .build();
+        }
+        // 사용자가 싫어요를 눌렀을 경우
+        else {
+            boardLikeEntity = BoardLikeEntity.builder()
+                    .bllike(false)
+                    .board(board)
+                    .blunlike(true)
+                    .member(member)
+                    .build();
+        }
+
+        // 좋아요 추가
+        if(checkLike == null && state.equals("like")) {
+            // 싫어요 숫자 변수
+            int num = board.getBunlike();
+
+            // 싫어요가 된 상태면 제거후 삽입
+            if(checkUnlike != null){
+                boardLikeRepository.deleteByBoardAndMemberAndBlunlikeTrue(board, member);
+                num = num - 1;
             }
             boardLikeRepository.save(boardLikeEntity);
+
+            // 새로운 정보 리턴
+            return BoardDto.builder()
+                    .bid(board.getBid())
+                    .blike(true)
+                    .bunlike(false)
+                    .likes(board.getLike() + 1)
+                    .unlikes(num).build();
         }
+        // 싫어요 추가
+        else if(checkUnlike == null && state.equals("unlike")) {
+            // 좋아요 숫자 변수
+            int num = board.getLike();
 
-        // 좋아요 상태에서 싫어요 하면 좋아요 삭제후 싫어요 추가를 해야함
-
-        //안좋아요 추가
-        else if(boardUnLike==null && unlike.equals("1")){
-            if(boardLike!=null){
-                //좋아요가 된상태
-                boardLikeRepository.Deleted(Long.valueOf(board),User_id);
+            // 좋아요가 된 상태면 제거후 삽입
+            if(checkLike != null){
+                boardLikeRepository.deleteByBoardAndMemberAndBllikeTrue(board, member);
+                num = num - 1;
             }
             boardLikeRepository.save(boardLikeEntity);
-        }
 
-        //안좋아요 제거
-        else if (boardUnLike!=null && unlike.equals("1")){
-            boardLikeRepository.Deleted(Long.valueOf(board),User_id);
+            // 새로운 정보 리턴
+            return BoardDto.builder()
+                    .bid(board.getBid())
+                    .blike(false)
+                    .bunlike(true)
+                    .likes(num)
+                    .unlikes(board.getBunlike() + 1).build();
         }
+        // 좋아요 제거
+        else if(checkLike != null && state.equals("like")){
+            boardLikeRepository.deleteByBoardAndMemberAndBllikeTrue(board, member);
 
-        //좋아요 제거
-        else{
-            System.out.println("삭제");
-            boardLikeRepository.Deleted(Long.valueOf(board),User_id);
+            // 새로운 정보 리턴
+            return BoardDto.builder()
+                    .bid(board.getBid())
+                    .blike(false)
+                    .bunlike(false)
+                    .likes(board.getLike() - 1)
+                    .unlikes(board.getBunlike()).build();
         }
-        BoardEntity datas = boardRepository.booleanCheck(Long.valueOf(board));
+        // 싫어요 제거
+        else {
+            boardLikeRepository.deleteByBoardAndMemberAndBlunlikeTrue(board, member);
 
-
-        BoardLikeEntity checklike = boardLikeRepository.findByLike(Long.valueOf(board), User_id);
-        BoardLikeEntity checkunlike = boardLikeRepository.findByUnLike(Long.valueOf(board), User_id);
-
-
-        if (checklike == null) {
-            liked=false;
+            // 새로운 정보 리턴
+            return BoardDto.builder()
+                    .bid(board.getBid())
+                    .blike(false)
+                    .bunlike(false)
+                    .likes(board.getLike())
+                    .unlikes(board.getBunlike() - 1).build();
         }
-        if(checklike !=null){
-            liked=true;
-        }
-        if(checkunlike ==null){
-            unliked=false;
-        }
-        if(checkunlike!=null){
-            unliked=true;
-        }
-        return BoardDto.builder().bid(datas.getBid()).blike(liked).bunlike(unliked).likes(datas.getLike()).unlikes(datas.getBunlike()).build();
     }
+
+
+
 
     @Transactional
     public void deleteBoard(Map<String, String> requestMap, HttpServletRequest request){

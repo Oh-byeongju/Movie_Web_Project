@@ -40,21 +40,21 @@ const ContentList = () => {
 
 	return (
 		<ContentWrapper>
-		{BOARD_LIST.content && BOARD_LIST.content.map((data, index)=>
-			<Card key={index}>
+		{BOARD_LIST.content && BOARD_LIST.content.map((board)=>
+			<Card key={board.bid}>
 				<Number>
 					<CaretUpOutlined twoToneColor="grey"/>
 					<div>
-						{data.bid}
+						{board.bid}
 					</div>
 				</Number>
 				<Detail>
-					<Link to={`/Board/content/${category}/${data.bid}/${data.btitle}`}>
+					<Link to={`/Board/content/${category}/${board.bid}/${board.btitle}`}>
 						<div>
 							<span>
-								{data.btitle}
+								{board.btitle}
 								<em>
-									[{data.commentcount}]
+									[{board.commentcount}]
 								</em>
 							</span>
 						</div>
@@ -62,19 +62,19 @@ const ContentList = () => {
 				</Detail>
 				<Item>
 					<div className="category">
-						{data.bcategory}
+						{board.bcategory}
 					</div>
 					<div className="date">
 						<span>
-							{date.detailDate(new Date(data.bdate))}
+							{date.detailDate(new Date(board.bdate))}
 						</span>
 					</div>
 					<div className="name">
-						{data.uid}
+						{board.uid}
 					</div>
 				</Item>
 				<Thumbnail>
-					<Link to={`/Board/content/${data.bid}/${data.btitle}`} dangerouslySetInnerHTML={{__html:data.bthumbnail}}/>
+					<Link to={`/Board/content/${category}/${board.bid}/${board.btitle}`} dangerouslySetInnerHTML={{__html:board.bthumbnail}}/>
 				</Thumbnail>
 			</Card>)}
 			<CustomPagination current={parseInt(page)} total={BOARD_LIST.totalElements} defaultPageSize={20} showSizeChanger={false} hideOnSinglePage={true} onChange={handleChange}/>
@@ -202,7 +202,7 @@ const Item = styled.div`
 const Thumbnail = styled.div`
 	display: table-cell;
 	padding-right: 20px;
-	width: 73px;
+	width: 85px;
 	vertical-align: middle;
 	
 	div {
@@ -211,7 +211,7 @@ const Thumbnail = styled.div`
 
 	img {
 		display: block;
-		width: 73px;
+		width: 85px;
 		height: 62px;
 		-o-object-fit: cover;
 		object-fit: cover;

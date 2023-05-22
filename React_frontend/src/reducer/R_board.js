@@ -1,10 +1,15 @@
 /*
-	23-05-19 ~ 21 게시물 페이지 리듀서 수정(오병주)
+	23-05-19 ~ 22 게시물 페이지 리듀서 수정(오병주)
 */
-// 게시물 목록 조회 리스트
+// 게시물 조회 리스트
 export const BOARD_LIST_REQUEST = "BOARD_LIST_REQUEST";
 export const BOARD_LIST_SUCCESS = "BOARD_LIST_SUCCESS";
 export const BOARD_LIST_FAILURE = "BOARD_LIST_FAILURE";
+
+// 게시물 검색 리스트
+export const BOARD_SEARCH_REQUEST = "BOARD_SEARCH_REQUEST"
+export const BOARD_SEARCH_SUCCESS = "BOARD_SEARCH_SUCCESS"
+export const BOARD_SEARCH_FAILURE = "BOARD_SEARCH_FAILURE"
 
 // 게시물 상세조회 리스트
 export const BOARD_CONTENT_REQUEST = "BOARD_CONTENT_REQUEST";
@@ -16,19 +21,19 @@ export const BOARD_WRITE_REQUEST = "BOARD_WRITE_REQUEST"
 export const BOARD_WRITE_SUCCESS = "BOARD_WRITE_SUCCESS"
 export const BOARD_WRITE_FAILURE = "BOARD_WRITE_FAILURE"
 
+// 게시물 좋아요 리스트
+export const BOARD_LIKE_REQUEST = "BOARD_LIKE_REQUEST"
+export const BOARD_LIKE_SUCCESS = "BOARD_LIKE_SUCCESS"
+export const BOARD_LIKE_FAILURE = "BOARD_LIKE_FAILURE"
 
 
 
 
 //// 아래로 날리기
-  export const BOARD_SEARCH_REQUEST = "BOARD_SEARCH_REQUEST"
-  export const BOARD_SEARCH_SUCCESS = "BOARD_SEARCH_SUCCESS"
-  export const BOARD_SEARCH_FAILURE = "BOARD_SEARCH_FAILURE"
-
+ 
   export const CONTENT_DELETE_REQUEST = "CONTENT_DELETE_REQUEST"
   export const CONTENT_DELETE_SUCCESS = "CONTENT_DELETE_SUCCESS"
   export const CONTENT_DELETE_FAILURE = "CONTENT_DELETE_FAILURE"
-
 
   export const BOARD_DELETE_REQUEST = "BOARD_DELETE_REQUEST"
   export const BOARD_DELETE_SUCCESS = "BOARD_DELETE_SUCCESS"
@@ -46,9 +51,6 @@ export const BOARD_WRITE_FAILURE = "BOARD_WRITE_FAILURE"
   export const COMMENT_DELETE_SUCCESS = "COMMENT_DELETE_SUCCESS"
   export const COMMENT_DELETE_FAILURE = "COMMENT_DELETE_FAILURE"
 
-  export const LIKE_REQUEST = "LIKE_REQUEST"
-  export const LIKE_SUCCESS = "LIKE_SUCCESS"
-  export const LIKE_FAILURE = "LIKE_FAILURE"
 
   export const COMMENT_LIKE_REQUEST = "COMMENT_LIKE_REQUEST"
   export const COMMENT_LIKE_SUCCESS = "COMMENT_LIKE_SUCCESS"
@@ -64,6 +66,11 @@ const initalState = {
   BOARD_LIST_error: false,
 	BOARD_LIST: [],
 	
+	BOARD_SEARCH_loading: false,
+  BOARD_SEARCH_done: false,
+  BOARD_SEARCH_error: false,
+	BOARD_SEARCH_LIST: [],
+
 	BOARD_CONTENT_loading: false,
   BOARD_CONTENT_done: false,
   BOARD_CONTENT_error: false,
@@ -73,16 +80,14 @@ const initalState = {
   BOARD_WRITE_done: false,
   BOARD_WRITE_error: false,
 
-
+	BOARD_LIKE_loading: false,
+  BOARD_LIKE_done: false,
+  BOARD_LIKE_error: false,
 
 
 
 	
 	// 아래로 날리기
-
-	board_search_loading:false,
-	board_search_done:false,
-	board_search_error:null,
 
 	content_read_loading:false,
 	content_read_done:false,
@@ -125,13 +130,10 @@ const initalState = {
 	content:[],
 	comment:[],
 	like:[],
-
 	likeslikes:[],
-
 };
 
   
-
 const R_board = (state = initalState, action) => {
 	switch (action.type) {
 		// 게시물 조회 케이스들
@@ -156,6 +158,29 @@ const R_board = (state = initalState, action) => {
         BOARD_LIST_loading: false,
         BOARD_LIST_done: false,
         BOARD_LIST_error: true
+      };
+		// 게시물 검색 케이스들
+    case BOARD_SEARCH_REQUEST:
+      return {
+        ...state,
+        BOARD_SEARCH_loading: true,
+        BOARD_SEARCH_done: false,
+        BOARD_SEARCH_error: false
+      };
+    case BOARD_SEARCH_SUCCESS:
+      return {
+        ...state,
+        BOARD_SEARCH_loading: false,
+        BOARD_SEARCH_done: true,
+        BOARD_SEARCH_error: false,
+        BOARD_SEARCH_LIST: action.data
+      };
+    case BOARD_SEARCH_FAILURE:
+      return {
+        ...state,
+        BOARD_SEARCH_loading: false,
+        BOARD_SEARCH_done: false,
+        BOARD_SEARCH_error: true
       };
 		// 게시물 상세조회 케이스들
     case BOARD_CONTENT_REQUEST:
@@ -202,34 +227,42 @@ const R_board = (state = initalState, action) => {
 				BOARD_WRITE_done: false,
 				BOARD_WRITE_error: true
 			};
+		// 게시물 좋아요 케이스들
+		case BOARD_LIKE_REQUEST:
+			return {
+				...state,
+				BOARD_LIKE_loading: true,
+				BOARD_LIKE_done: false,
+				BOARD_LIKE_error: false
+			};
+		case BOARD_LIKE_SUCCESS:
+			return {
+				...state,
+				BOARD_LIKE_loading: false,
+				BOARD_LIKE_done: true,
+				BOARD_LIKE_error: false,
+				BOARD_CONTENT : {
+					...state.BOARD_CONTENT,
+					blike: action.data.blike,
+					bunlike: action.data.bunlike,
+					likes: action.data.likes, 
+					unlikes: action.data.unlikes
+				}
+			}		
+		case BOARD_LIKE_FAILURE:
+			return {
+				...state,
+				BOARD_LIKE_loading: false,
+				BOARD_LIKE_done: false,
+				BOARD_LIKE_error: true
+			}; 
 
 
 
 
 
 		// 아래로 날리기
-			case BOARD_SEARCH_REQUEST:
-					return{
-							...state,
-							board_search_loading:true,
-							board_search_done:false,
-							board_search_error:null,
-				}
-					case BOARD_SEARCH_SUCCESS:
-							return{
-									...state,
-									board_search_loading:false,
-									board_search_done:true,
-									board_search_error:null,
-									board:action.data
-							}
-					case BOARD_SEARCH_FAILURE:
-							return{
-							...state,
-							board_search_loading:false,
-							board_search_done:false,
-							board_search_error:action.error,
-			} 
+			
 
 
 			case CONTENT_DELETE_REQUEST:
@@ -363,35 +396,7 @@ const R_board = (state = initalState, action) => {
 									
 									}  
 
-									case LIKE_REQUEST:
-											return{
-													...state,
-													like_loading:true,
-													like_done:false,
-													like_error:null,
-											}
-									case LIKE_SUCCESS:
-
-								
-											return{
-															...state,
-															like_loading:false,
-															like_done:true,
-															like_error:null,
-															content:{
-																	...state.content,
-																	blike: action.data.blike, bunlike: action.data.bunlike
-																																	,likes:action.data.likes, unlikes:action.data.unlikes
-															}
-																}
-																
-									case LIKE_FAILURE:
-											return{
-													...state,
-													like_loading:false,
-													like_done:false,
-													like_error:action.error,
-											}  
+									
 
 											case COMMENT_LIKE_REQUEST:
 													return{

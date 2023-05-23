@@ -5,6 +5,7 @@ package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.BoardDto;
 import com.movie.Spring_backend.dto.MemberDto;
+import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.entity.BoardEntity;
 import com.movie.Spring_backend.entity.BoardLikeEntity;
 import com.movie.Spring_backend.service.BoardService;
@@ -40,7 +41,7 @@ public class BoardController {
         return ResponseEntity.ok().body(boardService.getSearchBoard(requestMap));
     }
 
-    // 게시판 상세조회 컨트롤러
+    // 게시물 상세조회 컨트롤러
     @GetMapping("/normal/content")
     public ResponseEntity<BoardDto> BoardContent(@RequestParam Map<String, String> requestMap){
         return ResponseEntity.ok().body(boardService.getBoardDetail(requestMap));
@@ -52,10 +53,24 @@ public class BoardController {
         return ResponseEntity.ok().body(boardService.ImageUpload(request, multipartFiles));
     }
 
-    // 게시판에 글을 작성하는 컨트롤러
+    // 게시물 작성 컨트롤러
     @PostMapping("/auth/boardWrite")
     public ResponseEntity<String> BoardWrite(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
         boardService.BoardWrite(request, requestMap);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 게시물 수정 컨트롤러
+    @PatchMapping("/auth/boardUpdate")
+    public ResponseEntity<String> BoardUpdate(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
+        boardService.BoardUpdate(request, requestMap);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 게시물 삭제 컨트롤러
+    @DeleteMapping("/auth/boardDelete")
+    public ResponseEntity<String> BoardDelete(HttpServletRequest request, @RequestParam("bid") Long bid)  {
+        boardService.BoardDelete(request, bid);
         return ResponseEntity.noContent().build();
     }
 
@@ -64,18 +79,4 @@ public class BoardController {
     public ResponseEntity<BoardDto> BoardLike(HttpServletRequest request, @RequestBody Map<String, String> requestMap){
         return ResponseEntity.ok().body(boardService.onLike(request, requestMap));
     }
-
-
-
-
-    // 아래로 날려
-
-    //게시물 삭제 기능
-    // delete 매핑임
-    @PostMapping("/auth/delete")
-    public void DeleteBoard(@RequestBody Map<String, String> requestMap, HttpServletRequest request)  {
-        boardService.deleteBoard(requestMap,request);
-    }
-
-
 }

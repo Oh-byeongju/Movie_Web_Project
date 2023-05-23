@@ -15,8 +15,8 @@ import ScrollTop from "./lib/ScrollTop";
 const sagaMiddleware = createSagaMiddleware();
 const enhancer =
   process.env.NODE_ENV === "production"
-    ? compose(applyMiddleware(sagaMiddleware))
-    : composeWithDevTools(applyMiddleware(sagaMiddleware));
+	? compose(applyMiddleware(sagaMiddleware))
+	: composeWithDevTools(applyMiddleware(sagaMiddleware));
 
 const store = createStore(rootReducer, enhancer);
 sagaMiddleware.run(rootSaga);

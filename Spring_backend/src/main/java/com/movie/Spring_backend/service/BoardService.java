@@ -195,7 +195,7 @@ public class BoardService {
         return BoardDto.builder().image("http://localhost:3000/img/board/" + newFilename).build();
     }
 
-    // 게시판에 글을 작성하는 메소드
+    // 게시물 작성 메소드
     @Transactional
     public void BoardWrite(HttpServletRequest request, Map<String, String> requestMap) {
         // Access Token에 대한 유효성 검사
@@ -233,6 +233,48 @@ public class BoardService {
                 .member(member)
                 .bthumbnail(imgTag)
                 .build());
+    }
+
+    // 게시물 수정 메소드
+    @Transactional
+    public void BoardUpdate(HttpServletRequest request, Map<String, String> requestMap) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // requestMap 안에 정보를 추출
+        Long bid = Long.valueOf(requestMap.get("bid"));
+        String title = requestMap.get("title").trim();
+        String detail = requestMap.get("detail").trim();
+        String category = requestMap.get("category").trim();
+
+        // 게시물 존재여부 확인
+        if (!boardRepository.existsById(bid)) {
+            throw new BoardNotFoundException("게시물이 존재하지 않습니다.");
+        }
+
+        // 썸네일 정보 가공
+        String imgTag = "<img src=\"http://localhost:3000/img/board/post_hidden.jpg\">";
+        Pattern pattern = Pattern.compile("<img[^>]*src=[\"']?([^>\"']+)[\"']?[^>]*>");
+        Matcher match = pattern.matcher(detail);
+
+        // 게시물 내에 이미지 태그를 찾으면
+        if (match.find()) {
+            // 게시물 내용 중 첫번째 이미지 태그를 뽑은 후 변수에 할당
+            imgTag = match.group(0);
+        }
+
+        // 게시물 수정
+        boardRepository.BoardUpdate(title, detail, category, imgTag, bid);
+    }
+
+    // 게시물 삭제 메소드
+    @Transactional
+    public void BoardDelete(HttpServletRequest request, Long bid){
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 게시물 삭제
+        boardRepository.deleteById(bid);
     }
 
     // 좋아요 구현 메소드
@@ -343,19 +385,4 @@ public class BoardService {
                     .unlikes(board.getBunlike() - 1).build();
         }
     }
-
-
-
-
-    @Transactional
-    public void deleteBoard(Map<String, String> requestMap, HttpServletRequest request){
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        String bid = requestMap.get("bid");
-
-
-     boardRepository.deleteById(Long.valueOf(bid));
-    }
-
-
 }

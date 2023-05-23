@@ -1,5 +1,5 @@
 /*
-	23-05-19 ~ 22 게시물 페이지 리듀서 수정(오병주)
+	23-05-19 ~ 23 게시물 페이지 리듀서 수정(오병주)
 */
 // 게시물 조회 리스트
 export const BOARD_LIST_REQUEST = "BOARD_LIST_REQUEST";
@@ -21,6 +21,16 @@ export const BOARD_WRITE_REQUEST = "BOARD_WRITE_REQUEST"
 export const BOARD_WRITE_SUCCESS = "BOARD_WRITE_SUCCESS"
 export const BOARD_WRITE_FAILURE = "BOARD_WRITE_FAILURE"
 
+// 게시물 수정 리스트
+export const BOARD_UPDATE_REQUEST = "BOARD_UPDATE_REQUEST"
+export const BOARD_UPDATE_SUCCESS = "BOARD_UPDATE_SUCCESS"
+export const BOARD_UPDATE_FAILURE = "BOARD_UPDATE_FAILURE"
+
+// 게시물 삭제 리스트
+export const BOARD_DELETE_REQUEST = "BOARD_DELETE_REQUEST"
+export const BOARD_DELETE_SUCCESS = "BOARD_DELETE_SUCCESS"
+export const BOARD_DELETE_FAILURE = "BOARD_DELETE_FAILURE"
+
 // 게시물 좋아요 리스트
 export const BOARD_LIKE_REQUEST = "BOARD_LIKE_REQUEST"
 export const BOARD_LIKE_SUCCESS = "BOARD_LIKE_SUCCESS"
@@ -29,15 +39,13 @@ export const BOARD_LIKE_FAILURE = "BOARD_LIKE_FAILURE"
 
 
 
+
+
+
 //// 아래로 날리기
- 
   export const CONTENT_DELETE_REQUEST = "CONTENT_DELETE_REQUEST"
   export const CONTENT_DELETE_SUCCESS = "CONTENT_DELETE_SUCCESS"
   export const CONTENT_DELETE_FAILURE = "CONTENT_DELETE_FAILURE"
-
-  export const BOARD_DELETE_REQUEST = "BOARD_DELETE_REQUEST"
-  export const BOARD_DELETE_SUCCESS = "BOARD_DELETE_SUCCESS"
-  export const BOARD_DELETE_FAILURE = "BOARD_DELETE_FAILURE"
 
   export const COMMENT_READ_REQUEST = "COMMENT_READ_REQUEST"
   export const COMMENT_READ_SUCCESS = "COMMENT_READ_SUCCESS"
@@ -50,7 +58,6 @@ export const BOARD_LIKE_FAILURE = "BOARD_LIKE_FAILURE"
   export const COMMENT_DELETE_REQUEST = "COMMENT_DELETE_REQUEST"
   export const COMMENT_DELETE_SUCCESS = "COMMENT_DELETE_SUCCESS"
   export const COMMENT_DELETE_FAILURE = "COMMENT_DELETE_FAILURE"
-
 
   export const COMMENT_LIKE_REQUEST = "COMMENT_LIKE_REQUEST"
   export const COMMENT_LIKE_SUCCESS = "COMMENT_LIKE_SUCCESS"
@@ -80,30 +87,26 @@ const initalState = {
   BOARD_WRITE_done: false,
   BOARD_WRITE_error: false,
 
+	BOARD_UPDATE_loading: false,
+  BOARD_UPDATE_done: false,
+  BOARD_UPDATE_error: false,
+
+	BOARD_DELETE_loading: false,
+  BOARD_DELETE_done: false,
+  BOARD_DELETE_error: false,
+
 	BOARD_LIKE_loading: false,
   BOARD_LIKE_done: false,
   BOARD_LIKE_error: false,
 
-
+	
 
 	
 	// 아래로 날리기
 
-	content_read_loading:false,
-	content_read_done:false,
-	content_read_error:null,
-
 	content_delete_loading:false,
 	content_delete_done:false,
 	content_delete_error:null,
-
-	board_write_loading:false,
-	board_write_done:false,
-	board_write_error:null,
-
-	board_delete_loading:false,
-	board_delete_done:false,
-	board_delete_error:null,
 
 	comment_read_loading:false,
 	comment_read_done:false,
@@ -117,15 +120,9 @@ const initalState = {
 	comment_delete_done:false,
 	comment_delete_error:null,
 
-
-	like_loadng:false,
-	like_done:false,
-	like_error:null,
-	
 	comment_like_loadng:false,
 	comment_like_done:false,
 	comment_like_error:null,
-
 
 	content:[],
 	comment:[],
@@ -227,6 +224,50 @@ const R_board = (state = initalState, action) => {
 				BOARD_WRITE_done: false,
 				BOARD_WRITE_error: true
 			};
+		// 게시물 수정 케이스들
+		case BOARD_UPDATE_REQUEST:
+			return {
+				...state,
+				BOARD_UPDATE_loading: true,
+				BOARD_UPDATE_done: false,
+				BOARD_UPDATE_error: false
+			};
+		case BOARD_UPDATE_SUCCESS:
+			return {
+				...state,
+				BOARD_UPDATE_loading: false,
+				BOARD_UPDATE_done: true,
+				BOARD_UPDATE_error: false
+			};
+		case BOARD_UPDATE_FAILURE:
+			return {
+				...state,
+				BOARD_UPDATE_loading: false,
+				BOARD_UPDATE_done: false,
+				BOARD_UPDATE_error: true
+			};
+		// 게시물 삭제 케이스들
+		case BOARD_DELETE_REQUEST:
+			return {
+				...state,
+				BOARD_DELETE_loading: true,
+				BOARD_DELETE_done: false,
+				BOARD_DELETE_error: false
+			};
+		case BOARD_DELETE_SUCCESS:
+			return {
+				...state,
+				BOARD_DELETE_loading: false,
+				BOARD_DELETE_done: true,
+				BOARD_DELETE_error: false
+			};
+		case BOARD_DELETE_FAILURE:
+			return {
+				...state,
+				BOARD_DELETE_loading: false,
+				BOARD_DELETE_done: false,
+				BOARD_DELETE_error: true
+			};
 		// 게시물 좋아요 케이스들
 		case BOARD_LIKE_REQUEST:
 			return {
@@ -256,15 +297,13 @@ const R_board = (state = initalState, action) => {
 				BOARD_LIKE_done: false,
 				BOARD_LIKE_error: true
 			}; 
+		
 
 
 
 
 
 		// 아래로 날리기
-			
-
-
 			case CONTENT_DELETE_REQUEST:
 					return{
 							...state,
@@ -286,32 +325,6 @@ const R_board = (state = initalState, action) => {
 							content_delete_done:false,
 							content_delete_error:action.error,
 			}  
-
-			
-				
-					
-			case BOARD_DELETE_REQUEST:
-					return{
-							...state,
-							board_delete_loading:true,
-							board_delete_done:false,
-							board_delete_error:null,
-							}
-			case BOARD_DELETE_SUCCESS:
-					return{
-							...state,
-							board_delete_loading:false,
-							board_delete_done:true,
-							board_delete_error:null,
-									}
-			case BOARD_DELETE_FAILURE:
-					return{
-							...state,
-							board_delete_loading:false,
-							board_delete_done:false,
-							board_delete_error:action.error,
-							}    
-
 
 							case COMMENT_READ_REQUEST:
 									return{

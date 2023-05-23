@@ -1,5 +1,5 @@
 /*
-	23-05-19 ~ 22 게시물 페이지 수정(오병주)
+	23-05-19 ~ 23 게시물 페이지 수정(오병주)
 */
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
@@ -7,11 +7,13 @@ import {
 	BOARD_SEARCH_REQUEST, BOARD_SEARCH_SUCCESS, BOARD_SEARCH_FAILURE,
 	BOARD_CONTENT_REQUEST, BOARD_CONTENT_SUCCESS, BOARD_CONTENT_FAILURE,
 	BOARD_WRITE_REQUEST, BOARD_WRITE_SUCCESS, BOARD_WRITE_FAILURE,
+	BOARD_UPDATE_REQUEST, BOARD_UPDATE_SUCCESS, BOARD_UPDATE_FAILURE,
+	BOARD_DELETE_REQUEST, BOARD_DELETE_SUCCESS, BOARD_DELETE_FAILURE,
 	BOARD_LIKE_REQUEST, BOARD_LIKE_SUCCESS, BOARD_LIKE_FAILURE,
-
+	
 
 	// 아래로 날리기
-  CONTENT_DELETE_REQUEST,CONTENT_DELETE_SUCCESS,CONTENT_DELETE_FAILURE, COMMENT_WRITE_REQUEST, COMMENT_WRITE_SUCCESS, COMMENT_WRITE_FAILURE, COMMENT_READ_SUCCESS, COMMENT_READ_FAILURE, COMMENT_READ_REQUEST,COMMENT_DELETE_SUCCESS, COMMENT_DELETE_FAILURE, COMMENT_DELETE_REQUEST, COMMENT_LIKE_SUCCESS, COMMENT_LIKE_FAILURE, COMMENT_LIKE_REQUEST
+  COMMENT_WRITE_REQUEST, COMMENT_WRITE_SUCCESS, COMMENT_WRITE_FAILURE, COMMENT_READ_SUCCESS, COMMENT_READ_FAILURE, COMMENT_READ_REQUEST,COMMENT_DELETE_SUCCESS, COMMENT_DELETE_FAILURE, COMMENT_DELETE_REQUEST, COMMENT_LIKE_SUCCESS, COMMENT_LIKE_FAILURE, COMMENT_LIKE_REQUEST
 } from "../reducer/R_board";
 import { http } from "../lib/http";
 
@@ -140,6 +142,62 @@ async function callBoardWrite(data) {
 	});
 }
 
+// 게시물 수정 함수
+function* BoardUpdate(action) {
+	const result = yield call(callBoardUpdate, action.data);
+	if (result.status === 204) { 
+		yield put({
+			type: BOARD_UPDATE_SUCCESS
+		});
+	} 
+	else {
+		yield put({
+			type: BOARD_UPDATE_FAILURE
+		});   
+	}
+}
+
+// 게시물 수정 백엔드 호출
+async function callBoardUpdate(data) {
+	return await http.patch("/Board/auth/boardUpdate", data)
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
+}
+
+// 게시물 삭제 함수
+function* BoardDelete(action) {
+  const result = yield call(callBoardDelete, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: BOARD_DELETE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: BOARD_DELETE_FAILURE
+    });
+  }
+}
+
+// 게시물 삭제 백엔드 호출
+async function callBoardDelete(data) {
+	return await http.delete("/Board/auth/boardDelete", {
+    params: {
+			bid: data.bid
+		}
+	})
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
 // 게시물 좋아요 함수
 function* BoardLike(action) {
 	const result = yield call(callBoardLike, action.data);
@@ -175,39 +233,7 @@ async function callBoardLike(data) {
 
 
 
-
 // 아래로 날리기
-//게시판 삭제
-async function ContentDeleteApi(data) {
-  return await http
-    .post("/board/auth/delete",data)
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-
-function* ContentDelete(action) {
-  console.log(action)
-  const result = yield call(ContentDeleteApi, action.data);
-  console.log(result)
-  
-  if (result.status === 200) { 
-    yield put({
-      type: CONTENT_DELETE_SUCCESS,
-      
-    });
-
-  } else {
-    yield put({
-      type: CONTENT_DELETE_FAILURE,
-      data: result.status,
-    });   
-  }
-}
-
    //댓글 쓰기
 async function CommentReadApi(data) {
   return await http
@@ -349,6 +375,14 @@ function* BOARD_WRITE() {
 	yield takeLatest(BOARD_WRITE_REQUEST, BoardWrite);
 }
 
+function* BOARD_UPDATE() {
+	yield takeLatest(BOARD_UPDATE_REQUEST, BoardUpdate);
+}
+
+function* BOARD_DELETE() {
+	yield takeLatest(BOARD_DELETE_REQUEST, BoardDelete);
+}
+
 function* BOARD_LIKE() {
 	yield takeLatest(BOARD_LIKE_REQUEST, BoardLike);
 }
@@ -360,10 +394,6 @@ function* BOARD_LIKE() {
 
 
 // 아래로 날리기
-
-  function* ContentDeleteSaga() {
-    yield takeLatest(CONTENT_DELETE_REQUEST, ContentDelete);
-  }
 
   function* CommentReadSaga() {
     yield takeLatest(COMMENT_READ_REQUEST, CommentRead);
@@ -381,11 +411,12 @@ function* BOARD_LIKE() {
   }
   
   export default function* S_board() {
-    yield all([fork(BOARD_LIST), fork(BOARD_CONTENT), fork(BOARD_WRITE), fork(BOARD_SEARCH), fork(BOARD_LIKE),
+    yield all([fork(BOARD_LIST), fork(BOARD_CONTENT), fork(BOARD_WRITE), fork(BOARD_SEARCH), fork(BOARD_LIKE), fork(BOARD_DELETE),
+			fork(BOARD_UPDATE),
 
 			//아래로 날리기
 			
 			
-			fork(ContentDeleteSaga),
+			
     fork(CommentWriteSaga),fork(CommentReadSaga),fork(DeleteSaga),fork(CommentLikeSaga)]);
   }

@@ -1,47 +1,47 @@
 /*
-  23-05-16 게시물 페이지 수정(오병주)
+  23-05-23 게시물 페이지 수정(오병주)
 */
-import React, { useRef, useState, useMemo, useCallback, useEffect } from "react";
+import React, {useState, useEffect, useCallback, useMemo, useRef }from "react";
 import styled from "styled-components";
 import ReactQuill, { Quill } from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import ImageResize from '@looop/quill-image-resize-module-react';
 import { useSelector ,useDispatch, shallowEqual } from "react-redux";
 import { http } from "../../lib/http";
-import { BOARD_WRITE_REQUEST } from "../../reducer/R_board";
+import { BOARD_UPDATE_REQUEST } from "../../reducer/R_board";
 import { useLocation, useNavigate } from "react-router-dom";
 Quill.register('modules/ImageResize', ImageResize);
 
-const ContentWriting = () => {
+const ContentEdit =  () => {
+	const { state } = useLocation();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const location = useLocation();
 	const quillRef = useRef();
 
 	// 필요한 리덕스 상태들
-  const { BOARD_WRITE_done, BOARD_WRITE_error } = useSelector(
-    state => ({
-      BOARD_WRITE_done: state.R_board.BOARD_WRITE_done,
-			BOARD_WRITE_error: state.R_board.BOARD_WRITE_error
-    }),
-    shallowEqual
-  ); 
+	const { BOARD_UPDATE_done, BOARD_UPDATE_error } = useSelector(
+		state => ({
+			BOARD_UPDATE_done: state.R_board.BOARD_UPDATE_done,
+			BOARD_UPDATE_error: state.R_board.BOARD_UPDATE_error
+		}),
+		shallowEqual
+	); 
 
 	// 카테고리 지정
 	const selectList = ["자유 게시판", "영화 뉴스", "영화 토론"];
-	const [Selected, setSelected] = useState("자유 게시판");
+	const [Selected, setSelected] = useState(state.category);
 	const handleSelect = useCallback((e) => {
 		setSelected(e.target.value);
 	}, []);
 
 	// 게시글 제목
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(state.title);
   const handleTitle = useCallback((e) => {
     setTitle(e.target.value);
   }, []);
 
 	// 게시글 내용
-	const [Board_Content, setContent] = useState('');
+	const [Board_Content, setContent] = useState(state.content);
 	const onEditorChange = useCallback((value) => {
 		setContent(value);
 	}, []);
@@ -90,9 +90,9 @@ const ContentWriting = () => {
 				image: imageHandler
 			},
 		}, 
-		ImageResize : {
-    	modules : ['Resize', 'DisplaySize']
-    }
+		ImageResize: {
+			modules: ['Resize', 'DisplaySize']
+		},
 	}), []);
 	
 	// quill 라이브러리 설정값
@@ -102,11 +102,11 @@ const ContentWriting = () => {
 		'list', 'bullet', 'indent',
 		'link', 'image',
 		'align', 'color', 'background',
-		'width'  
+		'width'
 	];
 
-	// 작성하기 버튼 누를때 실행되는 함수
-	const onWrite = useCallback(()=> {
+	// 수정하기 버튼 누를때 실행되는 함수
+	const onUpdate = useCallback(()=> {
 		// 제목 빈칸 예외처리
 		if (title.trim() === '') {
 			alert('제목을 입력해주세요.');
@@ -119,56 +119,47 @@ const ContentWriting = () => {
 			return;
 		}
 
-		if (!window.confirm("게시글을 작성하시겠습니까?")) {
+		if (!window.confirm("게시글을 수정하시겠습니까?")) {
 			return;
 		} 
 		else {
 			dispatch({
-				type: BOARD_WRITE_REQUEST,
+				type: BOARD_UPDATE_REQUEST,
 				data:{
+					bid: state.id,
 					title: title,
 					detail: Board_Content,
 					category: Selected
 				}
 			});
 		}
-	}, [title, Board_Content, Selected, dispatch]);
+	}, [state, title, Board_Content, Selected, dispatch]);
 
-	// 취소버튼 누를때 실행되는 함수
-	const onCancel = useCallback(()=> {
-		if (location.state && location.state.url === '/UserLogin') {
-			navigate('/Board/list/free/all/1');
-		}
-		else {
-			navigate(-1);
-		}
-	}, [location, navigate]);
-
-	// 게시글 작성 성공 여부에 따른 useEffect
+	// 게시글 수정 성공 여부에 따른 useEffect
 	useEffect(()=> {
-		if (BOARD_WRITE_done) {
-			alert('게시글이 작성되었습니다.');
-			window.location.assign(`/Board/list/${Selected === '자유 게시판' ? 'free' : Selected === '영화 뉴스' ? 'news' : 'debate'}/all/1`);
+		if (BOARD_UPDATE_done) {
+			alert('게시글이 수정되었습니다.');
+			window.location.assign(`/Board/content/${Selected === '자유 게시판' ? 'free' : Selected === '영화 뉴스' ? 'news' : 'debate'}/${state.id}/${title}`);
 		}
 
-		if (BOARD_WRITE_error) {
-			alert('게시글 작성에 실패했습니다.');
-			window.location.replace('/Board/write');
+		if (BOARD_UPDATE_error) {
+			alert('게시글 수정에 실패했습니다.');
+			window.location.assign(`/Board/list/${state.category === '자유 게시판' ? 'free' : state.category === '영화 뉴스' ? 'news' : 'debate'}/all/1`);
 		}
-	}, [BOARD_WRITE_done, BOARD_WRITE_error, Selected]);
+	}, [BOARD_UPDATE_done, BOARD_UPDATE_error, Selected, state, title]);
 
-  return (
+	return (
 		<ContentWrapper>       
 			<WriteWrapper>  
 				<h2>
-					글쓰기
+					글수정
 				</h2>
 				<Select>
 					<select onChange={handleSelect} value={Selected}>
-						{selectList.map((item) => (
+					{selectList.map((item) => 
 						<option value={item} key={item}>
-              {item}
-            </option>))}
+							{item}
+						</option>)}
 					</select>
 					<input type="text" placeholder="제목" value={title} onChange={handleTitle}/>
 				</Select>
@@ -180,14 +171,14 @@ const ContentWriting = () => {
 					modules={modules}
 					theme="snow"
 					placeholder="내용을 입력해주세요."
-				/>          
+				/>     		
 			</WriteWrapper>
-      <ButtonMore>
-        <Fail onClick={onCancel}>
+			<ButtonMore>
+				<Fail onClick={()=>{navigate(-1)}}>
 					취소
 				</Fail>
-        <Success onClick={onWrite}>
-					작성하기
+				<Success onClick={onUpdate}>
+					수정하기
 				</Success>
 			</ButtonMore>
 		</ContentWrapper>
@@ -299,4 +290,4 @@ const CustomReactQuill = styled(ReactQuill)`
 	height: 530px;
 `;
 
-export default ContentWriting;
+export default ContentEdit;

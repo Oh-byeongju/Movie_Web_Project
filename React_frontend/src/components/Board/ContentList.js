@@ -204,18 +204,15 @@ const Thumbnail = styled.div`
 	padding-right: 20px;
 	width: 85px;
 	vertical-align: middle;
-	
-	div {
-		cursor: pointer;
-	}
 
 	img {
 		display: block;
-		width: 85px;
-		height: 62px;
+		width: 85px !important;
+		height: 62px !important;
 		-o-object-fit: cover;
 		object-fit: cover;
 		font-family: "object-fit: cover;";
+		cursor: pointer !important;
 	}
 `;
 

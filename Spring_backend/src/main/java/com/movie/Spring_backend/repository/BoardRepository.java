@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -32,10 +33,19 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     // 게시물 조회 메소드(제목으로 검색)
     Page<BoardEntity> findByBtitleContainsOrderByBidDesc(String title, Pageable pageable);
 
-    // 게시글의 조회수를 올려주는 메소드
+    // 게시물의 조회수를 올려주는 메소드
     @Modifying
     @Query("UPDATE BoardEntity AS board SET board.bclickindex = board.bclickindex+1 WHERE board.bid = :bid")
     void updateViews(@Param("bid") Long bid);
+
+    // 게시물 수정 메소드
+    @Modifying
+    @Query("UPDATE BoardEntity AS board SET board.btitle = :btitle, board.bdetail = :bdetail, " +
+            "board.bcategory = :bcategory, board.bthumbnail = :bthumbnail WHERE board.bid = :bid")
+    void BoardUpdate(@Param("btitle") String btitle, @Param("bdetail") String bdetail, @Param("bcategory") String bcategory,
+                     @Param("bthumbnail") String bthumbnail, @Param("bid") Long bid);
+
+
 
 
 

@@ -1,10 +1,12 @@
 import React from "react";
-import Edit from "../components/Board/Edit";
-const BoardEdit = () =>{
-    return(
-            <>
-            <Edit />
-            </>
-    )
-}
+import ContentEdit from "../components/Board/ContentEdit";
+
+const BoardEdit = () => {
+	return (
+		<>
+			<ContentEdit/>
+		</>
+	);
+};
+
 export default BoardEdit;

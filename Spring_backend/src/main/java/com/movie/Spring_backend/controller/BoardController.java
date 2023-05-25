@@ -1,5 +1,5 @@
 /*
-  23-05-19 ~ 22 게시물 관련 컨트롤러 수정(오병주)
+  23-05-19 ~ 23 게시물 관련 컨트롤러 수정(오병주)
 */
 package com.movie.Spring_backend.controller;
 

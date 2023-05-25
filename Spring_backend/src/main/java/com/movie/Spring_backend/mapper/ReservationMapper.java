@@ -10,7 +10,6 @@ import java.util.List;
 
 @Component
 public class ReservationMapper {
-
     // 마이페이지에 있는 예매내역, 취소내역, 지난관람내역 리스트 매핑
     public List<ReservationDto> MyPageListMapping(List<ReservationEntity> RE, List<MovieInfoSeatEntity> MIS) {
 

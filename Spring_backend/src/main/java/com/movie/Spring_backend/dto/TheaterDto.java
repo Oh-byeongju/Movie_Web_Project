@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class TheaterDto {
-
     private Long tid;
     private String tname;
     private String taddr;

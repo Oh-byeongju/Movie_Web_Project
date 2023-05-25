@@ -16,9 +16,9 @@ public class BoardLikeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long blid;
 
-    private boolean bllike;
+    private Boolean bllike;
 
-    private boolean blunlike;
+    private Boolean blunlike;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="bid")
@@ -32,18 +32,14 @@ public class BoardLikeEntity {
     @JoinColumn(name="uid")
     private MemberEntity member;
 
-    @Formula("(select count(boardlike.blid) from board_like boardlike where boardlike.bcid = null)")
-    private Integer likethis;
-
     @Builder
-    public BoardLikeEntity(Long blid, boolean bllike, boolean blunlike, BoardEntity board, BoardCommentEntity boardcomment,
-                           MemberEntity member, Integer likethis) {
+    public BoardLikeEntity(Long blid, boolean bllike, boolean blunlike, BoardEntity board,
+                           BoardCommentEntity boardcomment, MemberEntity member) {
         this.blid = blid;
         this.bllike = bllike;
         this.blunlike = blunlike;
         this.board = board;
         this.boardcomment = boardcomment;
         this.member = member;
-        this.likethis = likethis;
     }
 }

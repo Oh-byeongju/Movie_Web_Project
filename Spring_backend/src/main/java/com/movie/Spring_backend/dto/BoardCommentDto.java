@@ -1,71 +1,42 @@
 package com.movie.Spring_backend.dto;
 
-import com.movie.Spring_backend.entity.BoardCommentEntity;
-import com.movie.Spring_backend.entity.BoardEntity;
-import com.movie.Spring_backend.entity.MemberEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Getter
 @NoArgsConstructor
-public class BoardCommentDto  {
+public class BoardCommentDto {
     private Long bcid;
-
-    private String bcdate;
-
     private String bccomment;
-
-    private BoardEntity board;
-
-    private MemberEntity member;
+    private String bcdate;
+    private Long bcroot;
+    private Long bcparent;
+    private Integer likes;
+    private Integer unlikes;
+    private boolean like;
+    private boolean unlike;
     private String uid;
-    private Long bid;
-    private Integer parent;
-    private Integer commentcount;
-    private Integer commentlike;
-    private Integer commentUnlike;
-    private boolean likes;
-    private boolean unlikes;
-
+    private String parentUid;
+    private List<BoardCommentDto> child = new ArrayList<>();
 
     @Builder
-    public BoardCommentDto(Long bcid, String bcdate,String bccomment, BoardEntity board,Long bid,
-                              MemberEntity member, String uid, Integer parent,
-                           Integer commentcount,Integer commentlike,Integer commentUnlike,boolean likes,
-                           boolean unlikes
-
-) {
-        this.bcid=bcid;
+    public BoardCommentDto(Long bcid, String bccomment, String bcdate, Long bcroot, Long bcparent, Integer likes, Integer unlikes,
+                           boolean like, boolean unlike, String uid, String parentUid, List<BoardCommentDto> child) {
+        this.bcid = bcid;
+        this.bccomment = bccomment;
         this.bcdate = bcdate;
-        this.bccomment=bccomment;
-        this.board=board;
-        this.member=member;
-        this.bid=bid;
-        this.uid=uid;
-        this.parent=parent;
-        this.commentcount=commentcount;
-        this.commentlike=commentlike;
-        this.commentUnlike=commentUnlike;
-        this.likes=likes;
-        this.unlikes=unlikes;
-    }
-
-
-    @Builder
-    public BoardCommentDto(BoardCommentEntity com) {
-        this.bcid=com.getBcid();
-        this.bcdate = com.getBcdate();
-        this.bccomment=com.getBccomment();
-        this.bid=com.getBoard().getBid();
-        this.uid=com.getMember().getUid();
-        this.parent=com.getBcparent();
-        this.commentcount=com.getCommentcount();
+        this.bcroot = bcroot;
+        this.bcparent = bcparent;
+        this.likes = likes;
+        this.unlikes = unlikes;
+        this.like = like;
+        this.unlike = unlike;
+        this.uid = uid;
+        this.parentUid = parentUid;
+        this.child = child;
     }
 }

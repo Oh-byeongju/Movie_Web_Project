@@ -135,7 +135,7 @@ const ContentPost = () => {
 								</span>
 							</div>
 							<div className="comment">
-								댓글 {BOARD_CONTENT.commentcount}
+								댓글 {BOARD_CONTENT.commentCounts}
 							</div>
 							<div className="top">
 								추천 {BOARD_CONTENT.likes}
@@ -150,7 +150,7 @@ const ContentPost = () => {
 							<ArticleVote>
 								<button className="up" onClick={onClickLike}>
 									<span className="like">
-										{BOARD_CONTENT.blike ? <LikeFilled style={{fontSize:"15px", color:"#46cea6"}}/> : <LikeOutlined style={{fontSize:"15px"}}/>}
+										{BOARD_CONTENT.like ? <LikeFilled style={{fontSize:"15px", color:"#46cea6"}}/> : <LikeOutlined style={{fontSize:"15px"}}/>}
 									</span>
 									<span className="number">
 										{BOARD_CONTENT.likes}
@@ -158,7 +158,7 @@ const ContentPost = () => {
 								</button>
 								<button className="down" onClick={onClickUnLike}>
 									<span className="like">
-										{BOARD_CONTENT.bunlike ? <DislikeFilled style={{fontSize:"15px", color:"#f95a53"}}/> : <DislikeOutlined style={{fontSize:"15px"}}/>}
+										{BOARD_CONTENT.unlike ? <DislikeFilled style={{fontSize:"15px", color:"#f95a53"}}/> : <DislikeOutlined style={{fontSize:"15px"}}/>}
 									</span>
 									<span className="number">
 										{BOARD_CONTENT.unlikes}

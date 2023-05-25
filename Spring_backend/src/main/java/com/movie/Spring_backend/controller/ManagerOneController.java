@@ -6,24 +6,14 @@
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.*;
-import com.movie.Spring_backend.jwt.JwtValidCheck;
-import com.movie.Spring_backend.mapper.CountCommentMapper;
-import com.movie.Spring_backend.service.BoardCommentService;
-import com.movie.Spring_backend.service.BoardService;
 import com.movie.Spring_backend.service.ManagerOneService;
-import com.movie.Spring_backend.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

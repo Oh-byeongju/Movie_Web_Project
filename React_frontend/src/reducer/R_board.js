@@ -284,8 +284,8 @@ const R_board = (state = initalState, action) => {
 				BOARD_LIKE_error: false,
 				BOARD_CONTENT : {
 					...state.BOARD_CONTENT,
-					blike: action.data.blike,
-					bunlike: action.data.bunlike,
+					like: action.data.like,
+					unlike: action.data.unlike,
 					likes: action.data.likes, 
 					unlikes: action.data.unlikes
 				}

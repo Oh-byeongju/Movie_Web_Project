@@ -14,41 +14,33 @@ import java.util.Optional;
 
 @Repository
 public interface BoardLikeRepository extends JpaRepository<BoardLikeEntity, Long> {
-    // 게시물 좋아요 확인 메소드
+    // 게시물 좋아요 조회 메소드
     Optional<BoardLikeEntity> findByBoardAndMemberAndBllikeTrueAndBoardcommentIsNull(BoardEntity board, MemberEntity member);
 
-    // 게시물 싫어요 확인 메소드
+    // 게시물 싫어요 조회 메소드
     Optional<BoardLikeEntity> findByBoardAndMemberAndBlunlikeTrueAndBoardcommentIsNull(BoardEntity board, MemberEntity member);
 
     // 게시물 좋아요 삭제하는 메소드
-    void deleteByBoardAndMemberAndBllikeTrue(BoardEntity board, MemberEntity member);
+    void deleteByBoardAndMemberAndBllikeTrueAndBoardcommentIsNull(BoardEntity board, MemberEntity member);
 
     // 게시물 싫어요 삭제하는 메소드
-    void deleteByBoardAndMemberAndBlunlikeTrue(BoardEntity board, MemberEntity member);
+    void deleteByBoardAndMemberAndBlunlikeTrueAndBoardcommentIsNull(BoardEntity board, MemberEntity member);
 
+    // 댓글 좋아요 조회 메소드
+    List<BoardLikeEntity> findByBoardAndMemberAndBllikeTrueAndBoardcommentIsNotNull(BoardEntity board, MemberEntity member);
 
+    // 댓글 싫어요 조회 메소드
+    List<BoardLikeEntity> findByBoardAndMemberAndBlunlikeTrueAndBoardcommentIsNotNull(BoardEntity board, MemberEntity member);
 
     // 아래로 수정
     // 옵셔널 써라
     // jpql 안써도 되는애들이 많은듯
 
-
-    //댓글 좋아요 확인하는 메소드
-    @Query("select bb from BoardLikeEntity as bb where bb.board.bid= :bid and bb.member.uid = :uid " +
-            "and bb.bllike = true and bb.boardcomment.bcid = :bcid")
-    BoardLikeEntity findByCommentLike(@Param("bid")Long bid, @Param("uid")String uid ,@Param("bcid") Long bcid);
-
-    //댓글 싫어요 확인하는 메스도
-    @Query("select bb from BoardLikeEntity as bb where bb.board.bid= :bid and bb.member.uid = :uid " +
-            "and bb.blunlike = true and bb.boardcomment.bcid = :bcid")
-    BoardLikeEntity findByCommentUnLike(@Param("bid")Long bid, @Param("uid")String uid ,@Param("bcid") Long bcid);
-
-
-    //삭제, 댓글좋아요 // 이것들 다 이상함
-    @Modifying
-    @Query("delete from BoardLikeEntity as bl where bl.board.bid = :bid and bl.member.uid = :uid " +
-            "and bl.bllike = true and bl.blunlike = false and bl.boardcomment.bcid = :bcid")
-    void CommentDeleted(@Param("bid")Long bid, @Param("uid")String uid,
-                               @Param("bcid")Long bcid);
+//    //삭제, 댓글좋아요 // 이것들 다 이상함
+//    @Modifying
+//    @Query("delete from BoardLikeEntity as bl where bl.board.bid = :bid and bl.member.uid = :uid " +
+//            "and bl.bllike = true and bl.blunlike = false and bl.boardcomment.bcid = :bcid")
+//    void CommentDeleted(@Param("bid")Long bid, @Param("uid")String uid,
+//                               @Param("bcid")Long bcid);
 
 }

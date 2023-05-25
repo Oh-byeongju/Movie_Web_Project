@@ -29,43 +29,42 @@ public class BoardEntity {
     @Column(nullable = false)
     private String bdate;
 
+    @Column(nullable = false)
     private Integer bclickindex;
 
     @Column(nullable = false)
     private String bcategory;
 
+    @Column(nullable = false)
     private String bthumbnail;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="uid")
     private MemberEntity member;
 
-    // 이게 blikes이런식으로 되야할듯 되야할듯 아래에 있는likes도 바꾸삼 다대일인가 묶인거
-    @Formula("(select count(boardlike.blid) from board_like boardlike where boardlike.bid = bid and boardlike.bllike = true " +
-            "and boardlike.bcid is null)")
-    private Integer like;
+    @Formula("(SELECT COUNT(*) FROM board_like AS bl WHERE bl.bid = bid AND bl.bllike = true AND bl.bcid IS NULL)")
+    private Integer likes;
 
-    @Formula("(select count(boardlike.blid) from board_like boardlike where boardlike.bid = bid and boardlike.blunlike = true " +
-            "and boardlike.bcid is null)")
-    private Integer bunlike;
+    @Formula("(SELECT COUNT(*) FROM board_like AS bl WHERE bl.bid = bid AND bl.blunlike = true AND bl.bcid IS NULL)")
+    private Integer unlikes;
 
-    @Formula("(select count(comment.bcid) from board_comment comment where comment.bid = bid)")
-    private Integer commentcount;
+    @Formula("(SELECT COUNT(*) FROM board_comment AS comment WHERE comment.bid = bid)")
+    private Integer commentCounts;
 
     @OneToMany(mappedBy = "board",
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
-    private List<BoardCommentEntity> comment = new ArrayList<>();
+    private List<BoardCommentEntity> boardComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "board",
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
-    private List<BoardLikeEntity> likes = new ArrayList<>();
+    private List<BoardLikeEntity> boardLikes = new ArrayList<>();
 
     @Builder
     public BoardEntity(Long bid, String btitle, String bdetail, String bdate, Integer bclickindex, String bcategory,
-                       String bthumbnail, MemberEntity member, Integer like, Integer bunlike, Integer commentcount,
-                       List<BoardCommentEntity> comment, List<BoardLikeEntity> likes) {
+                       String bthumbnail, MemberEntity member, Integer likes, Integer unlikes, Integer commentCounts,
+                       List<BoardCommentEntity> boardComments, List<BoardLikeEntity> boardLikes) {
         this.bid = bid;
         this.btitle = btitle;
         this.bdetail = bdetail;
@@ -74,10 +73,10 @@ public class BoardEntity {
         this.bcategory = bcategory;
         this.bthumbnail = bthumbnail;
         this.member = member;
-        this.like = like;
-        this.bunlike = bunlike;
-        this.commentcount = commentcount;
-        this.comment = comment;
         this.likes = likes;
+        this.unlikes = unlikes;
+        this.commentCounts = commentCounts;
+        this.boardComments = boardComments;
+        this.boardLikes = boardLikes;
     }
 }

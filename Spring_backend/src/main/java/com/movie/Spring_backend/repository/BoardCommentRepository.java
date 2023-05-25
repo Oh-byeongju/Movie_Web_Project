@@ -15,28 +15,33 @@ import java.util.List;
 @Repository
 public interface BoardCommentRepository extends JpaRepository<BoardCommentEntity, Long> {
 
+    // 댓글 조회 메소드(최상위 부모 댓글만, 최신순)
+    List<BoardCommentEntity> findByBoardAndBcrootIsNullOrderByBcidDesc(BoardEntity board);
 
+    // 댓글 조회 메소드(최상위 부모 댓글만, 인기순)
+    @Query("SELECT bc FROM BoardCommentEntity AS bc WHERE bc.board = :board AND bc.bcroot IS NULL " +
+            "ORDER BY bc.likes DESC")
+    List<BoardCommentEntity> findByCommentLike(@Param("board") BoardEntity board);
 
-    @Query("select bc from BoardCommentEntity as bc where bc.board.bid = :bid ORDER BY bc.commentlike desc, bc.bcparent DESC NULLS FIRST, bcid desc")
-    public List<BoardCommentEntity> findByCommentlike(@Param("bid") Long bid);
-
-    //댓글이 존재하는지 확인하는 메소드
-    @Query("select bc from BoardCommentEntity as bc where bc.bcid = :bcid ")
-    public BoardCommentEntity booleanCheck(@Param("bcid") Long bcid);
-
-
-    //대댓글을 확인하는 메소드
-    @Query("select bc from BoardCommentEntity as bc where bc.board.bid = :bid ORDER BY bc.bcparent DESC NULLS FIRST, bcid desc")
-    public List<BoardCommentEntity> CommentToComment(@Param("bid") Long bid);
-
-    //부모로 자식 검색
-    @Query("select bc from BoardCommentEntity as bc where bc.bcparent = :parent")
-    public List<BoardCommentEntity> commentParent(@Param("parent") Integer parent);
+    // 답글 조회 메소드(작성 시간순으로 최신순)
+    List<BoardCommentEntity> findByBoardAndBcrootIsNotNullOrderByBcrootAscBcparentAscBcidDesc(BoardEntity board);
 
 
 
-    //댓글 페이지 네이션을 위한 메소드 ,번호순
-    @Query("select bc from BoardCommentEntity as bc where bc.board.bid = :bid ORDER BY bc.bcparent DESC NULLS FIRST, bcid desc")
-    public Page<BoardCommentEntity> PaginationComment(Pageable pageable, @Param("bid") Long bid);
+
+
+//    //아래로 날려
+
+
+//
+//    //댓글이 존재하는지 확인하는 메소드
+//    @Query("select bc from BoardCommentEntity as bc where bc.bcid = :bcid ")
+//    public BoardCommentEntity booleanCheck(@Param("bcid") Long bcid);
+//
+//
+//    //부모로 자식 검색
+//    @Query("select bc from BoardCommentEntity as bc where bc.bcparent = :parent")
+//    public List<BoardCommentEntity> commentParent(@Param("parent") Integer parent);
+
 
 }

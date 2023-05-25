@@ -1,5 +1,5 @@
 /*
-  23-05-19 ~ 22 게시물 관련 서비스 수정(오병주)
+  23-05-19 ~ 23 게시물 관련 서비스 수정(오병주)
 */
 package com.movie.Spring_backend.service;
 
@@ -90,7 +90,7 @@ public class BoardService {
                 .bcategory(data.getBcategory())
                 .bthumbnail(data.getBthumbnail())
                 .uid(data.getMember().getUid())
-                .commentcount(data.getCommentcount()).build());
+                .commentCounts(data.getCommentCounts()).build());
     }
 
     // 게시물 검색 메소드
@@ -120,7 +120,7 @@ public class BoardService {
                 .bcategory(data.getBcategory())
                 .bthumbnail(data.getBthumbnail())
                 .uid(data.getMember().getUid())
-                .commentcount(data.getCommentcount()).build());
+                .commentCounts(data.getCommentCounts()).build());
     }
 
     // 게시물 상세조회 메소드
@@ -163,11 +163,11 @@ public class BoardService {
                 .bcategory(Board.getBcategory())
                 .bclickindex(Board.getBclickindex() + 1)
                 .uid(Board.getMember().getUid())
-                .likes(Board.getLike())
-                .unlikes(Board.getBunlike())
-                .commentcount(Board.getCommentcount())
-                .blike(like)
-                .bunlike(unlike).build();
+                .likes(Board.getLikes())
+                .unlikes(Board.getUnlikes())
+                .commentCounts(Board.getCommentCounts())
+                .like(like)
+                .unlike(unlike).build();
     }
 
     // 게시물 작성시 이미지 저장 메소드
@@ -323,11 +323,11 @@ public class BoardService {
         // 좋아요 추가
         if(checkLike == null && state.equals("like")) {
             // 싫어요 숫자 변수
-            int num = board.getBunlike();
+            int num = board.getUnlikes();
 
             // 싫어요가 된 상태면 제거후 삽입
             if(checkUnlike != null){
-                boardLikeRepository.deleteByBoardAndMemberAndBlunlikeTrue(board, member);
+                boardLikeRepository.deleteByBoardAndMemberAndBlunlikeTrueAndBoardcommentIsNull(board, member);
                 num = num - 1;
             }
             boardLikeRepository.save(boardLikeEntity);
@@ -335,19 +335,19 @@ public class BoardService {
             // 새로운 정보 리턴
             return BoardDto.builder()
                     .bid(board.getBid())
-                    .blike(true)
-                    .bunlike(false)
-                    .likes(board.getLike() + 1)
+                    .like(true)
+                    .unlike(false)
+                    .likes(board.getLikes() + 1)
                     .unlikes(num).build();
         }
         // 싫어요 추가
         else if(checkUnlike == null && state.equals("unlike")) {
             // 좋아요 숫자 변수
-            int num = board.getLike();
+            int num = board.getLikes();
 
             // 좋아요가 된 상태면 제거후 삽입
             if(checkLike != null){
-                boardLikeRepository.deleteByBoardAndMemberAndBllikeTrue(board, member);
+                boardLikeRepository.deleteByBoardAndMemberAndBllikeTrueAndBoardcommentIsNull(board, member);
                 num = num - 1;
             }
             boardLikeRepository.save(boardLikeEntity);
@@ -355,34 +355,34 @@ public class BoardService {
             // 새로운 정보 리턴
             return BoardDto.builder()
                     .bid(board.getBid())
-                    .blike(false)
-                    .bunlike(true)
+                    .like(false)
+                    .unlike(true)
                     .likes(num)
-                    .unlikes(board.getBunlike() + 1).build();
+                    .unlikes(board.getUnlikes() + 1).build();
         }
         // 좋아요 제거
         else if(checkLike != null && state.equals("like")){
-            boardLikeRepository.deleteByBoardAndMemberAndBllikeTrue(board, member);
+            boardLikeRepository.deleteByBoardAndMemberAndBllikeTrueAndBoardcommentIsNull(board, member);
 
             // 새로운 정보 리턴
             return BoardDto.builder()
                     .bid(board.getBid())
-                    .blike(false)
-                    .bunlike(false)
-                    .likes(board.getLike() - 1)
-                    .unlikes(board.getBunlike()).build();
+                    .like(false)
+                    .unlike(false)
+                    .likes(board.getLikes() - 1)
+                    .unlikes(board.getUnlikes()).build();
         }
         // 싫어요 제거
         else {
-            boardLikeRepository.deleteByBoardAndMemberAndBlunlikeTrue(board, member);
+            boardLikeRepository.deleteByBoardAndMemberAndBlunlikeTrueAndBoardcommentIsNull(board, member);
 
             // 새로운 정보 리턴
             return BoardDto.builder()
                     .bid(board.getBid())
-                    .blike(false)
-                    .bunlike(false)
-                    .likes(board.getLike())
-                    .unlikes(board.getBunlike() - 1).build();
+                    .like(false)
+                    .unlike(false)
+                    .likes(board.getLikes())
+                    .unlikes(board.getUnlikes() - 1).build();
         }
     }
 }

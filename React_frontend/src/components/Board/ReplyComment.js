@@ -13,7 +13,7 @@ const ReplyComment = ({idd,child,bid,member}) =>
     const {title,id } = useParams();
     const [isValid, setIsValid] = useState(false);
     const [commentvalid, setCommentValid]= useState(false);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch(); 
    const [validId, setValidId] = useState(0);
    const { LOGIN_data } = useSelector((state) => state.R_user_login);
 
@@ -45,12 +45,10 @@ const ReplyComment = ({idd,child,bid,member}) =>
         return `${Math.floor(years)}년 전`;
     };
     //대댓글
-    return(
-        <CommentWrapper>
-            <div className="comment-contentt">
-                {member === LOGIN_data.uid ? <div 
-                style={{color:'red', float:'left', paddingRight:'20px'}}
-                onClick={()=>{
+	return (
+		<CommentWrapper>
+			<div className="comment-contentt">
+				{member === LOGIN_data.uid ? <div style={{color:'red', float:'left', paddingRight:'20px'}} onClick={()=>{
 
                     if (
                         !window.confirm(
@@ -67,34 +65,30 @@ const ReplyComment = ({idd,child,bid,member}) =>
                     })
                 }}
             }>
-                    삭제하기
-                </div>: ""}
-                
-                                            <div className="no"
-                                            onClick={()=>{
-                                                console.log(bid)
-                                            }}>
-                                                신고
-                                            </div>
-                                            <div className="comment_to_comment" 
-                                            onClick={()=>{
-                                                if (LOGIN_data.uid === "No_login") {
-                                                    if (
-                                                      !window.confirm(
-                                                        "로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
-                                                      )
-                                                    ) {
-                                                      return;
-                                                    } else {
-                                                      navigate(`/UserLogin`,{state:`/board/content/${id}/${title}`})
-                                                    }
-                                            }
-                                            else{
-                                                onClickReply()}}}>
-                                            <MessageOutlined 
-                                            style={{paddingRight:"5px"}}/>답글쓰기
-                                            </div>
-                                        </div>
+					삭제하기
+			</div>: ""}
+			<div className="no" onClick={()=>{console.log(bid)}}>
+				신고
+			</div>
+			<div className="comment_to_comment" 
+				onClick={()=>{
+							if (LOGIN_data.uid === "No_login") {
+									if (
+										!window.confirm(
+											"로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
+										)
+									) {
+										return;
+									} else {
+										navigate(`/UserLogin`,{state:`/board/content/${id}/${title}`})
+									}
+					}
+					else{
+							onClickReply()}}}>
+				<MessageOutlined style={{paddingRight:"5px"}}/>
+				답글쓰기
+				</div>
+			</div>
                                         {isValid? <CommentText id={idd} idtext={""}/>
       
                           

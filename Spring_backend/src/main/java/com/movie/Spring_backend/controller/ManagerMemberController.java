@@ -6,7 +6,6 @@
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.*;
-import com.movie.Spring_backend.mapper.CountCommentMapper;
 import com.movie.Spring_backend.service.BoardCommentService;
 import com.movie.Spring_backend.service.ManagerMemberService;
 import lombok.RequiredArgsConstructor;
@@ -71,23 +70,23 @@ public class ManagerMemberController {
     }
 
 
-    @GetMapping("/auth/boardread")
-    public ResponseEntity<List<BoardDto>> BoardWrite() {
-        return ResponseEntity.ok().body(managerMemberService.ReadBoard());
-    }
-    @GetMapping("/auth/boardselect")
-    public ResponseEntity<List<BoardDto>> BoardSelect(@RequestParam("text") String text ,@RequestParam("state") String state){
-        return ResponseEntity.ok().body(managerMemberService.SearchUid(text,state));
-    }
-    @PostMapping("/auth/deleteboard")
-    public void BoardDelete(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
-        managerMemberService.boarddelete(requestMap,request);
-    }
-    @GetMapping("/auth/commentread")
-    public ResponseEntity<CountCommentMapper> commentAll(@RequestParam("bid") Long bid, @RequestParam("type") String type) {
-        if(type.equals("new")) {
-            return ResponseEntity.ok().body(boardCommentService.findByComment(bid));
-        }
-        return null;
-    }
+//    @GetMapping("/auth/boardread")
+//    public ResponseEntity<List<BoardDto>> BoardWrite() {
+//        return ResponseEntity.ok().body(managerMemberService.ReadBoard());
+//    }
+//    @GetMapping("/auth/boardselect")
+//    public ResponseEntity<List<BoardDto>> BoardSelect(@RequestParam("text") String text ,@RequestParam("state") String state){
+//        return ResponseEntity.ok().body(managerMemberService.SearchUid(text,state));
+//    }
+//    @PostMapping("/auth/deleteboard")
+//    public void BoardDelete(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
+//        managerMemberService.boarddelete(requestMap,request);
+//    }
+//    @GetMapping("/auth/commentread")
+//    public ResponseEntity<CountCommentMapper> commentAll(@RequestParam("bid") Long bid, @RequestParam("type") String type) {
+//        if(type.equals("new")) {
+//            return ResponseEntity.ok().body(boardCommentService.findByComment(bid));
+//        }
+//        return null;
+//    }
 }

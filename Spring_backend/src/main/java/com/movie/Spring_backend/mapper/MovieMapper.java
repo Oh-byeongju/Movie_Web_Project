@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class MovieMapper {
-
     // 전체 영화 페이지와 상영 예정작 페이지에 사용되는 mapping 메소드
     public List<MovieDto> toDtoAllORComingMovie(List<MovieEntity> ShowMovies, List<MovieEntity> NotShowMovies, Set<Long> MovieLikes, float AllReserveCnt) {
 

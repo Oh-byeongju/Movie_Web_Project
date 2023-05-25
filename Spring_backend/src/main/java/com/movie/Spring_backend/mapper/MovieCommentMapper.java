@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MovieCommentMapper {
-
     // 영화 관람평과 로그인한 사용자의 좋아요 기록을 mapping 해주는 메소드
     public CommentInfoDto toDto(MovieMemberEntity entity, boolean like) {
 

@@ -1,10 +1,7 @@
 /*
- 23-01-19 유저 좋아요 toggle 구현(오병주)
  23-02-12 유저 관람평 작성 구현(오병주)
- 23-02-24 유저 관람평 좋아요 구현(오병주)
  23-02-25 유저 관람평 작성 수정(오병주)
 */
-// 이파일 좀 수정해야할듯 위에 부분 + 사가도
 export const USER_COMMENT_WRITE_REQUEST = "USER_COMMENT_WRITE_REQUEST"
 export const USER_COMMENT_WRITE_SUCCESS = "USER_COMMENT_WRITE_SUCCESS"
 export const USER_COMMENT_WRITE_FAILURE = "USER_COMMENT_WRITE_FAILURE"

@@ -26,19 +26,15 @@ public interface BoardCommentRepository extends JpaRepository<BoardCommentEntity
     // 답글 조회 메소드(작성 시간순으로 최신순)
     List<BoardCommentEntity> findByBoardAndBcrootIsNotNullOrderByBcrootAscBcparentAscBcidDesc(BoardEntity board);
 
+    // 최상위 부모댓글에 관련된 답글 제거하는 메소드
+    void deleteByBcroot(Long bcroot);
+
 
 
 
 
 //    //아래로 날려
 
-
-//
-//    //댓글이 존재하는지 확인하는 메소드
-//    @Query("select bc from BoardCommentEntity as bc where bc.bcid = :bcid ")
-//    public BoardCommentEntity booleanCheck(@Param("bcid") Long bcid);
-//
-//
 //    //부모로 자식 검색
 //    @Query("select bc from BoardCommentEntity as bc where bc.bcparent = :parent")
 //    public List<BoardCommentEntity> commentParent(@Param("parent") Integer parent);

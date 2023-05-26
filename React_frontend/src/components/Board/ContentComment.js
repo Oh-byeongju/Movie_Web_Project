@@ -3,45 +3,79 @@
 */
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { SyncOutlined, LoadingOutlined, CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector} from "react-redux"
-import { COMMENT_LIKE_REQUEST, COMMENT_READ_REQUEST, COMMENT_WRITE_REQUEST } from "../../reducer/R_board";
-import ReplyComment from "./ReplyComment";
+import { SyncOutlined, LoadingOutlined, CaretUpOutlined, CaretDownOutlined, MessageOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector, shallowEqual } from "react-redux"
+import { 
+	BOARD_COMMENT_LIST_REQUEST, 
+	BOARD_COMMENT_WRITE_REQUEST, 
+	BOARD_COMMENT_WRITE_RESET,
+	BOARD_COMMENT_DELETE_REQUEST,
+	BOARD_COMMENT_DELETE_RESET,
+	BOARD_COMMENT_LIKE_REQUEST, 
+ } from "../../reducer/R_board";
+import ContentReplyWriting from "./ContentReplyWriting";
+import ContentCommentReply from "./ContentCommentReply";
 import * as date from "../../lib/date.js";
 
 const ContentComment = () =>{
 	const dispatch = useDispatch();
-	const { id } = useParams();
+	const navigate = useNavigate();
+	const { category, id, title } = useParams();
 
-	// 로그인 리덕스 상태
-	const { LOGIN_data } = useSelector((state) => state.R_user_login);
-	const {BOARD_CONTENT, comment, comment_read_loading} = useSelector((state)=>state.R_board)
+	// 필요한 리덕스 상태들
+	const { LOGIN_data, BOARD_COMMENT_LIST_loading, BOARD_COMMENT_LIST, BOARD_COMMENT_WRITE_done, 
+		BOARD_COMMENT_WRITE_error, BOARD_COMMENT_DELETE_done, BOARD_COMMENT_DELETE_error, BOARD_COMMENT_LIKE_error } = useSelector(
+		state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+			BOARD_COMMENT_LIST_loading: state.R_board.BOARD_COMMENT_LIST_loading,
+			BOARD_COMMENT_LIST: state.R_board.BOARD_COMMENT_LIST,
+			BOARD_COMMENT_WRITE_done: state.R_board.BOARD_COMMENT_WRITE_done,
+			BOARD_COMMENT_WRITE_error: state.R_board.BOARD_COMMENT_WRITE_error,
+			BOARD_COMMENT_DELETE_done: state.R_board.BOARD_COMMENT_DELETE_done,
+			BOARD_COMMENT_DELETE_error: state.R_board.BOARD_COMMENT_DELETE_error,
+			BOARD_COMMENT_LIKE_error: state.R_board.BOARD_COMMENT_LIKE_error
+		}),
+		shallowEqual
+	);
 
 	// 댓글 정렬 상태
-	const menu = [{name:'최신순', type:"new"}, {name:'인기순', type:"top"}];
-	const [type, setType] = useState("new");
-	const onClickMenu = useCallback((data)=>{
-		setType(data);
+	const menu = [{name:'인기순', sort:"like"}, {name:'최신순', sort:"new"}];
+	const [sort, setSort] = useState("like");
+	const onClickMenu = useCallback((data)=> {
+		setSort(data);
 	}, []);
 
 	// 댓글 요청 useEffect
 	useEffect(()=>{
 		dispatch({
-			type: COMMENT_READ_REQUEST,
+			type: BOARD_COMMENT_LIST_REQUEST,
 			data: {
 				bid: id,
-				type: type
+				sort: sort,
+				uid: LOGIN_data.uid
 			}
 		});
-	}, [id, type, dispatch]);
+	}, [id, sort, LOGIN_data.uid, dispatch]);
 
 	// 댓글 내용 상태
 	const [text, setText] = useState("");
 	const onChangeText = useCallback((e)=>{
 		setText(e.target.value);
 	}, []);
-    
+
+	// 새로고침 함수
+	const onClickRefresh = useCallback(()=> {
+		dispatch ({
+			type: BOARD_COMMENT_LIST_REQUEST,
+			data: {
+				bid: id,
+				sort: sort,
+				uid: LOGIN_data.uid
+			}
+		});
+	}, [id, sort, LOGIN_data.uid, dispatch]);
+
 	// 댓글 작성하는 함수
 	const onClickComment = useCallback(() => {
 		// 댓글이 빈칸일경우
@@ -55,26 +89,32 @@ const ContentComment = () =>{
 		} 
 
 		dispatch({
-			type: COMMENT_WRITE_REQUEST,
+			type: BOARD_COMMENT_WRITE_REQUEST,
 			data: {
-				text: text,
-				parent: "",
-				bid: BOARD_CONTENT.bid,
+				comment: text,
+				bid: id
 			}
 		});
-		// 결과에 따라 useEffect 만들어야함
-	}, [dispatch, text, BOARD_CONTENT.bid]);
+	}, [dispatch, text, id]);
        
-	// 새로고침 함수
-	const onClickRefresh = useCallback(()=> {
-		dispatch ({
-			type: COMMENT_READ_REQUEST,
-			data: {
-				bid: id,
-				type: type
-			}
-		});
-	}, [id, type, dispatch]);
+	// 댓글 작성 성공여부에 따른 useEffect
+	useEffect(()=> {
+		// 작성 성공
+		if (BOARD_COMMENT_WRITE_done) {
+			setSort('new');
+			setText('');
+			onClickRefresh();
+			dispatch({
+				type: BOARD_COMMENT_WRITE_RESET
+			});
+		}
+
+		// 작성 실패
+		if (BOARD_COMMENT_WRITE_error) {
+			alert('댓글 작성에 실패했습니다.');
+			window.location.replace(`/Board/content/${category}/${id}/${title}`);
+		}
+	}, [BOARD_COMMENT_WRITE_done, BOARD_COMMENT_WRITE_error, category, id, title, onClickRefresh, dispatch]);
 
 	// 댓글 좋아요 함수
 	const onClickUp = useCallback((data)=> {
@@ -84,17 +124,15 @@ const ContentComment = () =>{
 		}
 		else {
 			dispatch({
-				type: COMMENT_LIKE_REQUEST,
+				type: BOARD_COMMENT_LIKE_REQUEST,
 				data: {
-					like: 1,
-					unlike: 0,
-					comment: data.bcid,
-					uid: LOGIN_data.uid,
-					board: data.board
+					bid: id,
+					bcid: data.bcid,
+					state: 'like'
 				}
 			});
 		}
-	}, [LOGIN_data.uid, dispatch]);
+	}, [LOGIN_data.uid, id, dispatch]);
 
 	// 댓글 싫어요 함수
 	const onClickDown = useCallback((data) => {
@@ -104,17 +142,76 @@ const ContentComment = () =>{
 		}
 		else {
 			dispatch({
-				type: COMMENT_LIKE_REQUEST,
+				type: BOARD_COMMENT_LIKE_REQUEST,
 				data: {
-					like: 0,
-					unlike: 1,
-					comment: data.bcid,
-					uid: LOGIN_data.uid,
-					board: data.board
+					bid: id,
+					bcid: data.bcid,
+					state: 'unlike'
 				}
 			});
 		}
-	}, [LOGIN_data.uid, dispatch]);
+	}, [LOGIN_data.uid, id, dispatch]);
+
+	// 댓글 좋아요, 싫어요 실패시 useEffect
+	useEffect(()=> {
+		if (BOARD_COMMENT_LIKE_error) {
+			alert('댓글 공감에 실패했습니다.');
+			window.location.replace(`/Board/content/${category}/${id}/${title}`);
+		}
+	}, [BOARD_COMMENT_LIKE_error, category, id, title]);
+
+	// 답글쓰기 버튼 누를때 함수 및 useState
+	const [checkId, setcheckId] = useState('');
+	const onReply = useCallback((bcid)=> {
+		if (LOGIN_data.uid === "No_login") {
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: `/Board/content/${category}/${id}/${title}`}});
+			}
+		}
+		else {
+			if (checkId === '') {
+				setcheckId(bcid);
+			}
+			else {
+				setcheckId('');
+			}
+		}
+	}, [LOGIN_data.uid, category, id, title, checkId, navigate]);
+
+	// 댓글 삭제하는 함수
+	const onDelete = useCallback((bcid)=> {
+		if (!window.confirm("댓글을 삭제하시겠습니까?")) {
+			return;
+		} 
+		else {
+			dispatch({
+				type: BOARD_COMMENT_DELETE_REQUEST,
+				data: {
+					bcid: bcid,
+				}
+			});
+		}
+	}, [dispatch]);
+
+	// 댓글 삭제 성공여부에 따른 useEffect
+	useEffect(()=> {
+		// 삭제 성공
+		if (BOARD_COMMENT_DELETE_done) {
+			onClickRefresh();
+			dispatch({
+				type: BOARD_COMMENT_DELETE_RESET
+			});
+		}
+
+		// 삭제 실패
+		if (BOARD_COMMENT_DELETE_error) {
+			alert('댓글 삭제에 실패했습니다.');
+			window.location.replace(`/Board/content/${category}/${id}/${title}`);
+		}
+	}, [BOARD_COMMENT_DELETE_done, BOARD_COMMENT_DELETE_error, category, id, title, onClickRefresh, dispatch]);
 
 	return (
 		<Comment>
@@ -124,13 +221,13 @@ const ContentComment = () =>{
 						댓글
 					</h2>
 					<span>
-						총 {comment.count}개
+						총 {BOARD_COMMENT_LIST.count}개
 					</span>
 				</Left>
 				<Right>
 					<button>
 						<span className="icon">
-							{comment_read_loading ? <LoadingOutlined/> : <SyncOutlined/>} 
+							{BOARD_COMMENT_LIST_loading ? <LoadingOutlined/> : <SyncOutlined/>} 
 						</span>
 						<span onClick={onClickRefresh}>
 							새로고침
@@ -161,7 +258,7 @@ const ContentComment = () =>{
 					<ul>
 						{menu.map((data, index)=>
 						<li key={index}>
-							<SortButton category={data.type} type={type} onClick={() => {onClickMenu(data.type)}}>
+							<SortButton category={data.sort} sort={sort} onClick={() => {onClickMenu(data.sort)}}>
 								{data.name}
 							</SortButton>
 						</li>)}				
@@ -169,35 +266,46 @@ const ContentComment = () =>{
 				</Sort>
 			</CommentList>      
 			<CommentData>
-				{comment.mapper && comment.mapper.map((data)=>
-				<li key={data.bcid}>
+				{BOARD_COMMENT_LIST.content && BOARD_COMMENT_LIST.content.map((comment)=>
+				<li key={comment.bcid}>
 					<div className="comment">
 						<div className="number">
-							<div className={data.likes? "colorup ": "up"} onClick={()=> onClickUp(data)}>
-								<CaretUpOutlined/>
+							<div className={comment.like ? "colorup ": "up"} onClick={()=> onClickUp(comment)}>
+								<CaretUpOutlined style={{cursor:'pointer'}}/>
 							</div>
 							<div className="num">
-								{data.commentlike}
+								{comment.likes - comment.unlikes}
 							</div>
-							<div className={data.unlikes? "colordown": "down"} onClick={()=> onClickDown(data)}>
-								<CaretDownOutlined/>
+							<div className={comment.unlike? "colordown": "down"} onClick={()=> onClickDown(comment)}>
+								<CaretDownOutlined style={{cursor:'pointer'}}/>
 							</div>
 						</div>
 						<div className="name">
 							<span className="id">
-								{data.member}
+								{comment.uid}
 							</span>
 							<span className="time">
-								{date.detailDate(new Date(data.bcdate))}
+								{date.detailDate(new Date(comment.bcdate))}
 							</span>
 						</div>
 						<div className="comment-content">
 							<p>
-								{data.bccomment}
+								{comment.bccomment}
 							</p>
 						</div>
 					</div>
-					<ReplyComment idd={data.bcid} child={data.child} bid={data.board} member = {data.member}/> 
+					<CommentButtons>
+						<ButtonReply onClick={()=> onReply(comment.bcid)}>
+							<MessageOutlined style={{paddingRight:"3px"}}/> 답글쓰기
+						</ButtonReply>
+						{comment.uid === LOGIN_data.uid ? 
+						<ButtonDel onClick={()=> onDelete(comment.bcid)}>
+							<DeleteOutlined style={{paddingRight:"2px"}}/> 삭제하기
+						</ButtonDel> : null}
+					</CommentButtons>
+					{/* 여기아래 bcid랑 bcroot줘야함 */}
+					{checkId === comment.bcid ? <ContentReplyWriting/> : null}
+					<ContentCommentReply idd={comment.bcid} child={comment.child} bid={comment.bid} member = {comment.uid}/> 
 				</li>)}
 			</CommentData>
 		</Comment>
@@ -363,8 +471,8 @@ const SortButton = styled.button`
 	border-right: 0;  
 	border-left: 0;                
 	border-top: 0; 
-	color: ${(props) => props.category === props.type ? "#16ae81" : ""};
-	border-color: ${(props) => props.category === props.type ? "#46cfa7" : ""};
+	color: ${(props) => props.category === props.sort ? "#16ae81" : ""};
+	border-color: ${(props) => props.category === props.sort ? "#46cfa7" : ""};
 	cursor: pointer;
 `;
 
@@ -437,6 +545,38 @@ const CommentData = styled.ul`
 			max-height: 400px;
 		}
 	}
+`;
+
+const CommentButtons = styled.div`
+	position:relative;
+	top: -20px;
+	left: 65px;
+	color: #7b858e;
+	margin-top: 8px;
+	line-height: 20px;
+	font-size: 14px;
+	word-wrap: break-word;
+	word-break: break-all;
+	max-height: 400px;
+`;
+
+const ButtonReply = styled.button`
+	border: none;
+	background: white;
+	color: #7b858e;
+	padding: 0;
+	margin-right: 20px;
+	vertical-align: middle;
+	cursor: pointer;
+`;
+
+const ButtonDel = styled.button`
+	color: red;
+	border: none;
+	background: white;
+	padding: 0;
+	vertical-align: middle;
+	cursor: pointer;
 `;
 
 export default ContentComment;

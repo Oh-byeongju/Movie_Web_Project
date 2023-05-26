@@ -36,13 +36,13 @@ public class BoardController {
     }
 
     // 게시물 검색 컨트롤러
-    @GetMapping("/normal/search")
+    @GetMapping("/normal/boardSearch")
     public ResponseEntity<Page<BoardDto>> BoardSearch(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(boardService.getSearchBoard(requestMap));
     }
 
     // 게시물 상세조회 컨트롤러
-    @GetMapping("/normal/content")
+    @GetMapping("/normal/boardContent")
     public ResponseEntity<BoardDto> BoardContent(@RequestParam Map<String, String> requestMap){
         return ResponseEntity.ok().body(boardService.getBoardDetail(requestMap));
     }
@@ -75,7 +75,7 @@ public class BoardController {
     }
 
     // 좋아요 기능을 구현한 컨트롤러
-    @PostMapping("/auth/like")
+    @PostMapping("/auth/boardLike")
     public ResponseEntity<BoardDto> BoardLike(HttpServletRequest request, @RequestBody Map<String, String> requestMap){
         return ResponseEntity.ok().body(boardService.onLike(request, requestMap));
     }

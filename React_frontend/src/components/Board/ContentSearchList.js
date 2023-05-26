@@ -122,7 +122,7 @@ const ContentSearchList = () => {
 								<span>
 									{board.btitle}
 									<em>
-										[{board.commentcount}]
+										[{board.commentCounts}]
 									</em>
 								</span>
 							</div>

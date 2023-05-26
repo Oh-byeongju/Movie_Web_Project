@@ -1,7 +1,5 @@
 /*
- 23-01-19 유저 좋아요 toggle 구현(오병주)
  23-02-12 유저 관람평 작성 구현(오병주)
- 23-02-24 유저 관람평 좋아요 구현(오병주)
  23-02-25 유저 관람평 작성 수정(오병주)
 */
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";

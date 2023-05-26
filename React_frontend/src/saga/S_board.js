@@ -1,5 +1,5 @@
 /*
-	23-05-19 ~ 23 게시물 페이지 수정(오병주)
+	23-05-19 ~ 23, 26 게시물 페이지 수정(오병주)
 */
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
@@ -10,10 +10,10 @@ import {
 	BOARD_UPDATE_REQUEST, BOARD_UPDATE_SUCCESS, BOARD_UPDATE_FAILURE,
 	BOARD_DELETE_REQUEST, BOARD_DELETE_SUCCESS, BOARD_DELETE_FAILURE,
 	BOARD_LIKE_REQUEST, BOARD_LIKE_SUCCESS, BOARD_LIKE_FAILURE,
-	
-
-	// 아래로 날리기
-  COMMENT_WRITE_REQUEST, COMMENT_WRITE_SUCCESS, COMMENT_WRITE_FAILURE, COMMENT_READ_SUCCESS, COMMENT_READ_FAILURE, COMMENT_READ_REQUEST,COMMENT_DELETE_SUCCESS, COMMENT_DELETE_FAILURE, COMMENT_DELETE_REQUEST, COMMENT_LIKE_SUCCESS, COMMENT_LIKE_FAILURE, COMMENT_LIKE_REQUEST
+	BOARD_COMMENT_LIST_REQUEST, BOARD_COMMENT_LIST_SUCCESS, BOARD_COMMENT_LIST_FAILURE,
+	BOARD_COMMENT_WRITE_REQUEST, BOARD_COMMENT_WRITE_SUCCESS, BOARD_COMMENT_WRITE_FAILURE,
+	BOARD_COMMENT_DELETE_REQUEST, BOARD_COMMENT_DELETE_SUCCESS, BOARD_COMMENT_DELETE_FAILURE,
+	BOARD_COMMENT_LIKE_REQUEST, BOARD_COMMENT_LIKE_SUCCESS, BOARD_COMMENT_LIKE_FAILURE,
 } from "../reducer/R_board";
 import { http } from "../lib/http";
 
@@ -69,7 +69,7 @@ function* BoardSearch(action) {
 
 // 게시물 검색 백엔드 호출
 async function callBoardSearch(data) {
-  return await http.get("/Board/normal/search", {
+  return await http.get("/Board/normal/boardSearch", {
     params: {
 			category: data.category,
 			title: data.title,
@@ -102,7 +102,7 @@ function* BoardContent(action) {
 
 // 게시물 상세조회 백엔드 호출
 async function callBoardContent(data) {
-	return await http.get("/Board/normal/content", {
+	return await http.get("/Board/normal/boardContent", {
     params: {
 			bid: data.bid,
 			uid: data.uid
@@ -216,7 +216,7 @@ function* BoardLike(action) {
 
 // 게시물 좋아요 백엔드 호출
 async function callBoardLike(data) {
-	return await http.post("/Board/auth/like", data)
+	return await http.post("/Board/auth/boardLike", data)
 	.then((response) => {
 		return response;
 	})
@@ -225,139 +225,121 @@ async function callBoardLike(data) {
 	});
 }
 
-
-
-
-
-
-
-
-
-// 아래로 날리기
-   //댓글 쓰기
-async function CommentReadApi(data) {
-  return await http
-    .get("/board/normal/comment",{params:{
-      bid:data.bid,
-      type:data.type
-    }})
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-
-function* CommentRead(action) {
-  console.log(action)
-  const result = yield call(CommentReadApi, action.data);
-
-  if (result.status === 200) { 
+// 게시물 댓글 조회 함수
+function* AllBoardComment(action) {
+  const result = yield call(callAllBoardComment, action.data);
+  if (result.status === 200) {
     yield put({
-      type: COMMENT_READ_SUCCESS,
-      data:result.data
+      type: BOARD_COMMENT_LIST_SUCCESS,
+      data: result.data
     });
-   
-  } else {
+  } 
+  else {
     yield put({
-      type: COMMENT_READ_FAILURE,
-      data: result.status,
-    });   
+			type: BOARD_COMMENT_LIST_FAILURE
+    });
   }
 }
 
-
-  //댓글 쓰기
-async function CommentWriteApi(data) {
-  return await http
-    .post("/board/auth/commentwrite",data)
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+// 게시물 댓글 조회 백엔드 호출
+async function callAllBoardComment(data) {
+	return await http.get("/Board/normal/allComment", {
+    params: {
+			bid: data.bid,
+      sort: data.sort,
+			uid: data.uid
+		}
+	})
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
 }
 
-function* CommentWrite(action) {
-  console.log(action)
-  const result = yield call(CommentWriteApi, action.data);
+// 게시물 댓글 작성 함수
+function* BoardCommentWrite(action) {
+	const result = yield call(callBoardCommentWrite, action.data);
+	if (result.status === 204) { 
+		yield put({
+			type: BOARD_COMMENT_WRITE_SUCCESS
+		});
+	} 
+	else {
+		yield put({
+			type: BOARD_COMMENT_WRITE_FAILURE
+		});   
+	}
+}
 
-  if (result.status === 204) { 
+// 게시물 댓글 작성 백엔드 호출
+async function callBoardCommentWrite(data) {
+	return await http.post("/Board/auth/commentWrite", data)
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
+}
+
+// 게시물 댓글 삭제 함수
+function* BoardCommentDelete(action) {
+  const result = yield call(callBoardCommentDelete, action.data);
+  if (result.status === 204) {
     yield put({
-      type: COMMENT_WRITE_SUCCESS,
-      data:result.data
+      type: BOARD_COMMENT_DELETE_SUCCESS
     });
-  } else {
+  } 
+  else {
     yield put({
-      type: COMMENT_WRITE_FAILURE,
-      data: result.status,
-    });   
+			type: BOARD_COMMENT_DELETE_FAILURE
+    });
   }
 }
- 
 
-   //게시물, 댓글 좋아요
-   async function CommentLikeApi(data) {
-    return await http
-      .post("/board/auth/likecomment",data)
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  }
-  
-  function* CommentLike(action) {
-    console.log(action)
-    const result = yield call(CommentLikeApi, action.data);
-  
-    if (result.status === 200) { 
-      yield put({
-        type: COMMENT_LIKE_SUCCESS,
-        data:result.data
-      });
-    } else {
-      yield put({
-        type: COMMENT_LIKE_FAILURE,
-        data: result.status,
-      });   
-    }
-  }
+// 게시물 댓글 삭제 백엔드 호출
+async function callBoardCommentDelete(data) {
+	return await http.delete("/Board/auth/commentDelete", {
+    params: {
+			bcid: data.bcid
+		}
+	})
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
-    //댓글지우기
-    async function DeleteApi(data) {
-      return await http
-        .post("/board/auth/deletecomment",data)
-        .then((response) => {
-          return response;
-        })
-        .catch((error) => {
-          return error.response;
-        });
-    }
-    
-    function* Delete(action) {
-      console.log(action)
-      const result = yield call(DeleteApi, action.data);
-    
-      if (result.status === 200) { 
-        yield put({
-          type: COMMENT_DELETE_SUCCESS,
-        });
-        alert("삭제완료되었습니다.")
-      } else {
-        yield put({
-          type: COMMENT_DELETE_FAILURE,
-          data: result.status,
-        });   
-      }
-    }
-// 위로 날리기
+// 게시물 댓글 좋아요 함수
+function* BoardCommentLike(action) {
+	const result = yield call(callBoardCommentLike, action.data);
+	if (result.status === 200) { 
+		yield put({
+			type: BOARD_COMMENT_LIKE_SUCCESS,
+			data: result.data
+		});
+	} 
+	else {
+		yield put({
+			type: BOARD_COMMENT_LIKE_FAILURE
+		});   
+	}
+}
 
-
+// 게시물 댓글 좋아요 백엔드 호출
+async function callBoardCommentLike(data) {
+	return await http.post("/Board/auth/commentLike", data)
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
+}
 
 function* BOARD_LIST() {
 	yield takeLatest(BOARD_LIST_REQUEST, AllBoard);
@@ -387,36 +369,34 @@ function* BOARD_LIKE() {
 	yield takeLatest(BOARD_LIKE_REQUEST, BoardLike);
 }
 
+function* BOARD_COMMENT_LIST() {
+	yield takeLatest(BOARD_COMMENT_LIST_REQUEST, AllBoardComment);
+}
 
+function* BOARD_COMMENT_WRITE() {
+	yield takeLatest(BOARD_COMMENT_WRITE_REQUEST, BoardCommentWrite);
+}
 
+function* BOARD_COMMENT_DELETE() {
+	yield takeLatest(BOARD_COMMENT_DELETE_REQUEST, BoardCommentDelete);
+}
 
+function* BOARD_COMMENT_LIKE() {
+	yield takeLatest(BOARD_COMMENT_LIKE_REQUEST, BoardCommentLike);
+}
 
-
-
-// 아래로 날리기
-
-  function* CommentReadSaga() {
-    yield takeLatest(COMMENT_READ_REQUEST, CommentRead);
-  }
-  
-  function* CommentWriteSaga() {
-    yield takeLatest(COMMENT_WRITE_REQUEST, CommentWrite);
-  }
-
-  function* CommentLikeSaga() {
-    yield takeLatest(COMMENT_LIKE_REQUEST, CommentLike);
-  }
-  function* DeleteSaga() {
-    yield takeLatest(COMMENT_DELETE_REQUEST, Delete);
-  }
-  
-  export default function* S_board() {
-    yield all([fork(BOARD_LIST), fork(BOARD_CONTENT), fork(BOARD_WRITE), fork(BOARD_SEARCH), fork(BOARD_LIKE), fork(BOARD_DELETE),
-			fork(BOARD_UPDATE),
-
-			//아래로 날리기
-			
-			
-			
-    fork(CommentWriteSaga),fork(CommentReadSaga),fork(DeleteSaga),fork(CommentLikeSaga)]);
-  }
+export default function* S_board() {
+	yield all([
+		fork(BOARD_LIST), 
+		fork(BOARD_SEARCH), 
+		fork(BOARD_CONTENT), 
+		fork(BOARD_WRITE), 
+		fork(BOARD_UPDATE),
+		fork(BOARD_DELETE), 
+		fork(BOARD_LIKE), 
+		fork(BOARD_COMMENT_LIST), 
+		fork(BOARD_COMMENT_WRITE), 
+		fork(BOARD_COMMENT_DELETE),
+		fork(BOARD_COMMENT_LIKE)
+	]);
+}

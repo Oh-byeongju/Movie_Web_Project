@@ -32,15 +32,15 @@ public interface BoardLikeRepository extends JpaRepository<BoardLikeEntity, Long
     // 댓글 싫어요 조회 메소드
     List<BoardLikeEntity> findByBoardAndMemberAndBlunlikeTrueAndBoardcommentIsNotNull(BoardEntity board, MemberEntity member);
 
-    // 아래로 수정
-    // 옵셔널 써라
-    // jpql 안써도 되는애들이 많은듯
+    // 개별 댓글 좋아요 조회 메소드
+    Optional<BoardLikeEntity> findByBoardAndMemberAndBoardcommentAndBllikeTrue(BoardEntity board, MemberEntity member, BoardCommentEntity boardComment);
 
-//    //삭제, 댓글좋아요 // 이것들 다 이상함
-//    @Modifying
-//    @Query("delete from BoardLikeEntity as bl where bl.board.bid = :bid and bl.member.uid = :uid " +
-//            "and bl.bllike = true and bl.blunlike = false and bl.boardcomment.bcid = :bcid")
-//    void CommentDeleted(@Param("bid")Long bid, @Param("uid")String uid,
-//                               @Param("bcid")Long bcid);
+    // 개별 댓글 싫어요 조회 메소드
+    Optional<BoardLikeEntity> findByBoardAndMemberAndBoardcommentAndBlunlikeTrue(BoardEntity board, MemberEntity member, BoardCommentEntity boardComment);
 
+    // 댓글 좋아요 삭제하는 메소드
+    void deleteByBoardAndMemberAndBoardcommentAndBllikeTrue(BoardEntity board, MemberEntity member, BoardCommentEntity boardComment);
+
+    // 댓글 싫어요 삭제하는 메소드
+    void deleteByBoardAndMemberAndBoardcommentAndBlunlikeTrue(BoardEntity board, MemberEntity member, BoardCommentEntity boardComment);
 }

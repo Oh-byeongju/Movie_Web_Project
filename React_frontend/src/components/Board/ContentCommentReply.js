@@ -1,21 +1,26 @@
-/*eslint-disable*/
-import React ,{useEffect, useState}from "react";
+/*
+  23-05-26 게시물 페이지 수정(오병주)
+*/
+import React, { useState } from "react";
 import styled from "styled-components";
-import CommentText from "./CommentText";
+import ContentReplyWriting from "./ContentReplyWriting";
 import { MessageOutlined} from "@ant-design/icons";
 import { useDispatch,useSelector } from "react-redux";
-import { COMMENT_DELETE_REQUEST} from "../../reducer/R_board";
+
 import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
-import { useNavigate,useParams } from "react-router-dom";
-const ReplyComment = ({idd,child,bid,member}) =>
-{
-    const navigate = useNavigate();
-    const {title,id } = useParams();
-    const [isValid, setIsValid] = useState(false);
-    const [commentvalid, setCommentValid]= useState(false);
-    const dispatch = useDispatch(); 
-   const [validId, setValidId] = useState(0);
-   const { LOGIN_data } = useSelector((state) => state.R_user_login);
+import { useNavigate, useParams } from "react-router-dom";
+
+const ContentCommentReply = ({idd,child,bid,member}) => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const { title, id } = useParams();
+
+
+	const [isValid, setIsValid] = useState(false);
+	const [commentvalid, setCommentValid]= useState(false);
+	 
+	const [validId, setValidId] = useState(0);
+	const { LOGIN_data } = useSelector((state) => state.R_user_login);
 
     const onClickReply = ()=>{
         setIsValid(!isValid);
@@ -44,52 +49,11 @@ const ReplyComment = ({idd,child,bid,member}) =>
         const years = days / 365;
         return `${Math.floor(years)}년 전`;
     };
-    //대댓글
+    
 	return (
 		<CommentWrapper>
-			<div className="comment-contentt">
-				{member === LOGIN_data.uid ? <div style={{color:'red', float:'left', paddingRight:'20px'}} onClick={()=>{
-
-                    if (
-                        !window.confirm(
-                          "삭제하시겠습니까?"
-                        )
-                      ) {
-                        return;
-                      } else {
-                    dispatch({
-                        type:COMMENT_DELETE_REQUEST,
-                        data:{
-                            comment:idd
-                        }
-                    })
-                }}
-            }>
-					삭제하기
-			</div>: ""}
-			<div className="no" onClick={()=>{console.log(bid)}}>
-				신고
-			</div>
-			<div className="comment_to_comment" 
-				onClick={()=>{
-							if (LOGIN_data.uid === "No_login") {
-									if (
-										!window.confirm(
-											"로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
-										)
-									) {
-										return;
-									} else {
-										navigate(`/UserLogin`,{state:`/board/content/${id}/${title}`})
-									}
-					}
-					else{
-							onClickReply()}}}>
-				<MessageOutlined style={{paddingRight:"5px"}}/>
-				답글쓰기
-				</div>
-			</div>
-                                        {isValid? <CommentText id={idd} idtext={""}/>
+			
+                                        {isValid? <ContentReplyWriting id={idd} idtext={""}/>
       
                           
                        :""} 
@@ -120,10 +84,10 @@ const ReplyComment = ({idd,child,bid,member}) =>
                         return;
                       } else {
                     dispatch({
-                        type:COMMENT_DELETE_REQUEST,
-                        data:{
-                            comment:data.bcid
-                        }
+                        // type:COMMENT_DELETE_REQUEST,
+                        // data:{
+                        //     comment:data.bcid
+                        // }
                     })
                 }}
             }>
@@ -160,7 +124,7 @@ const ReplyComment = ({idd,child,bid,member}) =>
                  </div>        
                         </div>
                                 </div>
-                                         { validId===data.bcid&&commentvalid? <CommentText id={idd} idtext={data.member}/>
+                                         { validId===data.bcid&&commentvalid? <ContentReplyWriting id={idd} idtext={data.member}/>
  :""} 
                                 </CommentReply>
                             )
@@ -177,21 +141,15 @@ const CommentWrapper = styled.div`
     top:-20px;
     left:65px;
     color: #7b858e;
-        margin-top: 8px;
-        line-height: 20px;
-        font-size: 14px;
-        word-wrap: break-word;
-        word-break: break-all;
-        /* overflow: auto; */
-        max-height: 400px;
+		margin-top: 8px;
+		line-height: 20px;
+		font-size: 14px;
+		word-wrap: break-word;
+		word-break: break-all;
+		/* overflow: auto; */
+		max-height: 400px;
 
-        .no{
-            float:left;
-            cursor:pointer;
-            margin-right:20px;
-            
-
-        }
+        
         .comment_to_comment{
             margin-top: 8px;
             line-height: 20px;
@@ -207,70 +165,7 @@ const CommentWrapper = styled.div`
         
     }
 }`
-const CommentTextt = styled.div`
-padding: 24px 16px;
-background: #f8f9fa;
 
-.form{
-    background-color: #fff;
-    border: 1px solid #dddfe4;
-    margin-left:80px;
-    width:85%;
-    .text{
-        margin: 8px 16px 0;
-        padding-bottom: 16px;
-
-        textarea{
-            overflow: hidden;
-            overflow-wrap: break-word;
-            height: 44px;
-            display: block;
-            width: 100%;
-            min-height: 40px;
-            line-height: 20px;
-            font-size: 14px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            resize: none;
-            border: none;
-            outline: none;
-            font-family: Helvetica,Arial,Malgun Gothic,sans-serif;
-        }
-    }
-    .button{
-        position: relative;
-        border-top: 1px solid #dddfe4;
-        min-height: 42px;
-        box-sizing: border-box;
-        padding-right: 110px;
-
-        .number{
-            line-height: 40px;
-            font-size: 14px;
-            color: #7b858e;
-            float:right;
-        }
-        .writebutton{
-            position: absolute;
-            right: 0;
-            bottom: 0;
-        .write{
-            width: 92px;
-padding: 10px 9px;
-line-height: 20px;
-font-size: 16px;
-border-radius: 0;
-border-color: #46cfa7;
-background-color: #46cfa7;
-color: #fff;border: 1px solid #dddfe4;
-
-        }
-        }
-        }
-    }
-}
-`
 const CommentReply = styled.div`
     background: #f8f9fa;
     padding-left: 92px;
@@ -333,4 +228,4 @@ const CommentReply = styled.div`
     }
 }
     `
-export default ReplyComment;
+export default ContentCommentReply;

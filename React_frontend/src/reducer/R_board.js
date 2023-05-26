@@ -1,5 +1,5 @@
 /*
-	23-05-19 ~ 23 게시물 페이지 리듀서 수정(오병주)
+	23-05-19 ~ 23, 26 게시물 페이지 리듀서 수정(오병주)
 */
 // 게시물 조회 리스트
 export const BOARD_LIST_REQUEST = "BOARD_LIST_REQUEST";
@@ -36,36 +36,27 @@ export const BOARD_LIKE_REQUEST = "BOARD_LIKE_REQUEST"
 export const BOARD_LIKE_SUCCESS = "BOARD_LIKE_SUCCESS"
 export const BOARD_LIKE_FAILURE = "BOARD_LIKE_FAILURE"
 
+// 게시물 댓글 조회 리스트
+export const BOARD_COMMENT_LIST_REQUEST = "BOARD_COMMENT_LIST_REQUEST";
+export const BOARD_COMMENT_LIST_SUCCESS = "BOARD_COMMENT_LIST_SUCCESS";
+export const BOARD_COMMENT_LIST_FAILURE = "BOARD_COMMENT_LIST_FAILURE";
 
+// 게시물 댓글 작성 리스트
+export const BOARD_COMMENT_WRITE_REQUEST = "BOARD_COMMENT_WRITE_REQUEST";
+export const BOARD_COMMENT_WRITE_SUCCESS = "BOARD_COMMENT_WRITE_SUCCESS";
+export const BOARD_COMMENT_WRITE_FAILURE = "BOARD_COMMENT_WRITE_FAILURE";
+export const BOARD_COMMENT_WRITE_RESET = "BOARD_COMMENT_WRITE_RESET";
 
+// 게시물 댓글 삭제 리스트
+export const BOARD_COMMENT_DELETE_REQUEST = "BOARD_COMMENT_DELETE_REQUEST";
+export const BOARD_COMMENT_DELETE_SUCCESS = "BOARD_COMMENT_DELETE_SUCCESS";
+export const BOARD_COMMENT_DELETE_FAILURE = "BOARD_COMMENT_DELETE_FAILURE";
+export const BOARD_COMMENT_DELETE_RESET = "BOARD_COMMENT_DELETE_RESET";
 
-
-
-
-//// 아래로 날리기
-  export const CONTENT_DELETE_REQUEST = "CONTENT_DELETE_REQUEST"
-  export const CONTENT_DELETE_SUCCESS = "CONTENT_DELETE_SUCCESS"
-  export const CONTENT_DELETE_FAILURE = "CONTENT_DELETE_FAILURE"
-
-  export const COMMENT_READ_REQUEST = "COMMENT_READ_REQUEST"
-  export const COMMENT_READ_SUCCESS = "COMMENT_READ_SUCCESS"
-  export const COMMENT_READ_FAILURE = "COMMENT_READ_FAILURE"
-  
-  export const COMMENT_WRITE_REQUEST = "COMMENT_WRITE_REQUEST"
-  export const COMMENT_WRITE_SUCCESS = "COMMENT_WRITE_SUCCESS"
-  export const COMMENT_WRITE_FAILURE = "COMMENT_WRITE_FAILURE"
-
-  export const COMMENT_DELETE_REQUEST = "COMMENT_DELETE_REQUEST"
-  export const COMMENT_DELETE_SUCCESS = "COMMENT_DELETE_SUCCESS"
-  export const COMMENT_DELETE_FAILURE = "COMMENT_DELETE_FAILURE"
-
-  export const COMMENT_LIKE_REQUEST = "COMMENT_LIKE_REQUEST"
-  export const COMMENT_LIKE_SUCCESS = "COMMENT_LIKE_SUCCESS"
-  export const COMMENT_LIKE_FAILURE = "COMMENT_LIKE_FAILURE"
-// 위로 날리기
-
-
-
+// 게시물 댓글 좋아요 리스트
+export const BOARD_COMMENT_LIKE_REQUEST = "BOARD_COMMENT_LIKE_REQUEST";
+export const BOARD_COMMENT_LIKE_SUCCESS = "BOARD_COMMENT_LIKE_SUCCESS";
+export const BOARD_COMMENT_LIKE_FAILURE = "BOARD_COMMENT_LIKE_FAILURE";
 
 const initalState = {
 	BOARD_LIST_loading: false,
@@ -99,38 +90,24 @@ const initalState = {
   BOARD_LIKE_done: false,
   BOARD_LIKE_error: false,
 
-	
+	BOARD_COMMENT_LIST_loading: false,
+  BOARD_COMMENT_LIST_done: false,
+  BOARD_COMMENT_LIST_error: false,
+	BOARD_COMMENT_LIST: [],
 
-	
-	// 아래로 날리기
+	BOARD_COMMENT_WRITE_loading: false,
+  BOARD_COMMENT_WRITE_done: false,
+  BOARD_COMMENT_WRITE_error: false,
 
-	content_delete_loading:false,
-	content_delete_done:false,
-	content_delete_error:null,
+	BOARD_COMMENT_DELETE_loading: false,
+  BOARD_COMMENT_DELETE_done: false,
+  BOARD_COMMENT_DELETE_error: false,
 
-	comment_read_loading:false,
-	comment_read_done:false,
-	comment_read_error:false,
-
-	comment_write_loading:false,
-	comment_write_done:false,
-	comment_write_error:null,
-
-	comment_delete_loading:false,
-	comment_delete_done:false,
-	comment_delete_error:null,
-
-	comment_like_loadng:false,
-	comment_like_done:false,
-	comment_like_error:null,
-
-	content:[],
-	comment:[],
-	like:[],
-	likeslikes:[],
+	BOARD_COMMENT_LIKE_loading: false,
+  BOARD_COMMENT_LIKE_done: false,
+  BOARD_COMMENT_LIKE_error: false,
 };
 
-  
 const R_board = (state = initalState, action) => {
 	switch (action.type) {
 		// 게시물 조회 케이스들
@@ -297,152 +274,128 @@ const R_board = (state = initalState, action) => {
 				BOARD_LIKE_done: false,
 				BOARD_LIKE_error: true
 			}; 
-		
+		// 게시물 댓글 조회 케이스들
+    case BOARD_COMMENT_LIST_REQUEST:
+      return {
+        ...state,
+        BOARD_COMMENT_LIST_loading: true,
+        BOARD_COMMENT_LIST_done: false,
+        BOARD_COMMENT_LIST_error: false
+      };
+    case BOARD_COMMENT_LIST_SUCCESS:
+			let origin = state.BOARD_CONTENT.commentCounts;
+			let newdata = action.data.count;
+			if (origin !== newdata) {
+				origin = newdata;
+			}
 
+      return {
+        ...state,
+        BOARD_COMMENT_LIST_loading: false,
+        BOARD_COMMENT_LIST_done: true,
+        BOARD_COMMENT_LIST_error: false,
+        BOARD_COMMENT_LIST: action.data,
+				BOARD_CONTENT: {...state.BOARD_CONTENT, commentCounts: origin}
+      };
+    case BOARD_COMMENT_LIST_FAILURE:
+      return {
+        ...state,
+        BOARD_COMMENT_LIST_loading: false,
+        BOARD_COMMENT_LIST_done: false,
+        BOARD_COMMENT_LIST_error: true
+      };
+		// 게시물 댓글 작성 케이스들
+    case BOARD_COMMENT_WRITE_REQUEST:
+      return {
+        ...state,
+        BOARD_COMMENT_WRITE_loading: true,
+        BOARD_COMMENT_WRITE_done: false,
+        BOARD_COMMENT_WRITE_error: false
+      };
+    case BOARD_COMMENT_WRITE_SUCCESS:
+      return {
+        ...state,
+        BOARD_COMMENT_WRITE_loading: false,
+        BOARD_COMMENT_WRITE_done: true,
+        BOARD_COMMENT_WRITE_error: false
+      };
+    case BOARD_COMMENT_WRITE_FAILURE:
+      return {
+        ...state,
+        BOARD_COMMENT_WRITE_loading: false,
+        BOARD_COMMENT_WRITE_done: false,
+        BOARD_COMMENT_WRITE_error: true
+      };
+		case BOARD_COMMENT_WRITE_RESET:
+			return {
+				...state,
+				BOARD_COMMENT_WRITE_loading: false,
+				BOARD_COMMENT_WRITE_done: false,
+				BOARD_COMMENT_WRITE_error: false
+			};
+		// 게시물 댓글 삭제 케이스들
+    case BOARD_COMMENT_DELETE_REQUEST:
+      return {
+        ...state,
+        BOARD_COMMENT_DELETE_loading: true,
+        BOARD_COMMENT_DELETE_done: false,
+        BOARD_COMMENT_DELETE_error: false
+      };
+    case BOARD_COMMENT_DELETE_SUCCESS:
+      return {
+        ...state,
+        BOARD_COMMENT_DELETE_loading: false,
+        BOARD_COMMENT_DELETE_done: true,
+        BOARD_COMMENT_DELETE_error: false
+      };
+    case BOARD_COMMENT_DELETE_FAILURE:
+      return {
+        ...state,
+        BOARD_COMMENT_DELETE_loading: false,
+        BOARD_COMMENT_DELETE_done: false,
+        BOARD_COMMENT_DELETE_error: true
+      };
+		case BOARD_COMMENT_DELETE_RESET:
+			return {
+				...state,
+				BOARD_COMMENT_DELETE_loading: false,
+				BOARD_COMMENT_DELETE_done: false,
+				BOARD_COMMENT_DELETE_error: false
+			};
+		// 게시물 댓글 좋아요 케이스들
+		case BOARD_COMMENT_LIKE_REQUEST:
+			return {
+				...state,
+				BOARD_COMMENT_LIKE_loading: true,
+				BOARD_COMMENT_LIKE_done: false,
+				BOARD_COMMENT_LIKE_error: false
+			};
+		case BOARD_COMMENT_LIKE_SUCCESS:
+			const temp = state.BOARD_COMMENT_LIST.content.map(comment =>
+				comment.bcid === action.data.bcid ? {
+					...comment,
+					like: action.data.like,
+					unlike: action.data.unlike,
+					likes: action.data.likes, 
+					unlikes: action.data.unlikes 
+				} : comment
+			)
+			const list = {...state.BOARD_COMMENT_LIST, content: temp}
 
-
-
-
-		// 아래로 날리기
-			case CONTENT_DELETE_REQUEST:
-					return{
-							...state,
-							content_delete_loading:true,
-							content_delete_done:false,
-							content_delete_error:null,
-				}
-					case CONTENT_DELETE_SUCCESS:
-							return{
-									...state,
-									content_delete_loading:false,
-									content_delete_done:true,
-									content_delete_error:null,
-							}
-					case CONTENT_DELETE_FAILURE:
-							return{
-							...state,
-							content_delete_loading:false,
-							content_delete_done:false,
-							content_delete_error:action.error,
-			}  
-
-							case COMMENT_READ_REQUEST:
-									return{
-											...state,
-											comment_read_loading:true,
-											comment_read_done:false,
-											comment_read_error:null,
-									}
-							case COMMENT_READ_SUCCESS:
-									let origin = state.content.commentcount;
-									let newdata = action.data.count;
-									if(origin !== newdata){
-									origin =newdata;
-									}
-									return{
-													...state,
-													comment_read_loading:false,
-													comment_read_done:true,
-													comment_read_error:null,
-													comment:action.data,
-
-													content: 
-													{...state.content,
-															commentcount: origin
-													}
-														
-													
-											
-													}
-							case COMMENT_READ_FAILURE:
-									return{
-											...state,
-											comment_read_loading:false,
-											comment_read_done:false,
-											comment_read_error:action.error,
-									}  
-									
-							case COMMENT_WRITE_REQUEST:
-									return{
-											...state,
-											comment_write_loading:true,
-											comment_write_done:false,
-											comment_write_error:null,
-									}
-							case COMMENT_WRITE_SUCCESS:
-									return{
-													...state,
-													comment_write_loading:false,
-													comment_write_done:true,
-													comment_write_error:null,
-											}
-							case COMMENT_WRITE_FAILURE:
-									return{
-											...state,
-											comment_write_loading:false,
-											comment_write_done:false,
-											comment_write_error:action.error,
-									}  
-
-									case COMMENT_DELETE_REQUEST:
-									return{
-											...state,
-											comment_delete_loading:true,
-											comment_delete_done:false,
-											comment_delete_error:null,
-
-									}
-							case COMMENT_DELETE_SUCCESS:
-									return{
-													...state,
-													comment_delete_loading:false,
-													comment_delete_done:true,
-	comment_delete_error:null,
-
-											}
-							case COMMENT_DELETE_FAILURE:
-									return{
-											...state,
-											comment_delete_loading:false,
-											comment_delete_done:false,
-											comment_delete_error:action.error,
-									
-									}  
-
-									
-
-											case COMMENT_LIKE_REQUEST:
-													return{
-															...state,
-															comment_like_loading:true,
-															comment_like_done:false,
-															comment_like_error:null,
-													}
-											case COMMENT_LIKE_SUCCESS:
-
-
-
-											const map = state.comment.mapper.map(con => 
-													con.bcid === action.data.bcid ? {...con, commentlike: action.data.commentlike
-																	,likes:action.data.likes, unlikes:action.data.unlikes
-													} : con
-												)     
-											const commentd = {...state.comment, mapper:map}
-													return{
-																	...state,
-																	comment_like_loading:false,
-																	comment_like_done:true,
-																	comment_like_error:null,
-																	comment: commentd   
-															}
-																		
-											case COMMENT_LIKE_FAILURE:
-													return{
-															...state,
-															comment_like_loading:false,
-															comment_like_done:false,
-															comment_like_error:action.error,
-													}  
+			return {
+				...state,
+				BOARD_COMMENT_LIKE_loading: false,
+				BOARD_COMMENT_LIKE_done: true,
+				BOARD_COMMENT_LIKE_error: false,
+				BOARD_COMMENT_LIST: list
+			}		
+		case BOARD_COMMENT_LIKE_FAILURE:
+			return {
+				...state,
+				BOARD_COMMENT_LIKE_loading: false,
+				BOARD_COMMENT_LIKE_done: false,
+				BOARD_COMMENT_LIKE_error: true
+			}; 						
 		default:
 			return state;
 	}

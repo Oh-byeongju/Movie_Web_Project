@@ -54,7 +54,7 @@ const ContentList = () => {
 							<span>
 								{board.btitle}
 								<em>
-									[{board.commentcount}]
+									[{board.commentCounts}]
 								</em>
 							</span>
 						</div>

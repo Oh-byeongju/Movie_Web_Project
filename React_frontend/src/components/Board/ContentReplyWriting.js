@@ -1,9 +1,12 @@
+/*
+  23-05-26 게시물 페이지 수정(오병주)
+*/
 /*eslint-disable*/
 import React ,{useState}from "react";
 import styled from "styled-components";
-import { COMMENT_WRITE_REQUEST } from "../../reducer/R_board";
+
 import { useDispatch ,useSelector} from "react-redux";
-const CommentText =({id,idtext}) =>{
+const ContentReplyWriting =({id,idtext}) =>{
     const {content} = useSelector((state)=>state.R_board)
     const [text, setText] =useState("");
     const [count, setCount]  = useState(0)
@@ -33,14 +36,14 @@ let ptag;
             return;
           } else {
             if(id===""){
-            dispatch({
-                type:COMMENT_WRITE_REQUEST,
-                data:{
-                    text:`<p>${text}</p>`,
-                    parent:"",
-                    bid:content.bid,
-                }
-            })
+            // dispatch({
+            //     type:COMMENT_WRITE_REQUEST,
+            //     data:{
+            //         text:`<p>${text}</p>`,
+            //         parent:"",
+            //         bid:content.bid,
+            //     }
+            // })
         alert('작성완료되었습니다.')
         setText("")
     }
@@ -54,12 +57,12 @@ let ptag;
             ptag= `<p>${text}</p>`
         }
     dispatch({
-        type:COMMENT_WRITE_REQUEST,
-        data:{
-            text:ptag,
-            parent:id,
-            bid: content.bid,
-        }
+        // type:COMMENT_WRITE_REQUEST,
+        // data:{
+        //     text:ptag,
+        //     parent:id,
+        //     bid: content.bid,
+        // }
     })
     alert('작성완료되었습니다2323')
     setText("")
@@ -168,4 +171,4 @@ color: #fff;border: 1px solid #dddfe4;
     }
 }
 `
-export default CommentText;
+export default ContentReplyWriting;

@@ -43,7 +43,8 @@ public enum ErrorCode {
     CINEMA_IS_NONE(400, "T002", "상영관이 존재하지 않습니다."),
 
     // Board
-    BOARD_IS_NONE(400, "B001", "게시물이 존재하지 않습니다.");
+    BOARD_IS_NONE(400, "B001", "게시물이 존재하지 않습니다."),
+    BOARD_COMMENT_IS_NONE(400, "B002", "댓글이 존재하지 않습니다.");
 
     private final String code;
     private final String message;

@@ -1,231 +1,220 @@
 /*
   23-05-26 게시물 페이지 수정(오병주)
 */
-import React, { useState } from "react";
+import React, { useEffect, useCallback } from "react";
 import styled from "styled-components";
 import ContentReplyWriting from "./ContentReplyWriting";
-import { MessageOutlined} from "@ant-design/icons";
-import { useDispatch,useSelector } from "react-redux";
-
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+import { MessageOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { BOARD_REPLY_KEY_SETTING, BOARD_COMMENT_REPLY_DELETE_REQUEST, BOARD_COMMENT_REPLY_DELETE_RESET } from "../../reducer/R_board";
+import * as date from "../../lib/date.js";
 
-const ContentCommentReply = ({idd,child,bid,member}) => {
+const ContentCommentReply = ({ child }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { title, id } = useParams();
+	const { category, title, id } = useParams();
 
+	// 필요한 리덕스 상태들
+	const { LOGIN_data, BOARD_Reply_Id, BOARD_COMMENT_REPLY_DELETE_done, BOARD_COMMENT_REPLY_DELETE_error } = useSelector(
+		state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+			BOARD_Reply_Id: state.R_board.BOARD_Reply_Id,
+			BOARD_COMMENT_REPLY_DELETE_done: state.R_board.BOARD_COMMENT_REPLY_DELETE_done,
+			BOARD_COMMENT_REPLY_DELETE_error: state.R_board.BOARD_COMMENT_REPLY_DELETE_error
+		}),
+		shallowEqual
+	);
 
-	const [isValid, setIsValid] = useState(false);
-	const [commentvalid, setCommentValid]= useState(false);
-	 
-	const [validId, setValidId] = useState(0);
-	const { LOGIN_data } = useSelector((state) => state.R_user_login);
+	// 답글 입력칸 띄어주는 함수
+	const onReply = useCallback((bcid)=> {
+		if (LOGIN_data.uid === "No_login") {
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: `/Board/content/${category}/${id}/${title}`}});
+			}
+		}
+		else {
+			if (BOARD_Reply_Id === bcid) {
+				dispatch({
+					type: BOARD_REPLY_KEY_SETTING,
+					data: ''
+				})
+			}
+			else {
+				dispatch({
+					type: BOARD_REPLY_KEY_SETTING,
+					data: bcid
+				})
+			}
+		}
+	}, [LOGIN_data.uid, category, id, title, BOARD_Reply_Id, dispatch, navigate]);
 
-    const onClickReply = ()=>{
-        setIsValid(!isValid);
-    }
-    const onClickCommentReply = (id)=>{
-        setValidId(id)
-        setCommentValid(!commentvalid);
-        console.log(validId)
-    }
+	// 답글 삭제하는 함수
+	const onDelete = useCallback((bcid)=> {
+		if (!window.confirm("답글을 삭제하시겠습니까?")) {
+			return;
+		} 
+		else {
+			dispatch({
+				type: BOARD_COMMENT_REPLY_DELETE_REQUEST,
+				data: {
+					bcid: bcid,
+				}
+			});
+		}
+	}, [dispatch]);
 
-  
-    const detailDate = (a) => {
-        const milliSeconds = new Date() - a;
-        const seconds = milliSeconds / 1000;
-        if (seconds < 60) return `방금 전`;
-        const minutes = seconds / 60;
-        if (minutes < 60) return `${Math.floor(minutes)}분 전`;
-        const hours = minutes / 60;
-        if (hours < 24) return `${Math.floor(hours)}시간 전`;
-        const days = hours / 24;
-        if (days < 7) return `${Math.floor(days)}일 전`;
-        const weeks = days / 7;
-        if (weeks < 5) return `${Math.floor(weeks)}주 전`;
-        const months = days / 30;
-        if (months < 12) return `${Math.floor(months)}개월 전`;
-        const years = days / 365;
-        return `${Math.floor(years)}년 전`;
-    };
-    
+	// 답글 삭제 성공여부에 따른 useEffect
+	useEffect(()=> {
+		// 삭제 성공
+		if (BOARD_COMMENT_REPLY_DELETE_done) {
+			dispatch({
+				type: BOARD_COMMENT_REPLY_DELETE_RESET
+			});
+		}
+
+		// 삭제 실패
+		if (BOARD_COMMENT_REPLY_DELETE_error) {
+			alert('답글 삭제에 실패했습니다.');
+			window.location.replace(`/Board/content/${category}/${id}/${title}`);
+		}
+	}, [BOARD_COMMENT_REPLY_DELETE_done, BOARD_COMMENT_REPLY_DELETE_error, category, id, title, dispatch]);
+
 	return (
-		<CommentWrapper>
-			
-                                        {isValid? <ContentReplyWriting id={idd} idtext={""}/>
-      
-                          
-                       :""} 
-                        {child.map((data)=>
-                        {
-                            return(
-                                <CommentReply>
-                                    <div className="icon">
-                                    <SubdirectoryArrowRightIcon />
-                                    </div>
-                                <div className="comment">
-                                                 <div className="name">
-                                                     <span className="id">{data.member}</span>
-                                                     <span className="time">{detailDate(new Date(data.bcdate))}</span>
-                                                 </div>
-                                                 <div className="comment-comment">
-                                                    <div dangerouslySetInnerHTML={{__html:data.bccomment}}></div>
-                                                 <div className="comment-content">
-                                                 {member === LOGIN_data.uid ? <div 
-                style={{color:'red', float:'left', paddingRight:'20px'}}
-                onClick={()=>{
-
-                    if (
-                        !window.confirm(
-                          "삭제하시겠습니까?"
-                        )
-                      ) {
-                        return;
-                      } else {
-                    dispatch({
-                        // type:COMMENT_DELETE_REQUEST,
-                        // data:{
-                        //     comment:data.bcid
-                        // }
-                    })
-                }}
-            }>
-                    삭제하기
-                </div>: ""}
-                
-                <div className="no"
-                onClick={()=>{
-                    console.log(bid)
-                }}>
-                    신고
-                </div>
-                <div className="comment_to_comment" 
-                onClick={()=>{
-                    if (LOGIN_data.uid === "No_login") {
-                        if (
-                          !window.confirm(
-                            "로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
-                          )
-                        ) {
-                          return;
-                        } else {
-                          navigate(`/UserLogin`,{state:`/board/content/${id}/${title}`})
-                        }
-                }
-                else{
-                    onClickCommentReply(data.bcid)
-                console.log(idd)
-                }
-                }}>
-                <MessageOutlined 
-                style={{paddingRight:"5px"}}/>답글쓰기
-                </div>
-                 </div>        
-                        </div>
-                                </div>
-                                         { validId===data.bcid&&commentvalid? <ContentReplyWriting id={idd} idtext={data.member}/>
- :""} 
-                                </CommentReply>
-                            )
-
-                        })}                      
-                     
-
-                    </CommentWrapper>)
-}
-
-const CommentWrapper = styled.div`
-.comment-contentt{
-    position:relative;
-    top:-20px;
-    left:65px;
-    color: #7b858e;
-		margin-top: 8px;
-		line-height: 20px;
-		font-size: 14px;
-		word-wrap: break-word;
-		word-break: break-all;
-		/* overflow: auto; */
-		max-height: 400px;
-
-        
-        .comment_to_comment{
-            margin-top: 8px;
-            line-height: 20px;
-            font-size: 14px;
-            word-wrap: break-word;
-            word-break: break-all;
-            overflow: auto;
-            max-height: 400px;
-            cursor:pointer;
-
-        
-        }
-        
-    }
-}`
+		<>
+			{child.map((comment)=>
+			<CommentReply key={comment.bcid}>
+				<div className="reply">
+					<div className="reply_name">
+						<span className="reply_id">
+							{comment.uid}
+						</span>
+						<span className="reply_time">
+							{date.detailDate(new Date(comment.bcdate))}
+						</span>
+					</div>
+					<div className="comment_reply">
+						<p>
+							{comment.parentUid ? 
+							<strong>
+								{comment.parentUid}
+							</strong> : null}
+							{comment.bccomment}
+						</p>
+					</div>
+				</div>
+				<ReplyButtons>
+					<ButtonReply onClick={()=> onReply(comment.bcid)}>
+						<MessageOutlined style={{paddingRight:"3px"}}/> 답글쓰기
+					</ButtonReply>
+					{comment.uid === LOGIN_data.uid ? 
+					<ButtonDel onClick={()=> onDelete(comment.bcid)}>
+						<DeleteOutlined style={{paddingRight:"2px"}}/> 삭제하기
+					</ButtonDel> : null}
+				</ReplyButtons>
+				{BOARD_Reply_Id === comment.bcid ? <ContentReplyWriting bcroot={comment.bcroot} bcid={comment.bcid} margin={true}/> : null} 
+			</CommentReply>)}                               
+		</>
+	);
+};
 
 const CommentReply = styled.div`
-    background: #f8f9fa;
-    padding-left: 92px;
-    position: relative;
-    padding: 12px 12px 12px 64px;
-    border-top: 1px solid #ebeef1;
-    strong{
-        display: inline-block;
-    font-weight: 400;
-    padding: 0 2px;
-    background: #d1f2e8;
-    color: #16ae81;
-    }
-    
-   .icon{
-    position: absolute;
-    top: 12px;
-    left: 64px;
-    content: "";
-    width: 12px;
-    height: 12px;
-    
-   }
-    li{
-        width:100%;
-        position: relative;
-    
-        left:-40px;
-        border-top: 1px solid #dddfe4;
-        .comment{
-            position: relative;
-            padding: 12px 12px 12px 64px;
-            
-            .comment-comment{
-                margin-top: 8px;
-                line-height: 20px;
-                font-size: 14px;
-                color: #1e2022;
-                word-wrap: break-word;
-                word-break: break-all;
-                /* overflow: auto; */
-                max-height: 400px;
-                cursor:pointer;
-            
-                .comment-content{
-                    margin-top: 8px;
-                    line-height: 20px;
-                    font-size: 50px;
-                    color: #1e2022;
-                    word-wrap: break-word;
-                    word-break: break-all;
-                    overflow: auto;
-                    max-height: 400px;
-                    
-                
-                }
-                
-            }
-        }
-    }
-}
-    `
+	background: #f8f9fa;
+	position: relative;
+	padding: 13px 12px 10px 66px;
+	border-top: 1px solid #ebeef1;
+
+	::before {
+		position: absolute;
+		top: 12px;
+		left: 60px;
+		content: "";
+		width: 12px;
+		height: 12px;
+		border-left: 1px solid #c5cbd0;
+    border-bottom: 1px solid #c5cbd0;
+	}
+
+	.reply {
+		position: relative;
+		padding-left: 20px;
+		font-size: 14px;
+		color: #7b858e;
+
+		.reply_id {
+			display: inline-block;
+			font-weight: 700;
+			color: #1e2022;
+			word-wrap: break-word;
+			word-break: break-all;
+			padding-right: 14px;
+			line-height: 10px;
+			height: 12px;
+			border-right: 1px solid #98a0a7;
+		}
+
+		.reply_time{
+			padding-left: 14px;
+		}
+		
+		.comment_reply {
+			line-height: 25px;
+			font-size: 15px;
+			color: #1e2022;
+			word-wrap: break-word;
+			word-break: break-all;
+			overflow: auto;
+			max-height: 400px;
+
+			p {
+				margin-top: 12px;
+
+				strong {
+					display: inline-block;
+					font-weight: 400;
+					padding: 0 2px;
+					margin-right: 5px;
+					background: #d1f2e8;
+					color: #16ae81;
+				}
+			}
+		}
+	}
+`;
+
+const ReplyButtons = styled.div`
+	position: relative;
+	top: -10px;
+	left: 20px;
+	color: #7b858e;
+	margin-top: 5px;
+	line-height: 20px;
+	font-size: 14px;
+	word-wrap: break-word;
+	word-break: break-all;
+	max-height: 400px;
+`;
+
+const ButtonReply = styled.button`
+	border: none;
+	background: #f8f9fa;
+	color: #7b858e;
+	padding: 0;
+	margin-right: 20px;
+	vertical-align: middle;
+	cursor: pointer;
+`;
+
+const ButtonDel = styled.button`
+	color: red;
+	border: none;
+	background: #f8f9fa;
+	padding: 0;
+	vertical-align: middle;
+	cursor: pointer;
+`;
+
 export default ContentCommentReply;

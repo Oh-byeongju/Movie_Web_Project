@@ -12,7 +12,8 @@ import {
 	BOARD_COMMENT_WRITE_RESET,
 	BOARD_COMMENT_DELETE_REQUEST,
 	BOARD_COMMENT_DELETE_RESET,
-	BOARD_COMMENT_LIKE_REQUEST, 
+	BOARD_COMMENT_LIKE_REQUEST,
+	BOARD_REPLY_KEY_SETTING,
  } from "../../reducer/R_board";
 import ContentReplyWriting from "./ContentReplyWriting";
 import ContentCommentReply from "./ContentCommentReply";
@@ -24,8 +25,9 @@ const ContentComment = () =>{
 	const { category, id, title } = useParams();
 
 	// 필요한 리덕스 상태들
-	const { LOGIN_data, BOARD_COMMENT_LIST_loading, BOARD_COMMENT_LIST, BOARD_COMMENT_WRITE_done, 
-		BOARD_COMMENT_WRITE_error, BOARD_COMMENT_DELETE_done, BOARD_COMMENT_DELETE_error, BOARD_COMMENT_LIKE_error } = useSelector(
+	const { LOGIN_data, BOARD_COMMENT_LIST_loading, BOARD_COMMENT_LIST, BOARD_COMMENT_WRITE_done, BOARD_COMMENT_WRITE_error, 
+		BOARD_COMMENT_DELETE_done, BOARD_COMMENT_DELETE_error, BOARD_COMMENT_LIKE_error, BOARD_Reply_Id, BOARD_COMMENT_REPLY_WRITE_done,
+		BOARD_COMMENT_REPLY_DELETE_done } = useSelector(
 		state => ({
 			LOGIN_data: state.R_user_login.LOGIN_data,
 			BOARD_COMMENT_LIST_loading: state.R_board.BOARD_COMMENT_LIST_loading,
@@ -34,7 +36,10 @@ const ContentComment = () =>{
 			BOARD_COMMENT_WRITE_error: state.R_board.BOARD_COMMENT_WRITE_error,
 			BOARD_COMMENT_DELETE_done: state.R_board.BOARD_COMMENT_DELETE_done,
 			BOARD_COMMENT_DELETE_error: state.R_board.BOARD_COMMENT_DELETE_error,
-			BOARD_COMMENT_LIKE_error: state.R_board.BOARD_COMMENT_LIKE_error
+			BOARD_COMMENT_LIKE_error: state.R_board.BOARD_COMMENT_LIKE_error,
+			BOARD_Reply_Id: state.R_board.BOARD_Reply_Id,
+			BOARD_COMMENT_REPLY_WRITE_done: state.R_board.BOARD_COMMENT_REPLY_WRITE_done,
+			BOARD_COMMENT_REPLY_DELETE_done: state.R_board.BOARD_COMMENT_REPLY_DELETE_done
 		}),
 		shallowEqual
 	);
@@ -160,8 +165,7 @@ const ContentComment = () =>{
 		}
 	}, [BOARD_COMMENT_LIKE_error, category, id, title]);
 
-	// 답글쓰기 버튼 누를때 함수 및 useState
-	const [checkId, setcheckId] = useState('');
+	// 답글 입력칸 띄어주는 함수
 	const onReply = useCallback((bcid)=> {
 		if (LOGIN_data.uid === "No_login") {
 			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
@@ -172,14 +176,37 @@ const ContentComment = () =>{
 			}
 		}
 		else {
-			if (checkId === '') {
-				setcheckId(bcid);
+			if (BOARD_Reply_Id === bcid) {
+				dispatch({
+					type: BOARD_REPLY_KEY_SETTING,
+					data: ''
+				})
 			}
 			else {
-				setcheckId('');
+				dispatch({
+					type: BOARD_REPLY_KEY_SETTING,
+					data: bcid
+				})
 			}
 		}
-	}, [LOGIN_data.uid, category, id, title, checkId, navigate]);
+	}, [LOGIN_data.uid, category, id, title, BOARD_Reply_Id, dispatch, navigate]);
+
+	// 답글 작성 성공시 새로고침 useEffect
+	useEffect(()=> {
+		if (BOARD_COMMENT_REPLY_WRITE_done) {
+			onClickRefresh();
+		}
+	}, [BOARD_COMMENT_REPLY_WRITE_done, onClickRefresh, dispatch]);
+
+	// 페이지 탈출시 답글 입력칸 ID 초기화를 위한 useEffect
+  useEffect(() => {
+    return () => {
+      dispatch({
+				type: BOARD_REPLY_KEY_SETTING,
+				data: ''
+			})
+    };
+  }, [dispatch]);
 
 	// 댓글 삭제하는 함수
 	const onDelete = useCallback((bcid)=> {
@@ -212,6 +239,13 @@ const ContentComment = () =>{
 			window.location.replace(`/Board/content/${category}/${id}/${title}`);
 		}
 	}, [BOARD_COMMENT_DELETE_done, BOARD_COMMENT_DELETE_error, category, id, title, onClickRefresh, dispatch]);
+
+	// 답글 삭제 성공시 새로고침 useEffect
+	useEffect(()=> {
+		if (BOARD_COMMENT_REPLY_DELETE_done) {
+			onClickRefresh();
+		}
+	}, [BOARD_COMMENT_REPLY_DELETE_done, onClickRefresh, dispatch]);
 
 	return (
 		<Comment>
@@ -303,9 +337,8 @@ const ContentComment = () =>{
 							<DeleteOutlined style={{paddingRight:"2px"}}/> 삭제하기
 						</ButtonDel> : null}
 					</CommentButtons>
-					{/* 여기아래 bcid랑 bcroot줘야함 */}
-					{checkId === comment.bcid ? <ContentReplyWriting/> : null}
-					<ContentCommentReply idd={comment.bcid} child={comment.child} bid={comment.bid} member = {comment.uid}/> 
+					{BOARD_Reply_Id === comment.bcid ? <ContentReplyWriting bcroot={comment.bcroot} bcid={comment.bcid} margin={false}/> : null}
+					<ContentCommentReply child={comment.child}/> 
 				</li>)}
 			</CommentData>
 		</Comment>
@@ -537,7 +570,7 @@ const CommentData = styled.ul`
     }
 		.comment-content{
 			line-height: 25px;
-			font-size: 14px;
+			font-size: 15px;
 			color: #1e2022;
 			word-wrap: break-word;
 			word-break: break-all;
@@ -552,7 +585,7 @@ const CommentButtons = styled.div`
 	top: -20px;
 	left: 65px;
 	color: #7b858e;
-	margin-top: 8px;
+	margin-top: 5px;
 	line-height: 20px;
 	font-size: 14px;
 	word-wrap: break-word;

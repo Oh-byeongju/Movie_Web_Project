@@ -14,6 +14,8 @@ import {
 	BOARD_COMMENT_WRITE_REQUEST, BOARD_COMMENT_WRITE_SUCCESS, BOARD_COMMENT_WRITE_FAILURE,
 	BOARD_COMMENT_DELETE_REQUEST, BOARD_COMMENT_DELETE_SUCCESS, BOARD_COMMENT_DELETE_FAILURE,
 	BOARD_COMMENT_LIKE_REQUEST, BOARD_COMMENT_LIKE_SUCCESS, BOARD_COMMENT_LIKE_FAILURE,
+	BOARD_COMMENT_REPLY_WRITE_REQUEST, BOARD_COMMENT_REPLY_WRITE_SUCCESS, BOARD_COMMENT_REPLY_WRITE_FAILURE,
+	BOARD_COMMENT_REPLY_DELETE_REQUEST, BOARD_COMMENT_REPLY_DELETE_SUCCESS, BOARD_COMMENT_REPLY_DELETE_FAILURE
 } from "../reducer/R_board";
 import { http } from "../lib/http";
 
@@ -341,6 +343,62 @@ async function callBoardCommentLike(data) {
 	});
 }
 
+// 게시물 답글 작성 함수
+function* BoardCommentReplyWrite(action) {
+	const result = yield call(callBoardCommentReplyWrite, action.data);
+	if (result.status === 204) { 
+		yield put({
+			type: BOARD_COMMENT_REPLY_WRITE_SUCCESS
+		});
+	} 
+	else {
+		yield put({
+			type: BOARD_COMMENT_REPLY_WRITE_FAILURE
+		});   
+	}
+}
+
+// 게시물 답글 작성 백엔드 호출
+async function callBoardCommentReplyWrite(data) {
+	return await http.post("/Board/auth/replyWrite", data)
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
+}
+
+// 게시물 답글 삭제 함수
+function* BoardCommentReplyDelete(action) {
+  const result = yield call(callBoardCommentReplyDelete, action.data);
+  if (result.status === 204) {
+    yield put({
+      type: BOARD_COMMENT_REPLY_DELETE_SUCCESS
+    });
+  } 
+  else {
+    yield put({
+			type: BOARD_COMMENT_REPLY_DELETE_FAILURE
+    });
+  }
+}
+
+// 게시물 답글 삭제 백엔드 호출
+async function callBoardCommentReplyDelete(data) {
+	return await http.delete("/Board/auth/replyDelete", {
+    params: {
+			bcid: data.bcid
+		}
+	})
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
+
 function* BOARD_LIST() {
 	yield takeLatest(BOARD_LIST_REQUEST, AllBoard);
 }
@@ -385,6 +443,14 @@ function* BOARD_COMMENT_LIKE() {
 	yield takeLatest(BOARD_COMMENT_LIKE_REQUEST, BoardCommentLike);
 }
 
+function* BOARD_COMMENT_REPLY_WRITE() {
+	yield takeLatest(BOARD_COMMENT_REPLY_WRITE_REQUEST, BoardCommentReplyWrite);
+}
+
+function* BOARD_COMMENT_REPLY_DELETE() {
+	yield takeLatest(BOARD_COMMENT_REPLY_DELETE_REQUEST, BoardCommentReplyDelete);
+}
+
 export default function* S_board() {
 	yield all([
 		fork(BOARD_LIST), 
@@ -397,6 +463,8 @@ export default function* S_board() {
 		fork(BOARD_COMMENT_LIST), 
 		fork(BOARD_COMMENT_WRITE), 
 		fork(BOARD_COMMENT_DELETE),
-		fork(BOARD_COMMENT_LIKE)
+		fork(BOARD_COMMENT_LIKE),
+		fork(BOARD_COMMENT_REPLY_WRITE),
+		fork(BOARD_COMMENT_REPLY_DELETE)
 	]);
 }

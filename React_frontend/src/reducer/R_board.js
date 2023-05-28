@@ -58,6 +58,21 @@ export const BOARD_COMMENT_LIKE_REQUEST = "BOARD_COMMENT_LIKE_REQUEST";
 export const BOARD_COMMENT_LIKE_SUCCESS = "BOARD_COMMENT_LIKE_SUCCESS";
 export const BOARD_COMMENT_LIKE_FAILURE = "BOARD_COMMENT_LIKE_FAILURE";
 
+// 게시물 답글 작성 리스트
+export const BOARD_COMMENT_REPLY_WRITE_REQUEST = "BOARD_COMMENT_REPLY_WRITE_REQUEST";
+export const BOARD_COMMENT_REPLY_WRITE_SUCCESS = "BOARD_COMMENT_REPLY_WRITE_SUCCESS";
+export const BOARD_COMMENT_REPLY_WRITE_FAILURE = "BOARD_COMMENT_REPLY_WRITE_FAILURE";
+export const BOARD_COMMENT_REPLY_WRITE_RESET = "BOARD_COMMENT_REPLY_WRITE_RESET";
+
+// 게시물 답글 삭제 리스트
+export const BOARD_COMMENT_REPLY_DELETE_REQUEST = "BOARD_COMMENT_REPLY_DELETE_REQUEST";
+export const BOARD_COMMENT_REPLY_DELETE_SUCCESS = "BOARD_COMMENT_REPLY_DELETE_SUCCESS";
+export const BOARD_COMMENT_REPLY_DELETE_FAILURE = "BOARD_COMMENT_REPLY_DELETE_FAILURE";
+export const BOARD_COMMENT_REPLY_DELETE_RESET = "BOARD_COMMENT_REPLY_DELETE_RESET";
+
+// 게시글 답글 입력칸 상태 리스트
+export const BOARD_REPLY_KEY_SETTING = "BOARD_REPLY_KEY_SETTING";
+
 const initalState = {
 	BOARD_LIST_loading: false,
   BOARD_LIST_done: false,
@@ -106,6 +121,17 @@ const initalState = {
 	BOARD_COMMENT_LIKE_loading: false,
   BOARD_COMMENT_LIKE_done: false,
   BOARD_COMMENT_LIKE_error: false,
+
+	BOARD_COMMENT_REPLY_WRITE_loading: false,
+  BOARD_COMMENT_REPLY_WRITE_done: false,
+  BOARD_COMMENT_REPLY_WRITE_error: false,
+
+	BOARD_COMMENT_REPLY_DELETE_loading: false,
+  BOARD_COMMENT_REPLY_DELETE_done: false,
+  BOARD_COMMENT_REPLY_DELETE_error: false,
+
+	// 답글 입력칸 상태
+	BOARD_Reply_Id: '',
 };
 
 const R_board = (state = initalState, action) => {
@@ -395,7 +421,71 @@ const R_board = (state = initalState, action) => {
 				BOARD_COMMENT_LIKE_loading: false,
 				BOARD_COMMENT_LIKE_done: false,
 				BOARD_COMMENT_LIKE_error: true
-			}; 						
+			};
+		// 게시물 답글 작성 케이스들
+    case BOARD_COMMENT_REPLY_WRITE_REQUEST:
+      return {
+        ...state,
+        BOARD_COMMENT_REPLY_WRITE_loading: true,
+        BOARD_COMMENT_REPLY_WRITE_done: false,
+        BOARD_COMMENT_REPLY_WRITE_error: false
+      };
+    case BOARD_COMMENT_REPLY_WRITE_SUCCESS:
+      return {
+        ...state,
+        BOARD_COMMENT_REPLY_WRITE_loading: false,
+        BOARD_COMMENT_REPLY_WRITE_done: true,
+        BOARD_COMMENT_REPLY_WRITE_error: false
+      };
+    case BOARD_COMMENT_REPLY_WRITE_FAILURE:
+      return {
+        ...state,
+        BOARD_COMMENT_REPLY_WRITE_loading: false,
+        BOARD_COMMENT_REPLY_WRITE_done: false,
+        BOARD_COMMENT_REPLY_WRITE_error: true
+      };
+		case BOARD_COMMENT_REPLY_WRITE_RESET:
+			return {
+				...state,
+				BOARD_COMMENT_REPLY_WRITE_loading: false,
+				BOARD_COMMENT_REPLY_WRITE_done: false,
+				BOARD_COMMENT_REPLY_WRITE_error: false
+			};
+		// 게시물 삭제 작성 케이스들
+    case BOARD_COMMENT_REPLY_DELETE_REQUEST:
+      return {
+        ...state,
+        BOARD_COMMENT_REPLY_DELETE_loading: true,
+        BOARD_COMMENT_REPLY_DELETE_done: false,
+        BOARD_COMMENT_REPLY_DELETE_error: false
+      };
+    case BOARD_COMMENT_REPLY_DELETE_SUCCESS:
+      return {
+        ...state,
+        BOARD_COMMENT_REPLY_DELETE_loading: false,
+        BOARD_COMMENT_REPLY_DELETE_done: true,
+        BOARD_COMMENT_REPLY_DELETE_error: false
+      };
+    case BOARD_COMMENT_REPLY_DELETE_FAILURE:
+      return {
+        ...state,
+        BOARD_COMMENT_REPLY_DELETE_loading: false,
+        BOARD_COMMENT_REPLY_DELETE_done: false,
+        BOARD_COMMENT_REPLY_DELETE_error: true
+      };
+		case BOARD_COMMENT_REPLY_DELETE_RESET:
+			return {
+				...state,
+				BOARD_COMMENT_REPLY_DELETE_loading: false,
+				BOARD_COMMENT_REPLY_DELETE_done: false,
+				BOARD_COMMENT_REPLY_DELETE_error: false
+			};
+		case BOARD_REPLY_KEY_SETTING:
+			return {
+				...state,
+				BOARD_Reply_Id: action.data,
+				BOARD_COMMENT_LIST_done: false
+			};
 		default:
 			return state;
 	}

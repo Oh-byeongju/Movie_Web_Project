@@ -28,7 +28,7 @@ public class BoardCommentController {
        return ResponseEntity.ok().body(boardCommentService.getComment(requestMap));
     }
 
-    // 댓글을 입력하는 컨트롤러
+    // 댓글을 작성하는 컨트롤러
     @PostMapping("/auth/commentWrite")
     public ResponseEntity<String> CommentWrite(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
         boardCommentService.CommentWrite(request, requestMap);
@@ -46,5 +46,19 @@ public class BoardCommentController {
     @PostMapping("/auth/commentLike")
     public ResponseEntity<BoardCommentDto> CommentLike(HttpServletRequest request, @RequestBody Map<String, String> requestMap){
         return ResponseEntity.ok().body(boardCommentService.onLike(request, requestMap));
+    }
+
+    // 답글을 작성하는 컨트롤러
+    @PostMapping("/auth/replyWrite")
+    public ResponseEntity<String> ReplyWrite(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
+        boardCommentService.ReplyWrite(request, requestMap);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 답글을 삭제하는 컨트롤러
+    @DeleteMapping("/auth/replyDelete")
+    public ResponseEntity<String> ReplyDelete(HttpServletRequest request, @RequestParam("bcid") Long bcid) {
+        boardCommentService.ReplyDelete(request, bcid);
+        return ResponseEntity.noContent().build();
     }
 }

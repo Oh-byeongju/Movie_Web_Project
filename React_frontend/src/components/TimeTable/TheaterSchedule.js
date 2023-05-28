@@ -193,7 +193,7 @@ const MovieArea = styled.div`
 	font-size: 1.2em;
 
 	div {
-		color: #444;
+		color: black;
 		text-decoration: none;
 	}
 `;

@@ -87,39 +87,4 @@ public class ReservationMapper {
                 .rprice(RE.getRprice())
                 .rstate(RE.getRstate()).build();
     }
-
-    // 관리자 페이지에 필요한 예매기록을 매핑(특정 영화 선택)
-    public ReservationDto ManagerListMappingMovie(ReservationEntity RE) {
-
-        return ReservationDto.builder()
-                .rid(RE.getRid())
-                .uid(RE.getMember().getUid())
-                .rdate(RE.getRdate())
-                .tarea(RE.getMovieInfo().getCinema().getTheater().getTarea())
-                .tname(RE.getMovieInfo().getCinema().getTheater().getTname())
-                .cname(RE.getMovieInfo().getCinema().getCname())
-                .mistarttime(RE.getMovieInfo().getMistarttime())
-                .rpeople(RE.getRpeople())
-                .rticket(RE.getRticket())
-                .rpaytype(RE.getRpaytype())
-                .rprice(RE.getRprice()).build();
-    }
-
-    // 관리자 페이지에 필요한 예매기록을 매핑(특정 극장 선택)
-    public ReservationDto ManagerListMappingTheater(ReservationEntity RE) {
-
-        return ReservationDto.builder()
-                .rid(RE.getRid())
-                .uid(RE.getMember().getUid())
-                .mtitle(RE.getMovieInfo().getMovie().getMtitle())
-                .rdate(RE.getRdate())
-                .tarea(RE.getMovieInfo().getCinema().getTheater().getTarea())
-                .tname(RE.getMovieInfo().getCinema().getTheater().getTname())
-                .cname(RE.getMovieInfo().getCinema().getCname())
-                .mistarttime(RE.getMovieInfo().getMistarttime())
-                .rpeople(RE.getRpeople())
-                .rticket(RE.getRticket())
-                .rpaytype(RE.getRpaytype())
-                .rprice(RE.getRprice()).build();
-    }
 }

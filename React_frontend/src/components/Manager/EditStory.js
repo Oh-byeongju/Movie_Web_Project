@@ -6,7 +6,6 @@ import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 
 const EditStroy = ({ setOpenStory, story, setStory }) =>{
-	
 	// 줄거리 수정을 위한 변수
 	const [editstory, setEditStory] = useState(story);
 	const onChangeValue = (value) =>{

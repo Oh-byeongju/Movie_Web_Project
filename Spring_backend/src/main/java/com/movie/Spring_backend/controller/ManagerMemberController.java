@@ -70,18 +70,19 @@ public class ManagerMemberController {
     }
 
 
-//    @GetMapping("/auth/boardread")
-//    public ResponseEntity<List<BoardDto>> BoardWrite() {
-//        return ResponseEntity.ok().body(managerMemberService.ReadBoard());
-//    }
-//    @GetMapping("/auth/boardselect")
-//    public ResponseEntity<List<BoardDto>> BoardSelect(@RequestParam("text") String text ,@RequestParam("state") String state){
-//        return ResponseEntity.ok().body(managerMemberService.SearchUid(text,state));
-//    }
-//    @PostMapping("/auth/deleteboard")
-//    public void BoardDelete(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
-//        managerMemberService.boarddelete(requestMap,request);
-//    }
+    // 아래로 밀어뿌라
+    @GetMapping("/auth/boardread")
+    public ResponseEntity<List<BoardDto>> BoardWrite() {
+        return ResponseEntity.ok().body(managerMemberService.ReadBoard());
+    }
+    @GetMapping("/auth/boardselect")
+    public ResponseEntity<List<BoardDto>> BoardSelect(@RequestParam("text") String text ,@RequestParam("state") String state){
+        return ResponseEntity.ok().body(managerMemberService.SearchUid(text,state));
+    }
+    @PostMapping("/auth/deleteboard")
+    public void BoardDelete(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
+        managerMemberService.boarddelete(requestMap,request);
+    }
 //    @GetMapping("/auth/commentread")
 //    public ResponseEntity<CountCommentMapper> commentAll(@RequestParam("bid") Long bid, @RequestParam("type") String type) {
 //        if(type.equals("new")) {

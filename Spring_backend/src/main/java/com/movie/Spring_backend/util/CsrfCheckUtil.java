@@ -3,7 +3,6 @@ package com.movie.Spring_backend.util;
 
 import com.movie.Spring_backend.error.exception.ErrorCode;
 import com.movie.Spring_backend.error.exception.InvalidValueException;
-import io.jsonwebtoken.Header;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

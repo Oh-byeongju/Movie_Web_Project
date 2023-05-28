@@ -212,10 +212,19 @@ public class ManagerMemberService {
             Reservations = reservationRepository.findManagerReserveMovie(movie, PageInfo);
         }
 
-
-        // 이거 매퍼에서 빼도 될듯
         // 예매기록을 매핑 후 리턴
-        return Reservations.map(reservationMapper::ManagerListMappingMovie);
+        return Reservations.map(reservation -> ReservationDto.builder()
+                .rid(reservation.getRid())
+                .uid(reservation.getMember().getUid())
+                .rdate(reservation.getRdate())
+                .tarea(reservation.getMovieInfo().getCinema().getTheater().getTarea())
+                .tname(reservation.getMovieInfo().getCinema().getTheater().getTname())
+                .cname(reservation.getMovieInfo().getCinema().getCname())
+                .mistarttime(reservation.getMovieInfo().getMistarttime())
+                .rpeople(reservation.getRpeople())
+                .rticket(reservation.getRticket())
+                .rpaytype(reservation.getRpaytype())
+                .rprice(reservation.getRprice()).build());
     }
 
     // 특정 극장의 예매기록을 불러오는 메소드
@@ -250,10 +259,20 @@ public class ManagerMemberService {
             Reservations = reservationRepository.findManagerReserveTheater(theater, PageInfo);
         }
 
-
-        // 이거 매퍼에서 빼도 될듯
         // 예매기록을 매핑 후 리턴
-        return Reservations.map(reservationMapper::ManagerListMappingTheater);
+        return Reservations.map(reservation -> ReservationDto.builder()
+                .rid(reservation.getRid())
+                .uid(reservation.getMember().getUid())
+                .mtitle(reservation.getMovieInfo().getMovie().getMtitle())
+                .rdate(reservation.getRdate())
+                .tarea(reservation.getMovieInfo().getCinema().getTheater().getTarea())
+                .tname(reservation.getMovieInfo().getCinema().getTheater().getTname())
+                .cname(reservation.getMovieInfo().getCinema().getCname())
+                .mistarttime(reservation.getMovieInfo().getMistarttime())
+                .rpeople(reservation.getRpeople())
+                .rticket(reservation.getRticket())
+                .rpaytype(reservation.getRpaytype())
+                .rprice(reservation.getRprice()).build());
     }
 
     // 특정 영화에 있는 관람평을 가져오는 메소드

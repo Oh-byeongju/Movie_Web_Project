@@ -11,10 +11,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BoardCommentRepository extends JpaRepository<BoardCommentEntity, Long> {
-
     // 댓글 조회 메소드(최상위 부모 댓글만, 최신순)
     List<BoardCommentEntity> findByBoardAndBcrootIsNullOrderByBcidDesc(BoardEntity board);
 
@@ -29,8 +29,8 @@ public interface BoardCommentRepository extends JpaRepository<BoardCommentEntity
     // 최상위 부모댓글에 관련된 답글 제거하는 메소드
     void deleteByBcroot(Long bcroot);
 
-
-
+    // 특정 답글 조회 메소드(부모로 조회)
+    List<BoardCommentEntity> findByBcparent(Long bcparent);
 
 
 //    //아래로 날려

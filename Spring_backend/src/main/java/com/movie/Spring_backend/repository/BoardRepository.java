@@ -16,7 +16,6 @@ import java.util.List;
 @Repository
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
-
     // 게시물 조회 메소드(최신순)
     Page<BoardEntity> findByBcategoryOrderByBidDesc(String category, Pageable pageable);
 

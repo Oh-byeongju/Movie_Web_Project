@@ -4,7 +4,6 @@
 package com.movie.Spring_backend.service;
 
 import com.movie.Spring_backend.dto.BoardCommentDto;
-import com.movie.Spring_backend.dto.BoardDto;
 import com.movie.Spring_backend.dto.CountCommentDto;
 import com.movie.Spring_backend.entity.BoardCommentEntity;
 import com.movie.Spring_backend.entity.BoardEntity;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -278,8 +276,65 @@ public class BoardCommentService {
         }
     }
 
+    // 답글 작성 메소드
+    @Transactional
+    public void ReplyWrite(HttpServletRequest request, Map<String, String> requestMap) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
 
-// 답글 넣을때는 부모랑 게시물 다 체크 해줘야 할듯
-// 그리고 답글 삭제할때는 메모장에 있는 말처럼 연계로 다 날려야함
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // requestMap 안에 정보를 추출
+        String comment = requestMap.get("comment");
+        long bid = Long.parseLong(requestMap.get("bid"));
+        long bcroot = Long.parseLong(requestMap.get("bcroot"));
+        long bcparent = Long.parseLong(requestMap.get("bcparent"));
+
+        // 답글 삽입에 필요한 정보 Entity로 변환
+        BoardEntity board = boardRepository.findById(bid).orElseThrow(()-> new BoardNotFoundException("게시물이 존재하지 않습니다."));
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
+
+        // 답글 삽입전 최상위 부모 댓글 및 부모 댓글의 존재유무 확인
+        if (!boardCommentRepository.existsById(bcroot) || !boardCommentRepository.existsById(bcparent)) {
+            throw new BoardCommentNotFoundException("댓글이 존재하지 않습니다.");
+        }
+
+        // 답글 저장
+        boardCommentRepository.save(BoardCommentEntity.builder()
+                .bccomment(comment)
+                .bcdate(DateUtil.getNow())
+                .bcroot(bcroot)
+                .bcparent(bcparent)
+                .board(board)
+                .member(member).build());
+    }
+
+    // 답글 삭제 메소드
+    @Transactional
+    public void ReplyDelete(HttpServletRequest request, Long bcid){
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 현재 답글과 관련된 모든 답글들을 제거하기위해 List선언 및 현재답글의 id값 삽입
+        List<Long> delList = new ArrayList<>();
+        delList.add(bcid);
+
+        // List가 비어 있을때 까지 반복
+        while (!delList.isEmpty()) {
+            // List의 제일 앞 인덱스 값 추출 후 자식 답글들 검색
+            long delNum = delList.get(0);
+            List<BoardCommentEntity> boardComments = boardCommentRepository.findByBcparent(delNum);
+
+            // 자식들의 id값 리스트에 삽입
+            for (BoardCommentEntity BC : boardComments) {
+                delList.add(BC.getBcid());
+            }
+
+            // 제일 앞 인덱스 값 답글 삭제 및 List에서 제거
+            boardCommentRepository.deleteById(delNum);
+            delList.remove(0);
+        }
+    }
 }
 

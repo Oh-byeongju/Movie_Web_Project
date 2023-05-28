@@ -120,7 +120,7 @@ function* commentread(action) {
   
   //조회 백엔드 호출
   async function commentReadApi(data) {
-    return await http.get("/manager/auth/commentread",
+    return await http.get("/Manager/auth/commentread",
     {
       params:{
         bid: data.bid,

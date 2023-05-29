@@ -3,10 +3,10 @@
 */
 import React, { useState, useEffect, useCallback} from "react";
 import styled from "styled-components";
-import { SearchOutlined, CaretUpOutlined } from "@ant-design/icons";
+import { SearchOutlined, CaretUpOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Pagination } from 'antd';
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { useDispatch ,useSelector} from "react-redux"
+import { useDispatch, useSelector, shallowEqual} from "react-redux"
 import { BOARD_SEARCH_REQUEST } from "../../reducer/R_board";
 import * as date from "../../lib/date.js";
 
@@ -15,8 +15,14 @@ const ContentSearchList = () => {
 	const navigate = useNavigate();
 	const { target, title, page } = useParams();
 
-	// 게시물 리스트 리덕스 상태
-	const { BOARD_SEARCH_LIST } = useSelector((state) => state.R_board);
+	// 필요한 리덕스 상태들
+	const { BOARD_SEARCH_done, BOARD_SEARCH_LIST } = useSelector(
+		state => ({
+			BOARD_SEARCH_done: state.R_board.BOARD_SEARCH_done,
+			BOARD_SEARCH_LIST: state.R_board.BOARD_SEARCH_LIST,
+		}),
+		shallowEqual
+	);
     
 	// 검색 분류 상태
 	const selectList = [{name: "제목", tag: "title"}, {name: "작성자", tag: "name"}];
@@ -107,7 +113,14 @@ const ContentSearchList = () => {
 					</SearchOption>
 				</SearchHeader>
 			</SearchWrapper>
-			<ContentWrapper>            
+			<ContentWrapper>
+				{BOARD_SEARCH_done && BOARD_SEARCH_LIST.content.length === 0 &&
+				<NotFound>
+					<InfoCircleOutlined style={{fontSize: "30px"}}/>
+					<NotFoundMsg>
+						검색된 게시물이 없습니다.
+					</NotFoundMsg>
+				</NotFound>}       
 				{BOARD_SEARCH_LIST.content && BOARD_SEARCH_LIST.content.map((board)=>
 				<Card key={board.bid}>
 					<Number>
@@ -257,8 +270,20 @@ const ContentWrapper = styled.div`
 	line-height: 18px;
 	font-size: 14px;
 	color: #7b858e;
-	min-height: 500px;
 	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .15);
+`;
+
+const NotFound = styled.div`
+	background: #fff;
+	padding: 100px 0;
+	text-align: center;
+`;
+
+const NotFoundMsg = styled.div`
+	margin-top: 12px;
+	line-height: 20px;
+	font-size: 16px;
+	color: #7b858e;
 `;
 
 const Card = styled.div`

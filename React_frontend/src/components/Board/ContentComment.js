@@ -3,7 +3,7 @@
 */
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { SyncOutlined, LoadingOutlined, CaretUpOutlined, CaretDownOutlined, MessageOutlined, DeleteOutlined } from "@ant-design/icons";
+import { SyncOutlined, LoadingOutlined, CaretUpOutlined, CaretDownOutlined, MessageOutlined, DeleteOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector, shallowEqual } from "react-redux"
 import { 
@@ -298,7 +298,14 @@ const ContentComment = () =>{
 						</li>)}				
 					</ul>
 				</Sort>
-			</CommentList>      
+			</CommentList>
+			{BOARD_COMMENT_LIST.content && BOARD_COMMENT_LIST.content.length === 0 &&
+			<NotFound>
+				<InfoCircleOutlined style={{fontSize: "30px"}}/>
+				<NotFoundMsg>
+					등록된 댓글이 없습니다.
+				</NotFoundMsg>
+			</NotFound>}
 			<CommentData>
 				{BOARD_COMMENT_LIST.content && BOARD_COMMENT_LIST.content.map((comment)=>
 				<li key={comment.bcid}>
@@ -509,6 +516,19 @@ const SortButton = styled.button`
 	cursor: pointer;
 `;
 
+const NotFound = styled.div`
+	background: #fff;
+	padding: 70px 0;
+	text-align: center;
+	color: #7b858e;
+`;
+
+const NotFoundMsg = styled.div`
+	margin-top: 12px;
+	line-height: 20px;
+	font-size: 16px;
+	color: #7b858e;
+`;
 
 const CommentData = styled.ul`
 	list-style-type: none;

@@ -3,9 +3,9 @@
 */
 import React, { useEffect, useCallback } from "react";
 import styled from "styled-components";
-import { CaretUpOutlined } from "@ant-design/icons";
+import { CaretUpOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Pagination } from 'antd';
-import { useDispatch ,useSelector} from "react-redux"
+import { useDispatch, useSelector, shallowEqual } from "react-redux"
 import { BOARD_LIST_REQUEST } from "../../reducer/R_board";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import * as date from "../../lib/date.js";
@@ -15,10 +15,15 @@ const ContentList = () => {
 	const navigate = useNavigate();
 	const { category, sort, page } = useParams();
 
-	// 로그인 리덕스 상태
-	const { LOGIN_data } = useSelector((state) => state.R_user_login);
-	// 게시물 리스트 리덕스 상태
-	const { BOARD_LIST } = useSelector((state) => state.R_board);
+	// 필요한 리덕스 상태들
+	const { LOGIN_data, BOARD_LIST_done, BOARD_LIST } = useSelector(
+		state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+			BOARD_LIST_done: state.R_board.BOARD_LIST_done,
+			BOARD_LIST: state.R_board.BOARD_LIST,
+		}),
+		shallowEqual
+	);
 
 	// 페이지네이션 변경 함수
 	const handleChange = useCallback((page) => {
@@ -40,6 +45,13 @@ const ContentList = () => {
 
 	return (
 		<ContentWrapper>
+		{BOARD_LIST_done && BOARD_LIST.content.length === 0 &&
+		<NotFound>
+			<InfoCircleOutlined style={{fontSize: "30px"}}/>
+			<NotFoundMsg>
+				게시글이 존재하지 않습니다.
+			</NotFoundMsg>
+		</NotFound>}
 		{BOARD_LIST.content && BOARD_LIST.content.map((board)=>
 			<Card key={board.bid}>
 				<Number>
@@ -91,8 +103,21 @@ const ContentWrapper = styled.div`
 	line-height: 18px;
 	font-size: 14px;
 	color: #7b858e;
-	min-height: 500px;
 	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .15);
+`;
+
+const NotFound = styled.div`
+	background: #fff;
+	padding: 100px 0;
+	text-align: center;
+	color: #7b858e;
+`;
+
+const NotFoundMsg = styled.div`
+	margin-top: 12px;
+	line-height: 20px;
+	font-size: 16px;
+	color: #7b858e;
 `;
 
 const Card = styled.div`

@@ -2,8 +2,8 @@ import React from 'react';
 import styled from "styled-components";
 import ClipLoader from "react-spinners/ClipLoader";
 
-// 마이페이지 로딩창
-const MyPageLoading = () => {
+// 게시글 로딩창
+const ContentLoading = () => {
 	return (
 		<Background>
       <ClipLoader
@@ -27,4 +27,4 @@ const Background = styled.div`
   justify-content: center;
 `;
 
-export default MyPageLoading;
+export default ContentLoading;

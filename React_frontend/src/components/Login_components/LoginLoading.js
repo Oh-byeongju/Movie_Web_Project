@@ -10,9 +10,9 @@ const LoginLoading = () => {
 	return (
 		<Background>
       <ClipLoader
-          color="#000066"
-          size={20}
-        />
+				color="#000066"
+				size={20}
+			/>
     </Background>
 	);
 };

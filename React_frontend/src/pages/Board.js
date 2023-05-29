@@ -25,6 +25,7 @@ const BoardWrapper = styled.div`
 	padding: 0;
 	width: 1235px;
 	margin : 0 auto;
+	min-height: 553px;
 	box-sizing: border-box; 
 	margin-bottom: 0;
 `;

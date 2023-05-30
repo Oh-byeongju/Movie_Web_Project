@@ -19,7 +19,12 @@ import ContentReplyWriting from "./ContentReplyWriting";
 import ContentCommentReply from "./ContentCommentReply";
 import * as date from "../../lib/date.js";
 
-const ContentComment = () =>{
+const menu = [
+	{name: "인기순", sort: "like"}, 
+	{name: "최신순", sort: "new"}
+];
+
+const ContentComment = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { category, id, title } = useParams();
@@ -45,7 +50,6 @@ const ContentComment = () =>{
 	);
 
 	// 댓글 정렬 상태
-	const menu = [{name:'인기순', sort:"like"}, {name:'최신순', sort:"new"}];
 	const [sort, setSort] = useState("like");
 	const onClickMenu = useCallback((data)=> {
 		setSort(data);
@@ -325,7 +329,7 @@ const ContentComment = () =>{
 							<span className="id">
 								{comment.uid}
 							</span>
-							<span className="time">
+							<span className="time" title={comment.bcdate}>
 								{date.detailDate(new Date(comment.bcdate))}
 							</span>
 						</div>

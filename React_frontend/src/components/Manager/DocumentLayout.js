@@ -4,7 +4,7 @@ import { PicCenterOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { MANAGER_MOVIE_LIST_COMMENT_REQUEST, MANAGER_MOVIE_COMMENT_SELECT, MANAGER_MOVIE_COMMENT_LIST_REQUEST, } from '../../reducer/R_manager_user';
 import DocumentMovieComment from './DocumentMovieComment';
-import Board from './Board'
+import DocumentBoard from './DocumentBoard'
 import ManagerLoading from './ManagerLoading';
 import { useNavigate } from 'react-router-dom';
 
@@ -92,7 +92,7 @@ const DocumentLayout = () => {
 						게시판관리
 					</button>
         </div>
-				{moviecommentbutton ? <>
+				{false ? <>
 				<MovieAreaChoice>
 					<TabLeft>
 						<ul>
@@ -136,7 +136,7 @@ const DocumentLayout = () => {
 				</Notice>
 				<DocumentMovieComment/></> : 
 				<>
-					<Board/>
+					<DocumentBoard/>
 				</>}
       </InnerWraps>
      </Container>

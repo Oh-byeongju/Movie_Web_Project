@@ -39,7 +39,6 @@ public class ManagerMemberService {
     private final CommentInfoRepository commentInfoRepository;
     private final BoardRepository boardRepository;
     private final MovieMapper movieMapper;
-    private final ReservationMapper reservationMapper;
     private final MovieCommentMapper movieCommentMapper;
     private final JwtValidCheck jwtValidCheck;
 
@@ -367,43 +366,53 @@ public class ManagerMemberService {
         return MovieMembers.map(Moviemember -> movieCommentMapper.toDto(Moviemember, false));
     }
 
+    // 게시물 조회 메소드
+    public List<BoardDto> getBoard(HttpServletRequest request) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
 
+        // 게시물 조회 후 리턴
+        List<BoardEntity> Boards = boardRepository.findAll();
 
-
-
-    //전체 게시판 불러오기
-    public List<BoardDto> ReadBoard (){
-        List<BoardEntity> boardEntities =boardRepository.findAll();
-        return boardEntities.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                .bthumbnail(data.getBthumbnail()).uid(data.getMember().getUid()).
-                build()).collect(Collectors.toList());
-
-    }
-    //페이지내 이름으로 검색하는 메소드
-    @Transactional
-    public List<BoardDto> SearchUid(String text, String state) {
-        if(state.equals("uid")) {
-            List<BoardEntity> datas = boardRepository.ManagerUid(text);
-            return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                    .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                    .bthumbnail(data.getBthumbnail()).uid(data.getMember().getUid()).
-                    build()).collect(Collectors.toList());
-        }
-
-        else if(state.equals("title")){
-            List<BoardEntity> datas = boardRepository.ManagerTitle(text);
-            return datas.stream().map(data -> BoardDto.builder().bid(data.getBid()).btitle(data.getBtitle()).bdetail(data.getBdetail())
-                    .bcategory(data.getBcategory()).bdate(data.getBdate()).bdate(data.getBdate()).bclickindex(data.getBclickindex())
-                    .bthumbnail(data.getBthumbnail()).uid(data.getMember().getUid()).
-                    build()).collect(Collectors.toList());
-        }
-        return null;
+        return Boards.stream().map(board -> BoardDto.builder()
+                .bid(board.getBid())
+                .btitle(board.getBtitle())
+                .bdate(board.getBdate())
+                .bclickindex(board.getBclickindex())
+                .bcategory(board.getBcategory())
+                .uid(board.getMember().getUid())
+                .likes(board.getLikes())
+                .unlikes(board.getUnlikes())
+                .commentCounts(board.getCommentCounts()).build()).collect(Collectors.toList());
     }
 
-    @Transactional
-    public void boarddelete(Map<String, String> requestMap, HttpServletRequest request){
-        String bid = requestMap.get("bid");
-        boardRepository.deleteById(Long.valueOf(bid));
+    // 게시물 검색 메소드
+    public List<BoardDto> getSearchBoard(HttpServletRequest request, Map<String, String> requestMap) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // requestMap 안에 정보를 추출
+        String category = requestMap.get("category");
+        String title = requestMap.get("title").trim();
+
+        // 게시물 검색
+        List<BoardEntity> Boards;
+        if (category.equals("title")) {
+            Boards = boardRepository.findByBtitleContainsOrderByBidAsc(title);
+        }
+        else {
+            Boards = boardRepository.findByMemberUidContainsOrderByBidAsc(title);
+        }
+
+        return Boards.stream().map(board -> BoardDto.builder()
+                .bid(board.getBid())
+                .btitle(board.getBtitle())
+                .bdate(board.getBdate())
+                .bclickindex(board.getBclickindex())
+                .bcategory(board.getBcategory())
+                .uid(board.getMember().getUid())
+                .likes(board.getLikes())
+                .unlikes(board.getUnlikes())
+                .commentCounts(board.getCommentCounts()).build()).collect(Collectors.toList());
     }
 }

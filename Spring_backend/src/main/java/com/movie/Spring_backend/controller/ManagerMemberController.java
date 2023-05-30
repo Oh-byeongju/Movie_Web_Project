@@ -24,9 +24,6 @@ public class ManagerMemberController {
 
     private final ManagerMemberService managerMemberService;
 
-    // 아래꺼도 옮기려면 옮겨야할듯
-    private final BoardCommentService boardCommentService;
-
     // 사용자 조회 메소드
     @GetMapping("/auth/allUser")
     public ResponseEntity<Page<MemberDto>> AllMember(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
@@ -69,25 +66,15 @@ public class ManagerMemberController {
         return ResponseEntity.ok().body(managerMemberService.MovieCommentDelete(request, requestMap));
     }
 
+    // 게시물 조회 컨트롤러
+    @GetMapping("/auth/allBoard")
+    public ResponseEntity<List<BoardDto>> AllBoard(HttpServletRequest request) {
+        return ResponseEntity.ok().body(managerMemberService.getBoard(request));
+    }
 
-    // 아래로 밀어뿌라
-    @GetMapping("/auth/boardread")
-    public ResponseEntity<List<BoardDto>> BoardWrite() {
-        return ResponseEntity.ok().body(managerMemberService.ReadBoard());
+    // 게시물 검색 컨트롤러
+    @GetMapping("/auth/boardSearch")
+    public ResponseEntity<List<BoardDto>> BoardSearch(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(managerMemberService.getSearchBoard(request, requestMap));
     }
-    @GetMapping("/auth/boardselect")
-    public ResponseEntity<List<BoardDto>> BoardSelect(@RequestParam("text") String text ,@RequestParam("state") String state){
-        return ResponseEntity.ok().body(managerMemberService.SearchUid(text,state));
-    }
-    @PostMapping("/auth/deleteboard")
-    public void BoardDelete(@RequestBody Map<String, String> requestMap, HttpServletRequest request){
-        managerMemberService.boarddelete(requestMap,request);
-    }
-//    @GetMapping("/auth/commentread")
-//    public ResponseEntity<CountCommentMapper> commentAll(@RequestParam("bid") Long bid, @RequestParam("type") String type) {
-//        if(type.equals("new")) {
-//            return ResponseEntity.ok().body(boardCommentService.findByComment(bid));
-//        }
-//        return null;
-//    }
 }

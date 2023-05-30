@@ -1,74 +1,86 @@
 /*
-
- 23-04-03 관리자 페이지 게시물 crud (강경목)
+	23-04-03 관리자 페이지 게시물 crud (강경목)
+	23-05-30 관리자 게시물 페이지 수정(오병주)
 */
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 
+
+import { 
+	MANAGER_BOARD_LIST_REQUEST, MANAGER_BOARD_LIST_SUCCESS, MANAGER_BOARD_LIST_FAILURE,
+	MANAGER_BOARD_SEARCH_REQUEST, MANAGER_BOARD_SEARCH_SUCCESS, MANAGER_BOARD_SEARCH_FAILURE,
+	
+	// 아래로 날려
+	BOARD_DELETE_DONE, BOARD_DELETE_ERROR, BOARD_DELETE_LOADING,  M_COMMENT_READ_FAILURE, M_COMMENT_READ_REQUEST, M_COMMENT_READ_SUCCESS } from "../reducer/R_manager_board";
 import { http } from "../lib/http";
-import { BOARD_DELETE_DONE, BOARD_DELETE_ERROR, BOARD_DELETE_LOADING, BOARD_READ_DONE, BOARD_READ_ERROR, BOARD_READ_LOADING, BOARD_SELECT_DONE, BOARD_SELECT_ERROR, BOARD_SELECT_LOADING, M_COMMENT_READ_FAILURE, M_COMMENT_READ_REQUEST, M_COMMENT_READ_SUCCESS } from "../reducer/R_manager_board";
 
 // 게시물 조회 함수
-function* boardread(action) {
-  const result = yield call(boardReadApi, action.data);
-  console.log(result);
+function* AllBoard() {
+  const result = yield call(callAllBoard);
   if (result.status === 200) {
     yield put({
-      type: BOARD_READ_DONE,
+      type: MANAGER_BOARD_LIST_SUCCESS,
       data: result.data
     });
   } 
   else {
     yield put({
-		type: BOARD_READ_ERROR,
-        data:result.error
+			type: MANAGER_BOARD_LIST_FAILURE
     });
   }
 }
 
-// 상영관 조회 백엔드 호출
-async function boardReadApi() {
-  return await http.get("/Manager/auth/boardread")
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-} 
+// 게시물 조회 백엔드 호출
+async function callAllBoard() {
+	return await http.get("/Manager/auth/allBoard")
+  .then((response) => {
+    return response;
+  })
+  .catch((error) => {
+    return error.response;
+  });
+}
 
-// 조회 함수
-function* boardselect(action) {
-    const result = yield call(boardSelectApi, action.data);
-    console.log(result);
-    if (result.status === 200) {
-      yield put({
-        type: BOARD_SELECT_DONE,
-        data: result.data
-      });
-    } 
-    else {
-      yield put({
-          type: BOARD_SELECT_ERROR,
-          data:result.error
-      });
-    }
-  }
-  
-  //조회 백엔드 호출
-  async function boardSelectApi(data) {
-    return await http.get("/Manager/auth/boardselect",{
-        params:{
-            text:data.text,
-            state:data.state
-        }
-    })
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
+// 게시물 검색 함수
+function* BoardSearch(action) {
+  const result = yield call(callBoardSearch, action.data);
+  if (result.status === 200) { 
+    yield put({
+      type: MANAGER_BOARD_SEARCH_SUCCESS,
+      data: result.data
+    });
   } 
+	else {
+    yield put({
+      type: MANAGER_BOARD_SEARCH_FAILURE
+    });   
+  }
+}
+
+// 게시물 검색 백엔드 호출
+async function callBoardSearch(data) {
+  return await http.get("/Manager/auth/boardSearch", {
+    params: {
+			category: data.category,
+			title: data.title
+    }
+	})
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
+}
+
+
+
+
+
+
+
+
+
+// 아래로 날려
 
 
 // 삭제 함수
@@ -134,19 +146,40 @@ function* commentread(action) {
         return error.response;
       });
   } 
+// 위로 날려
 
-function* BOARD_ALL() {
-    yield takeLatest(BOARD_READ_LOADING, boardread);
-  }
-function* BOARD_SELECT() {
-    yield takeLatest(BOARD_SELECT_LOADING, boardselect);
-  }
+
+
+
+function* MANAGER_BOARD_LIST() {
+	yield takeLatest(MANAGER_BOARD_LIST_REQUEST, AllBoard);
+}
+
+function* MANAGER_BOARD_SEARCH() {
+	yield takeLatest(MANAGER_BOARD_SEARCH_REQUEST, BoardSearch);
+}
+
+
+
+
+
+
+//아래로 날려
+
 function* BOARD_DELETE() {
     yield takeLatest(BOARD_DELETE_LOADING, boarddelete);
   }
   function* COMMENT_ALL() {
     yield takeLatest(M_COMMENT_READ_REQUEST, commentread);
   }
+// 위로 날려
+
+
+
 export default function* S_manager_board() {
-  yield all([fork(BOARD_ALL),fork(BOARD_SELECT),fork(BOARD_DELETE),fork(COMMENT_ALL)]);
+  yield all([fork(MANAGER_BOARD_LIST), fork(MANAGER_BOARD_SEARCH)
+		
+		
+		// 아래로 날려
+		,fork(BOARD_DELETE),fork(COMMENT_ALL)]);
 }

@@ -1,5 +1,5 @@
 /*
-	23-05-19 ~ 23, 26 게시물 페이지 리듀서 수정(오병주)
+	23-05-19 ~ 23, 26, 28 게시물 페이지 리듀서 수정(오병주)
 */
 // 게시물 조회 리스트
 export const BOARD_LIST_REQUEST = "BOARD_LIST_REQUEST";

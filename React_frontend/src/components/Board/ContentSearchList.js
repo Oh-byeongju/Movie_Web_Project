@@ -10,6 +10,11 @@ import { useDispatch, useSelector, shallowEqual} from "react-redux"
 import { BOARD_SEARCH_REQUEST } from "../../reducer/R_board";
 import * as date from "../../lib/date.js";
 
+const selectList = [
+	{name: "제목", tag: "title"}, 
+	{name: "작성자", tag: "name"}
+];
+
 const ContentSearchList = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -25,7 +30,6 @@ const ContentSearchList = () => {
 	);
     
 	// 검색 분류 상태
-	const selectList = [{name: "제목", tag: "title"}, {name: "작성자", tag: "name"}];
 	const [Selected, setSelected] = useState(target === "title" ? "title" : target === "name" ? "name" : "title");
 	const handleSelect = useCallback((e) => {
 		if (e.target.value === "title"){
@@ -124,9 +128,9 @@ const ContentSearchList = () => {
 				{BOARD_SEARCH_LIST.content && BOARD_SEARCH_LIST.content.map((board)=>
 				<Card key={board.bid}>
 					<Number>
-						<CaretUpOutlined twoToneColor="grey"/>
+						<CaretUpOutlined style={{fontSize: "17px"}} twoToneColor="grey"/>
 						<div>
-							{board.bid}
+							{board.likes - board.unlikes}
 						</div>
 					</Number>
 					<Detail>
@@ -146,7 +150,7 @@ const ContentSearchList = () => {
 							{board.bcategory}
 						</div>
 						<div className="date">
-							<span>
+							<span title={board.bdate}>
 								{date.detailDate(new Date(board.bdate))}
 							</span>
 						</div>

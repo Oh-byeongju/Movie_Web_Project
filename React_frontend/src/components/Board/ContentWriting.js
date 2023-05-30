@@ -12,6 +12,8 @@ import { BOARD_WRITE_REQUEST } from "../../reducer/R_board";
 import { useLocation, useNavigate } from "react-router-dom";
 Quill.register('modules/ImageResize', ImageResize);
 
+const selectList = ["자유 게시판", "영화 뉴스", "영화 토론"];
+
 const ContentWriting = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -28,7 +30,6 @@ const ContentWriting = () => {
   ); 
 
 	// 카테고리 지정
-	const selectList = ["자유 게시판", "영화 뉴스", "영화 토론"];
 	const [Selected, setSelected] = useState("자유 게시판");
 	const handleSelect = useCallback((e) => {
 		setSelected(e.target.value);
@@ -147,7 +148,6 @@ const ContentWriting = () => {
 	// 게시글 작성 성공 여부에 따른 useEffect
 	useEffect(()=> {
 		if (BOARD_WRITE_done) {
-			alert('게시글이 작성되었습니다.');
 			window.location.assign(`/Board/list/${Selected === '자유 게시판' ? 'free' : Selected === '영화 뉴스' ? 'news' : 'debate'}/all/1`);
 		}
 

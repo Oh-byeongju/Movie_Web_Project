@@ -200,42 +200,42 @@ const User = () => {
           <p>
             {USER_LIST.totalElements}명의 회원이 검색되었습니다.
           </p>
-            <ButtonList>
-              <ButtonWrap>
-                <button className={"btn" + (namebutton ? " active" : "")} onClick={clickname}>
-                  이름순
-                </button>
-              </ButtonWrap>
-              <ButtonWrap>
-                <button className={"btn" + (joinbutton ? " active" : "")} onClick={clickjoin}>
-                  가입순
-                </button>
-              </ButtonWrap>
-            </ButtonList>
-            <div className="search_button">
-            <SearchWarp
-              placeholder="계정명 검색"
-              allowClear
-              onSearch={onSearch}
-              value={search}
-              onChange={handleSearchChange}
-              style={{
-                width: 200,
-                height: 10,
-              }}
-            />
-          </div>
-        </div>
-        <TableWrap rowKey="uid"
-          loading={USER_LIST_loading || USER_DROP_loading}
-          columns={columns}
-          dataSource={USER_LIST.content}
-          pagination={{current: USER_LIST.number ? USER_LIST.number + 1 : 1, total: USER_LIST.totalElements, pageSize: USER_LIST.size}}
-          onChange={handleTableChange}
-          scroll={{x: 1350}}
-        />
-      </InnerWraps>
-     </Container>
+					<ButtonList>
+						<ButtonWrap>
+							<button className={"btn" + (namebutton ? " active" : "")} onClick={clickname}>
+								이름순
+							</button>
+						</ButtonWrap>
+						<ButtonWrap>
+							<button className={"btn" + (joinbutton ? " active" : "")} onClick={clickjoin}>
+								가입순
+							</button>
+						</ButtonWrap>
+					</ButtonList>
+					<div className="search_button">
+						<SearchWarp
+							placeholder="계정명 검색"
+							allowClear
+							onSearch={onSearch}
+							value={search}
+							onChange={handleSearchChange}
+							style={{
+								width: 200,
+								height: 10,
+							}}
+						/>
+					</div>
+				</div>	
+					<TableWrap rowKey="uid"
+						loading={USER_LIST_loading || USER_DROP_loading}
+						columns={columns}
+						dataSource={USER_LIST.content}
+						pagination={{current: USER_LIST.number ? USER_LIST.number + 1 : 1, total: USER_LIST.totalElements, pageSize: USER_LIST.size}}
+						onChange={handleTableChange}
+						scroll={{x: 1350}}
+					/>
+      	</InnerWraps>
+			</Container>
 	);
 };
 
@@ -270,7 +270,7 @@ const InnerWraps = styled.div`
 
     .search_button {
       position: absolute;
-      top: 0;
+      top: 1.5px;
       right: 0;
     }
   }

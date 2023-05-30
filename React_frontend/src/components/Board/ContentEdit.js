@@ -12,6 +12,8 @@ import { BOARD_UPDATE_REQUEST } from "../../reducer/R_board";
 import { useLocation, useNavigate } from "react-router-dom";
 Quill.register('modules/ImageResize', ImageResize);
 
+const selectList = ["자유 게시판", "영화 뉴스", "영화 토론"];
+
 const ContentEdit =  () => {
 	const { state } = useLocation();
 	const dispatch = useDispatch();
@@ -28,7 +30,6 @@ const ContentEdit =  () => {
 	); 
 
 	// 카테고리 지정
-	const selectList = ["자유 게시판", "영화 뉴스", "영화 토론"];
 	const [Selected, setSelected] = useState(state.category);
 	const handleSelect = useCallback((e) => {
 		setSelected(e.target.value);
@@ -138,7 +139,6 @@ const ContentEdit =  () => {
 	// 게시글 수정 성공 여부에 따른 useEffect
 	useEffect(()=> {
 		if (BOARD_UPDATE_done) {
-			alert('게시글이 수정되었습니다.');
 			window.location.assign(`/Board/content/${Selected === '자유 게시판' ? 'free' : Selected === '영화 뉴스' ? 'news' : 'debate'}/${state.id}/${title}`);
 		}
 

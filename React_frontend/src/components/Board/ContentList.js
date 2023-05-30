@@ -55,9 +55,9 @@ const ContentList = () => {
 		{BOARD_LIST.content && BOARD_LIST.content.map((board)=>
 			<Card key={board.bid}>
 				<Number>
-					<CaretUpOutlined twoToneColor="grey"/>
+					<CaretUpOutlined style={{fontSize: "17px"}} twoToneColor="grey"/>
 					<div>
-						{board.bid}
+						{board.likes - board.unlikes}
 					</div>
 				</Number>
 				<Detail>
@@ -77,7 +77,7 @@ const ContentList = () => {
 						{board.bcategory}
 					</div>
 					<div className="date">
-						<span>
+						<span title={board.bdate}>
 							{date.detailDate(new Date(board.bdate))}
 						</span>
 					</div>

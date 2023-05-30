@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled, EyeOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector, shallowEqual } from "react-redux"
-import { BOARD_CONTENT_REQUEST, BOARD_LIKE_REQUEST, BOARD_DELETE_REQUEST } from "../../reducer/R_board";
+import { BOARD_LIKE_REQUEST, BOARD_DELETE_REQUEST } from "../../reducer/R_board";
 import * as date from "../../lib/date.js";
 
 const ContentPost = () => {
@@ -15,29 +15,16 @@ const ContentPost = () => {
 	const { category, id, title } = useParams();
 
 	// 필요한 리덕스 상태들
-	const { LOGIN_STATUS_done, LOGIN_data, BOARD_CONTENT, BOARD_DELETE_done, BOARD_DELETE_error } = useSelector(
+	const { LOGIN_data, BOARD_CONTENT, BOARD_DELETE_done, BOARD_DELETE_error, BOARD_LIKE_error } = useSelector(
 		state => ({
-			LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
 			LOGIN_data: state.R_user_login.LOGIN_data,
 			BOARD_CONTENT: state.R_board.BOARD_CONTENT,
 			BOARD_DELETE_done: state.R_board.BOARD_DELETE_done,
-			BOARD_DELETE_error: state.R_board.BOARD_DELETE_error
+			BOARD_DELETE_error: state.R_board.BOARD_DELETE_error,
+			BOARD_LIKE_error: state.R_board.BOARD_LIKE_error
 		}),
 		shallowEqual
 	);
-
-	// 게시물 상세조회 useEffect
-	useEffect(()=>{
-		if (LOGIN_STATUS_done) {
-			dispatch({
-				type: BOARD_CONTENT_REQUEST,
-				data: {
-					bid: id,
-					uid: LOGIN_data.uid
-				}
-			});
-		}
-	}, [LOGIN_STATUS_done, id, LOGIN_data.uid, dispatch]);
 
 	// 좋아요 버튼 누를때 함수
 	const onClickLike = useCallback(() => {
@@ -71,6 +58,14 @@ const ContentPost = () => {
 		})
 	}, [BOARD_CONTENT.bid, LOGIN_data.uid, dispatch]);
 
+	// 게시글 좋아요, 싫어요 실패시 useEffect
+	useEffect(()=> {
+		if (BOARD_LIKE_error) {
+			alert('게시글 공감에 실패했습니다.');
+			window.location.replace(`/Board/content/${category}/${id}/${title}`);
+		}
+	}, [BOARD_LIKE_error, category, id, title]);
+
 	// 게시글 수정 페이지로 넘어가는 함수
 	const onClickEdit = useCallback(()=> {
 		navigate(`/Board/content/${id}/${title}/edit`, {state: {
@@ -98,7 +93,6 @@ const ContentPost = () => {
 	// 게시글 삭제 성공 여부에 따른 useEffect
 	useEffect(()=> {
 		if (BOARD_DELETE_done) {
-			alert('게시글이 삭제되었습니다.');
 			window.location.assign(`/Board/list/${category}/all/1`);
 		}
 
@@ -121,7 +115,9 @@ const ContentPost = () => {
 								{BOARD_CONTENT.bcategory}
 							</div>
 							<div className="time">
-								{date.detailDate(new Date(BOARD_CONTENT.bdate))}
+								<span title={BOARD_CONTENT.bdate}>
+									{date.detailDate(new Date(BOARD_CONTENT.bdate))}
+								</span>
 							</div>
 							<div className="name">
 								{BOARD_CONTENT.uid}
@@ -138,7 +134,7 @@ const ContentPost = () => {
 								댓글 {BOARD_CONTENT.commentCounts}
 							</div>
 							<div className="top">
-								추천 {BOARD_CONTENT.likes}
+								추천 {BOARD_CONTENT.likes - BOARD_CONTENT.unlikes}
 							</div>
 						</MetaListRight>
 					</SubTitle>
@@ -229,7 +225,6 @@ const MetaListLeft = styled.div`
 	.category {
 		display: inline-block;
 		font-size: 14px;
-		color: #98a0a7;
 		height: 13px;
 		padding-right: 14px;
 		line-height: 12px;

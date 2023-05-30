@@ -14,18 +14,13 @@ import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,7 +71,7 @@ public class BoardService {
                 break;
             // 조회순
             case "top":
-                board = boardRepository.findByBcategoryOrderByBclickindexDesc(search_category, PageInfo);
+                board = boardRepository.findByBcategoryOrderByBclickindexDescBidAsc(search_category, PageInfo);
                 break;
             // 내 게시물
             default:
@@ -90,6 +85,8 @@ public class BoardService {
                 .bcategory(data.getBcategory())
                 .bthumbnail(data.getBthumbnail())
                 .uid(data.getMember().getUid())
+                .likes(data.getLikes())
+                .unlikes(data.getUnlikes())
                 .commentCounts(data.getCommentCounts()).build());
     }
 
@@ -104,13 +101,13 @@ public class BoardService {
         // 페이지네이션을 위한 정보
         PageRequest PageInfo = PageRequest.of(page, 20);
 
-        // 게시물 조회
+        // 게시물 검색
         Page<BoardEntity> board;
         if (category.equals("title")) {
             board = boardRepository.findByBtitleContainsOrderByBidDesc(title, PageInfo);
         }
         else {
-            board = boardRepository.findByMemberOrderByBidDesc(MemberEntity.builder().uid(title).build(), PageInfo);
+            board = boardRepository.findByMemberUidContainsOrderByBidDesc(title, PageInfo);
         }
 
         return board.map(data -> BoardDto.builder()
@@ -120,6 +117,8 @@ public class BoardService {
                 .bcategory(data.getBcategory())
                 .bthumbnail(data.getBthumbnail())
                 .uid(data.getMember().getUid())
+                .likes(data.getLikes())
+                .unlikes(data.getUnlikes())
                 .commentCounts(data.getCommentCounts()).build());
     }
 

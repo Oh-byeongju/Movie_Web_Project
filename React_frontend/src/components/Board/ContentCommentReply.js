@@ -92,7 +92,7 @@ const ContentCommentReply = ({ child }) => {
 						<span className="reply_id">
 							{comment.uid}
 						</span>
-						<span className="reply_time">
+						<span className="reply_time" title={comment.bcdate}>
 							{date.detailDate(new Date(comment.bcdate))}
 						</span>
 					</div>

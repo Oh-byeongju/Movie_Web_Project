@@ -15,11 +15,11 @@ const MyPageLoading = () => {
 };
 
 const Background = styled.div`
-  position: fixed;
+  position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
-  left: 105px;
+  left: 0px;
   z-index: 9999;
   display: flex;
   flex-direction: column;

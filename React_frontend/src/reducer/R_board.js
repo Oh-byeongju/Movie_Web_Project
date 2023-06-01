@@ -451,7 +451,7 @@ const R_board = (state = initalState, action) => {
 				BOARD_COMMENT_REPLY_WRITE_done: false,
 				BOARD_COMMENT_REPLY_WRITE_error: false
 			};
-		// 게시물 삭제 작성 케이스들
+		// 게시물 답글 삭제 케이스들
     case BOARD_COMMENT_REPLY_DELETE_REQUEST:
       return {
         ...state,
@@ -480,6 +480,7 @@ const R_board = (state = initalState, action) => {
 				BOARD_COMMENT_REPLY_DELETE_done: false,
 				BOARD_COMMENT_REPLY_DELETE_error: false
 			};
+		// 답글 입력칸 띄우는 케이스
 		case BOARD_REPLY_KEY_SETTING:
 			return {
 				...state,

@@ -1,31 +1,24 @@
 /*
   23-03-27 관리자 페이지 사용자 관리 구현(오병주)
   23-03-28 ~ 30 관리자 페이지 사용자 예매 현황 구현(오병주)
-  23-03-31 ~ 23-04-01관리자 페이지 관람평 관리 구현(오병주)
+  23-03-31 ~ 23-04-01 관리자 페이지 관람평 관리 구현(오병주)
+  23-05-30 ~ 23-06-01 관리자 페이지 게시물 관리 구현(오병주)
 */
 package com.movie.Spring_backend.service;
 
 import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.entity.*;
-import com.movie.Spring_backend.exceptionlist.IdDuplicateException;
-import com.movie.Spring_backend.exceptionlist.MovieCommentNotFoundException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.mapper.MovieCommentMapper;
 import com.movie.Spring_backend.mapper.MovieMapper;
-import com.movie.Spring_backend.mapper.ReservationMapper;
 import com.movie.Spring_backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +31,7 @@ public class ManagerMemberService {
     private final MovieMemberRepository movieMemberRepository;
     private final CommentInfoRepository commentInfoRepository;
     private final BoardRepository boardRepository;
+    private final BoardCommentRepository boardCommentRepository;
     private final MovieMapper movieMapper;
     private final MovieCommentMapper movieCommentMapper;
     private final JwtValidCheck jwtValidCheck;
@@ -276,51 +270,31 @@ public class ManagerMemberService {
 
     // 특정 영화에 있는 관람평을 가져오는 메소드
     @Transactional
-    public Page<CommentInfoDto> MovieCommentSearch(HttpServletRequest request, Map<String, String> requestMap) {
+    public List<CommentInfoDto> MovieCommentSearch(HttpServletRequest request, Map<String, String> requestMap) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
         // requestMap 데이터 추출 및 형변환
         Long mid = Long.valueOf(requestMap.get("mid"));
-        int page = Integer.parseInt(requestMap.get("page"));
-        int size = Integer.parseInt(requestMap.get("size"));
-
-        // 페이지네이션을 위한 정보
-        PageRequest PageInfo = PageRequest.of(page, size);
 
         // 영화 id 정보를 entity 형으로 변환
         MovieEntity movie = MovieEntity.builder().mid(mid).build();
 
         // 영화 id를 기반으로 MovieMember table 검색(최신순)
-        Page<MovieMemberEntity> MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie, PageInfo);
-
-        // 프론트단에서 요청한 조건으로 얻을 수 있는 최대 페이지 number(PageSize에 의해 계산됨)
-        int max_index = MovieMembers.getTotalPages() - 1;
-        if (max_index == -1) {
-            max_index = 0;
-        }
-
-        // 최대 페이지 number가 프론트단에서 요청한 페이지 number보다 작을경우 최대 페이지 number로 재검색
-        if (max_index < page) {
-            PageInfo = PageRequest.of(max_index, size);
-            MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie, PageInfo);
-        }
+        List<MovieMemberEntity> MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie);
 
         // 관람평 목록과 좋아요 기록을 mapping 후 리턴
-        return MovieMembers.map(MovieMember -> movieCommentMapper.toDto(MovieMember, false));
+        return MovieMembers.stream().map(movieMember -> movieCommentMapper.toDto(movieMember, false)).collect(Collectors.toList());
     }
 
     // 특정 영화에 있는 관람평을 삭제하는 메소드
     @Transactional
-    public Page<CommentInfoDto> MovieCommentDelete(HttpServletRequest request, Map<String, String> requestMap) {
+    public void MovieCommentDelete(HttpServletRequest request, Map<String, String> requestMap) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
         // requestMap 데이터 추출 및 형변환
         Long umid = Long.valueOf(requestMap.get("umid"));
-        Long mid = Long.valueOf(requestMap.get("mid"));
-        int page = Integer.parseInt(requestMap.get("page"));
-        int size = Integer.parseInt(requestMap.get("size"));
 
         // 관람평 id를 이용해서 관람평 튜플 검색
         MovieMemberEntity MovieMember = movieMemberRepository.findById(umid).orElse(null);
@@ -340,30 +314,6 @@ public class ManagerMemberService {
         else {
             movieMemberRepository.deleteById(umid);
         }
-
-        // 페이지네이션을 위한 정보
-        PageRequest PageInfo = PageRequest.of(page, size);
-
-        // 영화 id 정보를 entity 형으로 변환
-        MovieEntity movie = MovieEntity.builder().mid(mid).build();
-
-        // 영화 id를 기반으로 MovieMember table 검색(최신순)
-        Page<MovieMemberEntity> MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie, PageInfo);
-
-        // 프론트단에서 요청한 조건으로 얻을 수 있는 최대 페이지 number(PageSize에 의해 계산됨)
-        int max_index = MovieMembers.getTotalPages() - 1;
-        if (max_index == -1) {
-            max_index = 0;
-        }
-
-        // 최대 페이지 number가 프론트단에서 요청한 페이지 number보다 작을경우 최대 페이지 number로 재검색
-        if (max_index < page) {
-            PageInfo = PageRequest.of(max_index, size);
-            MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie, PageInfo);
-        }
-
-        // 관람평 목록과 좋아요 기록을 mapping 후 리턴
-        return MovieMembers.map(Moviemember -> movieCommentMapper.toDto(Moviemember, false));
     }
 
     // 게시물 조회 메소드
@@ -377,6 +327,7 @@ public class ManagerMemberService {
         return Boards.stream().map(board -> BoardDto.builder()
                 .bid(board.getBid())
                 .btitle(board.getBtitle())
+                .bdetail(board.getBdetail())
                 .bdate(board.getBdate())
                 .bclickindex(board.getBclickindex())
                 .bcategory(board.getBcategory())
@@ -407,6 +358,7 @@ public class ManagerMemberService {
         return Boards.stream().map(board -> BoardDto.builder()
                 .bid(board.getBid())
                 .btitle(board.getBtitle())
+                .bdetail(board.getBdetail())
                 .bdate(board.getBdate())
                 .bclickindex(board.getBclickindex())
                 .bcategory(board.getBcategory())
@@ -414,5 +366,130 @@ public class ManagerMemberService {
                 .likes(board.getLikes())
                 .unlikes(board.getUnlikes())
                 .commentCounts(board.getCommentCounts()).build()).collect(Collectors.toList());
+    }
+
+    // 게시물 삭제 메소드
+    @Transactional
+    public void BoardDelete(HttpServletRequest request, Long bid){
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 게시물 삭제
+        boardRepository.deleteById(bid);
+    }
+
+    // 댓글 조회하는 메소드
+    @Transactional
+    public CountCommentDto getComment(HttpServletRequest request, Map<String, String> requestMap) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // requestMap 안에 정보를 추출
+        Long bid = Long.valueOf(requestMap.get("bid"));
+        String sort = requestMap.get("sort");
+
+        // 댓글 조회에 필요한 정보 Entity형으로 변환
+        BoardEntity board = BoardEntity.builder().bid(bid).build();
+
+        // 정렬에 따른 최상위 부모 댓글 조회
+        List<BoardCommentEntity> boardComments;
+        if (sort.equals("like")) {
+            boardComments = boardCommentRepository.findByCommentLike(board);
+        }
+        else {
+            boardComments = boardCommentRepository.findByBoardAndBcrootIsNullOrderByBcidDesc(board);
+        }
+
+        // 전체 답글조회(작성 시간순으로 최신순)
+        List<BoardCommentEntity> boardReply = boardCommentRepository.findByBoardAndBcrootIsNotNullOrderByBcrootAscBcparentAscBcidDesc(board);
+
+        // 댓글 개수 count
+        int count = 0;
+
+        // 최상위 부모 댓글 매핑
+        HashMap<Long, BoardCommentDto> result = new LinkedHashMap<>();
+        for (BoardCommentEntity BC : boardComments) {
+            result.put(BC.getBcid(), BoardCommentDto.builder()
+                    .bcid(BC.getBcid())
+                    .bccomment(BC.getBccomment())
+                    .bcdate(BC.getBcdate())
+                    .likes(BC.getLikes())
+                    .unlikes(BC.getUnlikes())
+                    .uid(BC.getMember().getUid())
+                    .child(new ArrayList<>()).build());
+            count++;
+        }
+
+        // 답글 매핑
+        for (BoardCommentEntity BC : boardReply) {
+            // 답글 중 최상위 답글일경우 답글을 그냥 삽입
+            if (BC.getBcroot().equals(BC.getBcparent())) {
+                result.get(BC.getBcroot()).getChild().add(0, BoardCommentDto.builder()
+                        .bcid(BC.getBcid())
+                        .bccomment(BC.getBccomment())
+                        .bcdate(BC.getBcdate())
+                        .bcroot(BC.getBcroot())
+                        .uid(BC.getMember().getUid()).build());
+            }
+            else {
+                // 최상위 부모 댓글의 자식들을 추출
+                List<BoardCommentDto> temp = result.get(BC.getBcroot()).getChild();
+
+                // 현재 답글 리스트중 자신의 부모를 찾은 뒤 다음 인덱스에 정보 삽입
+                for (int i = 0; i < temp.size(); i++) {
+                    if (temp.get(i).getBcid().equals(BC.getBcparent())) {
+                        temp.add(i + 1, BoardCommentDto.builder()
+                                .bcid(BC.getBcid())
+                                .bccomment(BC.getBccomment())
+                                .bcdate(BC.getBcdate())
+                                .bcroot(BC.getBcroot())
+                                .uid(BC.getMember().getUid())
+                                .parentUid(temp.get(i).getUid()).build());
+                    }
+                }
+            }
+            count++;
+        }
+
+        // 댓글의 총개수 + 댓글내용을 리턴
+        return CountCommentDto.builder().count(count).content(new ArrayList<>(result.values())).build();
+    }
+
+    // 댓글 삭제 메소드
+    @Transactional
+    public void CommentDelete(HttpServletRequest request, Long bcid){
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 댓글 및 답글 모두 제거
+        boardCommentRepository.deleteByBcroot(bcid);
+        boardCommentRepository.deleteById(bcid);
+    }
+
+    // 답글 삭제 메소드
+    @Transactional
+    public void ReplyDelete(HttpServletRequest request, Long bcid) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 현재 답글과 관련된 모든 답글들을 제거하기위해 List선언 및 현재답글의 id값 삽입
+        List<Long> delList = new ArrayList<>();
+        delList.add(bcid);
+
+        // List가 비어 있을때 까지 반복
+        while (!delList.isEmpty()) {
+            // List의 제일 앞 인덱스 값 추출 후 자식 답글들 검색
+            long delNum = delList.get(0);
+            List<BoardCommentEntity> boardComments = boardCommentRepository.findByBcparent(delNum);
+
+            // 자식들의 id값 리스트에 삽입
+            for (BoardCommentEntity BC : boardComments) {
+                delList.add(BC.getBcid());
+            }
+
+            // 제일 앞 인덱스 값 답글 삭제 및 List에서 제거
+            boardCommentRepository.deleteById(delNum);
+            delList.remove(0);
+        }
     }
 }

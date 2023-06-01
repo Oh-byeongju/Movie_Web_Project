@@ -243,9 +243,7 @@ function* AllMovieComment(action) {
 async function callAllMovieComment(data) {
   return await http.get("/Manager/auth/allMovieComment", {
     params: {
-      mid: data.mid,
-      page: data.page,
-      size: data.size
+      mid: data.mid
     },
   })
   .then((response) => {
@@ -259,10 +257,9 @@ async function callAllMovieComment(data) {
 // 관람평 삭제 함수
 function* MovieCommentDelete(action) {
   const result = yield call(callMovieCommentDelete, action.data);
-  if (result.status === 200) {
+  if (result.status === 204) {
     yield put({
-      type: MANAGER_MOVIE_COMMENT_DELETE_SUCCESS,
-      data: result.data
+      type: MANAGER_MOVIE_COMMENT_DELETE_SUCCESS
     });
   } 
   else {
@@ -274,12 +271,9 @@ function* MovieCommentDelete(action) {
 
 // 관람평 삭제 함수 백엔드 호출
 async function callMovieCommentDelete(data) {
-  return await http.delete("/Manager/auth/allMovieCommentDelete", {
+  return await http.delete("/Manager/auth/MovieCommentDelete", {
     params: {
-      umid: data.umid,
-      mid: data.mid,
-      page: data.page,
-      size: data.size
+      umid: data.umid
     }
   })
   .then((response) => {

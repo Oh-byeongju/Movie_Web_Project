@@ -2,6 +2,7 @@
   23-03-27 관리자 페이지 사용자 관리 구현(오병주)
   23-03-28 ~ 30 관리자 페이지 사용자 예매 현황 구현(오병주)
   23-03-31 ~ 23-04-01 관리자 페이지 관람평 관리 구현(오병주)
+  23-05-30 ~ 23-06-01 관리자 페이지 게시물 관리 구현(오병주)
 */
 package com.movie.Spring_backend.controller;
 
@@ -54,16 +55,17 @@ public class ManagerMemberController {
         return ResponseEntity.ok().body(managerMemberService.TheaterReserveSearch(request, requestMap));
     }
 
-    // 관람평 조회 메소드
+    // 관람평 조회 컨트롤러
     @GetMapping("/auth/allMovieComment")
-    public ResponseEntity<Page<CommentInfoDto>> MovieComment(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+    public ResponseEntity<List<CommentInfoDto>> MovieComment(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(managerMemberService.MovieCommentSearch(request, requestMap));
     }
 
-    // 관람평 삭제 메소드
-    @DeleteMapping("/auth/allMovieCommentDelete")
-    public ResponseEntity<Page<CommentInfoDto>> MovieCommentDelete(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
-        return ResponseEntity.ok().body(managerMemberService.MovieCommentDelete(request, requestMap));
+    // 관람평 삭제 컨트롤러
+    @DeleteMapping("/auth/MovieCommentDelete")
+    public ResponseEntity<String> MovieCommentDelete(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+        managerMemberService.MovieCommentDelete(request, requestMap);
+        return ResponseEntity.noContent().build();
     }
 
     // 게시물 조회 컨트롤러
@@ -76,5 +78,32 @@ public class ManagerMemberController {
     @GetMapping("/auth/boardSearch")
     public ResponseEntity<List<BoardDto>> BoardSearch(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(managerMemberService.getSearchBoard(request, requestMap));
+    }
+
+    // 게시물 삭제 컨트롤러
+    @DeleteMapping("/auth/boardDelete")
+    public ResponseEntity<String> BoardDelete(HttpServletRequest request, @RequestParam("bid") Long bid)  {
+        managerMemberService.BoardDelete(request, bid);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 댓글 조회 컨트롤러
+    @GetMapping("/auth/allComment")
+    public ResponseEntity<CountCommentDto> AllComment(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(managerMemberService.getComment(request, requestMap));
+    }
+
+    // 댓글 삭제 컨트롤러
+    @DeleteMapping("/auth/commentDelete")
+    public ResponseEntity<String> CommentDelete(HttpServletRequest request, @RequestParam("bcid") Long bcid) {
+        managerMemberService.CommentDelete(request, bcid);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 답글 삭제 컨트롤러
+    @DeleteMapping("/auth/replyDelete")
+    public ResponseEntity<String> ReplyDelete(HttpServletRequest request, @RequestParam("bcid") Long bcid) {
+        managerMemberService.ReplyDelete(request, bcid);
+        return ResponseEntity.noContent().build();
     }
 }

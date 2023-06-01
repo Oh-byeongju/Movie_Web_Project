@@ -50,42 +50,51 @@ export const MANAGER_MOVIE_COMMENT_LIST_FAILURE = "MANAGER_MOVIE_COMMENT_LIST_FA
 export const MANAGER_MOVIE_COMMENT_DELETE_REQUEST = "MANAGER_MOVIE_COMMENT_DELETE_REQUEST";
 export const MANAGER_MOVIE_COMMENT_DELETE_SUCCESS = "MANAGER_MOVIE_COMMENT_DELETE_SUCCESS";
 export const MANAGER_MOVIE_COMMENT_DELETE_FAILURE = "MANAGER_MOVIE_COMMENT_DELETE_FAILURE";
+export const MANAGER_MOVIE_COMMENT_DELETE_RESET = "MANAGER_MOVIE_COMMENT_DELETE_RESET";
 
 const initalState = {
   USER_LIST_loading: false,
   USER_LIST_done: false,
   USER_LIST_error: false,
 	USER_LIST: [],
+
 	USER_DROP_loading: false,
   USER_DROP_done: false,
   USER_DROP_error: false,
+
   MOVIE_LIST_loading: false,
   MOVIE_LIST_done: false,
   MOVIE_LIST_error: false,
 	MOVIE_LIST: [],
   MOVIE: '',
+
   THEATER_LIST_loading: false,
   THEATER_LIST_done: false,
   THEATER_LIST_error: false,
 	THEATER_LIST: [],
   THEATER: '',
+
   RESERVE_MOVIE_LIST_loading: false,
   RESERVE_MOVIE_LIST_done: false,
   RESERVE_MOVIE_LIST_error: false,
 	RESERVE_MOVIE_LIST: [],
+
   RESERVE_THEATER_LIST_loading: false,
   RESERVE_THEATER_LIST_done: false,
   RESERVE_THEATER_LIST_error: false,
 	RESERVE_THEATER_LIST: [],
+
   MOVIE_LIST_COMMENT_loading: false,
   MOVIE_LIST_COMMENT_done: false,
   MOVIE_LIST_COMMENT_error: false,
 	MOVIE_LIST_COMMENT: [],
-  MOVIE_COMMENT: '',
+
   MOVIE_COMMENT_LIST_loading: false,
   MOVIE_COMMENT_LIST_done: false,
   MOVIE_COMMENT_LIST_error: false,
 	MOVIE_COMMENT_LIST: [],
+	MOVIE_COMMENT: '',
+
   MOVIE_COMMENT_DELETE_loading: false,
   MOVIE_COMMENT_DELETE_done: false,
   MOVIE_COMMENT_DELETE_error: false,
@@ -301,23 +310,29 @@ const R_manager_user = (state = initalState, action) => {
         ...state,
         MOVIE_COMMENT_DELETE_loading: true,
         MOVIE_COMMENT_DELETE_done: false,
-        MOVIE_COMMENT_DELETE_error: false,
+        MOVIE_COMMENT_DELETE_error: false
       };
     case MANAGER_MOVIE_COMMENT_DELETE_SUCCESS:
       return {
         ...state,
         MOVIE_COMMENT_DELETE_loading: false,
         MOVIE_COMMENT_DELETE_done: true,
-        MOVIE_COMMENT_DELETE_error: false,
-        MOVIE_COMMENT_LIST: action.data
+        MOVIE_COMMENT_DELETE_error: false
       };
     case MANAGER_MOVIE_COMMENT_DELETE_FAILURE:
       return {
         ...state,
         MOVIE_COMMENT_DELETE_loading: false,
         MOVIE_COMMENT_DELETE_done: false,
-        MOVIE_COMMENT_DELETE_error: true,
+        MOVIE_COMMENT_DELETE_error: true
       };
+		case MANAGER_MOVIE_COMMENT_DELETE_RESET:
+			return {
+				...state,
+				MOVIE_COMMENT_DELETE_loading: false,
+				MOVIE_COMMENT_DELETE_done: false,
+				MOVIE_COMMENT_DELETE_error: false
+			};
     default:
       return state;
   }

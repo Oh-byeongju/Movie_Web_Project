@@ -49,9 +49,7 @@ const DocumentLayout = () => {
       dispatch({
         type: MANAGER_MOVIE_COMMENT_LIST_REQUEST,
         data: {
-          mid: MOVIE_COMMENT.mid,
-					page: 0,
-					size: 10
+          mid: MOVIE_COMMENT.mid
         }
       });
     }
@@ -92,7 +90,7 @@ const DocumentLayout = () => {
 						게시판관리
 					</button>
         </div>
-				{false ? <>
+				{moviecommentbutton ? <>
 				<MovieAreaChoice>
 					<TabLeft>
 						<ul>
@@ -132,7 +130,7 @@ const DocumentLayout = () => {
 					</TabCenter>
 				</MovieAreaChoice>
 				<Notice>
-					* 검색결과 <strong>{MOVIE_COMMENT_LIST.totalElements}</strong>건이 검색되었습니다. (더블 클릭시 관람평 전체내용 조회가능)
+					* 검색결과 <strong>{MOVIE_COMMENT_LIST.length}</strong>건이 검색되었습니다. (더블 클릭시 관람평 전체내용 조회가능)
 				</Notice>
 				<DocumentMovieComment/></> : 
 				<>

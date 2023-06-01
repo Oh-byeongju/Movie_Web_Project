@@ -1,16 +1,18 @@
-
-
+/*
+  23-05-30 관리자 게시물 페이지 수정(오병주)
+*/
 import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector, shallowEqual} from "react-redux";
 import { Table, Input, Modal } from 'antd';
-import { MANAGER_BOARD_LIST_REQUEST, MANAGER_BOARD_SEARCH_REQUEST,
-	
-	
-	BOARD_DELETE_LOADING, M_COMMENT_READ_REQUEST 
+import { 
+	MANAGER_BOARD_LIST_REQUEST, 
+	MANAGER_BOARD_SEARCH_REQUEST,
+	MANAGER_BOARD_DELETE_REQUEST, 
+	MANAGER_BOARD_DELETE_RESET
 } from "../../reducer/R_manager_board";
 import * as date from "../../lib/date.js";
-
+import DocumentBoardDetail from "./DocumentBoardDetail";
 const { Search } = Input;
 
 const DocumentBoard = () => {
@@ -24,11 +26,13 @@ const DocumentBoard = () => {
 	}, [dispatch]);
 
 	// 필요한 리덕스 상태들
-  const { MANAGER_BOARD_LIST_loading, MANAGER_BOARD_LIST, MANAGER_BOARD_SEARCH_loading } = useSelector(
+  const { MANAGER_BOARD_LIST_loading, MANAGER_BOARD_LIST, MANAGER_BOARD_SEARCH_loading, MANAGER_BOARD_DELETE_done, MANAGER_BOARD_DELETE_error } = useSelector(
     state => ({
       MANAGER_BOARD_LIST_loading: state.R_manager_board.MANAGER_BOARD_LIST_loading,
       MANAGER_BOARD_LIST: state.R_manager_board.MANAGER_BOARD_LIST,
-			MANAGER_BOARD_SEARCH_loading:  state.R_manager_board.MANAGER_BOARD_SEARCH_loading
+			MANAGER_BOARD_SEARCH_loading:  state.R_manager_board.MANAGER_BOARD_SEARCH_loading,
+			MANAGER_BOARD_DELETE_done: state.R_manager_board.MANAGER_BOARD_DELETE_done,
+      MANAGER_BOARD_DELETE_error: state.R_manager_board.MANAGER_BOARD_DELETE_error
     }),
     shallowEqual
   );
@@ -152,136 +156,88 @@ const DocumentBoard = () => {
 			title: '관리자',
 			fixed: 'right',
 			width: 3.5,
-			render: (text, row) => <TableButton onClick={()=>{
-				onDelete(row.bid)
-				console.log(row.bid)}}>delete</TableButton>,
+			render: (text, row) => <TableButton onClick={()=>{onDelete(row.bid)}}>delete</TableButton>
 		},
 	];  
 
+	// 게시글 삭제하는 함수
+	const onDelete = useCallback((data) =>{
+		if (!window.confirm("게시글을 삭제하시겠습니까?\n(삭제된 게시글은 복구되지 않습니다.)")) {
+			return;
+		};
 
-	// 여기위에 관리자 delete에서 more로 바꾸거나 아니면 그대로 쓰거나 음 이건 고민해봐야할듯 css를
+		dispatch({
+			type: MANAGER_BOARD_DELETE_REQUEST,
+			data: {
+				bid: data
+			}
+		})
+	}, [dispatch]);
 
+	// 게시글 삭제 상태에 따른 useEffect
+	useEffect(()=> {
+		// 삭제 성공
+		if (MANAGER_BOARD_DELETE_done) {
+			if (search.trim === '') {
+				dispatch({
+					type: MANAGER_BOARD_LIST_REQUEST
+				});
+			}
+			else {
+				onSearch();
+			}
+			dispatch({
+				type: MANAGER_BOARD_DELETE_RESET
+			});
+		}
 
+		// 삭제 실패
+		if (MANAGER_BOARD_DELETE_error) {
+			alert('게시글 삭제에 실패했습니다.');
+			if (search.trim === '') {
+				dispatch({
+					type: MANAGER_BOARD_LIST_REQUEST
+				});
+			}
+			else {
+				onSearch();
+			}
 
+			dispatch({
+				type: MANAGER_BOARD_DELETE_RESET
+			});
+		}
 
+	}, [MANAGER_BOARD_DELETE_done, search, onSearch, MANAGER_BOARD_DELETE_error, dispatch])
 
+	// 상세 조회 useState
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [content, setContent] = useState();
 
-	const { comment} = useSelector((state)=>state.R_manager_board)
-	      //board
-    const onDelete = (data) =>{
-      if (!window.confirm("게시글을 삭제하시겠습니까? (삭제된 게시글은 복구 불가합니다.")) {
-        return;
-      };
-        dispatch({
-                type:BOARD_DELETE_LOADING,
-                data:{
-                    bid:data
-                }
-        })
-    }  
+	// 댓글 정렬 상태
+	const [sort, setSort] = useState("like");
 
-   
+	// 모달 관련 함수
+	const showModal = useCallback((data) => {
+		setContent(data);
+		setIsModalOpen(true);
+	}, []);
 
+	const handleOk = useCallback(() => {
+		setIsModalOpen(false);
+		setSort("like");
+	}, []);
 
+	const handleCancel = useCallback(() => {
+		setIsModalOpen(false);
+		setSort("like");
+	}, []);
 
-
-
-
-
-
-
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-
-    const showModal = (data) => {
-        dispatch({
-            type:M_COMMENT_READ_REQUEST,
-            data:{
-                bid:data,
-                type:"new"
-            }
-        })
-        setIsModalOpen(true);
-      };
-      const handleOk = () => {
-        setIsModalOpen(false);
-      };
-      const handleCancel = () => {
-        setIsModalOpen(false);
-      };
-        
-    
-
-
-      const [isModalOpen2, setIsModalOpen2] = useState(false);
-      const [child, setChild] = useState([])
-
-      const showModal2 = (data) => {
-        setChild(data)
-          setIsModalOpen2(true);
-        };
-        const handleOk2 = () => {
-          setIsModalOpen2(false);
-        };
-        const handleCancel2 = () => {
-          setIsModalOpen2(false);
-        };
-        
-        
-
-      const columns2 = [
-        {
-          title: '게시글번호',
-          width: 70,
-          dataIndex: 'bcid',
-          fixed: 'left',
-        },
-        {
-          title: '계정',
-          width: 70,
-          dataIndex: 'member',
-          fixed: 'left',
-        },
-        {
-          title: '내용',
-          width: 100,
-          dataIndex: 'bccomment',
-          fixed: 'left',
-        },
-        {
-          title: '날짜',
-          width: 110,
-          dataIndex: 'bcdate',
-          fixed:'left'
-        },
-        {
-            title: '게시글',
-            width: 100,
-            dataIndex: 'board',
-            fixed:'left'
-          }, 
-          {
-            title: '상위댓글번호',
-            width: 210,
-            dataIndex: 'parent',
-            fixed:'left'
-          }, 
-          {
-            title: '관리자',
-            fixed: 'right',
-            width: 85,
-            render: (text, row) => <TableButton onClick={()=>{
-              
-              console.log(text)}}>delete</TableButton>,
-          },
-       
-      ]; 
 	return (
 		<>
 			<Layout>
 				<Text>
-					{MANAGER_BOARD_LIST.length}개의 게시글이 검색되었습니다. (더블클릭시 댓글, 댓글에서 더블클릭시 대댓글)
+					{MANAGER_BOARD_LIST.length}개의 게시글이 검색되었습니다. (더블클릭시 상세조회 및 댓글조회)
 				</Text>
 					<ButtonList>
 						<ButtonWrap>
@@ -321,62 +277,25 @@ const DocumentBoard = () => {
 					filterConfirm: '확인',
 					filterReset: '초기화'
 				}}
-
 				onRow={(record, rowIndex) => {
 					return {
-							// click row
 						onDoubleClick: event => {                 
-							showModal(record.bid)
-							console.log(record.bid)
-						}, // double click row
-						onContextMenu: event => {}, // right button click row
-						onMouseEnter: event => {}, // mouse enter row
-						onMouseLeave: event => {}, // mouse leave row
+							showModal(record);
+						}
 					};
 				}}
 			/>
-		<Modal width={1200}title="댓글" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-			
-
-		<TableWrap rowKey="bid"
-				columns={columns2}
-				dataSource={comment.mapper}
-				scroll={{x: 1350}}
-				onRow={(record, rowIndex) => {
-					return {
-							// click row
-						onDoubleClick: event => {     
-							showModal2(record.child);           
-						}, // double click row
-						onContextMenu: event => {}, // right button click row
-						onMouseEnter: event => {}, // mouse enter row
-						onMouseLeave: event => {}, // mouse leave row
-					};
-				}}
-			/>
-		
-		</Modal>
-		<Modal width={1200}title="대댓글" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>
-			
-		<TableWrap rowKey="bid"
-				columns={columns2}
-				dataSource={child}
-				scroll={{x: 1350}}
-				onRow={(record, rowIndex) => {
-					return {
-							// click row
-						onDoubleClick: event => {                 
-						}, // double click row
-						onContextMenu: event => {}, // right button click row
-						onMouseEnter: event => {}, // mouse enter row
-						onMouseLeave: event => {}, // mouse leave row
-					};
-				}}
-			/>
-			
-		
-		</Modal>
-	
+			<ModalWrapper 
+				keyboard={false} 
+				width={900} 
+				title="게시물 상세조회" 
+				okText="확인"
+				cancelText="취소" 
+				open={isModalOpen} 
+				onOk={handleOk} 
+				onCancel={handleCancel}>
+				<DocumentBoardDetail content={content} sort={sort} setSort={setSort}/>
+			</ModalWrapper>
 		</>
   );
 };
@@ -491,6 +410,12 @@ const TableButton = styled.button`
   cursor: pointer;
   transition: color 0.3s;
   border: none;
+`;
+
+const ModalWrapper = styled(Modal)`
+	.ant-modal-title {
+		font-size: 24px;
+	}
 `;
 
 export default DocumentBoard;

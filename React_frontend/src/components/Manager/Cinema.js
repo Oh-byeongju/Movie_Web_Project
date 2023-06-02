@@ -126,23 +126,28 @@ const Cinema = () =>{
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [CinemaId, setCinemaId] = useState();
 	const [delState, setdelState] = useState(true);
+	const [delState2, setdelState2] = useState(true);
 
 	// + 버튼 누를때 실행되는 함수
 	const ClickRowInsert = useCallback(()=> {
     setIsModalOpen(true);
 		setdelState(true);
+		setdelState2(false);
   }, []);
 
 	// modify 버튼을 누를때 실행되는 함수
 	const ClickRowModify = useCallback((data) => {
-    if (data.cntMovieInfo !== 0) {
-      alert('보유 상영정보가 없는 상영관만 수정이 가능합니다.');
-      return;
-    }
-
+   
     // 삭제버튼 활성화 및 상영관 ID 설정
     setdelState(false);
+		setdelState2(false);
     setCinemaId(data.cid);
+
+		// 보유 상영정보 예외처리
+		if (data.cntMovieInfo !== 0) {
+      alert('보유 상영정보가 있는 경우 일부만 수정이 가능합니다.');
+			setdelState2(true);
+    }
     
     // 모달창에 정보 입력
 		setTname(data.tid);
@@ -194,7 +199,7 @@ const Cinema = () =>{
 
 	// 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback(()=> {
-    if (!window.confirm("상영관을 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다)")) {
+    if (!window.confirm("상영관을 삭제하시겠습니까?\n(삭제한 정보는 복구되지 않습니다.)")) {
       return;
     };
 
@@ -207,18 +212,21 @@ const Cinema = () =>{
 
   }, [CinemaId, dispatch]);
 
+	// 모달창 닫을 시 초기화
+	const handleCancel = useCallback(() => {
+		setTname([]);
+		setName('');
+		setType('');
+		setSeat([]);
+		setIsModalOpen(false);
+	}, []);
+
 	// 상영관 추가 성공여부에 따른 useEffect
   useEffect(()=> {
     // 추가 성공
     if (CINEMA_INSERT_done) {
-      alert('상영관이 추가되었습니다.');
-
 			// 모달 상태 초기화
-			setTname([]);
-			setName('');
-			setType('');
-			setSeat([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_CINEMA_INSERT_RESET
@@ -236,20 +244,14 @@ const Cinema = () =>{
         type: MANAGER_CINEMA_INSERT_RESET
       });
     }
-  }, [CINEMA_INSERT_done, CINEMA_INSERT_error, dispatch]);
+  }, [CINEMA_INSERT_done, CINEMA_INSERT_error, handleCancel, dispatch]);
 
 	// 상영관 삭제 성공여부에 따른 useEffect
   useEffect(()=> {
     // 삭제 성공
     if (CINEMA_DELETE_done) {
-      alert('상영관이 삭제되었습니다.');
-
 			// 모달 상태 초기화
-			setTname([]);
-			setName('');
-			setType('');
-			setSeat([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_CINEMA_DELETE_RESET
@@ -265,11 +267,7 @@ const Cinema = () =>{
       alert('상영관 삭제에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setTname([]);
-			setName('');
-			setType('');
-			setSeat([]);
-			setIsModalOpen(false);
+			handleCancel();
 			
 			dispatch({
         type: MANAGER_CINEMA_DELETE_RESET
@@ -279,20 +277,15 @@ const Cinema = () =>{
         type: MANAGER_CINEMA_REQUEST
       });
     }
-  }, [CINEMA_DELETE_done, CINEMA_DELETE_error, dispatch]);
+  }, [CINEMA_DELETE_done, CINEMA_DELETE_error, handleCancel, dispatch]);
 
 	// 상영관 수정 성공여부에 따른 useEffect
   useEffect(()=> {
     // 수정 성공
     if (CINEMA_UPDATE_done) {
-      alert('상영관이 수정되었습니다.');
-
+    
 			// 모달 상태 초기화
-			setTname([]);
-			setName('');
-			setType('');
-			setSeat([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_CINEMA_UPDATE_RESET
@@ -308,11 +301,7 @@ const Cinema = () =>{
       alert('상영관 수정에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setTname([]);
-			setName('');
-			setType('');
-			setSeat([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_CINEMA_UPDATE_RESET
@@ -322,16 +311,7 @@ const Cinema = () =>{
         type: MANAGER_CINEMA_REQUEST
       });
     }
-  }, [CINEMA_UPDATE_done, CINEMA_UPDATE_error, dispatch]);
-
-	// 모달창 닫을 시 초기화
-	const handleCancel = useCallback(() => {
-		setTname([]);
-		setName('');
-		setType('');
-		setSeat([]);
-		setIsModalOpen(false);
-	}, []);
+  }, [CINEMA_UPDATE_done, CINEMA_UPDATE_error, handleCancel, dispatch]);
 
 	return(
 		<>
@@ -366,6 +346,7 @@ const Cinema = () =>{
 					<Form.Item label="영화관명">
 						<Select 
 							placeholder='영화관을 선택해주세요'
+							disabled={delState2}
 							onChange={onChangeTname}
 							value={tname}
 							options={THEATER.map((theater) => ({
@@ -383,6 +364,7 @@ const Cinema = () =>{
 					<Form.Item label="좌석수" >
 						<Select 
 						placeholder='좌석수를 선택해주세요'
+						disabled={delState2}
 						onChange={onChangeSeat}
 						defaultValue={seat}
 						options={[
@@ -401,7 +383,7 @@ const Cinema = () =>{
 						]}/> 
 					</Form.Item>
 					<Form.Item style={{position:'relative', top:'57px'}}>
-						<Button disabled={delState} onClick={onDelete} type="primary" danger>
+						<Button disabled={delState || delState2} onClick={onDelete} type="primary" danger>
 							삭제
 						</Button>       
 					</Form.Item>

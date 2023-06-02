@@ -56,10 +56,29 @@ public class MemberEntity {
             cascade = CascadeType.REMOVE)
     private List<CommentInfoEntity> commentInfos = new ArrayList<>();
 
+    // 일대다 관계 매핑
+    @OneToMany(mappedBy = "member",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<BoardEntity> boards = new ArrayList<>();
+
+    // 일대다 관계 매핑
+    @OneToMany(mappedBy = "member",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<BoardCommentEntity> boardComments = new ArrayList<>();
+
+    // 일대다 관계 매핑
+    @OneToMany(mappedBy = "member",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<BoardLikeEntity> boardLikes = new ArrayList<>();
+
     @Builder
     public MemberEntity(String uid, String upw, String uname, String uemail, String utel, String uaddr,
                         String uaddrsecond, Date ubirth, Date ujoindate, Authority uauthority, List<MovieMemberEntity> movieMembers,
-                        List<ReservationEntity> reservations, List<CommentInfoEntity> commentInfos) {
+                        List<ReservationEntity> reservations, List<CommentInfoEntity> commentInfos, List<BoardEntity> boards,
+                        List<BoardCommentEntity> boardComments, List<BoardLikeEntity> boardLikes) {
         this.uid = uid;
         this.upw = upw;
         this.uname = uname;
@@ -73,5 +92,8 @@ public class MemberEntity {
         this.movieMembers = movieMembers;
         this.reservations = reservations;
         this.commentInfos = commentInfos;
+        this.boards = boards;
+        this.boardComments = boardComments;
+        this.boardLikes = boardLikes;
     }
 }

@@ -1,19 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
 import * as date from "../../lib/date.js";
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { MANAGER_RESERVE_THEATER_LIST_REQUEST } from '../../reducer/R_manager_user.js';
+import { useSelector, shallowEqual } from 'react-redux';
 import { Table } from 'antd';
 
 const ReserveTheater = () => {
-	const dispatch = useDispatch();
 
 	// 필요한 리덕스 상태들
-	const { RESERVE_THEATER_LIST_loading, RESERVE_THEATER_LIST, THEATER } = useSelector(
+	const { RESERVE_THEATER_LIST_loading, RESERVE_THEATER_LIST } = useSelector(
 		state => ({
 			RESERVE_THEATER_LIST_loading: state.R_manager_user.RESERVE_THEATER_LIST_loading,
-			RESERVE_THEATER_LIST: state.R_manager_user.RESERVE_THEATER_LIST,
-			THEATER: state.R_manager_user.THEATER
+			RESERVE_THEATER_LIST: state.R_manager_user.RESERVE_THEATER_LIST
 		}),
 		shallowEqual
 	);
@@ -34,10 +31,11 @@ const ReserveTheater = () => {
     },
 		{
       title: '영화이름',
-      width: 160,
+      width: 185,
       dataIndex: 'mtitle',
 			ellipsis: true,
-      fixed: 'left'
+      fixed: 'left',
+			sorter: (a, b) => a.mtitle.localeCompare(b.mtitle)
     },
     {
       title: '예매일시',
@@ -47,7 +45,7 @@ const ReserveTheater = () => {
     },
     {
       title: '관람극장',
-      width: 180,
+      width: 175,
       render: (text, row) => <div> {row["tarea"]}-{row["tname"]}점 {row["cname"]}</div>,
     },
     {
@@ -57,7 +55,7 @@ const ReserveTheater = () => {
     },
     {
       title: '관람인원',
-      width: 290,
+      width: 265,
 			render: (text, row) => <div> {row["rpeople"]} (총 {row["rticket"]}매) </div>,
     },
 		{
@@ -70,39 +68,43 @@ const ReserveTheater = () => {
       width: 100,
 			render: (text, row) => <div> {row["rprice"]}원 </div>,
     },
+		{
+			title: '취소일시',
+			width: 190,
+			render: (text, row) => <div> {row["rcanceldate"] ? row["rcanceldate"].substr(0, 10) + " (" + date.getDayOfWeek(row["rcanceldate"]) + ") " + row["rcanceldate"].substr(10, 9): "-"} </div>,
+		},
     {
       title: '예매상태',
       fixed: 'right',
-      width: 90,
-      render: (text, row) => <div> 예매완료 </div>,
+      width: 104,
+			filters: [
+				{
+					text: '예매완료',
+					value: '예매완료'
+				},
+				{
+					text: '예매취소',
+					value: '예매취소'
+				},
+			],
+			onFilter: (value, record) => record.rstate_string.indexOf(value) === 0,
+      dataIndex: 'rstate_string'
     },
-  ];  
-
-	// 테이블에 있는 페이지네이션 누를 때
-	const handleTableChange = (pagination) => {
-		dispatch({
-			type: MANAGER_RESERVE_THEATER_LIST_REQUEST,
-			data: {
-				tid: THEATER.tid,
-				page: pagination.current - 1,
-        size: pagination.pageSize
-			}
-		});
-  };
+  ];
 
 	return (
 		<>
 			<TableWrap rowKey="rid"
 				loading={RESERVE_THEATER_LIST_loading}
         columns={columns}
-				dataSource={RESERVE_THEATER_LIST.content}
-				pagination={{current: RESERVE_THEATER_LIST.number ? RESERVE_THEATER_LIST.number + 1 : 1, total: RESERVE_THEATER_LIST.totalElements, pageSize: RESERVE_THEATER_LIST.size}}
+				dataSource={RESERVE_THEATER_LIST}
 				scroll={{x: 1350}}
-				onChange={handleTableChange}
         locale={{ 
           triggerDesc: '내림차순 정렬하기',
           triggerAsc: '오름차순 정렬하기', 
-          cancelSort: '정렬해제하기'
+          cancelSort: '정렬해제하기',
+					filterConfirm: '확인',
+					filterReset: '초기화'
       	}}
 			/>
 		</>

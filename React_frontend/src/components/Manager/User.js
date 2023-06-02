@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { Table, Input } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { MANAGER_USER_LIST_REQUEST, MANAGER_USER_DROP_REQUEST } from '../../reducer/R_manager_user';
+import { MANAGER_USER_LIST_REQUEST, MANAGER_USER_SEARCH_REQUEST, MANAGER_USER_DROP_REQUEST, MANAGER_USER_DROP_RESET } from '../../reducer/R_manager_user';
 import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
@@ -11,11 +11,13 @@ const User = () => {
   const navigate = useNavigate();
 
   // 필요한 리덕스 상태들
-  const { USER_LIST_loading, USER_DROP_loading, USER_LIST, LOGIN_STATUS_done, LOGIN_data } = useSelector(
+  const { USER_LIST_loading, USER_DROP_loading, USER_LIST, USER_DROP_done, USER_DROP_error, LOGIN_STATUS_done, LOGIN_data } = useSelector(
     state => ({
       USER_LIST_loading: state.R_manager_user.USER_LIST_loading,
       USER_DROP_loading: state.R_manager_user.USER_DROP_loading,
       USER_LIST: state.R_manager_user.USER_LIST,
+			USER_DROP_done: state.R_manager_user.USER_DROP_done,
+			USER_DROP_error: state.R_manager_user.USER_DROP_error,
       LOGIN_STATUS_done: state.R_user_login.LOGIN_STATUS_done,
       LOGIN_data: state.R_user_login.LOGIN_data
     }),
@@ -33,89 +35,43 @@ const User = () => {
     // 백엔드로 부터 로그인 기록을 받아온 다음 백엔드 요청
     if (LOGIN_data.uid === 'manager') {
       dispatch({
-        type: MANAGER_USER_LIST_REQUEST,
-        data: {
-          search: '', 
-          sort : 'name',
-          page: 0,
-          size: 10
-        }
+        type: MANAGER_USER_LIST_REQUEST
       });
     }
   }, [LOGIN_STATUS_done, LOGIN_data.uid, navigate, dispatch])
 
   // 검색칸 내용 변수
   const [search, setsearch] = useState('');
-  const handleSearchChange = e => {
+  const handleSearchChange = useCallback((e) => {
     setsearch(e.target.value);
-  };
+  }, []);
 
   // 정렬 버튼 css 변수
-	const [namebutton, setnamebutton] = useState(true);
-	const [joinbutton, setjoinbutton] = useState(false);
+	const [idbutton, setIdbutton] = useState(true);
+	const [namebutton, setNamebutton] = useState(false);
 
-   // 이름순 버튼을 누를 때 함수
-	const clickname = useCallback(()=> {
+	// 계정명 버튼을 누를 때 함수
+	const clickId = useCallback(()=> {
+		setIdbutton(true);
+		setNamebutton(false);
+	}, []);
 
-    // 백엔드를 다시 요청
-    dispatch({
-      type: MANAGER_USER_LIST_REQUEST,
-      data: {
-        search: search.trim(),
-        sort : 'name',
-        page: USER_LIST.number,
-        size: USER_LIST.size
-      }
-    });
-    
-		setnamebutton(true);
-		setjoinbutton(false);
-
-	}, [search, USER_LIST, dispatch])
-
-	// 가입순 버튼을 누를 때 함수
-	const clickjoin = useCallback(()=> {
-
-    // 백엔드를 다시 요청
-    dispatch({
-      type: MANAGER_USER_LIST_REQUEST,
-      data: {
-        search: search.trim(),
-        sort : 'join',
-        page: USER_LIST.number,
-        size: USER_LIST.size
-      }
-    });
-		
-		setnamebutton(false);
-		setjoinbutton(true);
-	}, [search, USER_LIST, dispatch])
+	// 이름 버튼을 누를 때 함수
+	const clickName = useCallback(()=> {
+		setIdbutton(false);
+		setNamebutton(true);
+	}, []);
 
   // 검색 버튼 누를때 실행되는 함수
   const onSearch = useCallback(() => {
     dispatch({
-      type: MANAGER_USER_LIST_REQUEST,
+      type: MANAGER_USER_SEARCH_REQUEST,
       data: {
-        search: search.trim(),
-        sort : namebutton ? 'name' : 'join',
-        page: USER_LIST.number,
-        size: USER_LIST.size
+        search: search,
+        sort : idbutton ? 'id' : 'name'
       }
     });
-  }, [namebutton, search, USER_LIST, dispatch]);
-
-  // 테이블에 있는 페이지네이션 누를 때
-	const handleTableChange = (pagination) => {
-		dispatch({
-			type: MANAGER_USER_LIST_REQUEST,
-			data: {
-				search: search.trim(),
-        sort : namebutton ? 'name' : 'join',
-				page: pagination.current - 1,
-        size: pagination.pageSize
-			}
-		});
-  };
+  }, [idbutton, search, dispatch]);
 
   // 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback((uid) => {
@@ -124,21 +80,53 @@ const User = () => {
 			return;
 		}
 
-    if (!window.confirm("사용자를 삭제하시겠습니까? \n(삭제된 사용자는 복구되지 않습니다)")) {
+    if (!window.confirm("사용자를 삭제하시겠습니까?\n(삭제된 사용자는 복구되지 않습니다.)")) {
       return;
     };
 
     dispatch({
       type: MANAGER_USER_DROP_REQUEST,
       data: { 
-        uid: uid,
-        search: search.trim(),
-        sort : namebutton ? 'name' : 'join',
-        page: USER_LIST.number,
-        size: USER_LIST.size
+        uid: uid
       }
     });
-  }, [USER_LIST, namebutton, search, dispatch])
+  }, [dispatch]);
+
+	// 사용자 삭제 상태에 따른 useEffect
+	useEffect(()=> {
+		// 삭제 성공
+		if (USER_DROP_done) {
+			if (search.trim === '') {
+				dispatch({
+					type: MANAGER_USER_LIST_REQUEST
+				});
+			}
+			else {
+				onSearch();
+			}
+			dispatch({
+				type: MANAGER_USER_DROP_RESET
+			});
+		}
+
+		// 삭제 실패
+		if (USER_DROP_error) {
+			alert('사용자 삭제에 실패했습니다.');
+			if (search.trim === '') {
+				dispatch({
+					type: MANAGER_USER_LIST_REQUEST
+				});
+			}
+			else {
+				onSearch();
+			}
+
+			dispatch({
+				type: MANAGER_USER_DROP_RESET
+			});
+		}
+
+	}, [USER_DROP_done, search, onSearch, USER_DROP_error, dispatch]);
 
   // antd css 설정
   const columns = [
@@ -147,31 +135,35 @@ const User = () => {
       width: 110,
       dataIndex: 'uid',
       fixed: 'left',
+			sorter: (a, b) => a.uid.localeCompare(b.uid)
     },
     {
       title: '이름',
       width: 120,
       dataIndex: 'uname',
       fixed: 'left',
+			sorter: (a, b) => a.uname.localeCompare(b.uname)
     },
     {
       title: '이메일',
       width: 210,
+			ellipsis: true,
       dataIndex: 'uemail',
     },
     {
       title: '전화번호',
-      width: 120,
-      dataIndex: 'utel',
+      width: 130,
+      render: (text, row) => <div> {row["utel"].substring(0,3)}-{row["utel"].substring(3,7)}-{row["utel"].substring(7, 11)} </div>,
     },
     {
       title: '주소',
-      width: 340,
+      width: 360,
+			ellipsis: true,
       render: (text, row) => <div> {row["uaddr"]} {row["uaddrsecond"]} </div>,
     },
     {
       title: '생년월일',
-      width: 130,
+      width: 110,
       dataIndex: 'ubirth',
     },
     {
@@ -179,6 +171,7 @@ const User = () => {
       width: 110,
       dataIndex: 'ujoindate',
       fixed: 'right',
+			sorter: (a, b) => new Date(a.ujoindate) - new Date(b.ujoindate)
     },
     {
       title: '관리자',
@@ -198,23 +191,23 @@ const User = () => {
         </div>
         <div className="search">
           <p>
-            {USER_LIST.totalElements}명의 회원이 검색되었습니다.
+            {USER_LIST.length}명의 회원이 검색되었습니다.
           </p>
 					<ButtonList>
 						<ButtonWrap>
-							<button className={"btn" + (namebutton ? " active" : "")} onClick={clickname}>
-								이름순
+							<button className={"btn" + (idbutton ? " active" : "")} onClick={clickId}>
+								계정명
 							</button>
 						</ButtonWrap>
 						<ButtonWrap>
-							<button className={"btn" + (joinbutton ? " active" : "")} onClick={clickjoin}>
-								가입순
+							<button className={"btn" + (namebutton ? " active" : "")} onClick={clickName}>
+								이름
 							</button>
 						</ButtonWrap>
 					</ButtonList>
 					<div className="search_button">
 						<SearchWarp
-							placeholder="계정명 검색"
+							placeholder="유저 검색"
 							allowClear
 							onSearch={onSearch}
 							value={search}
@@ -226,16 +219,19 @@ const User = () => {
 						/>
 					</div>
 				</div>	
-					<TableWrap rowKey="uid"
-						loading={USER_LIST_loading || USER_DROP_loading}
-						columns={columns}
-						dataSource={USER_LIST.content}
-						pagination={{current: USER_LIST.number ? USER_LIST.number + 1 : 1, total: USER_LIST.totalElements, pageSize: USER_LIST.size}}
-						onChange={handleTableChange}
-						scroll={{x: 1350}}
-					/>
-      	</InnerWraps>
-			</Container>
+				<TableWrap rowKey="uid"
+					loading={USER_LIST_loading || USER_DROP_loading}
+					columns={columns}
+					dataSource={USER_LIST}
+					scroll={{x: 1200}}
+					locale={{ 
+						triggerDesc: '내림차순 정렬하기',
+						triggerAsc: '오름차순 정렬하기', 
+						cancelSort: '정렬해제하기'
+					}}
+				/>
+			</InnerWraps>
+		</Container>
 	);
 };
 

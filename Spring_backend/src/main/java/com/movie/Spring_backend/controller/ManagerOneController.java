@@ -24,7 +24,7 @@ public class ManagerOneController {
 
     private final ManagerOneService managerOneService;
 
-    // 영화 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
+    // 영화 조회 메소드
     @GetMapping("/auth/allMovie")
     public ResponseEntity<List<MovieDto>> AllMovie(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllMovieSearch(request));
@@ -51,7 +51,7 @@ public class ManagerOneController {
         return ResponseEntity.noContent().build();
     }
 
-    // 배우 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
+    // 배우 조회 메소드
     @GetMapping("/auth/allActor")
     public ResponseEntity<List<ActorDto>> AllActor(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllActorSearch(request));
@@ -78,7 +78,7 @@ public class ManagerOneController {
         return ResponseEntity.noContent().build();
     }
 
-    // 영화관 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
+    // 영화관 조회 메소드
     @GetMapping("/auth/allTheater")
     public ResponseEntity<List<TheaterDto>> AllTheater(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllTheaterSearch(request));
@@ -105,7 +105,7 @@ public class ManagerOneController {
         return ResponseEntity.noContent().build();
     }
 
-    // 상영관 조회 메소드 (다른 페이지에서 사용하기 때문에 페이지네이션 x)
+    // 상영관 조회 메소드
     @GetMapping("/auth/allCinema")
     public ResponseEntity<List<CinemaDto>> AllCinema(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerOneService.AllCinemaSearch(request));

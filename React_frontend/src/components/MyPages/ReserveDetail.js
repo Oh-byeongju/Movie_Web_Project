@@ -87,7 +87,7 @@ const ReserveDetail = () => {
 			return;
 		}
 
-		if (!window.confirm("예매를 취소하시겠습니까? (취소하신 예매는 복구가 되지 않습니다.)")) {
+		if (!window.confirm("예매를 취소하시겠습니까?\n(취소하신 예매는 복구가 되지 않습니다.)")) {
       return;
     };
 

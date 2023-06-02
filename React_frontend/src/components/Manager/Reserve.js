@@ -61,9 +61,7 @@ const Reserve = () => {
       dispatch({
         type: MANAGER_RESERVE_MOVIE_LIST_REQUEST,
         data: {
-          mid: MOVIE.mid,
-					page: 0,
-					size: 10
+          mid: MOVIE.mid
         }
       });
     }
@@ -76,9 +74,7 @@ const Reserve = () => {
       dispatch({
         type: MANAGER_RESERVE_THEATER_LIST_REQUEST,
         data: {
-          tid: THEATER.tid,
-					page: 0,
-					size: 10
+          tid: THEATER.tid
         }
       });
     }
@@ -250,14 +246,19 @@ const Reserve = () => {
 				</MovieAreaChoice>
 				{moviebutton ? 
 				<>
+					{MOVIE.reserve ? 
 					<Notice>
-						* 검색결과 <strong>{RESERVE_MOVIE_LIST.totalElements}</strong>건이 검색되었습니다. (현재 영화는 {MOVIE.reserve ? <strong>상영중인</strong> : <strong>상영예정</strong>} 영화입니다.)
-					</Notice> 
+						* 총 <strong>{RESERVE_MOVIE_LIST.reservations && RESERVE_MOVIE_LIST.reservations.length}</strong>건이 검색되었습니다.
+						(예매율 {RESERVE_MOVIE_LIST.reserveRate ? RESERVE_MOVIE_LIST.reserveRate.toFixed(1) : (0.0).toFixed(1)}%, 취소건 제외)
+					</Notice> :
+					<Notice>
+						* 총 <strong>{RESERVE_MOVIE_LIST.reservations && RESERVE_MOVIE_LIST.reservations.length}</strong>건 (상영예정인 영화는 예매율이 표시되지 않습니다.)
+					</Notice>}
 					<ReserveMovie/>
 				</> :
 				<>
 					<Notice>
-						* 검색결과 <strong>{RESERVE_THEATER_LIST.totalElements}</strong>건이 검색되었습니다. (상영 예정 영화포함)
+						* 검색결과 <strong>{RESERVE_THEATER_LIST.length}</strong>건이 검색되었습니다. (모든 예매기록)
 					</Notice>
 					<ReserveTheater/>
 				</>}

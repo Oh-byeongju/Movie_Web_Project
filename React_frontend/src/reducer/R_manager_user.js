@@ -8,10 +8,16 @@ export const MANAGER_USER_LIST_REQUEST = "MANAGER_USER_LIST_REQUEST";
 export const MANAGER_USER_LIST_SUCCESS = "MANAGER_USER_LIST_SUCCESS";
 export const MANAGER_USER_LIST_FAILURE = "MANAGER_USER_LIST_FAILURE";
 
+// 사용자 계정 검색 리스트
+export const MANAGER_USER_SEARCH_REQUEST = "MANAGER_USER_SEARCH_REQUEST";
+export const MANAGER_USER_SEARCH_SUCCESS = "MANAGER_USER_SEARCH_SUCCESS";
+export const MANAGER_USER_SEARCH_FAILURE = "MANAGER_USER_SEARCH_FAILURE";
+
 // 사용자 계정 삭제 리스트
 export const MANAGER_USER_DROP_REQUEST = "MANAGER_USER_DROP_REQUEST";
 export const MANAGER_USER_DROP_SUCCESS = "MANAGER_USER_DROP_SUCCESS";
 export const MANAGER_USER_DROP_FAILURE = "MANAGER_USER_DROP_FAILURE";
+export const MANAGER_USER_DROP_RESET = "MANAGER_USER_DROP_RESET";
 
 // 영화 목록 조회 리스트
 export const MANAGER_MOVIE_LIST_REQUEST = "MANAGER_MOVIE_LIST_REQUEST";
@@ -57,6 +63,10 @@ const initalState = {
   USER_LIST_done: false,
   USER_LIST_error: false,
 	USER_LIST: [],
+
+	USER_SEARCH_loading: false,
+  USER_SEARCH_done: false,
+  USER_SEARCH_error: false,
 
 	USER_DROP_loading: false,
   USER_DROP_done: false,
@@ -125,29 +135,58 @@ const R_manager_user = (state = initalState, action) => {
         USER_LIST_done: false,
         USER_LIST_error: true,
       };
+		// 회원 검색 케이스들
+    case MANAGER_USER_SEARCH_REQUEST:
+      return {
+        ...state,
+        USER_SEARCH_loading: true,
+        USER_SEARCH_done: false,
+        USER_SEARCH_error: false
+      };
+    case MANAGER_USER_SEARCH_SUCCESS:
+      return {
+        ...state,
+        USER_SEARCH_loading: false,
+        USER_SEARCH_done: true,
+        USER_SEARCH_error: false,
+        USER_LIST: action.data
+      };
+    case MANAGER_USER_SEARCH_FAILURE:
+      return {
+        ...state,
+        USER_SEARCH_loading: false,
+        USER_SEARCH_done: false,
+        USER_SEARCH_error: true
+      };
 		// 회원 추방 케이스들
     case MANAGER_USER_DROP_REQUEST:
       return {
         ...state,
         USER_DROP_loading: true,
         USER_DROP_done: false,
-        USER_DROP_error: false,
+        USER_DROP_error: false
       };
     case MANAGER_USER_DROP_SUCCESS:
       return {
         ...state,
         USER_DROP_loading: false,
         USER_DROP_done: true,
-        USER_DROP_error: false,
-        USER_LIST: action.data
+        USER_DROP_error: false
       };
     case MANAGER_USER_DROP_FAILURE:
       return {
         ...state,
         USER_DROP_loading: false,
         USER_DROP_done: false,
-        USER_DROP_error: true,
+        USER_DROP_error: true
       };
+		case MANAGER_USER_DROP_RESET:
+			return {
+				...state,
+				USER_DROP_loading: false,
+				USER_DROP_done: false,
+				USER_DROP_error: false
+			};
     // 영화 조회 케이스들
     case MANAGER_MOVIE_LIST_REQUEST:
       return {

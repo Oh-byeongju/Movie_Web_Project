@@ -27,12 +27,13 @@ public class ReservationDto {
     private String rpaytype;
     private Integer rprice;
     private Boolean rstate;
+    private String rstate_string;
     private String rcanceldate;
 
     @Builder
     public ReservationDto(Long rid, String uid, String rdate, Long mid, String mtitle, String mimagepath, String tarea, String tname,
                           String cname, String mistarttime, String miendtime, String mrating, List<String> seats, String rpeople,
-                          Integer rticket, String rpaytype, Integer rprice, Boolean rstate, String rcanceldate) {
+                          Integer rticket, String rpaytype, Integer rprice, Boolean rstate, String rstate_string, String rcanceldate) {
         this.rid = rid;
         this.uid = uid;
         this.rdate = rdate;
@@ -51,6 +52,7 @@ public class ReservationDto {
         this.rpaytype = rpaytype;
         this.rprice = rprice;
         this.rstate = rstate;
+        this.rstate_string = rstate_string;
         this.rcanceldate = rcanceldate;
     }
 }

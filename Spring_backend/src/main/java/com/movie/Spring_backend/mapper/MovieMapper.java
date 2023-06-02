@@ -305,7 +305,7 @@ public class MovieMapper {
         else {
             return MovieDto.builder()
                     .mid(entity.getMid())
-                    .mtitle(entity.getMtitle())
+                    .mtitle(entity.getMtitle()+" (상영예정)")
                     .mtime(entity.getMtime())
                     .mdate(entity.getMdate())
                     .mimagepath(entity.getMimagepath())

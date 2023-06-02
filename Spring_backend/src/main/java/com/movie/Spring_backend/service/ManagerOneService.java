@@ -9,7 +9,6 @@ import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.error.exception.EntityNotFoundException;
 import com.movie.Spring_backend.error.exception.ErrorCode;
-import com.movie.Spring_backend.error.exception.InvalidValueException;
 import com.movie.Spring_backend.exceptionlist.MovieInfoExistException;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
@@ -367,17 +366,6 @@ public class ManagerOneService {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // 영화관 수정에 필요한 정보 Entity로 변환
-        TheaterEntity theater = TheaterEntity.builder().tid(requestDto.getTid()).build();
-
-        // 영화관 수정전 영화관에 대한 상영관 정보 조회
-        List<CinemaEntity> cinema = cinemaRepository.findByTheater(theater);
-
-        // 상영관이 존재할경우 예외처리
-        if(!cinema.isEmpty()) {
-            throw new InvalidValueException("상영관이 존재합니다.", ErrorCode.CINEMA_IS_EXIST);
-        }
-
         // 영화관 정보 수정
         theaterRepository.TheaterUpdate(requestDto.getTname(), requestDto.getTarea(),
                 requestDto.getTaddr(), requestDto.getTid());
@@ -470,17 +458,21 @@ public class ManagerOneService {
         // 상영관 수정전 상영관이 사용된 상영정보 조회
         List<MovieInfoEntity> movieInfos = movieInfoRepository.findByCinema(cinema);
 
-        // 상영정보가 존재할 경우 예외처리
+        // 상영정보가 존재할 경우 일부만 update
         if (!movieInfos.isEmpty()) {
-            throw new MovieInfoExistException("상영정보가 존재합니다.");
+            // 상영관 정보 수정
+            cinemaRepository.CinemaUpdate(requestDto.getCname(), requestDto.getCtype(), cinema.getCseat(),
+                    TheaterEntity.builder().tid(cinema.getTheater().getTid()).build(), requestDto.getCid());
+            return;
+        }
+        else {
+            // 상영관 정보 수정
+            cinemaRepository.CinemaUpdate(requestDto.getCname(), requestDto.getCtype(), requestDto.getCseat(),
+                    theater, requestDto.getCid());
         }
 
         // 상영관의 수정하는 좌석수와 DB에 저장된 좌석수가 일치하는지에 대한 변수
         boolean equal = Objects.equals(cinema.getCseat(), requestDto.getCseat());
-
-        // 상영관 정보 수정
-        cinemaRepository.CinemaUpdate(requestDto.getCname(), requestDto.getCtype(), requestDto.getCseat(),
-                theater, requestDto.getCid());
 
         // 좌석수를 변경했을 경우
         if (!equal) {

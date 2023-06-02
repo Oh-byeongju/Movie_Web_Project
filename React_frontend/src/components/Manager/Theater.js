@@ -115,6 +115,7 @@ const Theater = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
   const [theaterId, settheaterId] = useState();
   const [delState, setdelState] = useState(true);
+	const [delState2, setdelState2] = useState(true);
 
 	// + 버튼 누를때 실행되는 함수
 	const ClickRowInsert = useCallback(()=> {
@@ -124,15 +125,18 @@ const Theater = () => {
 
 	// modify 버튼을 누를때 실행되는 함수
 	const ClickRowModify = useCallback((data) => {
-    if (data.cntCinema !== 0) {
-      alert('보유 상영관이 없는 영화관만 수정이 가능합니다.');
-      return;
+
+		// 삭제버튼 활성화 및 영화관 ID 설정
+    setdelState(false);
+		setdelState2(false);
+    settheaterId(data.tid);
+
+		// 보유 상영관 예외처리
+		if (data.cntCinema !== 0) {
+      alert('보유 상영관이 있는 경우 수정만 가능합니다.');
+			setdelState2(true);
     }
 
-    // 삭제버튼 활성화 및 영화관 ID 설정
-    setdelState(false);
-    settheaterId(data.tid);
-    
     // 모달창에 정보 입력
     if (data.tarea === '서울') {
 			setArea('seoul');
@@ -206,7 +210,7 @@ const Theater = () => {
 
 	// 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback(()=> {
-    if (!window.confirm("영화관을 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다)")) {
+    if (!window.confirm("영화관을 삭제하시겠습니까?\n(삭제한 정보는 복구되지 않습니다.)")) {
       return;
     };
 
@@ -219,17 +223,20 @@ const Theater = () => {
 
   }, [theaterId, dispatch]);
 
+	// 모달창 닫을 시 초기화
+	const handleCancel = useCallback(() => {
+		setAddr('');
+		setName('');
+		setArea([]);
+		setIsModalOpen(false);
+	}, []);
+
 	// 영화관 추가 성공여부에 따른 useEffect
   useEffect(()=> {
     // 추가 성공
     if (THEATER_INSERT_done) {
-      alert('영화관이 추가되었습니다.');
-
 			// 모달 상태 초기화
-			setAddr('');
-			setName('');
-			setArea([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_THEATER_INSERT_RESET
@@ -247,19 +254,14 @@ const Theater = () => {
         type: MANAGER_THEATER_INSERT_RESET
       });
     }
-  }, [THEATER_INSERT_done, THEATER_INSERT_error, dispatch]);
+  }, [THEATER_INSERT_done, THEATER_INSERT_error, handleCancel, dispatch]);
 
 	// 영화관 삭제 성공여부에 따른 useEffect
   useEffect(()=> {
     // 삭제 성공
     if (THEATER_DELETE_done) {
-      alert('영화관이 삭제되었습니다.');
-
 			// 모달 상태 초기화
-			setAddr('');
-			setName('');
-			setArea([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_THEATER_DELETE_RESET
@@ -275,10 +277,7 @@ const Theater = () => {
       alert('영화관 삭제에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setAddr('');
-			setName('');
-			setArea([]);
-			setIsModalOpen(false);
+			handleCancel();
 			
 			dispatch({
         type: MANAGER_THEATER_DELETE_RESET
@@ -288,19 +287,15 @@ const Theater = () => {
         type: MANAGER_THEATER_REQUEST
       });
     }
-  }, [THEATER_DELETE_done, THEATER_DELETE_error, dispatch]);
+  }, [THEATER_DELETE_done, THEATER_DELETE_error, handleCancel, dispatch]);
 
 	// 영화관 수정 성공여부에 따른 useEffect
   useEffect(()=> {
     // 수정 성공
     if (THEATER_UPDATE_done) {
-      alert('영화관이 수정되었습니다.');
 
 			// 모달 상태 초기화
-			setAddr('');
-			setName('');
-			setArea([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_THEATER_UPDATE_RESET
@@ -316,10 +311,7 @@ const Theater = () => {
       alert('영화관 수정에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setAddr('');
-			setName('');
-			setArea([]);
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_THEATER_UPDATE_RESET
@@ -329,15 +321,7 @@ const Theater = () => {
         type: MANAGER_THEATER_REQUEST
       });
     }
-  }, [THEATER_UPDATE_done, THEATER_UPDATE_error, dispatch]);
-
-	// 모달창 닫을 시 초기화
-	const handleCancel = useCallback(() => {
-		setAddr('');
-		setName('');
-		setArea([]);
-		setIsModalOpen(false);
-	}, []);
+  }, [THEATER_UPDATE_done, THEATER_UPDATE_error, handleCancel, dispatch]);
 
 	return(
 		<>
@@ -401,7 +385,7 @@ const Theater = () => {
 						<Input placeholder='주소를 입력해주세요' value={addr}/>
 					</Form.Item>
 					<Form.Item style={{position:'relative', top:'57px'}}>
-						<Button disabled={delState} onClick={onDelete} type="primary" danger>
+						<Button disabled={delState || delState2} onClick={onDelete} type="primary" danger>
               삭제
             </Button>       
 					</Form.Item>

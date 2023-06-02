@@ -6,6 +6,7 @@
 import { call, all, takeLatest, fork, put } from "redux-saga/effects";
 import { 
 	MANAGER_USER_LIST_REQUEST, MANAGER_USER_LIST_SUCCESS, MANAGER_USER_LIST_FAILURE,
+	MANAGER_USER_SEARCH_REQUEST, MANAGER_USER_SEARCH_SUCCESS, MANAGER_USER_SEARCH_FAILURE,
 	MANAGER_USER_DROP_REQUEST, MANAGER_USER_DROP_SUCCESS, MANAGER_USER_DROP_FAILURE,
   MANAGER_MOVIE_LIST_REQUEST, MANAGER_MOVIE_LIST_SUCCESS, MANAGER_MOVIE_LIST_FAILURE,
   MANAGER_THEATER_LIST_REQUEST, MANAGER_THEATER_LIST_SUCCESS, MANAGER_THEATER_LIST_FAILURE,
@@ -18,8 +19,8 @@ import {
 import { http } from "../lib/http";
 
 // 유저 조회 함수
-function* AllUser(action) {
-  const result = yield call(callAllUser, action.data);
+function* AllUser() {
+  const result = yield call(callAllUser);
   if (result.status === 200) {
     yield put({
       type: MANAGER_USER_LIST_SUCCESS,
@@ -34,15 +35,8 @@ function* AllUser(action) {
 }
 
 // 유저 조회 백엔드 호출
-async function callAllUser(data) {
-  return await http.get("/Manager/auth/allUser", {
-    params: {
-      search: data.search,
-      sort: data.sort,
-      page: data.page,
-      size: data.size
-    },
-  })
+async function callAllUser() {
+  return await http.get("/Manager/auth/allMember")
   .then((response) => {
     return response;
   })
@@ -51,13 +45,44 @@ async function callAllUser(data) {
   });
 }
 
+// 유저 검색 함수
+function* SearchUser(action) {
+  const result = yield call(callSearchUser, action.data);
+  if (result.status === 200) { 
+    yield put({
+      type: MANAGER_USER_SEARCH_SUCCESS,
+      data: result.data
+    });
+  } 
+	else {
+    yield put({
+      type: MANAGER_USER_SEARCH_FAILURE
+    });   
+  }
+}
+
+// 유저 검색 백엔드 호출
+async function callSearchUser(data) {
+  return await http.get("/Manager/auth/memberSearch", {
+    params: {
+			search: data.search,
+			sort: data.sort
+    }
+	})
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
+}
+
 // 유저 추방 함수
 function* DropUser(action) {
   const result = yield call(callDropUser, action.data);
-  if (result.status === 200) {
+  if (result.status === 204) {
     yield put({
-      type: MANAGER_USER_DROP_SUCCESS,
-      data: result.data
+      type: MANAGER_USER_DROP_SUCCESS
     });
   } 
   else {
@@ -69,13 +94,9 @@ function* DropUser(action) {
 
 // 유저 추방 함수 백엔드 호출
 async function callDropUser(data) {
-  return await http.delete("/Manager/auth/dropUser", {
+  return await http.delete("/Manager/auth/memberDelete", {
     params: {
-      uid: data.uid,
-      search: data.search,
-      sort: data.sort,
-      page: data.page,
-      size: data.size
+      uid: data.uid
     }
   })
   .then((response) => {
@@ -160,9 +181,7 @@ function* AllMovieReserve(action) {
 async function callAllMovieReserve(data) {
   return await http.get("/Manager/auth/allMovieReserve", {
     params: {
-      mid: data.mid,
-      page: data.page,
-      size: data.size
+      mid: data.mid
     },
   })
   .then((response) => {
@@ -193,9 +212,7 @@ function* AllTheaterReserve(action) {
 async function callAllTheaterReserve(data) {
   return await http.get("/Manager/auth/allTheaterReserve", {
     params: {
-      tid: data.tid,
-      page: data.page,
-      size: data.size
+      tid: data.tid
     },
   })
   .then((response) => {
@@ -288,6 +305,10 @@ function* USER_LIST() {
   yield takeLatest(MANAGER_USER_LIST_REQUEST, AllUser);
 }
 
+function* USER_SEARCH() {
+  yield takeLatest(MANAGER_USER_SEARCH_REQUEST, SearchUser);
+}
+
 function* USER_DROP() {
   yield takeLatest(MANAGER_USER_DROP_REQUEST, DropUser);
 }
@@ -322,6 +343,7 @@ function* MOVIE_COMMENT_DELETE() {
 
 export default function* S_manager_user() {
   yield all([fork(USER_LIST),
+		fork(USER_SEARCH),
     fork(USER_DROP),
     fork(MOVIE_LIST),
     fork(THEATER_LIST),

@@ -367,7 +367,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
 
   // 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback(()=> {
-    if (!window.confirm("상영정보를 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다.)")) {
+    if (!window.confirm("상영정보를 삭제하시겠습니까?\n(삭제한 정보는 복구되지 않습니다.)")) {
       return;
     };
 

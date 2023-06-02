@@ -25,33 +25,40 @@ public class ManagerMemberController {
 
     private final ManagerMemberService managerMemberService;
 
-    // 사용자 조회 메소드
-    @GetMapping("/auth/allUser")
-    public ResponseEntity<Page<MemberDto>> AllMember(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
-        return ResponseEntity.ok().body(managerMemberService.AllMemberSearch(request, requestMap));
+    // 사용자 조회 컨트롤러
+    @GetMapping("/auth/allMember")
+    public ResponseEntity<List<MemberDto>> AllMember(HttpServletRequest request) {
+        return ResponseEntity.ok().body(managerMemberService.AllMember(request));
     }
 
-    // 특정 사용자 추방하는 메소드
-    @DeleteMapping("/auth/dropUser")
-    public ResponseEntity<Page<MemberDto>> DropMember(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
-        return ResponseEntity.ok().body(managerMemberService.DropMember(request, requestMap));
+    // 사용자 검색 컨트롤러
+    @GetMapping("/auth/memberSearch")
+    public ResponseEntity<List<MemberDto>> MemberSearch(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+        return ResponseEntity.ok().body(managerMemberService.MemberSearch(request, requestMap));
     }
 
-    // 예매기록 페이지에서 전체 영화 불러오는 메소드
+    // 특정 사용자 추방하는 컨트롤러
+    @DeleteMapping("/auth/memberDelete")
+    public ResponseEntity<String> MemberDelete(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+        managerMemberService.MemberDelete(request, requestMap);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 예매기록 페이지에서 전체 영화 불러오는 컨트롤러
     @GetMapping("/auth/allMovie/Reservation")
     public ResponseEntity<List<MovieDto>> AllMovie(HttpServletRequest request) {
         return ResponseEntity.ok().body(managerMemberService.AllMovieSearch(request));
     }
 
-    // 예매기록 조회 메소드(영화 선택)
+    // 예매기록 조회 컨트롤러(영화 선택)
     @GetMapping("/auth/allMovieReserve")
-    public ResponseEntity<Page<ReservationDto>> MovieReserve(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+    public ResponseEntity<ManagerReservationDto> MovieReserve(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(managerMemberService.MovieReserveSearch(request, requestMap));
     }
 
-    // 예매기록 조회 메소드(극장 선택)
+    // 예매기록 조회 컨트롤러(극장 선택)
     @GetMapping("/auth/allTheaterReserve")
-    public ResponseEntity<Page<ReservationDto>> TheaterReserve(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+    public ResponseEntity<List<ReservationDto>> TheaterReserve(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(managerMemberService.TheaterReserveSearch(request, requestMap));
     }
 

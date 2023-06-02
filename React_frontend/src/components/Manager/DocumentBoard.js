@@ -60,26 +60,13 @@ const DocumentBoard = () => {
 
 	// 검색 함수
 	const onSearch = useCallback(() => {
-		// 제목 버튼이 활성화
-		if (titlebutton) {
-			dispatch({
-				type: MANAGER_BOARD_SEARCH_REQUEST,
-				data: {
-					category: "title",
-					title: search
-				}
-			});
-		}
-		// 작성자 버튼이 활성화
-		else {
-			dispatch({
-				type: MANAGER_BOARD_SEARCH_REQUEST,
-				data: {
-					category: "writer",
-					title: search
-				}
-			});
-		}
+		dispatch({
+			type: MANAGER_BOARD_SEARCH_REQUEST,
+			data: {
+				category: titlebutton ? "title" : "writer",
+				title: search
+			}
+		});
 	}, [titlebutton, search, dispatch]);
 
 	// antd css 설정
@@ -208,7 +195,7 @@ const DocumentBoard = () => {
 			});
 		}
 
-	}, [MANAGER_BOARD_DELETE_done, search, onSearch, MANAGER_BOARD_DELETE_error, dispatch])
+	}, [MANAGER_BOARD_DELETE_done, search, onSearch, MANAGER_BOARD_DELETE_error, dispatch]);
 
 	// 상세 조회 useState
 	const [isModalOpen, setIsModalOpen] = useState(false);

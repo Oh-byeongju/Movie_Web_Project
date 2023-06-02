@@ -2,6 +2,7 @@ package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.BoardCommentEntity;
 import com.movie.Spring_backend.entity.BoardEntity;
+import com.movie.Spring_backend.entity.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -32,12 +33,6 @@ public interface BoardCommentRepository extends JpaRepository<BoardCommentEntity
     // 특정 답글 조회 메소드(부모로 조회)
     List<BoardCommentEntity> findByBcparent(Long bcparent);
 
-
-//    //아래로 날려
-
-//    //부모로 자식 검색
-//    @Query("select bc from BoardCommentEntity as bc where bc.bcparent = :parent")
-//    public List<BoardCommentEntity> commentParent(@Param("parent") Integer parent);
-
-
+    // 특정 사용자가 적은 모든 댓글 조회
+    List<BoardCommentEntity> findByMember(MemberEntity member);
 }

@@ -682,7 +682,7 @@ const InfoModify = () => {
 	// 회원탈퇴를 누를 시 실행되는 함수
 	const memberDrop = useCallback(() => {
 		
-		if (!window.confirm("회원을 탈퇴하시겠습니까? (모든 정보는 사라지고 복구되지 않습니다)")) {
+		if (!window.confirm("회원을 탈퇴하시겠습니까?\n(모든 정보는 사라지고 복구되지 않습니다.)")) {
       return;
     };
 	

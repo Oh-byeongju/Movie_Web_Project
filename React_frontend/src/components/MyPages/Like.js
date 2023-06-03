@@ -7,7 +7,7 @@ import { HeartOutlined, HeartFilled, StarFilled } from "@ant-design/icons";
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { USER_MLIKE_REQUEST } from '../../reducer/movie';
+import { USER_MLIKE_REQUEST } from '../../reducer/R_movie';
 import { TICKET_PAGE_SETTING } from '../../reducer/R_ticket';
 
 const Like= ({ movie }) => {
@@ -28,7 +28,7 @@ const Like= ({ movie }) => {
   };
 
 	// 영화 좋아요 실패 여부 상태
-  const { MLIKE_error } = useSelector((state) => state.movie);
+  const { MLIKE_error } = useSelector((state) => state.R_movie);
 
 	// 사용자가 영화의 좋아요를 누를 때 호출되는 함수
 	const LikeChange = useCallback(() => {
@@ -132,7 +132,7 @@ const Like= ({ movie }) => {
 								상영 등급 : &nbsp;
 							</dt>
 							<dd>
-								{movie.mrating === '0' ? "전체 이용가" : movie.mrating+"세 이용가"}
+								{movie.mrating === '0' ? "전체 이용가" : movie.mrating === '18' ? '청소년 관람불가' : movie.mrating+"세 이용가"}
 							</dd>
 							<br />
 							<dt>

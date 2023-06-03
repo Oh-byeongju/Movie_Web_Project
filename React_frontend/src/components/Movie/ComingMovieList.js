@@ -3,7 +3,7 @@
 */
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { COMINGMOVIE_REQUEST, COMINGMOVIE_SETTING } from "../../reducer/movie";
+import { COMINGMOVIE_REQUEST, COMINGMOVIE_SETTING } from "../../reducer/R_movie";
 import Movie from "./Movie";
 import MovieSearchLoading from "./MovieSearchLoading";
 import styled from "styled-components";
@@ -20,14 +20,14 @@ const ComingMovieList = () => {
   const { comingMovie, comingmovie_loading, comingmovieKey, comingmovieSortRate, comingmovieSortLike, 
     comingmovieLimit, comingmovieId, comingmovieSearch } = useSelector(
     state => ({
-      comingMovie: state.movie.comingMovie,
-      comingmovie_loading: state.movie.comingmovie_loading,
-      comingmovieKey: state.movie.comingmovieKey,
-      comingmovieSortRate: state.movie.comingmovieSortRate,
-      comingmovieSortLike: state.movie.comingmovieSortLike,
-      comingmovieLimit: state.movie.comingmovieLimit,
-      comingmovieId: state.movie.comingmovieId,
-      comingmovieSearch: state.movie.comingmovieSearch
+      comingMovie: state.R_movie.comingMovie,
+      comingmovie_loading: state.R_movie.comingmovie_loading,
+      comingmovieKey: state.R_movie.comingmovieKey,
+      comingmovieSortRate: state.R_movie.comingmovieSortRate,
+      comingmovieSortLike: state.R_movie.comingmovieSortLike,
+      comingmovieLimit: state.R_movie.comingmovieLimit,
+      comingmovieId: state.R_movie.comingmovieId,
+      comingmovieSearch: state.R_movie.comingmovieSearch
     }),
     shallowEqual
   );

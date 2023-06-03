@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { BOXMOVIE_REQUEST } from "../../reducer/movie";
+import { BOXMOVIE_REQUEST } from "../../reducer/R_movie";
 
 const BoxList = () => {
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const BoxList = () => {
   }, [LOGIN_data.uid, dispatch]);
 
   // 영화 리덕스 상태
-  const { boxMovie } = useSelector((state) => state.movie);
+  const { boxMovie } = useSelector((state) => state.R_movie);
 
   return (
     <CardList>

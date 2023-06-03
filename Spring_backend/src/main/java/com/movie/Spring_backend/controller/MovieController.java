@@ -42,6 +42,7 @@ public class MovieController {
     }
 
     // 아랫놈들은 컨트롤러를 따로 빼버릴까 고민 무비 멤버로
+    // 그리고 두개를 묶어버리면됨
     // 영화 세부내용의 관람평을 가져오는 메소드(최신순)
     @GetMapping("/normal/recentcomment/Moviedetail/{mid}")
     public ResponseEntity<List<CommentInfoDto>> MovieDetailCommentRecent(@PathVariable("mid") Long mid, @RequestParam(value = "uid") String uid){

@@ -183,7 +183,7 @@ const ReserveDetail = () => {
 								상영등급
 							</dt>
 							<dd>
-								{RESERVE_DETAIL.mrating === '0' ? "전체 이용가" : RESERVE_DETAIL.mrating+"세 이용가"}
+								{RESERVE_DETAIL.mrating === '0' ? "전체 이용가" : RESERVE_DETAIL.mrating === '18' ? '청소년 관람불가' : RESERVE_DETAIL.mrating+"세 이용가"}
 							</dd>
 						</dl>
 						<dl>

@@ -8,11 +8,15 @@ import styled from "styled-components";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { USER_MLIKE_REQUEST } from "../../reducer/movie";
+import { USER_MLIKE_REQUEST } from "../../reducer/R_movie";
 import { useLocation } from "react-router-dom";
 import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 
 const Movie = ({ movie }) => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+  const location = useLocation();
+
   // 반올림 없이 소수점 생성해주는 함수
   const getNotRoundDecimalNumber = (number, decimalPoint = 1) => {
     let num = typeof number === "number" ? String(number) : number;
@@ -27,12 +31,8 @@ const Movie = ({ movie }) => {
 
   // 리덕스 로그인 상태 정보
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
-  const dispatch = useDispatch();
-  const location = useLocation();
-	const navigate = useNavigate();
-
   // 영화 좋아요 실패 여부 상태
-  const { MLIKE_error } = useSelector((state) => state.movie);
+  const { MLIKE_error } = useSelector((state) => state.R_movie);
 
   // 사용자가 영화의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {

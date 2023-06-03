@@ -5,7 +5,7 @@
 */
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { ALLMOVIE_REQUEST, ALLMOVIE_SETTING } from "../../reducer/movie";
+import { ALLMOVIE_REQUEST, ALLMOVIE_SETTING } from "../../reducer/R_movie";
 import Movie from "./Movie";
 import MovieSearchLoading from "./MovieSearchLoading";
 import styled from "styled-components";
@@ -22,14 +22,14 @@ const AllMovieList = () => {
   const { allMovie, allmovie_loading, allMovieKey, allMovieSortRate, allMovieSortLike, 
     allMovieLimit, allMovieId, allMovieSearch } = useSelector(
     state => ({
-      allMovie: state.movie.allMovie,
-      allmovie_loading: state.movie.allmovie_loading,
-      allMovieKey: state.movie.allMovieKey,
-      allMovieSortRate: state.movie.allMovieSortRate,
-      allMovieSortLike: state.movie.allMovieSortLike,
-      allMovieLimit: state.movie.allMovieLimit,
-      allMovieId: state.movie.allMovieId,
-      allMovieSearch: state.movie.allMovieSearch
+      allMovie: state.R_movie.allMovie,
+      allmovie_loading: state.R_movie.allmovie_loading,
+      allMovieKey: state.R_movie.allMovieKey,
+      allMovieSortRate: state.R_movie.allMovieSortRate,
+      allMovieSortLike: state.R_movie.allMovieSortLike,
+      allMovieLimit: state.R_movie.allMovieLimit,
+      allMovieId: state.R_movie.allMovieId,
+      allMovieSearch: state.R_movie.allMovieSearch
     }),
     shallowEqual
   );

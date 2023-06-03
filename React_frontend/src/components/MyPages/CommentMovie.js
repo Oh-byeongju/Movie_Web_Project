@@ -64,7 +64,7 @@ const CommentMovie = ({ movie }) => {
 								상영 등급 : &nbsp;
 							</dt>
 							<dd>
-								{movie.mrating === '0' ? "전체 이용가" : movie.mrating+"세 이용가"}
+								{movie.mrating === '0' ? "전체 이용가" : movie.mrating === '18' ? '청소년 관람불가' : movie.mrating+"세 이용가"}
 							</dd>
 							<br />
 							<dt>

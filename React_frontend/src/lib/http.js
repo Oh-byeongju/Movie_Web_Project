@@ -81,7 +81,7 @@ http.interceptors.response.use(
         const originalRequest = config;
 
         // 토큰 재발급 요청
-        await http.post("/member/normal/reissue");
+        await http.post("/Member/normal/reissue");
 
         // 실패했던 원래의 요청을 토큰을 재발급 받은뒤에 다시 요청
         return axios(originalRequest);

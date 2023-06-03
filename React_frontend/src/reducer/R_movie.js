@@ -126,7 +126,7 @@ export const initalState = {
   likeMovie: []
 };
 
-const movie = (state = initalState, action) => {
+const R_movie = (state = initalState, action) => {
   switch (action.type) {
     // 박스 오피스 영화 케이스들
     case BOXMOVIE_REQUEST:
@@ -429,4 +429,5 @@ const movie = (state = initalState, action) => {
       return state;
   }
 };
-export default movie;
+
+export default R_movie;

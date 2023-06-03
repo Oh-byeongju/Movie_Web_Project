@@ -77,7 +77,7 @@ public class MovieMemberService {
         }
         else {
             // 튜플의 like가 true일 경우 false로 update
-            if (MovieMember.getUmlike()) {
+            if (MovieMember.getUmlike() != null && MovieMember.getUmlike()) {
                 movieMemberRepository.MovieLikeChangeFalse(member, movie);
 
                 // 프론트단에서 사용할 정보 리턴

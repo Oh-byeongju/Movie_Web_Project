@@ -16,6 +16,7 @@ const initalState = {
   COMMENT_WRITE_done: false,
   COMMENT_WRITE_error: false,
 	WRITE_code: '',
+	
 	COMMENT_DELETE_loading: false,
   COMMENT_DELETE_done: false,
   COMMENT_DELETE_error: false

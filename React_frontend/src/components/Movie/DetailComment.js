@@ -6,8 +6,8 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { Rate } from 'antd';
 import { SmileFilled, MehFilled, FrownFilled, DeleteOutlined, LikeOutlined, LikeFilled } from '@ant-design/icons';
-import { useDispatch, useSelector } from "react-redux";
-import { USER_COMMENT_LIKE_REQUEST } from '../../reducer/movie';
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { USER_COMMENT_LIKE_REQUEST } from '../../reducer/R_movie';
 import { USER_COMMENT_DELETE_REQUEST } from '../../reducer/R_user_movie';
 import { USER_MY_COMMENT_UPDATE } from '../../reducer/R_mypage_movie';
 import { useLocation } from "react-router-dom";
@@ -17,12 +17,15 @@ const DetailComment = ({ comment }) => {
 	const dispatch = useDispatch();
 	const location = useLocation(); 
 
-	// 로그인 리덕스 상태
-	const { LOGIN_data } = useSelector((state) => state.R_user_login);
-	// 관람평 좋아요 실패 여부 상태
-	const { COMMENT_LIKE_error } = useSelector((state) => state.movie);
-	// 좋아요 누른 관람평 내용
-	const { COMMENT_LIKE_result } = useSelector((state) => state.movie);
+	// 필요한 리덕스 상태들
+  const { LOGIN_data, COMMENT_LIKE_error, COMMENT_LIKE_result } = useSelector(
+    state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+      COMMENT_LIKE_error: state.R_movie.COMMENT_LIKE_error,
+      COMMENT_LIKE_result: state.R_movie.COMMENT_LIKE_result
+    }),
+    shallowEqual
+  );
 
 	// 사용자가 관람평의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {

@@ -5,8 +5,8 @@ import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import Like from './Like';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { USER_MY_MOVIE_SEARCH_REQUEST } from '../../reducer/movie';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { USER_MY_MOVIE_SEARCH_REQUEST } from '../../reducer/R_movie';
 import MyPageLoading from './MyPageLoading';
 import { useLocation } from "react-router-dom";
 
@@ -14,13 +14,16 @@ const LikeList = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 
-	// 좋아요 누른 영화 상태
-	const { likeMovie } = useSelector((state) => state.movie);
-	const { MY_MOVIE_loading } = useSelector((state) => state.movie); 
-	const { MY_MOVIE_key } = useSelector((state) => state.movie);
-
-	// 리덕스 로그인 상태 정보
-	const { LOGIN_data } = useSelector((state) => state.R_user_login);
+	// 필요한 리덕스 상태들
+  const { LOGIN_data, likeMovie, MY_MOVIE_loading, MY_MOVIE_key } = useSelector(
+    state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+      likeMovie: state.R_movie.likeMovie,
+      MY_MOVIE_loading: state.R_movie.MY_MOVIE_loading,
+			MY_MOVIE_key: state.R_movie.MY_MOVIE_key
+    }),
+    shallowEqual
+  );
 
 	// 찜한 영화 요청
   useEffect(() => {

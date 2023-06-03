@@ -39,16 +39,7 @@ const initalState = {
 
 	SEAT_CHECK_loading: false,
   SEAT_CHECK_done: false,
-  SEAT_CHECK_error: false,
-
-
-	// 아래로 내꺼아님
-  choiceSeat: [],
-  어른: 0,
-  학생: 0,
-  아이: 0,
-  price: 0,
-  total: 0,
+  SEAT_CHECK_error: false
 };
 
 const R_seat = (state = initalState, action) => {

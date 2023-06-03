@@ -3,7 +3,7 @@
 */
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { SCREENMOVIE_REQUEST, SCREENMOVIE_SETTING } from "../../reducer/movie";
+import { SCREENMOVIE_REQUEST, SCREENMOVIE_SETTING } from "../../reducer/R_movie";
 import Movie from "./Movie";
 import MovieSearchLoading from "./MovieSearchLoading";
 import styled from "styled-components";
@@ -20,14 +20,14 @@ const ScreenMovieList = () => {
   const { screenMovie, screenmovie_loading, screenmovieKey, screenmovieSortRate, screenmovieSortLike, 
     screenmovieLimit, screenmovieId, screenmovieSearch } = useSelector(
     state => ({
-      screenMovie: state.movie.screenMovie,
-      screenmovie_loading: state.movie.screenmovie_loading,
-      screenmovieKey: state.movie.screenmovieKey,
-      screenmovieSortRate: state.movie.screenmovieSortRate,
-      screenmovieSortLike: state.movie.screenmovieSortLike,
-      screenmovieLimit: state.movie.screenmovieLimit,
-      screenmovieId: state.movie.screenmovieId,
-      screenmovieSearch: state.movie.screenmovieSearch
+      screenMovie: state.R_movie.screenMovie,
+      screenmovie_loading: state.R_movie.screenmovie_loading,
+      screenmovieKey: state.R_movie.screenmovieKey,
+      screenmovieSortRate: state.R_movie.screenmovieSortRate,
+      screenmovieSortLike: state.R_movie.screenmovieSortLike,
+      screenmovieLimit: state.R_movie.screenmovieLimit,
+      screenmovieId: state.R_movie.screenmovieId,
+      screenmovieSearch: state.R_movie.screenmovieSearch
     }),
     shallowEqual
   );

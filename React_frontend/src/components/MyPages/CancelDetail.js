@@ -124,7 +124,7 @@ const CancelDetail = () => {
 								관람등급
 							</dt>
 							<dd>
-								{RESERVE_CANCEL_DETAIL.mrating === '0' ? "전체 이용가" : RESERVE_CANCEL_DETAIL.mrating+"세 이용가"}
+								{RESERVE_CANCEL_DETAIL.mrating === '0' ? "전체 이용가" : RESERVE_CANCEL_DETAIL.mrating === '18' ? '청소년 관람불가' : RESERVE_CANCEL_DETAIL.mrating+"세 이용가"}
 							</dd>
 						</dl>
 						<dl>

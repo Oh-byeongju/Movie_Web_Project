@@ -5,7 +5,7 @@
 import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { Rate } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { USER_COMMENT_WRITE_REQUEST, USER_COMMENT_WRITE_RESET } from '../../reducer/R_user_movie';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -24,12 +24,15 @@ const DetailCommentWrite = () => {
     setcomment(e.target.value);
   };
 
-	// 로그인 상태확인용 리덕스 상태
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
-
-	// 관람평 작성에 필요한 리덕스 상태
-	const { detailMovie } = useSelector((state) => state.movie);
-	const { WRITE_code } = useSelector((state) => state.R_user_movie);
+	// 필요한 리덕스 상태들
+  const { LOGIN_data, detailMovie, WRITE_code } = useSelector(
+    state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+      detailMovie: state.R_movie.detailMovie,
+      WRITE_code: state.R_user_movie.WRITE_code
+    }),
+    shallowEqual
+  );
 
 	// 관람평 작성 버튼을 누르면 실행되는 함수
 	const onSubmit = useCallback(() => {

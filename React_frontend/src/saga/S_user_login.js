@@ -35,7 +35,7 @@ function* UserLogin(action) {
 // 디비에 로그인 정보를 전달하고 토큰을 리턴
 async function Login(data) {
   return await http
-    .post("/member/normal/login", data)
+    .post("/Member/normal/login", data)
     .then((response) => {
       return response;
     })
@@ -63,7 +63,7 @@ function* UserCheck() {
 // 로그인 상태를 확인 하기 위해 쿠키를 전달함(백엔드 연결)
 async function Check() {
   return await http
-    .get("/member/normal/login_status")
+    .get("/Member/normal/login_status")
     .then((response) => {
       return response;
     })
@@ -89,7 +89,7 @@ function* UserLogout() {
 // 로그아웃을 처리하기 위해 쿠키를 전달함(백엔드 연결)
 async function Checkout() {
   return await http
-    .post("/member/normal/logout")
+    .post("/Member/normal/logout")
     .then((response) => {
       return response;
     })
@@ -116,7 +116,7 @@ function* UserFindId(action) {
 
 // 아이디 찾기 백엔드 호출
 async function CallUserFindId(data) {
-  return await http.get("/member/normal/findId", {
+  return await http.get("/Member/normal/findId", {
     params: {
       uname: data.uname,
       uemail: data.uemail
@@ -147,7 +147,7 @@ function* UserFindPw(action) {
 
 // 비밀번호 찾기 백엔드 호출
 async function CallUserFindPw(data) {
-  return await http.get("/member/normal/findPw", {
+  return await http.get("/Member/normal/findPw", {
     params: {
       uname: data.uname,
       uid: data.uid,
@@ -178,7 +178,7 @@ function* UserChangePw(action) {
 
 // 비밀번호 변경 함수 백엔드 호출
 async function CallUserChangePw(data) {
-  return await http.patch("/member/normal/changePw", data)
+  return await http.patch("/Member/normal/changePw", data)
     .then((response) => {
       return response;
     })
@@ -207,7 +207,7 @@ function* UserPwCheck(action) {
 // 백엔드 호출
 async function callPwCheck(data) {
   return await http
-    .get("/member/auth/checkPw", {
+    .get("/Member/auth/checkPw", {
       params: {
         upw: data
       },

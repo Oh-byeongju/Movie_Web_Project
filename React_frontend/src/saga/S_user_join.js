@@ -32,7 +32,7 @@ function* IDcheck(action) {
 // 디비에서 데이터 select 하고 바로 리턴해줌(아이디 중복 검사)
 async function idexsits(data) {
   return await http
-    .get("/member/normal/id", {
+    .get("/Member/normal/id", {
       params: {
         uid: data,
       },
@@ -64,7 +64,7 @@ function* Emailcheck(action) {
 // 디비에서 데이터 select 하고 바로 리턴해줌(이메일 중복 검사)
 async function Emailexsits(data) {
   return await http
-    .get("/member/normal/email", {
+    .get("/Member/normal/email", {
       params: {
         uemail: data
       },
@@ -96,7 +96,7 @@ function* UserSignUp(action) {
 // 디비에 회원정보를 전달하고 저장
 async function SignUp(data) {
   return await http
-    .post("/member/normal/signup", data)
+    .post("/Member/normal/signup", data)
     .then((response) => {
       return response;
     })
@@ -125,7 +125,7 @@ function* UserUpdate(action) {
 // 디비에 회원정보를 수정하고 저장
 async function Update(data) {
   return await http
-    .patch("/member/auth/memberUpdate", data)
+    .patch("/Member/auth/memberUpdate", data)
     .then((response) => {
       return response;
     })
@@ -153,7 +153,7 @@ function* UserDrop() {
 // 디비에 존재하는 회원정보를 삭제
 async function DROP() {
   return await http
-    .delete("/member/auth/memberDrop")
+    .delete("/Member/auth/memberDrop")
     .then((response) => {
       return response;
     })

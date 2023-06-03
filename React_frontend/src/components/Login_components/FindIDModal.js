@@ -82,7 +82,6 @@ const FindIDModal = ({ setfindid }) => {
     }
 
     if (ID_FIND_data !== '') {
-      alert('검색이 완료 되었습니다.');
       dispatch({
 				type: USER_ID_FIND_RESET
 			});

@@ -7,7 +7,7 @@ import React, { useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { USER_MLIKE_REQUEST } from "../../reducer/movie";
+import { USER_MLIKE_REQUEST } from "../../reducer/R_movie";
 import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -32,7 +32,7 @@ const Box = ({ movie }) => {
 	const navigate = useNavigate();
 
   // 영화 좋아요 실패 여부 상태
-  const { MLIKE_error } = useSelector((state) => state.movie);
+  const { MLIKE_error } = useSelector((state) => state.R_movie);
 
   // 사용자가 영화의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {

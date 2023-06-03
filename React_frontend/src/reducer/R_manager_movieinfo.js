@@ -45,26 +45,32 @@ const initalState = {
   MOVIEINFO_MOVIE_LIST_done: false,
   MOVIEINFO_MOVIE_LIST_error: false,
 	MOVIEINFO_MOVIE_LIST: [],
+
 	MOVIEINFO_THEATER_LIST_loading: false,
   MOVIEINFO_THEATER_LIST_done: false,
   MOVIEINFO_THEATER_LIST_error: false,
 	MOVIEINFO_THEATER_LIST: [],
+
   MOVIEINFO_CINEMA_LIST_loading: false,
   MOVIEINFO_CINEMA_LIST_done: false,
   MOVIEINFO_CINEMA_LIST_error: false,
 	MOVIEINFO_CINEMA_LIST: [],
+
 	MOVIEINFO_LIST_loading: false,
   MOVIEINFO_LIST_done: false,
   MOVIEINFO_LIST_error: false,
 	MOVIEINFO_LIST: [],
+
   MOVIEINFO_INSERT_loading: false,
   MOVIEINFO_INSERT_done: false,
   MOVIEINFO_INSERT_error: false,
 	MOVIEINFO_INSERT_state: '',
+
   MOVIEINFO_DELETE_loading: false,
   MOVIEINFO_DELETE_done: false,
   MOVIEINFO_DELETE_error: false,
 	MOVIEINFO_DELETE_state: '',
+	
   MOVIEINFO_UPDATE_loading: false,
   MOVIEINFO_UPDATE_done: false,
   MOVIEINFO_UPDATE_error: false,

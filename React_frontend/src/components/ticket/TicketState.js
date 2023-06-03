@@ -144,8 +144,7 @@ const TicketState = ({ seatPage, setSeatPage }) => {
 						</span>}
 					</Title>
 					<Title>
-						{MOVIE && MOVIE.mrating === '0' ? '전체 이용가' : MOVIE && MOVIE.mrating === '18' ? '청소년 관람불가' 
-						: MOVIE && MOVIE.mrating + '세 이용가'}
+						{MOVIE && MOVIE.mrating === '0' ? '전체 이용가' : MOVIE && MOVIE.mrating === '18' ? '청소년 관람불가' : MOVIE && MOVIE.mrating + '세 이용가'}
 					</Title>
 				</MoviePoster>
         <MovieTheater>

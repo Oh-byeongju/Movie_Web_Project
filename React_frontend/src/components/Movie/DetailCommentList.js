@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 import styled from 'styled-components';
 import { StarFilled, UnorderedListOutlined, LikeOutlined, DownOutlined  } from "@ant-design/icons";
 import DetailComment from './DetailComment';
-import { DETAIL_COMMENT_RECENT_REQUEST, DETAIL_COMMENT_LIKE_REQUEST } from '../../reducer/movie';
+import { DETAIL_COMMENT_RECENT_REQUEST, DETAIL_COMMENT_LIKE_REQUEST } from '../../reducer/R_movie';
 
 const DetailCommentList = () => {
 	const location = useLocation();  
@@ -17,6 +17,8 @@ const DetailCommentList = () => {
 
 	// 로그인 리덕스 상태
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
+	// 현재 페이지 관람평 리덕스 상태
+	const { detailComment } = useSelector((state) => state.R_movie);
 
   // 로그인 상태에 따라 전체 검색이 다름(관람평 좋아요 표시 때문)
   useEffect(() => {
@@ -28,9 +30,6 @@ const DetailCommentList = () => {
       }
     });
   }, [LOGIN_data.uid, location.pathname, dispatch]);
-
-	// 현재 페이지 관람평 리덕스 상태
-	const { detailComment } = useSelector((state) => state.movie);
 
 	// 관람평 더보기 limit
 	const [limit, setlimit] = useState(15);

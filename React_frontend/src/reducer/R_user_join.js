@@ -36,18 +36,22 @@ const initalState = {
   ID_done: false,
   ID_error: null,
   ID_status: '',
+
   EMAIL_loading: false,
   EMAIL_done: false,
   EMAIL_error: null,
   EMAIL_status: '',
+
   JOIN_loading: false,
   JOIN_done: false,
   JOIN_error: null,
   JOIN_status: '',
+
   UPDATE_loading: false,
   UPDATE_done: false,
   UPDATE_error: null,
   UPDATE_status: '',
+	
   DROP_loading: false,
   DROP_done: false,
   DROP_error: null,

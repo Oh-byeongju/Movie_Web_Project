@@ -10,7 +10,7 @@ import {
   DETAIL_COMMENT_LIKE_REQUEST, DETAIL_COMMENT_LIKE_SUCCESS, DETAIL_COMMENT_LIKE_FAILURE,
   USER_COMMENT_LIKE_REQUEST, USER_COMMENT_LIKE_SUCCESS, USER_COMMENT_LIKE_FAILURE,
   USER_MY_MOVIE_SEARCH_REQUEST, USER_MY_MOVIE_SEARCH_SUCCESS, USER_MY_MOVIE_SEARCH_FAILURE
-} from "../reducer/movie";
+} from "../reducer/R_movie";
 import { http } from "../lib/http";
 
 // 박스 오피스 영화 불러오는 함수
@@ -213,7 +213,6 @@ async function DetailMovie(data) {
 // 영화 관람평을 최신순으로 들고오는 함수
 function* DetailCommentRecentLoad(action) {
   const result = yield call(CommentRecent, action.data);
-  
   if (result.status === 200) {
     yield put({
       type: DETAIL_COMMENT_RECENT_SUCCESS,
@@ -372,7 +371,7 @@ function* likeMovie() {
   yield takeLatest(USER_MY_MOVIE_SEARCH_REQUEST, LikeMovieLoad);
 }
 
-export default function* movieSaga() {
+export default function* S_movie() {
   yield all([fork(boxMovie), fork(allMovie), fork(screenMovie), fork(comingMovie), fork(USER_MLIKE_TOGGLE), 
             fork(detailMovie), fork(detailCommentRecent), fork(detailCommentLike), fork(USER_COMMENT_LIKE_TOGGLE), fork(likeMovie)]);
 }

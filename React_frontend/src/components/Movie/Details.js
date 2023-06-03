@@ -6,8 +6,8 @@ import React, { useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { HeartOutlined, HeartFilled, StarFilled } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { DETAIL_MOVIE_REQUEST, USER_MLIKE_REQUEST  } from "../../reducer/movie";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { DETAIL_MOVIE_REQUEST, USER_MLIKE_REQUEST  } from "../../reducer/R_movie";
 import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 import MovieSearchLoading from "./MovieSearchLoading";
 
@@ -28,14 +28,16 @@ const Details = () => {
     return Number(`${splitNumber[0]}.${rightNum}`).toFixed(decimalPoint);
   };
 
-  // 로그인 리덕스 상태
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
-  // 영화 좋아요 실패 여부 상태
-  const { MLIKE_error } = useSelector((state) => state.movie);
-  // 영화의 상세내용 상태
-  const { detailMovie } = useSelector((state) => state.movie);
-  // 로딩창을 위한 리덕스 상태
-  const { detail_movie_loading } = useSelector((state) => state.movie);
+	// 필요한 리덕스 상태들
+  const { LOGIN_data, detailMovie, MLIKE_error, detail_movie_loading } = useSelector(
+    state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+      detailMovie: state.R_movie.detailMovie,
+      MLIKE_error: state.R_movie.MLIKE_error,
+			detail_movie_loading: state.R_movie.detail_movie_loading
+    }),
+    shallowEqual
+  );
 
   // 로그인 상태에 따라 영화 검색이 다름(좋아요 표시 때문)
   useEffect(() => {
@@ -180,7 +182,7 @@ const Details = () => {
                     상영 등급 : &nbsp;
                   </dt>
                   <dd>
-                    {detailMovie.mrating === '0' ? "전체 이용가" : detailMovie.mrating+"세 이용가"}
+                    {detailMovie.mrating === '0' ? "전체 이용가" : detailMovie.mrating === '18' ? '청소년 관람불가' : detailMovie.mrating+"세 이용가"}
                   </dd>
                   <br />
                   <dt>

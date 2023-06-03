@@ -2,7 +2,7 @@ import { all, fork } from "redux-saga/effects";
 import S_user_join from "./S_user_join";
 import S_ticket from "./S_ticket";
 import S_user_login from "./S_user_login";
-import movieSaga from "./movie";
+import S_movie from "./S_movie";
 import S_user_movie from "./S_user_movie";
 import S_seat from "./S_seat";
 import S_timeTable from "./S_timeTable";
@@ -21,7 +21,7 @@ export default function* rootSaga() {
     fork(S_user_join),
     fork(S_ticket),
     fork(S_user_login),
-    fork(movieSaga),
+    fork(S_movie),
     fork(S_user_movie),
     fork(S_seat),
     fork(S_timeTable),

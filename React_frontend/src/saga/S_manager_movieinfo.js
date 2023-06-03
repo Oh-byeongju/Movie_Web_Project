@@ -118,9 +118,7 @@ async function callMovieInfoSearch(data) {
       tarea: data.tarea,
 			tid: data.tid,
       startDay: data.startDay,
-      endDay: data.endDay,
-      page: data.page,
-      size: data.size
+      endDay: data.endDay
     },
   })
   .then((response) => {

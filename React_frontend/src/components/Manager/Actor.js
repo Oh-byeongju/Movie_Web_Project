@@ -138,7 +138,7 @@ const Actor = () => {
 
 	// 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback(()=> {
-    if (!window.confirm("배우 정보를 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다)")) {
+    if (!window.confirm("배우 정보를 삭제하시겠습니까?\n(삭제한 정보는 복구되지 않습니다.)")) {
       return;
     };
 
@@ -151,16 +151,19 @@ const Actor = () => {
 
   }, [ActorId, dispatch]);
 
+	// 모달창 닫을 시 초기화
+	const handleCancel = useCallback(() => {
+		setName('');
+		setPlace('');
+		setIsModalOpen(false);
+	}, []);
+
 	// 배우 추가 성공여부에 따른 useEffect
   useEffect(()=> {
     // 추가 성공
     if (ACTOR_INSERT_done) {
-      alert('배우 정보가 추가되었습니다.');
-
 			// 모달 상태 초기화
-			setName('');
-			setPlace('');
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_ACTOR_INSERT_RESET
@@ -178,18 +181,14 @@ const Actor = () => {
         type: MANAGER_ACTOR_INSERT_RESET
       });
     }
-  }, [ACTOR_INSERT_done, ACTOR_INSERT_error, ACTOR.number, ACTOR.size, dispatch]);
+  }, [ACTOR_INSERT_done, ACTOR_INSERT_error, handleCancel, dispatch]);
 
 	// 배우 삭제 성공여부에 따른 useEffect
   useEffect(()=> {
     // 삭제 성공
     if (ACTOR_DELETE_done) {
-      alert('배우 정보가 삭제되었습니다.');
-
 			// 모달 상태 초기화
-			setName('');
-			setPlace('');
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_ACTOR_DELETE_RESET
@@ -205,9 +204,7 @@ const Actor = () => {
       alert('배우 정보 삭제에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setName('');
-			setPlace('');
-			setIsModalOpen(false);
+			handleCancel();
 			
 			dispatch({
         type: MANAGER_ACTOR_DELETE_RESET
@@ -217,18 +214,14 @@ const Actor = () => {
         type: MANAGER_ACTOR_REQUEST
       });
     }
-  }, [ACTOR_DELETE_done, ACTOR_DELETE_error, dispatch]);
+  }, [ACTOR_DELETE_done, ACTOR_DELETE_error, handleCancel, dispatch]);
 
 	// 배우 수정 성공여부에 따른 useEffect
   useEffect(()=> {
     // 수정 성공
     if (ACTOR_UPDATE_done) {
-      alert('배우 정보가 수정되었습니다.');
-
 			// 모달 상태 초기화
-			setName('');
-			setPlace('');
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_ACTOR_UPDATE_RESET
@@ -244,9 +237,7 @@ const Actor = () => {
       alert('배우 정보 수정에 실패했습니다.');
 
 			// 모달 상태 초기화
-			setName('');
-			setPlace('');
-			setIsModalOpen(false);
+			handleCancel();
 
       dispatch({
         type: MANAGER_ACTOR_UPDATE_RESET
@@ -256,14 +247,7 @@ const Actor = () => {
         type: MANAGER_ACTOR_REQUEST
       });
     }
-  }, [ACTOR_UPDATE_done, ACTOR_UPDATE_error, dispatch]);
-
-	// 모달창 닫을 시 초기화
-	const handleCancel = useCallback(() => {
-		setName('');
-		setPlace('');
-		setIsModalOpen(false);
-	}, []);
+  }, [ACTOR_UPDATE_done, ACTOR_UPDATE_error, handleCancel, dispatch]);
 
 	return(
 		<>

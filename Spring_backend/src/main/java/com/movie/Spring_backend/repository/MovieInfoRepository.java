@@ -80,12 +80,11 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "AND (:startDay is null or mi.miday >= :startDay) AND (:endDay is null or mi.miday <= :endDay) " +
             "AND mi.cinema IN :cinemaEntities " +
             "ORDER BY mi.miday DESC, mi.mistarttime DESC")
-    @EntityGraph(attributePaths = {"movie", "cinema.theater"})
-    Page<MovieInfoEntity> findManagerMovieInfo(@Param("movie") MovieEntity movie,
+    @EntityGraph(attributePaths = {"cinema.theater"})
+    List<MovieInfoEntity> findManagerMovieInfo(@Param("movie") MovieEntity movie,
                                                @Param("startDay") Date startDay,
                                                @Param("endDay") Date endDay,
-                                               @Param("cinemaEntities") List<CinemaEntity> cinemaEntities,
-                                               Pageable pageable);
+                                               @Param("cinemaEntities") List<CinemaEntity> cinemaEntities);
 
     // 상영정보간 시간을 확인하는 메소드(앞뒤 30분 여유 확인)
     @Query(value = "SELECT mi FROM MovieInfoEntity as mi WHERE mi.cinema = :cinema AND " +

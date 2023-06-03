@@ -60,9 +60,7 @@ const MovieInfo = () => {
 					tarea: null,
 					tid: null,
 					startDay: null,
-					endDay: null,
-					page: 0,
-					size: 10
+					endDay: null
 				}
 			});
 		}
@@ -197,9 +195,7 @@ const MovieInfo = () => {
 				tarea: area,
 				tid: selectTheater,
 				startDay: start,
-        endDay: end,
-				page: 0,
-				size: 10
+        endDay: end
 			}
 		});
 	}, [selectMovie, selectArea, selectTheater, days, dispatch])

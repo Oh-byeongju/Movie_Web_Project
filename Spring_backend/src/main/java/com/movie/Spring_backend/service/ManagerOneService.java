@@ -16,8 +16,6 @@ import com.movie.Spring_backend.mapper.MovieMapper;
 import com.movie.Spring_backend.repository.*;
 import com.movie.Spring_backend.util.DateUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -496,7 +494,7 @@ public class ManagerOneService {
     }
 
     // 상영정보를 불러오는 메소드
-    public Page<MovieInfoDto> MovieInfoSearch(HttpServletRequest request, Map<String, String> requestMap) {
+    public List<MovieInfoDto> MovieInfoSearch(HttpServletRequest request, Map<String, String> requestMap) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
@@ -506,11 +504,6 @@ public class ManagerOneService {
         String tid = requestMap.get("tid");
         String startDay = requestMap.get("startDay");
         String endDay = requestMap.get("endDay");
-        int page = Integer.parseInt(requestMap.get("page"));
-        int size = Integer.parseInt(requestMap.get("size"));
-
-        // 페이지네이션을 위한 정보
-        PageRequest PageInfo = PageRequest.of(page, size);
 
         // 프론트단에서 영화를 선택 안했을경우 파라미터를 null로 주기위한 과정
         MovieEntity movie = null;
@@ -538,25 +531,22 @@ public class ManagerOneService {
         List<CinemaEntity> cinemaEntities = cinemaRepository.findByTidAndTarea(theater, tarea);
 
         // 프론트단에서 보낸 조건과 상영관 정보를 이용해서 상영정보 검색
-        Page<MovieInfoEntity> MovieInfos = movieInfoRepository.findManagerMovieInfo(movie, Start, End, cinemaEntities, PageInfo);
+        List<MovieInfoEntity> movieInfos = movieInfoRepository.findManagerMovieInfo(movie, Start, End, cinemaEntities);
 
-        // 프론트단에서 요청한 조건으로 얻을 수 있는 최대 페이지 number(PageSize에 의해 계산됨)
-        int max_index = MovieInfos.getTotalPages() - 1;
-        if (max_index == -1) {
-            max_index = 0;
+        // 영화 정보 가공
+        List<MovieEntity> movies = movieRepository.findAll();
+        HashMap<Long, String> m_title = new HashMap<>();
+        HashMap<Long, Date> m_date = new HashMap<>();
+        for (MovieEntity m : movies) {
+            m_title.put(m.getMid(), m.getMtitle());
+            m_date.put(m.getMid(), m.getMdate());
         }
 
-        // 최대 페이지 number가 프론트단에서 요청한 페이지 number보다 작을경우 최대 페이지 number로 재검색
-        if (max_index < page) {
-            PageInfo = PageRequest.of(max_index, size);
-            MovieInfos = movieInfoRepository.findManagerMovieInfo(movie, Start, End, cinemaEntities, PageInfo);
-        }
-
-        return MovieInfos.map(movieInfo -> MovieInfoDto.builder()
+        return movieInfos.stream().map(movieInfo -> MovieInfoDto.builder()
                 .mid(movieInfo.getMovie().getMid())
                 .miid(movieInfo.getMiid())
-                .mtitle(movieInfo.getMovie().getMtitle())
-                .mdate(movieInfo.getMovie().getMdate())
+                .mtitle(m_title.get(movieInfo.getMovie().getMid()))
+                .mdate(m_date.get(movieInfo.getMovie().getMid()))
                 .tid(movieInfo.getCinema().getTheater().getTid())
                 .cid(movieInfo.getCinema().getCid())
                 .tarea(movieInfo.getCinema().getTheater().getTarea())
@@ -566,7 +556,7 @@ public class ManagerOneService {
                 .mistarttime(movieInfo.getMistarttime())
                 .miendtime(movieInfo.getMiendtime())
                 .cntSeatAll(movieInfo.getCinema().getCseat())
-                .cntSeatInfo(movieInfo.getCntSeatInfo()).build());
+                .cntSeatInfo(movieInfo.getCntSeatInfo()).build()).collect(Collectors.toList());
     }
 
     // 상영정보를 추가하는 메소드

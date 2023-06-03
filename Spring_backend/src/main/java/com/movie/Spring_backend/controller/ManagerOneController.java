@@ -8,7 +8,6 @@ package com.movie.Spring_backend.controller;
 import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.service.ManagerOneService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -134,7 +133,7 @@ public class ManagerOneController {
 
     // 상영정보 불러오는 메소드
     @GetMapping("/auth/getMovieInfo")
-    public ResponseEntity<Page<MovieInfoDto>> GetMovieInfo(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
+    public ResponseEntity<List<MovieInfoDto>> GetMovieInfo(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(managerOneService.MovieInfoSearch(request, requestMap));
     }
 

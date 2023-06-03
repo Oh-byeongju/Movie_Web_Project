@@ -36,50 +36,6 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
     shallowEqual
   );
 
-  // 테이블에 있는 페이지네이션 누를 때
-	const handleTableChange = useCallback((pagination) => {
-    // 사용자가 고른 날짜가 있을경우 처리
-		var start = null;
-		var end = null;
-		if (days) {
-			if (days[0]) {
-				start = date.DateToString(days[0].$d);
-			}
-
-			if (days[1]) {
-				end = date.DateToString(days[1].$d);
-			}
-		}
-
-		// 사용자가 고른 지역이 있을경우 처리
-		var area = null;
-		if (selectArea === 'seoul') {
-			area = '서울';
-		}
-		else if (selectArea === 'gyeonggi') {
-			area = '경기';
-		}
-		else if (selectArea === 'incheon') {
-			area = '인천';
-		}
-		else if (selectArea === 'busan') {
-			area = '부산';
-		}
-
-		dispatch({
-			type: MANAGER_MOVIEINFO_LIST_REQUEST,
-			data: {
-				mid: selectMovie,
-				tarea: area,
-				tid: selectTheater,
-				startDay: start,
-        endDay: end,
-				page: pagination.current - 1,
-        size: pagination.pageSize
-			}
-		});
-  }, [selectMovie, selectArea, selectTheater, days, dispatch]);
-
   // antd css 설정
   const columns = [
     {
@@ -93,7 +49,8 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
       width: 160,
       dataIndex: 'mtitle',
       ellipsis: true,
-      fixed: 'left'
+      fixed: 'left',
+			sorter: (a, b) => a.mtitle.localeCompare(b.mtitle)
     },
     {
       title: '상영극장',
@@ -384,8 +341,6 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
   useEffect(()=> {
     // 추가 성공
     if (MOVIEINFO_INSERT_state === 204) {
-      alert('상영정보가 추가되었습니다.');
-
       dispatch({
         type: MANAGER_MOVIEINFO_INSERT_RESET
       });
@@ -420,9 +375,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
           tarea: area,
           tid: selectTheaterModal,
           startDay: null,
-          endDay: null,
-          page: 0,
-          size: 10
+          endDay: null
         }
       });
     }
@@ -440,8 +393,6 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
   useEffect(()=> {
     // 삭제 성공
     if (MOVIEINFO_DELETE_state === 204) {
-      alert('상영정보가 삭제되었습니다.');
-
       dispatch({
         type: MANAGER_MOVIEINFO_DELETE_RESET
       });
@@ -483,15 +434,13 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
           tarea: area,
           tid: selectTheater,
           startDay: start,
-          endDay: end,
-          page: MOVIEINFO_LIST.number,
-          size: MOVIEINFO_LIST.size
+          endDay: end
         }
       });
     }
 
     // 삭제 실패
-    if(MOVIEINFO_DELETE_state === 400 || MOVIEINFO_DELETE_state === 500) {
+    if (MOVIEINFO_DELETE_state === 400 || MOVIEINFO_DELETE_state === 500) {
       alert('상영정보 삭제에 실패했습니다.');
       dispatch({
         type: MANAGER_MOVIEINFO_DELETE_RESET
@@ -534,9 +483,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
           tarea: area2,
           tid: selectTheater,
           startDay: start2,
-          endDay: end2,
-          page: MOVIEINFO_LIST.number,
-          size: MOVIEINFO_LIST.size
+          endDay: end2
         }
       });
     }
@@ -546,8 +493,6 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
   useEffect(()=> {
     // 수정 성공
     if (MOVIEINFO_UPDATE_state === 204) {
-      alert('상영정보가 수정 되었습니다.');
-
       dispatch({
         type: MANAGER_MOVIEINFO_UPDATE_RESET
       });
@@ -582,9 +527,7 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
           tarea: area,
           tid: selectTheaterModal,
           startDay: null,
-          endDay: null,
-          page: 0,
-          size: 10
+          endDay: null
         }
       });
     }
@@ -601,15 +544,13 @@ const MovieInfoTable = ({ selectMovie, selectArea, selectTheater, days, setselec
 	return (
 		<>
       <Notice>
-				* 검색결과 <strong>{MOVIEINFO_LIST.totalElements}</strong>건이 검색되었습니다.
-				<Button onClick={ClickRowInsert} style={{marginLeft:"7px"}} type="primary" shape="circle" icon={<PlusOutlined />} ></Button>
+				* 검색결과 <strong>{MOVIEINFO_LIST.length}</strong>건이 검색되었습니다.
+				<Button onClick={ClickRowInsert} style={{marginLeft:"7px"}} type="primary" shape="circle" icon={<PlusOutlined />}></Button>
 			</Notice> 
 			<TableWrap rowKey="miid"
         loading={MOVIEINFO_LIST_loading}
         columns={columns}
-        dataSource={MOVIEINFO_LIST.content}
-        pagination={{current: MOVIEINFO_LIST.number ? MOVIEINFO_LIST.number + 1 : 1, total: MOVIEINFO_LIST.totalElements, pageSize: MOVIEINFO_LIST.size}}
-        onChange={handleTableChange}
+        dataSource={MOVIEINFO_LIST}
 				scroll={{x: 550}}
 				locale={{ 
           triggerDesc: '내림차순 정렬하기',

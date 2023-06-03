@@ -377,7 +377,7 @@ const Movie = () => {
 
 	// 삭제 버튼 누를때 실행되는 함수
   const onDelete = useCallback(()=> {
-    if (!window.confirm("영화를 삭제하시겠습니까? \n(삭제한 정보는 복구되지 않습니다)")) {
+    if (!window.confirm("영화를 삭제하시겠습니까?\n(삭제한 정보는 복구되지 않습니다)")) {
       return;
     };
 
@@ -394,8 +394,6 @@ const Movie = () => {
   useEffect(()=> {
     // 추가 성공
     if (MOVIE_INSERT_done) {
-      alert('영화가 추가되었습니다.');
-
 			// 모달 상태 초기화
 			handleCancel();
 
@@ -421,8 +419,6 @@ const Movie = () => {
   useEffect(()=> {
     // 삭제 성공
     if (MOVIE_DELETE_done) {
-      alert('영화가 삭제되었습니다.');
-
 			// 모달 상태 초기화
 			handleCancel();
 
@@ -456,8 +452,6 @@ const Movie = () => {
 	useEffect(()=> {
 		// 수정 성공
 		if (MOVIE_UPDATE_done) {
-			alert('영화가 수정되었습니다.');
-
 			// 모달 상태 초기화
 			handleCancel();
 

@@ -1,5 +1,6 @@
 /*
   23-02-09 로그인한 유저가 영화에 관련된 행위를 할때 사용되는 Service 구현(오병주)
+  23-02-12 영화 관람평 조회 메소드 구현(오병주)
   23-02-13 관람평 작성 메소드 구현(오병주)
   23-02-25 관람평 작성 메소드 수정(오병주)
 */
@@ -15,6 +16,7 @@ import com.movie.Spring_backend.exceptionlist.MemberNotFoundException;
 import com.movie.Spring_backend.exceptionlist.MovieCommentNotFoundException;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
+import com.movie.Spring_backend.mapper.MovieCommentMapper;
 import com.movie.Spring_backend.repository.*;
 import com.movie.Spring_backend.util.DateUtil;
 import com.movie.Spring_backend.util.SecurityUtil;
@@ -36,7 +38,51 @@ public class MovieMemberService {
     private final MovieInfoRepository movieInfoRepository;
     private final ReservationRepository reservationRepository;
     private final CommentInfoRepository commentInfoRepository;
+    private final MovieCommentMapper movieCommentMapper;
     private final JwtValidCheck jwtValidCheck;
+
+    // 영화 세부내용 관람평 조회 메소드
+    @Transactional
+    public List<CommentInfoDto> getMovieDetailComment(Long mid, Map<String, String> requestMap) {
+        // 영화 id 정보를 entity 형으로 변환
+        MovieEntity movie = MovieEntity.builder().mid(mid).build();
+
+        // requestMap 데이터 추출
+        String uid = requestMap.get("uid");
+        String sort = requestMap.get("sort");
+
+        // 정렬에 따라 다른 DB쿼리문 실행
+        List<MovieMemberEntity> MovieMembers;
+        if (sort.equals("new")) {
+            // 영화 id를 기반으로 MovieMember table 검색(최신순)
+            MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie);
+        }
+        else {
+            // 영화 id를 기반으로 MovieMember table 검색(공감순)
+            MovieMembers = movieMemberRepository.findAllCommentLikeDESC(movie);
+        }
+
+        // 영화 관람평이 없는경우 예외처리
+        if (MovieMembers.isEmpty()) {
+            throw new MovieCommentNotFoundException("관람평이 없습니다.");
+        }
+
+        // 사용자 id 정보를 entity 형으로 변환
+        MemberEntity member = MemberEntity.builder().uid(uid).build();
+
+        // 사용자가 좋아요 누른 영화 관람평 검색
+        List<CommentInfoEntity> CommentLikes = commentInfoRepository.findByMember(member);
+
+        // 좋아요 누른 관람평 목록의 관람평 기본키를 List로 변환
+        List<Long> CommentLikeList = new ArrayList<>();
+        for (CommentInfoEntity CI : CommentLikes) {
+            CommentLikeList.add(CI.getMoviemember().getUmid());
+        }
+
+        // 관람평 목록과 좋아요 기록을 mapping 후 리턴
+        return MovieMembers.stream().map(MovieMember ->
+                movieCommentMapper.toDto(MovieMember, CommentLikeList.contains(MovieMember.getUmid()))).collect(Collectors.toList());
+    }
 
     // 사용자가 영화 좋아요를 누를 때 실행되는 메소드
     @Transactional
@@ -105,16 +151,17 @@ public class MovieMemberService {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // 이거 아이디 안받아오게 만들기
         // requestMap 안에 정보를 추출
-        String User_id = requestMap.get("uid");
         String Movie_id = requestMap.get("mid");
         String Movie_comment = requestMap.get("mcomment");
         String Movie_score = requestMap.get("mscore");
 
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
         // JPA를 사용하기 위해 Movie_id 와 User_id 를 entity형으로 변환
         MovieEntity movie = MovieEntity.builder().mid(Long.valueOf(Movie_id)).build();
-        MemberEntity member = MemberEntity.builder().uid(User_id).build();
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
 
         // MovieMember table에 튜플의 존재 여부를 먼저 파악
         MovieMemberEntity MovieMember = movieMemberRepository.findByMovieAndMember(movie, member).orElse(null);
@@ -123,8 +170,6 @@ public class MovieMemberService {
         if (MovieMember != null && MovieMember.getUmcomment() != null) {
             throw new BusinessException("작성된 관람평이 존재합니다.", ErrorCode.COMMENT_IS_EXIST);
         }
-
-        // 이거 아래 검색도 reservation을 조인해서 들고오면 되지않나 싶기도함
 
         // 상영이 끝난 영화정보 튜플 검색
         List<MovieInfoEntity> MovieInfos = movieInfoRepository.findInfoBeforeToday(movie);

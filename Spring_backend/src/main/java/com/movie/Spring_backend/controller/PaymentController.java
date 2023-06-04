@@ -18,13 +18,13 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    // 결제 검증을 위한 메소드
+    // 결제 검증을 위한 컨트롤러
     @PostMapping("/auth/Check")
     public ResponseEntity<ReservationDto> PaymentCheck(@RequestBody Map<String, String> requestMap, HttpServletRequest request) {
         return ResponseEntity.ok().body(paymentService.CheckPayment(requestMap, request));
     }
 
-    // 예매 취소를 위한 메소드
+    // 예매 취소를 위한 컨트롤러
     @PatchMapping("/auth/cancel/ReserveDetail/{rid}")
     public ResponseEntity<String> PaymentCancel(@PathVariable("rid") Long rid, HttpServletRequest request) {
         paymentService.CancelPayment(rid, request);

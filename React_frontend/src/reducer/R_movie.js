@@ -36,15 +36,10 @@ export const DETAIL_MOVIE_REQUEST = "DETAIL_MOVIE_REQUEST";
 export const DETAIL_MOVIE_SUCCESS = "DETAIL_MOVIE_SUCCESS";
 export const DETAIL_MOVIE_FAILURE = "DETAIL_MOVIE_FAILURE";
 
-// 영화 관람평 최신순 조회 리스트
-export const DETAIL_COMMENT_RECENT_REQUEST = "DETAIL_COMMENT_RECENT_REQUEST";
-export const DETAIL_COMMENT_RECENT_SUCCESS = "DETAIL_COMMENT_RECENT_SUCCESS";
-export const DETAIL_COMMENT_RECENT_FAILURE = "DETAIL_COMMENT_RECENT_FAILURE";
-
-// 영화 관람평 공감순 조회 리스트
-export const DETAIL_COMMENT_LIKE_REQUEST = "DETAIL_COMMENT_LIKE_REQUEST";
-export const DETAIL_COMMENT_LIKE_SUCCESS = "DETAIL_COMMENT_LIKE_SUCCESS";
-export const DETAIL_COMMENT_LIKE_FAILURE = "DETAIL_COMMENT_LIKE_FAILURE";
+// 영화 관람평 조회 리스트
+export const DETAIL_COMMENT_REQUEST = "DETAIL_COMMENT_REQUEST";
+export const DETAIL_COMMENT_SUCCESS = "DETAIL_COMMENT_SUCCESS";
+export const DETAIL_COMMENT_FAILURE = "DETAIL_COMMENT_FAILURE";
 
 // 영화 관람평 좋아요 리스트
 export const USER_COMMENT_LIKE_REQUEST = "USER_COMMENT_LIKE_REQUEST"
@@ -99,13 +94,9 @@ export const initalState = {
   detail_movie_done: false,
   detail_movie_error: null,
 
-  detail_comment_recent_loading: false,
-  detail_comment_recent_done: false,
-  detail_comment_recent_error: null,
-
-  detail_comment_like_loading: false,
-  detail_comment_like_done: false,
-  detail_comment_like_error: null,
+  detail_comment_loading: false,
+  detail_comment_done: false,
+  detail_comment_error: null,
 
   COMMENT_LIKE_loading: false,
   COMMENT_LIKE_done: false,
@@ -326,52 +317,28 @@ const R_movie = (state = initalState, action) => {
         detail_movie_done: false,
         detail_movie_error: action.error
       };
-    // 영화 관람평 최신순 조회 케이스
-    case DETAIL_COMMENT_RECENT_REQUEST:
+    // 영화 관람평 조회 케이스
+    case DETAIL_COMMENT_REQUEST:
       return {
         ...state, 
-        detail_comment_recent_loading: true,
-        detail_comment_recent_done: false,
-        detail_comment_recent_error: null,
+        detail_comment_loading: true,
+  			detail_comment_done: false,
+  			detail_comment_error: null,
       };
-    case DETAIL_COMMENT_RECENT_SUCCESS:
+    case DETAIL_COMMENT_SUCCESS:
       return {
         ...state,
-        detail_comment_recent_loading: false,
-        detail_comment_recent_done: true,
-        detail_comment_recent_error: null,
+        detail_comment_loading: false,
+  			detail_comment_done: true,
+  			detail_comment_error: null,
         detailComment: action.data
       };
-    case DETAIL_COMMENT_RECENT_FAILURE:
+    case DETAIL_COMMENT_FAILURE:
       return {
         ...state,
-        detail_comment_recent_loading: false,
-        detail_comment_recent_done: false,
-        detail_comment_recent_error: action.error,
-        detailComment: []
-      };
-    // 영화 관람평 공감순 조회 케이스
-    case DETAIL_COMMENT_LIKE_REQUEST:
-      return {
-        ...state, 
-        detail_comment_like_loading: true,
-        detail_comment_like_done: false,
-        detail_comment_like_error: null,
-      };
-    case DETAIL_COMMENT_LIKE_SUCCESS:
-      return {
-        ...state,
-        detail_comment_like_loading: false,
-        detail_comment_like_done: true,
-        detail_comment_like_error: null,
-        detailComment: action.data
-      };
-    case DETAIL_COMMENT_LIKE_FAILURE:
-      return {
-        ...state,
-        detail_comment_like_loading: false,
-        detail_comment_like_done: false,
-        detail_comment_like_error: action.error,
+        detail_comment_loading: false,
+  			detail_comment_done: false,
+  			detail_comment_error: action.error,
         detailComment: []
       };
     // 영화 관람평 좋아요 케이스들

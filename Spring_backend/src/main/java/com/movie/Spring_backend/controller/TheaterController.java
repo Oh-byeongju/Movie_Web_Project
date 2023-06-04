@@ -15,13 +15,13 @@ public class TheaterController {
 
     private final TheaterService theaterService;
 
-    // 예매가 가능한 영화관 불러오는 메소드
+    // 예매가 가능한 영화관 불러오는 컨트롤러
     @GetMapping("/normal/ReservePossible")
     public ResponseEntity<List<TheaterDto>> PossibleTheater() {
         return ResponseEntity.ok().body(theaterService.getPossibleTheater());
     }
 
-    // 예매 페이지에서 조건에 맞는 영화관 불러오는 메소드
+    // 예매 페이지에서 조건에 맞는 영화관 불러오는 컨트롤러
     @GetMapping("/normal/Ticket")
     public ResponseEntity<List<TheaterDto>> TicketTheater(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(theaterService.getTicketTheater(requestMap));

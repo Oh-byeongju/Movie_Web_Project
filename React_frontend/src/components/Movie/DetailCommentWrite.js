@@ -57,7 +57,6 @@ const DetailCommentWrite = () => {
 		dispatch({
 			type: USER_COMMENT_WRITE_REQUEST,
 			data: {
-				uid: LOGIN_data.uid,
 				mid: detailMovie.mid,
 				mcomment: comment,
 				mscore: (value*2)

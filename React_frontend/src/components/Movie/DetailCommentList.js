@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 import styled from 'styled-components';
 import { StarFilled, UnorderedListOutlined, LikeOutlined, DownOutlined  } from "@ant-design/icons";
 import DetailComment from './DetailComment';
-import { DETAIL_COMMENT_RECENT_REQUEST, DETAIL_COMMENT_LIKE_REQUEST } from '../../reducer/R_movie';
+import { DETAIL_COMMENT_REQUEST } from '../../reducer/R_movie';
 
 const DetailCommentList = () => {
 	const location = useLocation();  
@@ -23,16 +23,17 @@ const DetailCommentList = () => {
   // 로그인 상태에 따라 전체 검색이 다름(관람평 좋아요 표시 때문)
   useEffect(() => {
     dispatch({
-      type: DETAIL_COMMENT_RECENT_REQUEST,
+      type: DETAIL_COMMENT_REQUEST,
       data: {
         pathname: location.pathname,
-        uid: LOGIN_data.uid
+        uid: LOGIN_data.uid,
+				sort: "new"
       }
     });
   }, [LOGIN_data.uid, location.pathname, dispatch]);
 
 	// 관람평 더보기 limit
-	const [limit, setlimit] = useState(15);
+	const [limit, setlimit] = useState(30);
 
 	// 정렬 버튼 css 변수
 	const [newbutton, setnewbutton] = useState(true);
@@ -41,34 +42,36 @@ const DetailCommentList = () => {
 	// 최신순 버튼을 누를 때
 	const clicknew = useCallback(()=> {
 		dispatch({
-      type: DETAIL_COMMENT_RECENT_REQUEST,
+      type: DETAIL_COMMENT_REQUEST,
       data: {
         pathname: location.pathname,
-        uid: LOGIN_data.uid
+        uid: LOGIN_data.uid,
+				sort: "new"
       }
     });
 		setnewbutton(true);
 		setlikebutton(false);
-		setlimit(15);
+		setlimit(30);
 	}, [LOGIN_data.uid, location.pathname, dispatch])
 
 	// 공감순 버튼을 누를 때
 	const clicklike = useCallback(()=> {
 		dispatch({
-      type: DETAIL_COMMENT_LIKE_REQUEST,
+      type: DETAIL_COMMENT_REQUEST,
       data: {
         pathname: location.pathname,
-        uid: LOGIN_data.uid
+        uid: LOGIN_data.uid,
+				sort: "like"
       }
     });
 		setlikebutton(true);
 		setnewbutton(false);
-		setlimit(15);
+		setlimit(30);
 	}, [LOGIN_data.uid, location.pathname, dispatch])
 
 	// 더보기 버튼을 누를 때
 	const onMoreClick = useCallback(() => {
-    setlimit(limit + 15);
+    setlimit(limit + 30);
   }, [limit]);
 
 	return (

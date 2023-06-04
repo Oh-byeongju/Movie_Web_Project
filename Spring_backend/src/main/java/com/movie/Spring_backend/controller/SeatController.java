@@ -21,13 +21,13 @@ public class SeatController {
 
     private final SeatService seatService;
 
-    // 예매 페이지에서 좌석을 가져오는 메소드
+    // 예매 페이지에서 좌석을 가져오는 컨트롤러
     @GetMapping("/auth/MovieInfo")
     public ResponseEntity<List<SeatDto>> SeatMovieInfo(HttpServletRequest request, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(seatService.getSeatMovieInfo(request, requestMap));
     }
 
-    // 결제전 점유좌석의 여부를 확인하는 메소드
+    // 결제전 점유좌석의 여부를 확인하는 컨트롤러
     @PostMapping("/auth/Check")
     public ResponseEntity<String> SeatCheck(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
         seatService.getSeatCheck(request, requestMap);

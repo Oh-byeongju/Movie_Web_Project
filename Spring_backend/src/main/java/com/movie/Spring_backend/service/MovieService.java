@@ -1,14 +1,11 @@
 /*
   23-02-10 영화 세부내용을 위한 메소드 설계(오병주)
   23-02-14 영화 세부내용 메소드 수정(오병주)
-  23-02-20 영화 관람평 메소드 구현(오병주)
   23-03-06 전체영화 조회 및 사용자 영화 검색 메소드 수정(오병주)
   23-04-27 ~ 28 예매 페이지 영화조회 수정(오병주)
 */
 package com.movie.Spring_backend.service;
-import com.movie.Spring_backend.dto.CommentInfoDto;
 import com.movie.Spring_backend.entity.*;
-import com.movie.Spring_backend.exceptionlist.MovieCommentNotFoundException;
 import com.movie.Spring_backend.mapper.MovieCommentMapper;
 import com.movie.Spring_backend.repository.*;
 import com.movie.Spring_backend.dto.MovieDto;
@@ -253,74 +250,6 @@ public class MovieService {
         else {
             return movieMapper.toDtoDetail(movie, true, Screen, Actors, cnt);
         }
-    }
-    
-    // 영화 세부내용 관람평 메소드(최신순)  --> 밑에꺼랑 합쳐도 될듯
-    @Transactional
-    public List<CommentInfoDto> getMovieDetailCommentRecent(Long mid, String uid) {
-
-        // 영화 id 정보를 entity 형으로 변환
-        MovieEntity movie = MovieEntity.builder()
-                .mid(mid).build();
-
-        // 영화 id를 기반으로 MovieMember table 검색(최신순)
-        List<MovieMemberEntity> MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie);
-
-        // 영화 관람평이 없는경우 예외처리
-        if (MovieMembers.isEmpty()) {
-            throw new MovieCommentNotFoundException("관람평이 없습니다.");
-        }
-
-        // 사용자 id 정보를 entity 형으로 변환
-        MemberEntity member = MemberEntity.builder()
-                .uid(uid).build();
-
-        // 사용자가 좋아요 누른 영화 관람평 검색
-        List<CommentInfoEntity> CommentLikes = commentInfoRepository.findByMember(member);
-
-        // 좋아요 누른 관람평 목록의 관람평 기본키를 List로 변환
-        List<Long> CommentLikeList = new ArrayList<>();
-        for (CommentInfoEntity CI : CommentLikes) {
-            CommentLikeList.add(CI.getMoviemember().getUmid());
-        }
-
-        // 관람평 목록과 좋아요 기록을 mapping 후 리턴
-        return MovieMembers.stream().map(MovieMember ->
-                movieCommentMapper.toDto(MovieMember, CommentLikeList.contains(MovieMember.getUmid()))).collect(Collectors.toList());
-    }
-
-    // 영화 세부내용 관람평 메소드(공감순)
-    @Transactional
-    public List<CommentInfoDto> getMovieDetailCommentLike(Long mid, String uid) {
-
-        // 영화 id 정보를 entity 형으로 변환
-        MovieEntity movie = MovieEntity.builder()
-                .mid(mid).build();
-
-        // 영화 id를 기반으로 MovieMember table 검색(공감순)
-        List<MovieMemberEntity> MovieMembers = movieMemberRepository.findAllCommentLikeDESC(movie);
-
-        // 영화 관람평이 없는경우 예외처리
-        if (MovieMembers.isEmpty()) {
-            throw new MovieCommentNotFoundException("관람평이 없습니다.");
-        }
-
-        // 사용자 id 정보를 entity 형으로 변환
-        MemberEntity member = MemberEntity.builder()
-                .uid(uid).build();
-
-        // 사용자가 좋아요 누른 영화 관람평 검색
-        List<CommentInfoEntity> CommentLikes = commentInfoRepository.findByMember(member);
-
-        // 좋아요 누른 관람평 목록을 HashSet 으로 변환
-        Set<Long> CommentLikeSet = new HashSet<>();
-        for (CommentInfoEntity CI : CommentLikes) {
-            CommentLikeSet.add(CI.getMoviemember().getUmid());
-        }
-
-        // 관람평 목록과 좋아요 기록을 mapping 후 리턴
-        return MovieMembers.stream().map(MovieMember ->
-                movieCommentMapper.toDto(MovieMember, CommentLikeSet.contains(MovieMember.getUmid()))).collect(Collectors.toList());
     }
 
     // 예매 페이지에서 조건에 맞는 영화를 가져오는 메소드

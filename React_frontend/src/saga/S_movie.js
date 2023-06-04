@@ -6,8 +6,7 @@ import {
   COMINGMOVIE_REQUEST, COMINGMOVIE_SUCCESS, COMINGMOVIE_FAILURE,
   USER_MLIKE_REQUEST, USER_MLIKE_SUCCESS, USER_MLIKE_FAILURE,
   DETAIL_MOVIE_REQUEST, DETAIL_MOVIE_SUCCESS, DETAIL_MOVIE_FAILURE,
-  DETAIL_COMMENT_RECENT_REQUEST, DETAIL_COMMENT_RECENT_SUCCESS, DETAIL_COMMENT_RECENT_FAILURE,
-  DETAIL_COMMENT_LIKE_REQUEST, DETAIL_COMMENT_LIKE_SUCCESS, DETAIL_COMMENT_LIKE_FAILURE,
+  DETAIL_COMMENT_REQUEST, DETAIL_COMMENT_SUCCESS, DETAIL_COMMENT_FAILURE,
   USER_COMMENT_LIKE_REQUEST, USER_COMMENT_LIKE_SUCCESS, USER_COMMENT_LIKE_FAILURE,
   USER_MY_MOVIE_SEARCH_REQUEST, USER_MY_MOVIE_SEARCH_SUCCESS, USER_MY_MOVIE_SEARCH_FAILURE
 } from "../reducer/R_movie";
@@ -33,7 +32,7 @@ function* BoxMovieLoad(action) {
 // 백엔드 호출
 async function LoadBoxMovie(data) {
   // 박스오피스 영화는 전체 영화중 예매순으로 내림차순
-  return await http.get("/movie/normal/allmovie", {
+  return await http.get("/Movie/normal/allmovie", {
     params: {
       uid: data.uid,
       button: data.button,
@@ -67,7 +66,7 @@ function* AllMovieLoad(action) {
 
 // 백엔드 호출
 async function LoadAllMovie(data) {
-  return await http.get("/movie/normal/allmovie", {
+  return await http.get("/Movie/normal/allmovie", {
     params: {
       uid: data.uid,
       button: data.button,
@@ -101,7 +100,7 @@ function* ScreenMovieLoad(action) {
 
 // 백엔드 호출
 async function LoadScreenMovie(data) {
-  return await http.get("/movie/normal/screenmovie", {
+  return await http.get("/Movie/normal/screenmovie", {
     params: {
       uid: data.uid,
       button: data.button,
@@ -135,7 +134,7 @@ function* ComingMovieLoad(action) {
 
 // 백엔드 호출
 async function LoadComingMovie(data) {
-  return await http.get("/movie/normal/comingmovie", {
+  return await http.get("/Movie/normal/comingmovie", {
     params: {
       uid: data.uid,
       button: data.button,
@@ -169,7 +168,7 @@ function* MovieLikeToggle(action) {
 
 // 유저 정보를 전달한 뒤 좋아요 기록 변경(백엔드 연결)
 async function CallMovieLikeToggle(data) {
-  return await http.post("/MovieMember/auth/LikeToggle", data)
+  return await http.post("/MovieMember/auth/MovieLikeToggle", data)
     .then((response) => {
       return response;
     })
@@ -197,7 +196,7 @@ function* DetailMovieLoad(action) {
 // 백엔드 호출
 async function DetailMovie(data) {
   return await http
-    .get(`/movie/normal${data.pathname}`, {
+    .get(`/Movie/normal${data.pathname}`, {
       params: {
         uid: data.uid
       }
@@ -210,71 +209,37 @@ async function DetailMovie(data) {
     });
 }
 
-// 영화 관람평을 최신순으로 들고오는 함수
-function* DetailCommentRecentLoad(action) {
-  const result = yield call(CommentRecent, action.data);
+// 영화 관람평을 조회하는 함수
+function* DetailCommentLoad(action) {
+  const result = yield call(CommentLoad, action.data);
   if (result.status === 200) {
     yield put({
-      type: DETAIL_COMMENT_RECENT_SUCCESS,
+      type: DETAIL_COMMENT_SUCCESS,
       data: result.data
     });
   } 
   else {
     yield put({
-      type: DETAIL_COMMENT_RECENT_FAILURE,
+      type: DETAIL_COMMENT_FAILURE,
       data: result.data
     });
   }
 }
 
-// 관람평 최신순 백엔드 호출
-async function CommentRecent(data) {
-  return await http
-    .get(`/movie/normal/recentcomment${data.pathname}`, {
-      params: {
-        uid: data.uid
-      }
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-
-// 영화 관람평을 공감순으로 들고오는 함수
-function* DetailCommentLikeLoad(action) {
-  const result = yield call(CommentLike, action.data);
-
-  if (result.status === 200) {
-    yield put({
-      type: DETAIL_COMMENT_LIKE_SUCCESS,
-      data: result.data
-    });
-  } 
-  else {
-    yield put({
-      type: DETAIL_COMMENT_LIKE_FAILURE,
-      data: result.data
-    });
-  }
-}
-
-// 관람평 공감순 백엔드 호출
-async function CommentLike(data) {
-  return await http
-    .get(`/movie/normal/likecomment${data.pathname}`, {
-      params: {
-        uid: data.uid
-      }
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+// 관람평 조회 백엔드 호출
+async function CommentLoad(data) {
+  return await http.get(`/MovieMember/normal/comment${data.pathname}`, {
+		params: {
+			uid: data.uid,
+			sort: data.sort
+		}
+	})
+	.then((response) => {
+		return response;
+	})
+	.catch((error) => {
+		return error.response;
+	});
 }
 
 // 관람평 좋아요 toggle 함수
@@ -355,12 +320,8 @@ function* detailMovie() {
   yield takeLatest(DETAIL_MOVIE_REQUEST, DetailMovieLoad);
 }
 
-function* detailCommentRecent() {
-  yield takeLatest(DETAIL_COMMENT_RECENT_REQUEST, DetailCommentRecentLoad);
-}
-
-function* detailCommentLike() {
-  yield takeLatest(DETAIL_COMMENT_LIKE_REQUEST, DetailCommentLikeLoad);
+function* detailComment() {
+  yield takeLatest(DETAIL_COMMENT_REQUEST, DetailCommentLoad);
 }
 
 function* USER_COMMENT_LIKE_TOGGLE() {
@@ -373,5 +334,5 @@ function* likeMovie() {
 
 export default function* S_movie() {
   yield all([fork(boxMovie), fork(allMovie), fork(screenMovie), fork(comingMovie), fork(USER_MLIKE_TOGGLE), 
-            fork(detailMovie), fork(detailCommentRecent), fork(detailCommentLike), fork(USER_COMMENT_LIKE_TOGGLE), fork(likeMovie)]);
+            fork(detailMovie), fork(detailComment), fork(USER_COMMENT_LIKE_TOGGLE), fork(likeMovie)]);
 }

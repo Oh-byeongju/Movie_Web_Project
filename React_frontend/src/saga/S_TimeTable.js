@@ -29,7 +29,7 @@ function* MovieSearch() {
 
 // 예매 가능한 영화 조회 백엔드 호출
 async function callMovieSearch() {
-  return await http.get("/movie/normal/ReservePossibleDESC")
+  return await http.get("/Movie/normal/ReservePossibleDESC")
   .then((response) => {
     return response;
   })

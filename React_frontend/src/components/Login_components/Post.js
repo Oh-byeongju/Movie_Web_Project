@@ -5,7 +5,6 @@ import { CloseOutlined } from "@ant-design/icons";
 
 // 다음 주소검색 api이고 배경 부분에는 모달로 구현
 const Post = ({ setAddress, M_address, InsertAddress }) => {
-
   // 주소 선택시 선택한 주소값을 던져주고 주소검색창을 닫는 함수
   const onCompletePost = (data) => {
     M_address = data.address;

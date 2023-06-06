@@ -1,12 +1,12 @@
 import React from "react";
 import BuildingLayout from "../components/Manager/BuildingLayout";
 
-const ManagerBuilding = () =>{
+const ManagerBuilding = () => {
 	return(
 		<>
 			<BuildingLayout/>
 		</>
-	)
-}
+	);
+};
 
 export default ManagerBuilding;

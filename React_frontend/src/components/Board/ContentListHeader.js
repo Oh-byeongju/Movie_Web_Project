@@ -249,7 +249,7 @@ const Search = styled.div`
 		}
 	}
 
-	button{
+	button {
 		float: left;
 		position: absolute;
 		top: 0;

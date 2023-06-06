@@ -1,14 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  GithubOutlined,
-  HomeOutlined,
-  UserAddOutlined,
-} from "@ant-design/icons";
+import { GithubOutlined, HomeOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useLocation, Link } from "react-router-dom";
 
 const Footer = () => {
   const location = useLocation();
+
   return (
     <>
       <div className="l-Footer">

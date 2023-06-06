@@ -14,7 +14,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import LoginLoading from './LoginLoading';
 
 const JoinForm = () => {
-
 	// 주소검색 팝업창 관리
 	const [popup, setpopup] = useState(false);
 

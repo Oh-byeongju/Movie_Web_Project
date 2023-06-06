@@ -35,7 +35,6 @@ const InfoCheck = () => {
 
 	// 확인 버튼을 누를 때 함수
 	const onCheck = useCallback(() => {
-
 		// 테스트 계정 수정을 방지하는 예외처리
 		for (var i = 1; i <= 1120; i++) {
 			if (LOGIN_data.uid === 'temp' + i) {

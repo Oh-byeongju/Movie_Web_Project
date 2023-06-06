@@ -186,5 +186,9 @@ function* USER_DELETE() {
 }
 
 export default function* S_mypage_movie() {
-  yield all([fork(USER_POSSIBLE), fork(USER_WRITE), fork(USER_SEARCH), fork(USER_LIKE), fork(USER_DELETE)]);
+  yield all([fork(USER_POSSIBLE), 
+		fork(USER_WRITE), 
+		fork(USER_SEARCH), 
+		fork(USER_LIKE), 
+		fork(USER_DELETE)]);
 }

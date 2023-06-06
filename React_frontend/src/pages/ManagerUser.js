@@ -4,7 +4,7 @@ import User from '../components/Manager/User';
 const ManagerUser = () => {
 	return (
 		<>
-			<User />
+			<User/>
 		</>
 	);
 };

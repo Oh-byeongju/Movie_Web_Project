@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { useSelector, shallowEqual } from "react-redux";
 import { Link } from "react-router-dom";
 
-const PaymentComplete = ()=>{
+const PaymentComplete = () => {
 	// 필요한 리덕스 상태들
 	const { MOVIE, THEATER, MOVIEINFO, Kid, Teenager, Adult, Price, ChoiceSeat, PAYMENT } = useSelector(
 		state => ({

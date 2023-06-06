@@ -42,7 +42,6 @@ const CancelDetail = () => {
 
 	// 예매 상태를 다시 확인하는 useEffect
 	useEffect(()=> {
-		
 		// 예매기록이 존재하지 않을 경우
 		if (RESERVE_CANCEL_DETAIL_error) {
 			alert("존재하지 않는 취소내역 입니다.");
@@ -55,9 +54,7 @@ const CancelDetail = () => {
 			alert("존재하지 않는 취소내역 입니다.")
 			window.location.assign('/Mypage/Cancel');
 		}
-
 	}, [RESERVE_CANCEL_DETAIL_error, RESERVE_CANCEL_DETAIL.rstate])
-
 
 	return (
 		<Content>

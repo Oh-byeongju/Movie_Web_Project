@@ -254,10 +254,10 @@ function* USER_RESERVE_FINISH_DETAIL() {
 
 export default function* S_mypage_reserve() {
   yield all([fork(USER_RESERVE_SEARCH), 
-             fork(USER_RESERVE_DETAIL), 
-             fork(USER_RESERVE_DROP),
-             fork(USER_RESERVE_CANCEL_SEARCH), 
-             fork(USER_RESERVE_CANCEL_DETAIL),
-             fork(USER_RESERVE_FINISH_SEARCH),
-             fork(USER_RESERVE_FINISH_DETAIL)]);
+		fork(USER_RESERVE_DETAIL), 
+		fork(USER_RESERVE_DROP),
+		fork(USER_RESERVE_CANCEL_SEARCH), 
+		fork(USER_RESERVE_CANCEL_DETAIL),
+		fork(USER_RESERVE_FINISH_SEARCH),
+		fork(USER_RESERVE_FINISH_DETAIL)]);
 }

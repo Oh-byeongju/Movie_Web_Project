@@ -5,7 +5,7 @@ import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const MovieSchedule = () =>{
+const MovieSchedule = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 

@@ -333,6 +333,13 @@ function* likeMovie() {
 }
 
 export default function* S_movie() {
-  yield all([fork(boxMovie), fork(allMovie), fork(screenMovie), fork(comingMovie), fork(USER_MLIKE_TOGGLE), 
-            fork(detailMovie), fork(detailComment), fork(USER_COMMENT_LIKE_TOGGLE), fork(likeMovie)]);
+  yield all([fork(boxMovie),
+		fork(allMovie), 
+		fork(screenMovie), 
+		fork(comingMovie), 
+		fork(USER_MLIKE_TOGGLE), 
+    fork(detailMovie), 
+		fork(detailComment), 
+		fork(USER_COMMENT_LIKE_TOGGLE), 
+		fork(likeMovie)]);
 }

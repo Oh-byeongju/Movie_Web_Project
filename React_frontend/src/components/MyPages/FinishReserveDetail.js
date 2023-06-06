@@ -46,7 +46,6 @@ const FinishReserveDetail = () => {
 
 	// 예매 상태를 다시 확인하는 useEffect
 	useEffect(()=> {
-		
 		// 예매기록이 존재하지 않을 경우
 		if (RESERVE_FINISH_DETAIL_error) {
 			alert("존재하지 않는 예매입니다.");
@@ -66,7 +65,6 @@ const FinishReserveDetail = () => {
 			alert("관람이 끝나지 않은 영화입니다.")
 			window.location.assign('/Mypage/Finish');
 		}
-
 	}, [RESERVE_FINISH_DETAIL_error, RESERVE_FINISH_DETAIL.rstate, RESERVE_FINISH_DETAIL.miendtime, endtime]);
 
 	return (

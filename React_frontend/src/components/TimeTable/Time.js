@@ -26,7 +26,7 @@ for (var i = 0; i < 20; i++){
 	}
 }
 
-const Time = ()=> {
+const Time = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 

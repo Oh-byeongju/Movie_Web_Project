@@ -5,7 +5,6 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { Table } from 'antd';
 
 const ReserveTheater = () => {
-
 	// 필요한 리덕스 상태들
 	const { RESERVE_THEATER_LIST_loading, RESERVE_THEATER_LIST } = useSelector(
 		state => ({

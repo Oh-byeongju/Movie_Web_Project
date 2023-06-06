@@ -10,7 +10,7 @@ import Time from "./Time";
 import MovieSchedule from "./MovieSchedule";
 import TheaterSchedule from "./TheaterSchedule";
 
-const Scheduler = () =>{
+const Scheduler = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 

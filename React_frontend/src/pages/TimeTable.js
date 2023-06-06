@@ -1,7 +1,7 @@
 import React from "react";
 import Scheduler from "../components/TimeTable/Scheduler";
 
-const TimeTable = () =>{
+const TimeTable = () => {
 	return (
 		<>
 			<Scheduler/>

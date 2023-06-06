@@ -31,11 +31,4 @@ const Background = styled.div`
   justify-content: center;
 `;
 
-// 추후 text가 필요하면 사용
-// const LoadingText = styled.div`
-//   font: 1rem 'Noto Sans KR';
-//   text-align: center;
-//   margin-top: 7px !important;
-// `;
-
 export default LoginLoading;

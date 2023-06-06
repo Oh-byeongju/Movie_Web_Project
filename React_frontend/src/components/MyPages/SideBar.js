@@ -10,7 +10,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 // 마이페이지 왼쪽 사이드바
 const SideBar = () => {
-
 	// 로그인 상태확인용 리덕스 상태
 	const dispatch = useDispatch();
 	const { LOGIN_data } = useSelector((state) => state.R_user_login);

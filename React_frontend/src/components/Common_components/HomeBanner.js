@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Carousel } from "antd";
 
 const HomeBanner = () => {
-
   // 캐러셀 넘어가는 속도 조절을 위한 setting
   const settings = {
     dots: true,

@@ -192,8 +192,7 @@ function* PAYMENT() {
 }
 
 export default function* S_ticket() {
-  yield all([
-		fork(MOVIE_LIST),
+  yield all([fork(MOVIE_LIST),
 		fork(THEATER_LIST),
 		fork(DAY_LIST),
 		fork(MOVIEINFO_LIST),

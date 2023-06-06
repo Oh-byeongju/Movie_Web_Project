@@ -71,7 +71,7 @@ const Seat = () => {
         type: USER_CHOICE,
         data: {
 					type: "아이",
-					price: 10
+					price: 100
 				}
       });
     }
@@ -91,7 +91,7 @@ const Seat = () => {
         type: USER_REMOVE,
         data: {
 					type: "아이",
-					price: 10
+					price: 100
 				}
       });
     }
@@ -105,7 +105,7 @@ const Seat = () => {
         type: USER_CHOICE,
 				data: {
 					type: "학생",
-					price: 20
+					price: 150
 				}
       });
     }
@@ -125,7 +125,7 @@ const Seat = () => {
         type: USER_REMOVE,
         data: {
 					type: "학생",
-					price: 20
+					price: 150
 				}
       });
     }
@@ -139,7 +139,7 @@ const Seat = () => {
         type: USER_CHOICE,
 				data: {
 					type: "성인",
-					price: 30
+					price: 200
 				}
       });
     }
@@ -159,7 +159,7 @@ const Seat = () => {
         type: USER_REMOVE,
 				data: {
 					type: "성인",
-					price: 30
+					price: 200
 				}
       });
     }

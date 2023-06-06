@@ -17,7 +17,6 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
-
     // 한글 출력을 위해 getWriter() 사용, 프론트단으로 보내는 error 가공
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {

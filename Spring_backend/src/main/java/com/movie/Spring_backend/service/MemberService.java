@@ -11,10 +11,8 @@ import com.movie.Spring_backend.dto.MemberDto;
 import com.movie.Spring_backend.dto.TokenDto;
 import com.movie.Spring_backend.entity.Authority;
 import com.movie.Spring_backend.entity.MemberEntity;
-import com.movie.Spring_backend.entity.MovieInfoEntity;
 import com.movie.Spring_backend.entity.RefreshTokenEntity;
 import com.movie.Spring_backend.error.exception.ErrorCode;
-import com.movie.Spring_backend.error.exception.InvalidValueException;
 import com.movie.Spring_backend.exceptionlist.EmailDuplicateException;
 import com.movie.Spring_backend.exceptionlist.IdDuplicateException;
 import com.movie.Spring_backend.exceptionlist.MemberNotFoundException;
@@ -22,7 +20,6 @@ import com.movie.Spring_backend.exceptionlist.PwNotCorrectException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.jwt.TokenProvider;
 import com.movie.Spring_backend.repository.MemberRepository;
-import com.movie.Spring_backend.repository.MovieInfoRepository;
 import com.movie.Spring_backend.repository.RefreshTokenRepository;
 import com.movie.Spring_backend.util.SecurityUtil;
 import io.jsonwebtoken.JwtException;
@@ -40,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 @Service

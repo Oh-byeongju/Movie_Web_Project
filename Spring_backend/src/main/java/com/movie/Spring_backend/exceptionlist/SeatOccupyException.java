@@ -1,9 +1,7 @@
 package com.movie.Spring_backend.exceptionlist;
 
 import com.movie.Spring_backend.error.exception.BusinessException;
-import com.movie.Spring_backend.error.exception.EntityNotFoundException;
 import com.movie.Spring_backend.error.exception.ErrorCode;
-import com.movie.Spring_backend.error.exception.InvalidValueException;
 
 // 좌석이 이미 점유되었을경우 예외처리
 public class SeatOccupyException extends BusinessException {

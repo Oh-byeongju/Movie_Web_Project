@@ -10,7 +10,6 @@ import com.movie.Spring_backend.mapper.CinemaMapper;
 import com.movie.Spring_backend.mapper.MovieInfoMapper;
 import com.movie.Spring_backend.repository.MovieInfoRepository;
 import com.movie.Spring_backend.repository.RedisSeatRepository;
-import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

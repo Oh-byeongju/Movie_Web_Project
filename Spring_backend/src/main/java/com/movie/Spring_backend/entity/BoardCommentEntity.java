@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +38,11 @@ public class BoardCommentEntity {
     @JoinColumn(name="uid")
     private MemberEntity member;
 
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM board_like bl WHERE bl.bcid = bcid AND bl.bllike = true)")
     private Integer likes;
 
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM board_like bl WHERE bl.bcid = bcid AND bl.blunlike = true)")
     private Integer unlikes;
 

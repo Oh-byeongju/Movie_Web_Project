@@ -2,11 +2,8 @@ package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.MovieActorEntity;
 import com.movie.Spring_backend.entity.MovieEntity;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

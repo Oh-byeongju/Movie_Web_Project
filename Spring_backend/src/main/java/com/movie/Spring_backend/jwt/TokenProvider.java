@@ -50,7 +50,6 @@ public class TokenProvider {
 
     // 토큰을 생성하는 메소드
     public TokenDto generateTokenDto(Authentication authentication) {
-
         // Authentication 인터페이스를 확장한 파라미터를 stream을 통한 함수형 프로그래밍으로
         // String 형의 authorities로 변환
         // ex) ROLE_USER, ROLE_ADMIN

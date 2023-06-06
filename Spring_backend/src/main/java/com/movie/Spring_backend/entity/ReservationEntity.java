@@ -1,9 +1,8 @@
 package com.movie.Spring_backend.entity;
-import javax.persistence.*;
 
+import javax.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,20 +15,27 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rid;
 
+    @Column(nullable = false)
     private String rdate;
 
+    @Column(nullable = false)
     private Integer rprice;
 
+    @Column(nullable = false)
     private String rpeople;
 
     // 티켓 매수
+    @Column(nullable = false)
     private Integer rticket;
 
+    @Column(nullable = false)
     private String rpayid;
 
+    @Column(nullable = false)
     private String rpaytype;
 
     // 예매 취소 확인용(true -> 예매한 것, false -> 취소한 것)
+    @Column(nullable = false)
     private Boolean rstate;
 
     private String rcanceldate;

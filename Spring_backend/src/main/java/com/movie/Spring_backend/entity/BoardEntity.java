@@ -3,11 +3,9 @@ package com.movie.Spring_backend.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +40,15 @@ public class BoardEntity {
     @JoinColumn(name="uid")
     private MemberEntity member;
 
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM board_like AS bl WHERE bl.bid = bid AND bl.bllike = true AND bl.bcid IS NULL)")
     private Integer likes;
 
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM board_like AS bl WHERE bl.bid = bid AND bl.blunlike = true AND bl.bcid IS NULL)")
     private Integer unlikes;
 
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM board_comment AS comment WHERE comment.bid = bid)")
     private Integer commentCounts;
 

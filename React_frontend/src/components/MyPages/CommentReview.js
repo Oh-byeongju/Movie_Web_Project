@@ -22,14 +22,12 @@ const CommentReview = ({ comment }) => {
 
 	// 사용자가 관람평의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {
-
     dispatch({
       type: USER_MY_COMMENT_LIKE_REQUEST,
       data: {
         umid: comment.umid
       },
     });
-
   }, [comment.umid, dispatch]);
 
 	// 관람평 삭제 버튼 누르면 실행되는 함수
@@ -42,27 +40,22 @@ const CommentReview = ({ comment }) => {
       type: USER_MY_COMMENT_DELETE_REQUEST,
 			data: comment.umid
     });
-		
 	}, [dispatch, comment.umid]);
 
 	// UI에는 변경되지 않았지만 삭제된 관람평을 좋아요 누를 경우
 	useEffect(()=> {
-
 		if (MY_COMMENT_LIKE_error === comment.umid) {
 			alert("존재하지 않는 관람평입니다.");
 			window.location.replace(location.pathname);
 		}
-
 	}, [MY_COMMENT_LIKE_error, comment.umid, location.pathname])
 
 	// UI에는 변경되지 않았지만 삭제된 관람평을 삭제 할 경우
 	useEffect(()=> {
-
 		if (MY_COMMENT_DELETE_error === comment.umid) {
 			alert("존재하지 않는 관람평입니다.");
 			window.location.replace(location.pathname);
 		}
-
 	}, [MY_COMMENT_DELETE_error, comment.umid, location.pathname])
 
 	return (

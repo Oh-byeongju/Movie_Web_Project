@@ -29,34 +29,44 @@ const ContentPost = () => {
 	// 좋아요 버튼 누를때 함수
 	const onClickLike = useCallback(() => {
 		if (LOGIN_data.uid === "No_login") {
-			alert('로그인이 필요한 서비스입니다.');
-			return;
-		}
-
-		dispatch({
-			type: BOARD_LIKE_REQUEST,
-			data: {
-				bid: BOARD_CONTENT.bid,
-        state: 'like'
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: `/Board/content/${category}/${id}/${title}`}});
 			}
-		})
-	}, [BOARD_CONTENT.bid, LOGIN_data.uid, dispatch]);
+		}
+		else {
+			dispatch({
+				type: BOARD_LIKE_REQUEST,
+				data: {
+					bid: BOARD_CONTENT.bid,
+					state: 'like'
+				}
+			});
+		}
+	}, [BOARD_CONTENT.bid, LOGIN_data.uid, category, id, title, navigate, dispatch]);
 
 	// 싫어요 버튼 누를때 함수
 	const onClickUnLike = useCallback(() => {
 		if (LOGIN_data.uid === "No_login") {
-			alert('로그인이 필요한 서비스입니다.');
-			return;
-		}
-
-		dispatch({
-			type: BOARD_LIKE_REQUEST,
-			data: {
-				bid: BOARD_CONTENT.bid,
-        state: 'unlike'
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: `/Board/content/${category}/${id}/${title}`}});
 			}
-		})
-	}, [BOARD_CONTENT.bid, LOGIN_data.uid, dispatch]);
+		}
+		else {
+			dispatch({
+				type: BOARD_LIKE_REQUEST,
+				data: {
+					bid: BOARD_CONTENT.bid,
+					state: 'unlike'
+				}
+			});
+		}
+	}, [BOARD_CONTENT.bid, LOGIN_data.uid, category, id, title, navigate, dispatch]);
 
 	// 게시글 좋아요, 싫어요 실패시 useEffect
 	useEffect(()=> {

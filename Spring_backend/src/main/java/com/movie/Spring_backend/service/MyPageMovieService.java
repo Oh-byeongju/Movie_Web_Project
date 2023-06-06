@@ -10,7 +10,6 @@ import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.ReservationDto;
 import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.error.exception.BusinessException;
-import com.movie.Spring_backend.error.exception.EntityNotFoundException;
 import com.movie.Spring_backend.error.exception.ErrorCode;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
 import com.movie.Spring_backend.exceptionlist.ReserveNotFoundException;
@@ -43,6 +42,169 @@ public class MyPageMovieService {
     private final MovieCommentMapper movieCommentMapper;
     private final ReservationMapper reservationMapper;
     private final JwtValidCheck jwtValidCheck;
+
+    // 사용자가 현재 예매한 영화 내역 불러오는 메소드
+    @Transactional
+    public List<ReservationDto> MovieReserveSearch(HttpServletRequest request) {
+
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
+
+        // 현재 시점으로 부터 6개월 전 날짜 생성
+        String BeforeMonth = DateUtil.ChangeDateNow(0, -6, 0);
+
+        // 사용자가 예매한 영화의 정보 및 좌석 조회
+        List<ReservationEntity> Reserve = reservationRepository.findMyPageReserve(member, BeforeMonth);
+        List<MovieInfoSeatEntity> ReserveSeat = movieInfoSeatRepository.findMyPageReserveSeat(member, BeforeMonth);
+
+        return reservationMapper.MyPageListMapping(Reserve, ReserveSeat);
+    }
+
+    // 사용자가 현재 예매취소한 영화 내역 불러오는 메소드
+    @Transactional
+    public List<ReservationDto> MovieReserveCancelSearch(HttpServletRequest request) {
+
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
+
+        // 현재 시점으로 부터 6개월 전 날짜 생성
+        String BeforeMonth = DateUtil.ChangeDateNow(0, -6, 0);
+
+        // 사용자가 예매 취소한 영화의 정보 조회
+        List<ReservationEntity> ReserveCancel = reservationRepository.findMyPageReserveCancel(member, BeforeMonth);
+
+        return ReserveCancel.stream().map(Reserve -> ReservationDto.builder()
+                .rid(Reserve.getRid())
+                .rdate(Reserve.getRdate())
+                .rcanceldate(Reserve.getRcanceldate())
+                .mtitle(Reserve.getMovieInfo().getMovie().getMtitle())
+                .mimagepath(Reserve.getMovieInfo().getMovie().getMimagepath())
+                .tarea(Reserve.getMovieInfo().getCinema().getTheater().getTarea())
+                .tname(Reserve.getMovieInfo().getCinema().getTheater().getTname())
+                .cname(Reserve.getMovieInfo().getCinema().getCname())
+                .mistarttime(Reserve.getMovieInfo().getMistarttime())
+                .rticket(Reserve.getRticket())
+                .rprice(Reserve.getRprice()).build()).collect(Collectors.toList());
+    }
+
+    // 사용자가 예매한 지난 관람내역 불러오는 메소드
+    @Transactional
+    public List<ReservationDto> MovieReserveFinishSearch(HttpServletRequest request) {
+
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
+
+        // 현재 시점으로 부터 6개월 전 날짜 생성
+        String BeforeMonth = DateUtil.ChangeDateNow(0, -6, 0);
+
+        // 사용자가 예매한 지난 관람내역의 정보 및 좌석 조회
+        List<ReservationEntity> ReserveFinish = reservationRepository.findMyPageReserveFinish(member, BeforeMonth);
+        List<MovieInfoSeatEntity> ReserveFinishSeat = movieInfoSeatRepository.findMyPageReserveFinishSeat(member, BeforeMonth);
+
+        return reservationMapper.MyPageListMapping(ReserveFinish, ReserveFinishSeat);
+    }
+
+    // 사용자가 예매한 영화의 세부 내역 불러오는 메소드
+    @Transactional
+    public ReservationDto MovieReserveDetailSearch(Long rid, HttpServletRequest request) {
+
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // 사용자가 예매한 영화의 세부내역 조회
+        ReservationEntity Reserve = reservationRepository.findMyPageReserveDetail(rid)
+                .orElseThrow(() -> new ReserveNotFoundException("예매 기록이 존재하지 않습니다."));
+
+        // 조회하려는 예매의 예매자 id가 현재 사용자의 id와 다를 경우 예외처리
+        if (!Reserve.getMember().getUid().equals(currentMemberId)) {
+            throw new ReserveNotFoundException("예매 기록이 존재하지 않습니다.");
+        }
+
+        // 취소된 예매일 경우 좌석을 제외하고 매핑한 값을 리턴
+        if (!Reserve.getRstate()) {
+            return ReservationDto.builder()
+                    .rid(Reserve.getRid())
+                    .rdate(Reserve.getRdate())
+                    .rcanceldate(Reserve.getRcanceldate())
+                    .mid(Reserve.getMovieInfo().getMovie().getMid())
+                    .mtitle(Reserve.getMovieInfo().getMovie().getMtitle())
+                    .mimagepath(Reserve.getMovieInfo().getMovie().getMimagepath())
+                    .tarea(Reserve.getMovieInfo().getCinema().getTheater().getTarea())
+                    .tname(Reserve.getMovieInfo().getCinema().getTheater().getTname())
+                    .cname(Reserve.getMovieInfo().getCinema().getCname())
+                    .mistarttime(Reserve.getMovieInfo().getMistarttime())
+                    .miendtime(Reserve.getMovieInfo().getMiendtime())
+                    .mrating(Reserve.getMovieInfo().getMovie().getMrating())
+                    .rpeople(Reserve.getRpeople())
+                    .rticket(Reserve.getRticket())
+                    .rpaytype(Reserve.getRpaytype())
+                    .rprice(Reserve.getRprice())
+                    .rstate(Reserve.getRstate()).build();
+        }
+
+        // 사용자가 예매한 영화의 세부내역 좌석 조회
+        List<MovieInfoSeatEntity> ReserveSeat = movieInfoSeatRepository.findMyPageReserveDetailSeat(rid);
+
+        return reservationMapper.MyPageReserveDetail(Reserve, ReserveSeat);
+    }
+
+    // 사용자가 좋아요 누른 영화 불러오는 메소드
+    @Transactional
+    public List<MovieDto> MovieLikeGet(HttpServletRequest request) {
+        // Access Token에 대한 유효성 검사
+        jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
+        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
+
+        // 사용자가 좋아요 누른 영화 목록 검색
+        List<MovieEntity> Movies = movieRepository.findMemberLikeMovieDESC(member);
+
+        // 영화 테이블에서 현재 예매가 가능한 영화들 조회
+        List<MovieEntity> MovieReserve = movieRepository.findShowMoviesReserve();
+
+        // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
+        float cnt = 0;
+        for (MovieEntity m : MovieReserve) {
+            cnt += m.getCntreserve();
+        }
+        // 람다식에서 사용하기 위해 final 선언
+        final float Cnt = cnt;
+
+        // 예매가 가능한 영화 ID를 List로 변환
+        // Mapper에서 Screen true, false를 위해 사용
+        List<Long> MovieIDCheck = new ArrayList<>();
+        for (MovieEntity M : MovieReserve) {
+            MovieIDCheck.add(M.getMid());
+        }
+
+        return Movies.stream().map(Movie ->
+                movieMapper.toDtoMyPage(Movie, MovieIDCheck.contains(Movie.getMid()), Cnt)).collect(Collectors.toList());
+    }
 
     // 사용자가 관람평을 작성할 수 있는 영화 목록을 불러오는 메소드
     @Transactional
@@ -180,169 +342,6 @@ public class MyPageMovieService {
         // 관람평 목록과 좋아요 기록을 mapping 후 리턴
         return MovieMembers.stream().map(MovieMember ->
                 movieCommentMapper.toDtoMyPage(MovieMember, CommentLikeList.contains(MovieMember.getUmid()))).collect(Collectors.toList());
-    }
-
-    // 사용자가 좋아요 누른 영화 불러오는 메소드
-    @Transactional
-    public List<MovieDto> MovieLikeGet(HttpServletRequest request) {
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        // authentication 객체에서 아이디 확보
-        String currentMemberId = SecurityUtil.getCurrentMemberId();
-
-        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
-        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
-
-        // 사용자가 좋아요 누른 영화 목록 검색
-        List<MovieEntity> Movies = movieRepository.findMemberLikeMovieDESC(member);
-
-        // 영화 테이블에서 현재 예매가 가능한 영화들 조회
-        List<MovieEntity> MovieReserve = movieRepository.findShowMoviesReserve();
-
-        // 예매가 가능한 영화들의 전체 예매 횟수(예매율 계산시 나누기 할때 사용)
-        float cnt = 0;
-        for (MovieEntity m : MovieReserve) {
-            cnt += m.getCntreserve();
-        }
-        // 람다식에서 사용하기 위해 final 선언
-        final float Cnt = cnt;
-
-        // 예매가 가능한 영화 ID를 List로 변환
-        // Mapper에서 Screen true, false를 위해 사용
-        List<Long> MovieIDCheck = new ArrayList<>();
-        for (MovieEntity M : MovieReserve) {
-            MovieIDCheck.add(M.getMid());
-        }
-
-        return Movies.stream().map(Movie ->
-                movieMapper.toDtoMyPage(Movie, MovieIDCheck.contains(Movie.getMid()), Cnt)).collect(Collectors.toList());
-    }
-
-    // 사용자가 현재 예매한 영화 내역 불러오는 메소드
-    @Transactional
-    public List<ReservationDto> MovieReserveSearch(HttpServletRequest request) {
-
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        // authentication 객체에서 아이디 확보
-        String currentMemberId = SecurityUtil.getCurrentMemberId();
-
-        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
-        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
-
-        // 현재 시점으로 부터 6개월 전 날짜 생성
-        String BeforeMonth = DateUtil.ChangeDateNow(0, -6, 0);
-
-        // 사용자가 예매한 영화의 정보 및 좌석 조회
-        List<ReservationEntity> Reserve = reservationRepository.findMyPageReserve(member, BeforeMonth);
-        List<MovieInfoSeatEntity> ReserveSeat = movieInfoSeatRepository.findMyPageReserveSeat(member, BeforeMonth);
-
-        return reservationMapper.MyPageListMapping(Reserve, ReserveSeat);
-    }
-
-    // 사용자가 현재 예매취소한 영화 내역 불러오는 메소드
-    @Transactional
-    public List<ReservationDto> MovieReserveCancelSearch(HttpServletRequest request) {
-
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        // authentication 객체에서 아이디 확보
-        String currentMemberId = SecurityUtil.getCurrentMemberId();
-
-        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
-        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
-
-        // 현재 시점으로 부터 6개월 전 날짜 생성
-        String BeforeMonth = DateUtil.ChangeDateNow(0, -6, 0);
-
-        // 사용자가 예매 취소한 영화의 정보 조회
-        List<ReservationEntity> ReserveCancel = reservationRepository.findMyPageReserveCancel(member, BeforeMonth);
-
-        return ReserveCancel.stream().map(Reserve -> ReservationDto.builder()
-                .rid(Reserve.getRid())
-                .rdate(Reserve.getRdate())
-                .rcanceldate(Reserve.getRcanceldate())
-                .mtitle(Reserve.getMovieInfo().getMovie().getMtitle())
-                .mimagepath(Reserve.getMovieInfo().getMovie().getMimagepath())
-                .tarea(Reserve.getMovieInfo().getCinema().getTheater().getTarea())
-                .tname(Reserve.getMovieInfo().getCinema().getTheater().getTname())
-                .cname(Reserve.getMovieInfo().getCinema().getCname())
-                .mistarttime(Reserve.getMovieInfo().getMistarttime())
-                .rticket(Reserve.getRticket())
-                .rprice(Reserve.getRprice()).build()).collect(Collectors.toList());
-    }
-
-    // 사용자가 예매한 지난 관람내역 불러오는 메소드
-    @Transactional
-    public List<ReservationDto> MovieReserveFinishSearch(HttpServletRequest request) {
-
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        // authentication 객체에서 아이디 확보
-        String currentMemberId = SecurityUtil.getCurrentMemberId();
-
-        // JPA를 사용하기 위해 현재 아이디를 entity형으로 변환
-        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
-
-        // 현재 시점으로 부터 6개월 전 날짜 생성
-        String BeforeMonth = DateUtil.ChangeDateNow(0, -6, 0);
-
-        // 사용자가 예매한 지난 관람내역의 정보 및 좌석 조회
-        List<ReservationEntity> ReserveFinish = reservationRepository.findMyPageReserveFinish(member, BeforeMonth);
-        List<MovieInfoSeatEntity> ReserveFinishSeat = movieInfoSeatRepository.findMyPageReserveFinishSeat(member, BeforeMonth);
-
-        return reservationMapper.MyPageListMapping(ReserveFinish, ReserveFinishSeat);
-    }
-
-    // 사용자가 예매한 영화의 세부 내역 불러오는 메소드
-    @Transactional
-    public ReservationDto MovieReserveDetailSearch(Long rid, HttpServletRequest request) {
-
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        // authentication 객체에서 아이디 확보
-        String currentMemberId = SecurityUtil.getCurrentMemberId();
-
-        // 사용자가 예매한 영화의 세부내역 조회
-        ReservationEntity Reserve = reservationRepository.findMyPageReserveDetail(rid)
-                .orElseThrow(() -> new ReserveNotFoundException("예매 기록이 존재하지 않습니다."));
-
-        // 조회하려는 예매의 예매자 id가 현재 사용자의 id와 다를 경우 예외처리
-        if (!Reserve.getMember().getUid().equals(currentMemberId)) {
-            throw new ReserveNotFoundException("예매 기록이 존재하지 않습니다.");
-        }
-
-        // 취소된 예매일 경우 좌석을 제외하고 매핑한 값을 리턴
-        if (!Reserve.getRstate()) {
-            return ReservationDto.builder()
-                    .rid(Reserve.getRid())
-                    .rdate(Reserve.getRdate())
-                    .rcanceldate(Reserve.getRcanceldate())
-                    .mid(Reserve.getMovieInfo().getMovie().getMid())
-                    .mtitle(Reserve.getMovieInfo().getMovie().getMtitle())
-                    .mimagepath(Reserve.getMovieInfo().getMovie().getMimagepath())
-                    .tarea(Reserve.getMovieInfo().getCinema().getTheater().getTarea())
-                    .tname(Reserve.getMovieInfo().getCinema().getTheater().getTname())
-                    .cname(Reserve.getMovieInfo().getCinema().getCname())
-                    .mistarttime(Reserve.getMovieInfo().getMistarttime())
-                    .miendtime(Reserve.getMovieInfo().getMiendtime())
-                    .mrating(Reserve.getMovieInfo().getMovie().getMrating())
-                    .rpeople(Reserve.getRpeople())
-                    .rticket(Reserve.getRticket())
-                    .rpaytype(Reserve.getRpaytype())
-                    .rprice(Reserve.getRprice())
-                    .rstate(Reserve.getRstate()).build();
-        }
-
-        // 사용자가 예매한 영화의 세부내역 좌석 조회
-        List<MovieInfoSeatEntity> ReserveSeat = movieInfoSeatRepository.findMyPageReserveDetailSeat(rid);
-
-        return reservationMapper.MyPageReserveDetail(Reserve, ReserveSeat);
     }
 }
 

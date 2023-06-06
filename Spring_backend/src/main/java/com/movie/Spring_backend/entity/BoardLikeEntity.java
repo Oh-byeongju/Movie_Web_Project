@@ -3,7 +3,6 @@ package com.movie.Spring_backend.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 

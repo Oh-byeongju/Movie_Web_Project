@@ -6,9 +6,6 @@ package com.movie.Spring_backend.repository;
 import com.movie.Spring_backend.entity.MemberEntity;
 import com.movie.Spring_backend.entity.MovieEntity;
 import com.movie.Spring_backend.entity.MovieMemberEntity;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +18,6 @@ import java.util.Optional;
 
 @Repository
 public interface MovieMemberRepository extends JpaRepository<MovieMemberEntity, Long> {
-
     // 사용자가 좋아요 누른 영화 목록 구하는 메소드
     List<MovieMemberEntity> findByUmlikeTrueAndMember(MemberEntity member);
 

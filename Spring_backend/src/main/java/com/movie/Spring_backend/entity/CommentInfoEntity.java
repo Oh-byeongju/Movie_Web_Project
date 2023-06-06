@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 public class CommentInfoEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cuid;

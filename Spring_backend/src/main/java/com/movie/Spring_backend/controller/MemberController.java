@@ -8,7 +8,6 @@
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.service.MemberService;
-import com.movie.Spring_backend.util.SecurityUtil;
 import com.movie.Spring_backend.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,8 +1,6 @@
 package com.movie.Spring_backend.entity;
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.annotations.Formula;
 
@@ -15,13 +13,17 @@ public class TheaterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tid;
 
+    @Column(nullable = false)
     private String tname;
 
+    @Column(nullable = false)
     private String taddr;
 
+    @Column(nullable = false)
     private String tarea;
 
     // 현재 영화관에 있는 상영관 개수
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM movie_cinema mc WHERE mc.tid = tid)")
     private Integer cntCinema;
 

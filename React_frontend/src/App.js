@@ -31,6 +31,7 @@ import ManagerBuilding from "./pages/ManagerBuilding";
 import ManagerMovieInfo from "./pages/ManagerMovieInfo";
 import ManagerMovie from "./pages/ManagerMovie";
 import BoardEdit from "./pages/BoardEdit";
+import NotFound from "./pages/NotFound";
 
 // TopButton과 Footer가 있어야 하는 페이지이면 Layout 사이에 넣고 아니면 따로 빼기
 function App() {
@@ -70,6 +71,8 @@ function App() {
         <Route path="/ManagerPage/Building" element={<ManagerBuilding />}></Route>
         <Route path="/ManagerPage/MovieInfo" element={<ManagerMovieInfo />}></Route>
         <Route path="/ManagerPage/Movie" element={<ManagerMovie />}></Route>
+				{/* 상단에 위치하는 라우트들의 규칙을 모두 확인, 일치하는 라우트가 없는경우 처리 */}
+				<Route path="*" element={<NotFound />}></Route>
       </Route>
     </Routes>
   );

@@ -69,7 +69,7 @@ const CommentList = () => {
 				}
       });
 		};
-	}, [possiblebutton, reviewbutton, location, dispatch])
+	}, [possiblebutton, reviewbutton, location, dispatch]);
 
 	// 작성 가능 영화 버튼 누를 때
 	const clickpossible = useCallback(()=> {
@@ -79,7 +79,7 @@ const CommentList = () => {
 
 		setpossiblebutton(true);
 		setreviewbutton(false);
-	}, [dispatch])
+	}, [dispatch]);
 
 	// 작성한 관람평 버튼 누를 때
 	const clickreview = useCallback(()=> {
@@ -89,7 +89,7 @@ const CommentList = () => {
 
 		setpossiblebutton(false);
 		setreviewbutton(true);
-	}, [dispatch])
+	}, [dispatch]);
 
 	return (
 		<Content>

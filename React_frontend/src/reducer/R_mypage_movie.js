@@ -5,11 +5,13 @@
 export const USER_MOVIE_POSSIBLE_REQUEST = "USER_MOVIE_POSSIBLE_REQUEST"
 export const USER_MOVIE_POSSIBLE_SUCCESS = "USER_MOVIE_POSSIBLE_SUCCESS"
 export const USER_MOVIE_POSSIBLE_FAILURE = "USER_MOVIE_POSSIBLE_FAILURE"
+export const USER_MOVIE_POSSIBLE_UPDATE = "USER_MOVIE_POSSIBLE_UPDATE"
 
 // 마이페이지 관람평 작성 리스트
 export const USER_MY_COMMENT_WRITE_REQUEST = "USER_MY_COMMENT_WRITE_REQUEST"
 export const USER_MY_COMMENT_WRITE_SUCCESS = "USER_MY_COMMENT_WRITE_SUCCESS"
 export const USER_MY_COMMENT_WRITE_FAILURE = "USER_MY_COMMENT_WRITE_FAILURE"
+export const USER_MY_COMMENT_WRITE_RESET = "USER_MY_COMMENT_WRITE_RESET"
 
 // 마이페이지 작성한 관람평 리스트
 export const USER_MY_COMMENT_SEARCH_REQUEST = "USER_MY_COMMENT_SEARCH_REQUEST"
@@ -29,8 +31,8 @@ export const USER_MY_COMMENT_DELETE_FAILURE = "USER_MY_COMMENT_DELETE_FAILURE"
 // 마이페이지 영화 관람평 내역 버튼 상태 Setting
 export const USER_MY_COMMENT_SETTING = "USER_MY_COMMENT_SETTING"
 
-// 무비 디테일에서 누른 관람평 좋아요 수정
-export const USER_MY_COMMENT_UPDATE = "USER_MY_COMMENT_UPDATE"
+// 무비 디테일에서 누른 관람평 내용 수정
+export const USER_MY_COMMENT_LIKE_UPDATE = "USER_MY_COMMENT_LIKE_UPDATE"
 
 const initalState = {
   MOVIE_POSSIBLE_loading: false,
@@ -88,6 +90,11 @@ const R_mypage_movie = (state = initalState, action) => {
 				MOVIE_POSSIBLE_error: true,
 				possibleMovie: []
 			};
+		case USER_MOVIE_POSSIBLE_UPDATE:
+			return {
+				...state,
+				possibleMovie: state.possibleMovie.filter(movie => movie.mid !== action.data)
+			}
 		// 관람평 작성 케이스들
 		case USER_MY_COMMENT_WRITE_REQUEST:
 			return {
@@ -111,6 +118,14 @@ const R_mypage_movie = (state = initalState, action) => {
 				MY_COMMENT_WRITE_done: false,
 				MY_COMMENT_WRITE_error: true,
 				MY_COMMENT_status: action.data
+			};
+		case USER_MY_COMMENT_WRITE_RESET:
+			return {
+				...state,
+				MY_COMMENT_WRITE_loading: false,
+				MY_COMMENT_WRITE_done: false,
+				MY_COMMENT_WRITE_error: false,
+				MY_COMMENT_status: ''
 			};
 		// 작성한 관람평 조회 케이스들
 		case USER_MY_COMMENT_SEARCH_REQUEST:
@@ -194,7 +209,7 @@ const R_mypage_movie = (state = initalState, action) => {
 				Comment_key: action.data.key
 			};
 		// 무비 디테일에서 누른 관람평 좋아요 수정 케이스
-		case USER_MY_COMMENT_UPDATE:
+		case USER_MY_COMMENT_LIKE_UPDATE:
 			return {
 				...state,
 				// 좋아요 버튼을 누른 관람평의 내용을 수정

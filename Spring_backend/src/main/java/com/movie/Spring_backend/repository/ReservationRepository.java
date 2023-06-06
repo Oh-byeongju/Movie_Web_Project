@@ -1,8 +1,6 @@
 package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,12 +20,11 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     Optional<ReservationEntity> findByRpayid(String rpayid);
 
     // 사용자가 예매한 영화 정보들을 가져오는 메소드(예매시간 순으로 내림차순, 아직 영화가 끝나지 않은 예매들)
-    // 아래꺼도 movieInfocinema 지워도 되는걸로암
     @Query(value = "SELECT rs FROM ReservationEntity as rs INNER JOIN MovieInfoEntity as mi " +
             "ON rs.movieInfo = mi.miid " +
             "WHERE rs.member = :member AND rs.rstate = true AND rs.rdate > :rdate AND mi.miendtime > now() " +
             "ORDER BY rs.rdate DESC")
-    @EntityGraph(attributePaths = {"movieInfo.movie", "movieInfo.cinema", "movieInfo.cinema.theater"})
+    @EntityGraph(attributePaths = {"movieInfo.movie", "movieInfo.cinema.theater"})
     List<ReservationEntity> findMyPageReserve(@Param("member") MemberEntity member, @Param("rdate") String rdate);
 
     // 사용자가 예매취소한 영화 정보들을 가져오는 메소드(취소시간 순으로 내림차순)
@@ -35,11 +32,10 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
              "ON rs.movieInfo = mi.miid " +
              "WHERE rs.member = :member AND rs.rstate = false AND rs.rdate > :rdate " +
              "ORDER BY rs.rcanceldate DESC")
-    @EntityGraph(attributePaths = {"movieInfo.movie", "movieInfo.cinema", "movieInfo.cinema.theater"})
+    @EntityGraph(attributePaths = {"movieInfo.movie", "movieInfo.cinema.theater"})
     List<ReservationEntity> findMyPageReserveCancel(@Param("member") MemberEntity member, @Param("rdate") String rdate);
 
     // 사용자가 예매한 지난 관람내역들을 가져오는 메소드(예매시간 순으로 내림차순, 영화가 끝난 예매들)
-    // 이거 처럼 수정해버리면 됨 (메모장 확인) 엔티티 그래프
     @Query(value = "SELECT rs FROM ReservationEntity as rs INNER JOIN MovieInfoEntity as mi " +
             "ON rs.movieInfo = mi.miid " +
             "WHERE rs.member = :member AND rs.rstate = true AND rs.rdate > :rdate AND mi.miendtime <= now() " +
@@ -51,7 +47,7 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     @Query(value = "SELECT rs FROM ReservationEntity as rs INNER JOIN MovieInfoEntity as mi " +
             "ON rs.movieInfo = mi.miid " +
             "WHERE rs.rid = :rid")
-    @EntityGraph(attributePaths = {"movieInfo.movie", "movieInfo.cinema", "movieInfo.cinema.theater"})
+    @EntityGraph(attributePaths = {"movieInfo.movie", "movieInfo.cinema.theater"})
     Optional<ReservationEntity> findMyPageReserveDetail(@Param("rid") Long rid);
 
     // 예매 취소시 컬럼을 수정하는 메소드(예매 상태를 false, 취소시간을 현재 시간으로)
@@ -60,12 +56,6 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
             "SET rs.rstate = false, rs.rcanceldate = now() " +
             "WHERE rs.rid = :rid")
     void UserReservationCancel(@Param("rid") Long rid);
-
-
-    // 엔티티 그래프 쓴거 전부 INNER JOIN으로 바꾸기 (레프트 조인 쓴거도)
-    // 엔티티 그래프로 불러오면서 Inner join으로 조건 줘야함
-    // inner join이 하나면 fetch join 써보고 두개면 그냥 inner join걸고 거기에 앤티티 그래프 써야할듯
-
 
     // 특정 영화의 예매 기록을 전부 들고오는 메소드(예매시간 순으로 내림차순, 예매취소 제외)
     @Query(value = "SELECT rs FROM ReservationEntity as rs INNER JOIN MovieInfoEntity as mi " +

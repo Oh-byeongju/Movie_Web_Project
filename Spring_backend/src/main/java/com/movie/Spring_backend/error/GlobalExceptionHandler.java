@@ -17,7 +17,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
     /**
      * javax.validation.Valid or @Validated 으로 binding error 발생시 발생한다.
      * HttpMessageConverter 에서 등록한 HttpMessageConverter binding 못할경우 발생

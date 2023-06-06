@@ -1,8 +1,6 @@
 package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -62,10 +60,8 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfoEntity, Long
             "WHERE mi.movie = :movie AND mi.miendtime <= now()")
     List<MovieInfoEntity> findInfoBeforeToday(@Param("movie") MovieEntity movie);
 
-    // 이거 조인 빼버려도 될듯 --> 부질의로
-    // 조인건거 보니깐 조금 다름 부질의로 빼서 N+1생길수도 있음 확인바람
     // 특정 사용자가 예매후 관람이 끝난 영화 정보를 들고오는 메소드
-    @Query(value = "SELECT mi FROM MovieInfoEntity as mi LEFT OUTER JOIN mi.reservations rs " +
+    @Query(value = "SELECT mi FROM MovieInfoEntity as mi INNER JOIN mi.reservations rs " +
             "WHERE mi.miendtime <= NOW() AND rs.rstate = 1 AND rs.member = :member")
     List<MovieInfoEntity> findMemberPossible(@Param("member") MemberEntity member);
 

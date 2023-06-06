@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ManagerMemberService {
+public class ManagerTwoService {
     private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
     private final ReservationRepository reservationRepository;

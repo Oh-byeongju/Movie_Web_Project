@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-
 public class TheaterDto {
     private Long tid;
     private String tname;

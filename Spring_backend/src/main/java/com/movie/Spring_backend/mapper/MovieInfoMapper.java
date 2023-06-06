@@ -2,15 +2,12 @@ package com.movie.Spring_backend.mapper;
 
 import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.entity.MovieInfoEntity;
-import com.movie.Spring_backend.entity.TheaterEntity;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class MovieInfoMapper {

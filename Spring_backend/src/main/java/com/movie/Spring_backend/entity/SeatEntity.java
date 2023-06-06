@@ -1,8 +1,6 @@
 package com.movie.Spring_backend.entity;
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 @Entity
@@ -14,6 +12,7 @@ public class SeatEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sid;
 
+    @Column(nullable = false)
     private String sname;
 
     @ManyToOne(fetch = FetchType.LAZY)

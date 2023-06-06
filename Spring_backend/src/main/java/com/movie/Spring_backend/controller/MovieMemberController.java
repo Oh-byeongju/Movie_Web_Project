@@ -7,7 +7,6 @@
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.CommentInfoDto;
-import com.movie.Spring_backend.dto.MemberDto;
 import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.service.MovieMemberService;
 import lombok.RequiredArgsConstructor;

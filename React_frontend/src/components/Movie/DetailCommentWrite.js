@@ -8,16 +8,19 @@ import { Rate } from 'antd';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { USER_COMMENT_WRITE_REQUEST, USER_COMMENT_WRITE_RESET } from '../../reducer/R_user_movie';
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+// 별점 표시를 위한 배열
+const desc = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 const DetailCommentWrite = () => {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const location = useLocation();
 
-	// 별점 표시를 위한 배열
+	// 별점 표시를 위한 useState
 	const [value, setValue] = useState(5);
-	const desc = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-
+	
 	// textarea 내용 변수
 	const [comment, setcomment] = useState("");
 	const handleCommentChange = e => {
@@ -36,12 +39,16 @@ const DetailCommentWrite = () => {
 
 	// 관람평 작성 버튼을 누르면 실행되는 함수
 	const onSubmit = useCallback(() => {
-
 		// 로그인 상태 확인
-		if (LOGIN_data.uid === 'No_login') {
-      alert("로그인이 필요한 서비스입니다.")
-      return;
-    }
+		if (LOGIN_data.uid === "No_login") {
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: location.pathname}});
+				return;
+			}
+		}
 
 		// 관람평이 빈칸인지 확인
 		if (comment === '') {
@@ -63,13 +70,14 @@ const DetailCommentWrite = () => {
 			}
 		})
 
-	}, [dispatch, LOGIN_data.uid, detailMovie.mid, comment, value]);
+	}, [dispatch, navigate, location.pathname, LOGIN_data.uid, detailMovie.mid, comment, value]);
 
-	// 관람평 작성 결과에 따른 alert을 위한 useEffect
+	// 관람평 작성 실패에 따른 alert을 위한 useEffect
 	useEffect(()=> {
+		// 작성 성공시 입력칸 초기화
 		if (WRITE_code === 204) {
-			window.location.replace(location.pathname);
-			return;
+			setValue(5);
+			setcomment("");
 		}
 
 		if (WRITE_code === "MC002") {
@@ -86,7 +94,6 @@ const DetailCommentWrite = () => {
 				type: USER_COMMENT_WRITE_RESET
 			});
 		}
-
 	}, [WRITE_code, location.pathname, dispatch]);
 
 	return (

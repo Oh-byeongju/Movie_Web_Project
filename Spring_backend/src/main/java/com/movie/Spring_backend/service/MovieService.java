@@ -6,7 +6,6 @@
 */
 package com.movie.Spring_backend.service;
 import com.movie.Spring_backend.entity.*;
-import com.movie.Spring_backend.mapper.MovieCommentMapper;
 import com.movie.Spring_backend.repository.*;
 import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
@@ -27,9 +26,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieMemberRepository movieMemberRepository;
     private final MovieActorRepository movieActorRepository;
-    private final CommentInfoRepository commentInfoRepository;
     private final MovieMapper movieMapper;
-    private final MovieCommentMapper movieCommentMapper;
 
     // 전체 영화 조회 메소드
     public List<MovieDto> getAllMovie(Map<String, String> requestMap) {

@@ -7,18 +7,20 @@ import styled from 'styled-components';
 import { CloseOutlined } from "@ant-design/icons";
 import { Rate } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { USER_MY_COMMENT_WRITE_REQUEST } from '../../reducer/R_mypage_movie';
+import { USER_MOVIE_POSSIBLE_REQUEST, USER_MY_COMMENT_WRITE_REQUEST, USER_MY_COMMENT_WRITE_RESET, USER_MOVIE_POSSIBLE_UPDATE } from '../../reducer/R_mypage_movie';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+
+// 별점 표시를 위한 배열
+const desc = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 const CommentModal = ({ movie, setwrite }) => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 
-	// 별점 표시를 위한 배열
+	// 별점 표시를 위한 useState
 	const [value, setValue] = useState(5);
-	const desc = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-
+	
 	// textarea 내용 변수
 	const [comment, setcomment] = useState("");
 	const handleCommentChange = e => {
@@ -33,13 +35,13 @@ const CommentModal = ({ movie, setwrite }) => {
 
 		// 관람평이 빈칸인지 확인
 		if (comment === '') {
-			alert("관람평을 작성해 주세요!")
+			alert("관람평을 작성해 주세요!");
 			return;
 		}
 
 		if (!window.confirm("관람평을 작성하시겠습니까?")) {
       return;
-    };
+    }
 
 		// 관람평 작성 요청
 		dispatch({
@@ -49,22 +51,36 @@ const CommentModal = ({ movie, setwrite }) => {
 				mcomment: comment,
 				mscore: (value*2)
 			}
-		})
-
+		});
 	}, [dispatch, movie, comment, value]);
 
 	// 관람평 작성 결과에 따른 alert을 위한 useEffect
 	useEffect(()=> {
+		// 작성 성공
 		if (MY_COMMENT_status === 204) {
-			window.location.replace(location.pathname);
-			return;
+			dispatch({
+				type: USER_MY_COMMENT_WRITE_RESET
+			});	
+
+			dispatch({
+				type: USER_MOVIE_POSSIBLE_UPDATE,
+				data: movie.mid
+			});
+			setwrite(false);
 		}
 
+		// 작성 실패
 		if (MY_COMMENT_status === 400) {
 			alert("이미 작성된 관람평이 존재합니다.");
-			window.location.replace(location.pathname);
+			dispatch({
+				type: USER_MOVIE_POSSIBLE_REQUEST
+			});
+
+			dispatch({
+				type: USER_MY_COMMENT_WRITE_RESET
+			});
 		}
-	}, [MY_COMMENT_status, location.pathname, dispatch]);
+	}, [MY_COMMENT_status, setwrite, movie.mid, location.pathname, dispatch]);
 
 	// 모달창 스크롤 막는 useEffect
 	useEffect(() => {

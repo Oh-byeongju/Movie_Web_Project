@@ -15,27 +15,35 @@ import java.util.List;
 public class MemberEntity {
 
     @Id
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String uid;
 
+    @Column(nullable = false)
     private String upw;
 
+    @Column(nullable = false)
     private String uname;
 
+    @Column(unique = true)
     private String uemail;
 
+    @Column(nullable = false)
     private String utel;
 
+    @Column(nullable = false)
     private String uaddr;
 
+    @Column(nullable = false)
     private String uaddrsecond;
 
+    @Column(nullable = false)
     private Date ubirth;
 
+    @Column(nullable = false)
     private Date ujoindate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private Authority uauthority;
 
     // 일대다 관계 매핑

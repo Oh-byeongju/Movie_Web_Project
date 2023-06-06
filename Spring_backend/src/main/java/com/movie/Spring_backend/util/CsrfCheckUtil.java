@@ -20,7 +20,7 @@ public class CsrfCheckUtil {
         // 쿠키가 없을 경우 예외처리
         if (Cookies == null) {
             throw new InvalidValueException("정보가 일치하지 않습니다.", ErrorCode.CSRF_ERROR);
-        };
+        }
 
         // CTK 토큰의 값을 추출
         String CookieToken = "";

@@ -16,7 +16,6 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
     // 한글 출력을 위해 getWriter() 사용, 프론트단으로 보내는 error 가공
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {

@@ -13,7 +13,6 @@ import com.movie.Spring_backend.repository.RedisSeatRepository;
 import com.movie.Spring_backend.repository.SeatRepository;
 import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;

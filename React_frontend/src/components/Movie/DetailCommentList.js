@@ -4,21 +4,29 @@
 	23-02-23 영화 상세정보 관람평 백엔드 연결(오병주)
 */
 import React, { useState, useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useLocation } from "react-router-dom";
 import styled from 'styled-components';
 import { StarFilled, UnorderedListOutlined, LikeOutlined, DownOutlined  } from "@ant-design/icons";
 import DetailComment from './DetailComment';
 import { DETAIL_COMMENT_REQUEST } from '../../reducer/R_movie';
+import { USER_COMMENT_WRITE_RESET, USER_COMMENT_DELETE_RESET } from '../../reducer/R_user_movie';
+import { USER_MOVIE_POSSIBLE_REQUEST, USER_MY_COMMENT_SEARCH_REQUEST } from '../../reducer/R_mypage_movie';
 
 const DetailCommentList = () => {
 	const location = useLocation();  
 	const dispatch = useDispatch();
 
-	// 로그인 리덕스 상태
-  const { LOGIN_data } = useSelector((state) => state.R_user_login);
-	// 현재 페이지 관람평 리덕스 상태
-	const { detailComment } = useSelector((state) => state.R_movie);
+	// 필요한 리덕스 상태들
+  const { LOGIN_data, detailComment, WRITE_code, COMMENT_DELETE_done } = useSelector(
+    state => ({
+			LOGIN_data: state.R_user_login.LOGIN_data,
+      detailComment: state.R_movie.detailComment,
+      WRITE_code: state.R_user_movie.WRITE_code,
+			COMMENT_DELETE_done: state.R_user_movie.COMMENT_DELETE_done
+    }),
+    shallowEqual
+  );
 
   // 로그인 상태에 따라 전체 검색이 다름(관람평 좋아요 표시 때문)
   useEffect(() => {
@@ -74,6 +82,62 @@ const DetailCommentList = () => {
     setlimit(limit + 30);
   }, [limit]);
 
+	// 관람평 작성 성공시 관람평 목록 갱신 useEffect
+	useEffect(()=> {
+		if (WRITE_code === 204) {
+			dispatch({
+				type: DETAIL_COMMENT_REQUEST,
+				data: {
+					pathname: location.pathname,
+					uid: LOGIN_data.uid,
+					sort: "new"
+				}
+			});
+			setnewbutton(true);
+			setlikebutton(false);
+
+			dispatch({
+				type: USER_COMMENT_WRITE_RESET
+			});
+
+			// 마이페이지 내용도 갱신
+			dispatch({
+				type: USER_MOVIE_POSSIBLE_REQUEST
+			});
+
+			dispatch({
+				type: USER_MY_COMMENT_SEARCH_REQUEST
+			});
+		}
+	}, [WRITE_code, LOGIN_data.uid, location.pathname, dispatch]);
+
+	// 관람평 삭제 성공시 관람평 목록 갱신 useEffect
+	useEffect(()=> {
+		if (COMMENT_DELETE_done) {
+			dispatch({
+				type: DETAIL_COMMENT_REQUEST,
+				data: {
+					pathname: location.pathname,
+					uid: LOGIN_data.uid,
+					sort: newbutton ? "new" : "like"
+				}
+			});
+
+			dispatch({
+				type: USER_COMMENT_DELETE_RESET
+			});
+
+			// 마이페이지 내용도 갱신
+			dispatch({
+				type: USER_MOVIE_POSSIBLE_REQUEST
+			});
+
+			dispatch({
+				type: USER_MY_COMMENT_SEARCH_REQUEST
+			});
+		}
+	}, [COMMENT_DELETE_done, LOGIN_data.uid, newbutton, location.pathname, dispatch]);
+
 	return (
 		<Layout>
 			<CommentSection>
@@ -118,10 +182,9 @@ const DetailCommentList = () => {
 			</CommentSection>
 			<SubSection>
 				{limit >= detailComment.length ? null : 
-          <More onClick={onMoreClick}>
-            더 보기 <DownOutlined />
-          </More>
-        }
+				<More onClick={onMoreClick}>
+					더 보기 <DownOutlined />
+				</More>}
 			</SubSection>
 		</Layout>
 	);

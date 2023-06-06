@@ -36,18 +36,24 @@ const Movie = ({ movie }) => {
 
   // 사용자가 영화의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {
-    if (LOGIN_data.uid === "No_login") {
-      alert("로그인이 필요한 서비스입니다.");
-      return;
-    }
-
-    dispatch({
-      type: USER_MLIKE_REQUEST,
-      data: {
-        mid: movie.mid,
-      }
-    });
-  }, [movie.mid, LOGIN_data.uid, dispatch]);
+    // 로그인 상태 확인
+		if (LOGIN_data.uid === "No_login") {
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: location.pathname}});
+			}
+		}
+		else {
+			dispatch({
+				type: USER_MLIKE_REQUEST,
+				data: {
+					mid: movie.mid,
+				}
+			});
+		}
+  }, [movie.mid, LOGIN_data.uid, location.pathname, navigate, dispatch]);
 
   // UI에는 변경되지 않았지만 삭제된 영화 좋아요 누를 경우
   useEffect(()=> {

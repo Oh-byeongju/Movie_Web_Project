@@ -9,13 +9,14 @@ import { SmileFilled, MehFilled, FrownFilled, DeleteOutlined, LikeOutlined, Like
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { USER_COMMENT_LIKE_REQUEST } from '../../reducer/R_movie';
 import { USER_COMMENT_DELETE_REQUEST } from '../../reducer/R_user_movie';
-import { USER_MY_COMMENT_UPDATE } from '../../reducer/R_mypage_movie';
-import { useLocation } from "react-router-dom";
+import { USER_MY_COMMENT_LIKE_UPDATE } from '../../reducer/R_mypage_movie';
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from 'react';
 
 const DetailComment = ({ comment }) => {
 	const dispatch = useDispatch();
 	const location = useLocation(); 
+	const navigate = useNavigate();
 
 	// 필요한 리덕스 상태들
   const { LOGIN_data, COMMENT_LIKE_error, COMMENT_LIKE_result } = useSelector(
@@ -30,18 +31,22 @@ const DetailComment = ({ comment }) => {
 	// 사용자가 관람평의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {
     if (LOGIN_data.uid === "No_login") {
-      alert("로그인이 필요한 서비스입니다.");
-      return;
-    }
-
-    dispatch({
-      type: USER_COMMENT_LIKE_REQUEST,
-      data: {
-        umid: comment.umid
-      },
-    });
-
-  }, [LOGIN_data.uid, comment.umid, dispatch]);
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: location.pathname}});
+			}
+		}
+		else {
+			dispatch({
+				type: USER_COMMENT_LIKE_REQUEST,
+				data: {
+					umid: comment.umid
+				},
+			});
+		}
+  }, [LOGIN_data.uid, comment.umid, location.pathname, navigate, dispatch]);
 
 	// 관람평 삭제 버튼 누르면 실행되는 함수
 	const CommentDelete = useCallback(() => {
@@ -53,25 +58,21 @@ const DetailComment = ({ comment }) => {
       type: USER_COMMENT_DELETE_REQUEST,
 			data: comment.umid
     });
-		
-		window.location.replace(location.pathname);
-	}, [dispatch, comment.umid, location.pathname]);
+	}, [dispatch, comment.umid]);
 
 	// UI에는 변경되지 않았지만 삭제된 관람평을 좋아요 누를 경우
 	useEffect(()=> {
-		
 		if (COMMENT_LIKE_error === comment.umid) {
 			alert("존재하지 않는 관람평입니다.");
 			window.location.replace(location.pathname);
 		}
-
 	}, [COMMENT_LIKE_error, comment.umid, location.pathname]);
 
 	// 자신의 관람평을 좋아요 눌렀을경우 마이페이지 ui 수정
 	useEffect(()=> {
 		if (COMMENT_LIKE_result && COMMENT_LIKE_result.umid === comment.umid) {
 			dispatch({
-				type: USER_MY_COMMENT_UPDATE,
+				type: USER_MY_COMMENT_LIKE_UPDATE,
 				data: COMMENT_LIKE_result
 			});
 		}

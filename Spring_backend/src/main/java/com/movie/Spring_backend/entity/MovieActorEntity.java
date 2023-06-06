@@ -8,18 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Table(name="movie_actor")
 @Entity
 @Getter
 @NoArgsConstructor
 public class MovieActorEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long maid;
 
+    @Column(nullable = false)
     private String marole;
 
     // 다대일 관계 매핑

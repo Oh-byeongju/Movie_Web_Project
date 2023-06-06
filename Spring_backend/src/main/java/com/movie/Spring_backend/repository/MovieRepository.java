@@ -6,7 +6,6 @@
 package com.movie.Spring_backend.repository;
 
 import com.movie.Spring_backend.entity.MemberEntity;
-import com.movie.Spring_backend.entity.MovieInfoEntity;
 import com.movie.Spring_backend.entity.TheaterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,7 +20,6 @@ import java.util.Set;
 
 @Repository
 public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
-
     // 현재 예매가 가능한 영화 조회 메소드(영화시작 시간이 현재시간에 30분을 더한 값 보다 큰것들, 예매율 계산에 사용)
     @Query(value = "SELECT m FROM MovieEntity as m WHERE m.mid IN " +
             "(SELECT DISTINCT mi.movie FROM MovieInfoEntity mi WHERE mi.mistarttime >= function('addtime', now(), '0:30:00'))")

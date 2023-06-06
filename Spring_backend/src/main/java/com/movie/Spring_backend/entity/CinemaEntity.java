@@ -14,15 +14,17 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "movie_cinema")
 public class CinemaEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
 
+    @Column(nullable = false)
     private String cname;
 
+    @Column(nullable = false)
     private String ctype;
 
+    @Column(nullable = false)
     private Integer cseat;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +32,7 @@ public class CinemaEntity {
     private TheaterEntity theater;
 
     // 상영관이 지정된 상영정보 개수
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM movie_information mi WHERE mi.cid = cid)")
     private Integer cntMovieInfo;
 

@@ -128,8 +128,12 @@ const ContentComment = () => {
 	// 댓글 좋아요 함수
 	const onClickUp = useCallback((data)=> {
 		if (LOGIN_data.uid === "No_login") {
-			alert('로그인이 필요한 서비스입니다.');
-			return;
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: `/Board/content/${category}/${id}/${title}`}});
+			}
 		}
 		else {
 			dispatch({
@@ -141,13 +145,17 @@ const ContentComment = () => {
 				}
 			});
 		}
-	}, [LOGIN_data.uid, id, dispatch]);
+	}, [LOGIN_data.uid, category, id, title, navigate, dispatch]);
 
 	// 댓글 싫어요 함수
 	const onClickDown = useCallback((data) => {
 		if (LOGIN_data.uid === "No_login") {
-			alert('로그인이 필요한 서비스입니다.');
-			return;
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: `/Board/content/${category}/${id}/${title}`}});
+			}
 		}
 		else {
 			dispatch({
@@ -159,7 +167,7 @@ const ContentComment = () => {
 				}
 			});
 		}
-	}, [LOGIN_data.uid, id, dispatch]);
+	}, [LOGIN_data.uid, category, id, title, navigate, dispatch]);
 
 	// 댓글 좋아요, 싫어요 실패시 useEffect
 	useEffect(()=> {

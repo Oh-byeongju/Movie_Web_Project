@@ -66,6 +66,7 @@ const LoginForm = () => {
   // 로그인 상태확인용 리덕스 상태
   const { LOGIN_data } = useSelector((state) => state.R_user_login);
   const { LOGIN_loading } = useSelector((state) => state.R_user_login);
+	const { LOGIN_done } = useSelector((state) => state.R_user_login);
 
   // enter키를 누르면 로그인이 실행되게 하는 함수
   const handleOnKeyPress = (e) => {
@@ -96,15 +97,16 @@ const LoginForm = () => {
       return;
     }
     // 로그인에 성공했을 경우 메인페이지 또는 이전 페이지로 넘어가게 함
-    if (LOGIN_data.uname !== '' && LOGIN_data.uname !== "error!!") {
+    if (LOGIN_data.uname !== '' && LOGIN_data.uname !== "error!!" && LOGIN_done) {
       if (location.state === null || location.state.url === "/UserJoin" || location.state.url === "/UserLogin") {
 				navigate(`/`);
       }
 			else {
 				navigate(location.state.url, {state: {url: '/UserLogin'}});
 			}
+			dispatch({ type: USER_LOGIN_RESET });
     }
-  }, [LOGIN_data, location.state, navigate, dispatch]);
+  }, [LOGIN_data, location.state, LOGIN_done, navigate, dispatch]);
 
   // 아이디 찾기 및 비밀번호 찾기 모달 상태관리
   const [findid, setfindid] = useState(false);
@@ -112,7 +114,7 @@ const LoginForm = () => {
 
 	// 예매 페이지에서 로그인하러 왔을경우 선택한 예매정보를 세팅해주는 useEffect
 	useEffect(()=> {
-		if (location.state.url === "/Reserve" && location.state.MOVIEINFO) {
+		if (location.state && location.state.url === "/Reserve" && location.state.MOVIEINFO) {
 			dispatch({
 				type: TICKET_PAGE_SETTING,
 				data: {

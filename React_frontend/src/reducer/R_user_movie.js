@@ -10,6 +10,7 @@ export const USER_COMMENT_WRITE_RESET = "USER_COMMENT_WRITE_RESET"
 export const USER_COMMENT_DELETE_REQUEST = "USER_COMMENT_DELETE_REQUEST"
 export const USER_COMMENT_DELETE_SUCCESS = "USER_COMMENT_DELETE_SUCCESS"
 export const USER_COMMENT_DELETE_FAILURE = "USER_COMMENT_DELETE_FAILURE"
+export const USER_COMMENT_DELETE_RESET = "USER_COMMENT_DELETE_RESET"
 
 const initalState = {
 	COMMENT_WRITE_loading: false,
@@ -69,14 +70,21 @@ const R_user_movie = (state = initalState, action) => {
 				...state,
 				COMMENT_DELETE_loading: false,
 				COMMENT_DELETE_done: true,
-				COMMENT_DELETE_error: false,
+				COMMENT_DELETE_error: false
 			};
 		case USER_COMMENT_DELETE_FAILURE:
 			return {
 				...state,
 				COMMENT_DELETE_loading: false,
 				COMMENT_DELETE_done: false,
-				COMMENT_DELETE_error: true,
+				COMMENT_DELETE_error: true
+			};
+		case USER_COMMENT_DELETE_RESET:
+			return {
+				...state,
+				COMMENT_DELETE_loading: false,
+				COMMENT_DELETE_done: false,
+				COMMENT_DELETE_error: false
 			};
 		default:
       return state;

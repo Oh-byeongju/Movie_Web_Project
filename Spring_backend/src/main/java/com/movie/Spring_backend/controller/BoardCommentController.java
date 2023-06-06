@@ -4,7 +4,6 @@
 package com.movie.Spring_backend.controller;
 
 import com.movie.Spring_backend.dto.BoardCommentDto;
-import com.movie.Spring_backend.dto.BoardDto;
 import com.movie.Spring_backend.dto.CountCommentDto;
 import com.movie.Spring_backend.service.BoardCommentService;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController

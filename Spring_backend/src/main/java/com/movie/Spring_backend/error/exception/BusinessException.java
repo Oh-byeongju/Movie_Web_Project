@@ -1,4 +1,3 @@
-// 23-01-13 아이디 중복 예외처리 구현(오병주)
 package com.movie.Spring_backend.error.exception;
 
 public class BusinessException extends RuntimeException {

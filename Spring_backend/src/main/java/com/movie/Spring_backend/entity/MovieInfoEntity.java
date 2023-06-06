@@ -10,8 +10,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.Formula;
-
 @Table(name="movie_information")
 @Entity
 @Getter
@@ -22,10 +20,13 @@ public class MovieInfoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long miid;
 
+    @Column(nullable = false)
     private Date miday;
 
+    @Column(nullable = false)
     private String mistarttime;
 
+    @Column(nullable = false)
     private String miendtime;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,6 +38,7 @@ public class MovieInfoEntity {
     private CinemaEntity cinema;
 
     // 현재 상영정보가 점유한 좌석 개수
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM movie_infoseat mis WHERE mis.miid = miid)")
     private Integer cntSeatInfo;
 

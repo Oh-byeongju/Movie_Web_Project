@@ -29,9 +29,10 @@ const Details = () => {
   };
 
 	// 필요한 리덕스 상태들
-  const { LOGIN_data, detailMovie, MLIKE_error, detail_movie_loading } = useSelector(
+  const { LOGIN_data, LOGIN_STATUS_loading, detailMovie, MLIKE_error, detail_movie_loading } = useSelector(
     state => ({
 			LOGIN_data: state.R_user_login.LOGIN_data,
+			LOGIN_STATUS_loading: state.R_user_login.LOGIN_STATUS_loading,
       detailMovie: state.R_movie.detailMovie,
       MLIKE_error: state.R_movie.MLIKE_error,
 			detail_movie_loading: state.R_movie.detail_movie_loading
@@ -52,18 +53,24 @@ const Details = () => {
 
   // 사용자가 영화의 좋아요를 누를 때 호출되는 함수
   const LikeChange = useCallback(() => {
-    if (LOGIN_data.uid === 'No_login') {
-      alert("로그인이 필요한 서비스입니다.")
-      return;
-    }   
-
-    dispatch({
-      type: USER_MLIKE_REQUEST,
-      data: {
-        mid: detailMovie.mid
-      }
-    })
-  }, [detailMovie.mid, LOGIN_data.uid, dispatch]);
+    // 로그인 상태 확인
+		if (LOGIN_data.uid === "No_login") {
+			if (!window.confirm("로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?")) {
+				return;
+			} 
+			else {
+				navigate(`/UserLogin`, {state: {url: location.pathname}});
+			}
+		}
+		else {
+			dispatch({
+				type: USER_MLIKE_REQUEST,
+				data: {
+					mid: detailMovie.mid
+				}
+			});
+		}
+  }, [detailMovie.mid, LOGIN_data.uid, location.pathname, navigate, dispatch]);
 
   // UI에는 변경되지 않았지만 삭제된 영화 좋아요 누를 경우
   useEffect(()=> {
@@ -112,7 +119,7 @@ const Details = () => {
 
   return (
     <Container>
-      {detail_movie_loading ? <MovieSearchLoading height={1000}/> : 
+      {detail_movie_loading || LOGIN_STATUS_loading? <MovieSearchLoading height={1050}/> : 
       <Content>
         <Wrapper>
           <BaseMovie>

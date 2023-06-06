@@ -20,23 +20,32 @@ public class MovieEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mid;
 
+    @Column(nullable = false)
     private String mtitle;
 
+    @Column(nullable = false)
     private String mdir;
 
+    @Column(nullable = false)
     private String mgenre;
 
+    @Column(nullable = false)
     private Integer mtime;
 
+    @Column(nullable = false)
     private Date mdate;
 
+    @Column(nullable = false)
     private String mrating;
 
+    @Column(nullable = false)
     private String mstory;
 
+    @Column(nullable = false)
     private String mimagepath;
 
     // 영화의 예매기록 갯수 (예매 취소 제외)
+    @Column(nullable = false)
     private Integer cntreserve;
 
     // 좋아요 개수 추출
@@ -50,6 +59,7 @@ public class MovieEntity {
     private Float avgScore; // 평점의 평균
 
     // 영화가 지정된 상영정보 개수
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM movie_information mi WHERE mi.mid = mid)")
     private Integer cntMovieInfo;
 

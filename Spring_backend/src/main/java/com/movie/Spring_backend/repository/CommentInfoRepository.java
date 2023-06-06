@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentInfoRepository extends JpaRepository<CommentInfoEntity, Long> {
-
     // 사용자 ID와 관람평 번호를 이용해서 좋아요 기록을 조회하는 메소드
     Optional<CommentInfoEntity> findByMemberAndMoviemember(MemberEntity member, MovieMemberEntity moviemember);
 

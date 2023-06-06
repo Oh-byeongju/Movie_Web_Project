@@ -4,7 +4,6 @@ import lombok.*;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +21,7 @@ public class ActorEntity {
     private String abirthplace;
 
     // 출연한 영화 횟수
+    @Basic(fetch = FetchType.LAZY)
     @Formula("(SELECT COUNT(*) FROM movie_actor ma WHERE ma.aid = aid)")
     private Integer cntMovie;
 

@@ -6,7 +6,6 @@ import com.movie.Spring_backend.error.exception.InvalidValueException;
 
 // 아이디 중복시 처리되는 예외
 public class IdDuplicateException extends InvalidValueException {
-
     // message와 error 코드를 이용하여 부모 클래스의 생성자 InvalidValueException 생성자 호출
     public IdDuplicateException(String message) {super(message, ErrorCode.ID_DUPLICATION); }
 

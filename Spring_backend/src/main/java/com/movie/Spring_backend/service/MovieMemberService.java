@@ -12,7 +12,6 @@ import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.error.exception.BusinessException;
 import com.movie.Spring_backend.error.exception.EntityNotFoundException;
 import com.movie.Spring_backend.error.exception.ErrorCode;
-import com.movie.Spring_backend.exceptionlist.MemberNotFoundException;
 import com.movie.Spring_backend.exceptionlist.MovieCommentNotFoundException;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 

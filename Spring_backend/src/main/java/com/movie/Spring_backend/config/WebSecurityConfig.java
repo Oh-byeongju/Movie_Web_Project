@@ -55,6 +55,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/**/normal/**").permitAll()
+                .antMatchers("/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/favicon.ico").permitAll() // 스웨거 관련
                 .antMatchers("/Manager/**").hasRole("ADMIN") // ADMIN 권한을 가진 사용자만 접근 허용(관리자)
                 .anyRequest().authenticated()
 

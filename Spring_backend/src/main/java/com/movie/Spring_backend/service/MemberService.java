@@ -137,6 +137,11 @@ public class MemberService {
     // 비밀번호 변경 메소드
     @Transactional
     public void changePw(MemberDto requestDto) {
+        // 중요한 임시계정 예외처리
+        if (requestDto.getUid().equals("temp1") || requestDto.getUid().equals("manager")) {
+            throw new RuntimeException("임시계정 수정 예외처리");
+        }
+
         // 새로운 비밀번호로 update
         memberRepository.MemberPwUpdate(requestDto.getUid(), passwordEncoder.encode(requestDto.getNewPw()));
     }
@@ -430,6 +435,11 @@ public class MemberService {
             throw new PwNotCorrectException("비밀번호가 일치하지 않습니다.");
         }
 
+        // 중요한 임시계정 예외처리
+        if (requestDto.getUid().equals("temp1") || requestDto.getUid().equals("manager")) {
+            throw new RuntimeException("임시계정 수정 예외처리");
+        }
+
         // 전달받은 새로운 회원정보를 통해 DB 업데이트(프로젝트에 빌더 패턴을 사용해서 update 쿼리 사용 시 JPQL을 사용)
         // 매개변수로 id, pw, 이름, 이메일, 전화번호, 주소, 생일을 전달
         memberRepository.MemberInfoUpdate(
@@ -451,6 +461,11 @@ public class MemberService {
 
         // authentication 객체에서 아이디 확보
         String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // 중요한 임시계정 예외처리
+        if (currentMemberId.equals("temp1") || currentMemberId.equals("manager")) {
+            throw new RuntimeException("임시계정 삭제 예외처리");
+        }
 
         // Redis에 저장되어 있는 Refresh Token 삭제
         refreshTokenRepository.deleteById(currentMemberId);

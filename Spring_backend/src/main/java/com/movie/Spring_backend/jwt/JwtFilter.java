@@ -33,12 +33,16 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // axios 요청이 POST, DELETE, PUT, PATCH인 경우 Double submit cookie 메소드 실행(csrf 공격 방지)
+        // Header에 TestID가 존재하면 검사X (Swagger에서 요청한 방식)
+        // 현재 프로젝트는 포트폴리오를 위한 프로젝트라 Rest Api 명세서를 공개하므로 실제 배포와 달리 예외사항을 처리한 것
         if (request.getMethod().equals("POST")
          || request.getMethod().equals("DELETE")
          || request.getMethod().equals("PUT")
          || request.getMethod().equals("PATCH")) {
-            CsrfCheckUtil.CsrfCheck(request);
-            System.out.println("CSRF 공격 검사 완료");
+            if (request.getHeader("TestID") == null) {
+                CsrfCheckUtil.CsrfCheck(request);
+                System.out.println("CSRF 공격 검사 완료");
+            }
         }
 
         // Request Header에서 토큰을 꺼내 jwt 변수에 저장

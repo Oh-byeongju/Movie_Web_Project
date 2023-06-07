@@ -74,7 +74,7 @@ http.interceptors.response.use(
     // 비구조화 할당으로 데이터 추출
     const { config, response: { status }} = error;
     // error의 상태와 메시지가 Access 토큰의 만료를 알리는 경우
-    if (status === 400) {
+    if (status === 401) {
       if (error.response.data.message === "로그인이 만료되었습니다.") {
 
         // 원래의 요청을 변수에 저장

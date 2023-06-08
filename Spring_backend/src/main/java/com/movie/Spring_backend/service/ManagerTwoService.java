@@ -8,12 +8,12 @@ package com.movie.Spring_backend.service;
 
 import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.entity.*;
-import com.movie.Spring_backend.exceptionlist.MemberNotFoundException;
-import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
+import com.movie.Spring_backend.exceptionlist.*;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.mapper.MovieCommentMapper;
 import com.movie.Spring_backend.mapper.MovieMapper;
 import com.movie.Spring_backend.repository.*;
+import com.movie.Spring_backend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class ManagerTwoService {
     private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
+    private final TheaterRepository theaterRepository;
     private final ReservationRepository reservationRepository;
     private final MovieMemberRepository movieMemberRepository;
     private final CommentInfoRepository commentInfoRepository;
@@ -90,12 +91,14 @@ public class ManagerTwoService {
 
     // 유저 추방 메소드
     @Transactional
-    public void MemberDelete(HttpServletRequest request, Map<String, String> requestMap) {
+    public void MemberDelete(HttpServletRequest request, String uid) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // requestMap 데이터 추출
-        String uid = requestMap.get("uid");
+        // 중요한 임시계정 예외처리
+        if (uid.equals("temp1") || uid.equals("manager")) {
+            throw new RuntimeException("임시계정 추방 예외처리");
+        }
 
         // JPA 사용을 위한 형 변환
         MemberEntity member = memberRepository.findById(uid).orElseThrow(()-> new MemberNotFoundException("사용자가 없습니다."));
@@ -156,12 +159,9 @@ public class ManagerTwoService {
 
     // 특정 영화의 예매기록을 불러오는 메소드
     @Transactional
-    public ManagerReservationDto MovieReserveSearch(HttpServletRequest request, Map<String, String> requestMap) {
+    public ManagerReservationDto MovieReserveSearch(HttpServletRequest request, Long mid) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
-
-        // requestMap 데이터 추출 및 형변환
-        Long mid = Long.valueOf(requestMap.get("mid"));
 
         // JPA 사용을 위한 형 변환
         MovieEntity movie = movieRepository.findById(mid).orElseThrow(()-> new MovieNotFoundException("영화가 존재하지 않습니다."));
@@ -200,15 +200,13 @@ public class ManagerTwoService {
 
     // 특정 극장의 예매기록을 불러오는 메소드
     @Transactional
-    public List<ReservationDto> TheaterReserveSearch(HttpServletRequest request, Map<String, String> requestMap) {
+    public List<ReservationDto> TheaterReserveSearch(HttpServletRequest request, Long tid) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // requestMap 데이터 추출 및 형변환
-        Long tid = Long.valueOf(requestMap.get("tid"));
-
         // JPA 사용을 위한 형 변환
-        TheaterEntity theater = TheaterEntity.builder().tid(tid).build();
+        TheaterEntity theater = theaterRepository.findById(tid)
+                .orElseThrow(()-> new TheaterNotFoundException("극장이 존재하지 않습니다."));
 
         // 특정 극장의 예매기록 검색(예매일 순으로 내림차순)
         List<ReservationEntity> Reservations = reservationRepository.findManagerReserveTheater(theater);
@@ -240,15 +238,12 @@ public class ManagerTwoService {
 
     // 특정 영화에 있는 관람평을 가져오는 메소드
     @Transactional
-    public List<CommentInfoDto> MovieCommentSearch(HttpServletRequest request, Map<String, String> requestMap) {
+    public List<CommentInfoDto> MovieCommentSearch(HttpServletRequest request, Long mid) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // requestMap 데이터 추출 및 형변환
-        Long mid = Long.valueOf(requestMap.get("mid"));
-
         // 영화 id 정보를 entity 형으로 변환
-        MovieEntity movie = MovieEntity.builder().mid(mid).build();
+        MovieEntity movie = movieRepository.findById(mid).orElseThrow(()-> new MovieNotFoundException("영화가 존재하지 않습니다."));
 
         // 영화 id를 기반으로 MovieMember table 검색(최신순)
         List<MovieMemberEntity> MovieMembers = movieMemberRepository.findByMovieAndUmcommentIsNotNullOrderByUmcommenttimeDesc(movie);
@@ -259,15 +254,13 @@ public class ManagerTwoService {
 
     // 특정 영화에 있는 관람평을 삭제하는 메소드
     @Transactional
-    public void MovieCommentDelete(HttpServletRequest request, Map<String, String> requestMap) {
+    public void MovieCommentDelete(HttpServletRequest request, Long umid) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // requestMap 데이터 추출 및 형변환
-        Long umid = Long.valueOf(requestMap.get("umid"));
-
         // 관람평 id를 이용해서 관람평 튜플 검색
-        MovieMemberEntity MovieMember = movieMemberRepository.findById(umid).orElse(null);
+        MovieMemberEntity MovieMember = movieMemberRepository.findById(umid)
+                .orElseThrow(()-> new MovieCommentNotFoundException("관람평이 존재하지 않습니다."));
 
         // 영화에 대한 좋아요 기록이 있으면 튜플 update
         if (MovieMember != null && MovieMember.getUmlike() != null && MovieMember.getUmlike()) {
@@ -343,6 +336,11 @@ public class ManagerTwoService {
     public void BoardDelete(HttpServletRequest request, Long bid){
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 게시물이 존재하지 않을경우 예외처리
+        if (!boardRepository.existsById(bid)) {
+            throw new BoardNotFoundException("게시물이 존재하지 않습니다.");
+        }
 
         // 게시물 삭제
         boardRepository.deleteById(bid);
@@ -431,6 +429,12 @@ public class ManagerTwoService {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
+        // 댓글 삭제전 예외처리
+        BoardCommentEntity boardComment = boardCommentRepository.findById(bcid).orElseThrow(()-> new BoardCommentNotFoundException("댓글이 존재하지 않습니다."));
+        if (boardComment.getBcroot() != null) {
+            throw new BoardCommentNotFoundException("댓글이 존재하지 않습니다.");
+        }
+
         // 댓글 및 답글 모두 제거
         boardCommentRepository.deleteByBcroot(bcid);
         boardCommentRepository.deleteById(bcid);
@@ -441,6 +445,12 @@ public class ManagerTwoService {
     public void ReplyDelete(HttpServletRequest request, Long bcid) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
+
+        // 답글 삭제전 예외처리
+        BoardCommentEntity boardComment = boardCommentRepository.findById(bcid).orElseThrow(()-> new BoardCommentNotFoundException("답글이 존재하지 않습니다."));
+        if (boardComment.getBcroot() == null) {
+            throw new BoardCommentNotFoundException("답글이 존재하지 않습니다.");
+        }
 
         // 현재 답글과 관련된 모든 답글들을 제거하기위해 List선언 및 현재답글의 id값 삽입
         List<Long> delList = new ArrayList<>();

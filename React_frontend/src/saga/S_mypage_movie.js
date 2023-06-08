@@ -68,7 +68,7 @@ function* CommentInsert(action) {
 
 // 관람평 내용을 전달한 뒤 저장(백엔드 연결)
 async function CallCommentInsert(data) {
-  return await http.post("/MyPageMovie/auth/InsertComment", data)
+  return await http.post("/MovieMember/auth/InsertComment", data)
     .then((response) => {
       return response;
     })

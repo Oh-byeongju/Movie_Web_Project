@@ -20,7 +20,7 @@ public class TheaterService {
     private final TheaterRepository theaterRepository;
     private final TheaterMapper theaterMapper;
 
-    // 예매가 가능한 영화관 조회하는 메소드
+    // 예매가 가능한 극장 조회하는 메소드
     @Transactional
     public List<TheaterDto> getPossibleTheater() {
         List<TheaterEntity> Theaters = theaterRepository.findPossibleTheater();
@@ -31,7 +31,7 @@ public class TheaterService {
                 .tarea(theater.getTarea()).build()).collect(Collectors.toList());
     }
 
-    // 예매 페이지에서 조건에 맞는 영화관을 가져오는 메소드
+    // 예매 페이지에서 조건에 맞는 극장을 가져오는 메소드
     public List<TheaterDto> getTicketTheater(Map<String, String> requestMap) {
         // requestMap 안에 정보를 추출
         String miday = requestMap.get("miday");
@@ -49,13 +49,13 @@ public class TheaterService {
             movie = MovieEntity.builder().mid(Long.valueOf(mid)).build();
         }
 
-        // 영화관 테이블에서 조건에 맞는 영화관들 조회
+        // 극장 테이블에서 조건에 맞는 극장들 조회
         List<TheaterEntity> conditionTheater = theaterRepository.findTheaterOnTicket(day, movie);
 
-        // 영화관 테이블에서 현재 예매가 가능한 영화관들 조회
+        // 극장 테이블에서 현재 예매가 가능한 극장들 조회
         List<TheaterEntity> allTheater = theaterRepository.findPossibleTheater();
 
-        // 검색한 영화관 목록 리턴
+        // 검색한 극장 목록 리턴
         return theaterMapper.toDtoTicketTheater(conditionTheater, allTheater);
     }
 }

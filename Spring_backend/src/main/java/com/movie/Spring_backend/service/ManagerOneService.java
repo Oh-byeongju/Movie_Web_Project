@@ -1,6 +1,6 @@
 /*
   23-04-03 ~ 23-04-05 관리자 페이지 상영정보관리 구현(오병주)
-  23-04-17 상영관, 영화관 관리자 페이지 수정(오병주)
+  23-04-17 상영관, 극장 관리자 페이지 수정(오병주)
   23-04-18 ~ 19영화 관리자 페이지 수정(오병주)
 */
 package com.movie.Spring_backend.service;
@@ -9,8 +9,7 @@ import com.movie.Spring_backend.dto.*;
 import com.movie.Spring_backend.entity.*;
 import com.movie.Spring_backend.error.exception.EntityNotFoundException;
 import com.movie.Spring_backend.error.exception.ErrorCode;
-import com.movie.Spring_backend.exceptionlist.MovieInfoExistException;
-import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
+import com.movie.Spring_backend.exceptionlist.*;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.mapper.MovieMapper;
 import com.movie.Spring_backend.repository.*;
@@ -298,6 +297,11 @@ public class ManagerOneService {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
+        // 배우가 존재하지 않을경우 예외처리
+        if (!actorRepository.existsById(aid)) {
+            throw new ActorNotFoundException("배우가 존재하지 않습니다.");
+        }
+
         // 배우정보 삭제
         actorRepository.deleteById(aid);
     }
@@ -310,23 +314,23 @@ public class ManagerOneService {
 
         // 배우가 존재하지 않을경우 예외처리
         if (!actorRepository.existsById(requestDto.getAid())) {
-            throw new EntityNotFoundException("배우가 존재하지 않습니다.");
+            throw new ActorNotFoundException("배우가 존재하지 않습니다.");
         }
 
         // 배우 정보 수정
         actorRepository.ActorUpdate(requestDto.getAname(), requestDto.getAbirthplace(), requestDto.getAid());
     }
 
-    // 전체 영화관 불러오는 메소드
+    // 전체 극장 불러오는 메소드
     @Transactional
     public List<TheaterDto> AllTheaterSearch(HttpServletRequest request) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // 모든 영화관 검색
+        // 모든 극장 검색
         List<TheaterEntity> Theaters = theaterRepository.findAll();
 
-        // 검색한 영화관 리턴
+        // 검색한 극장 리턴
         return Theaters.stream().map(theater -> TheaterDto.builder()
                 .tid(theater.getTid())
                 .tname(theater.getTname())
@@ -335,36 +339,57 @@ public class ManagerOneService {
                 .cntCinema(theater.getCntCinema()).build()).collect(Collectors.toList());
     }
 
-    // 영화관을 추가하는 메소드
+    // 극장을 추가하는 메소드
     @Transactional
     public void TheaterInsert(HttpServletRequest request, TheaterDto requestDto) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // 영화관 정보 추가
+        // 극장 정보 추가
         theaterRepository.save(TheaterEntity.builder()
                 .tname(requestDto.getTname())
                 .tarea(requestDto.getTarea())
                 .taddr(requestDto.getTaddr()).build());
     }
 
-    // 영화관을 삭제하는 메소드
+    // 극장을 삭제하는 메소드
     @Transactional
     public void TheaterDelete(HttpServletRequest request, Long tid) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // 영화관 삭제(Cascade 설정을 안해둬서 상영관이 존재할경우 SQL이 알아서 예외처리를 해줌)
+        // 극장이 존재하지 않을경우 예외처리
+        if (!theaterRepository.existsById(tid)) {
+            throw new TheaterNotFoundException("극장이 존재하지 않습니다.");
+        }
+
+        // 극장 삭제에 필요한 정보 Entity로 변환
+        TheaterEntity theater = TheaterEntity.builder().tid(tid).build();
+
+        // 극장 삭제전 극장에 대한 상영관 정보 조회
+        List<CinemaEntity> cinema = cinemaRepository.findByTheater(theater);
+
+        // 상영관이 존재할경우 예외처리
+        if (!cinema.isEmpty()) {
+            throw new CinemaExistException("상영관이 존재합니다.");
+        }
+
+        // 극장 삭제
         theaterRepository.deleteById(tid);
     }
 
-    // 영화관을 수정하는 메소드
+    // 극장을 수정하는 메소드
     @Transactional
     public void TheaterUpdate(HttpServletRequest request, TheaterDto requestDto) {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // 영화관 정보 수정
+        // 극장이 존재하지 않을경우 예외처리
+        if (!theaterRepository.existsById(requestDto.getTid())) {
+            throw new TheaterNotFoundException("극장이 존재하지 않습니다.");
+        }
+
+        // 극장 정보 수정
         theaterRepository.TheaterUpdate(requestDto.getTname(), requestDto.getTarea(),
                 requestDto.getTaddr(), requestDto.getTid());
     }

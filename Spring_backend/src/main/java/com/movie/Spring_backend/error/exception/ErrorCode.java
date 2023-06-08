@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
-
     // Common
     INVALID_INPUT_VALUE(400, "C001", " Invalid Input Value"),
     METHOD_NOT_ALLOWED(405, "C002", " Invalid Input Value"),
@@ -29,7 +28,7 @@ public enum ErrorCode {
     CSRF_ERROR(403, "S005", "CSRF 토큰이 없습니다."),
 
     // Movie
-    SELECT_IS_NONE(400, "MV001", "검색결과가 존재하지 않습니다."),
+    MOVIE_IS_NONE(400, "MV001", "영화가 존재하지 않습니다."),
     OCCUPY_SEAT_NONE(406, "ST001", "점유된 좌석입니다"),
     PAYMENT_NOT_CORRECT(400, "P001", "결제 기록이 올바르지 않습니다."),
     COMMENT_IS_NONE(400, "MC001", "관람평이 존재하지 않습니다."),
@@ -37,9 +36,12 @@ public enum ErrorCode {
     WATCHING_IS_NONE(400, "MC003", "영화 관람기록이 없습니다."),
     RESERVE_IS_NONE(400, "MR001", "영화 예매기록이 없습니다."),
     MOVIEINFO_IS_EXIST(400, "MI001", "수정이 불가능한 상영정보입니다."),
+    ACTOR_IS_NONE(400, "MA001", "배우가 존재하지 않습니다."),
 
     // Theater
-    CINEMA_IS_NONE(400, "T001", "상영관이 존재하지 않습니다."),
+    THEATER_IS_NONE(400, "T001", "극장이 존재하지 않습니다."),
+    CINEMA_IS_EXIST(400, "T002", "상영관이 존재합니다."),
+    CINEMA_IS_NONE(400, "T003", "상영관이 존재하지 않습니다."),
 
     // Board
     BOARD_IS_NONE(400, "B001", "게시물이 존재하지 않습니다."),

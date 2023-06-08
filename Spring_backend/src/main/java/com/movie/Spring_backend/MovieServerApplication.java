@@ -8,5 +8,6 @@ public class MovieServerApplication {
 
 	public static void main(String[] args) throws InterruptedException {
 		SpringApplication.run(MovieServerApplication.class, args);
+		System.out.println("서버 작동");
 	}
 }

@@ -47,7 +47,7 @@ public class SwaggerConfig {
         String path = "/Member/**";
 
         return GroupedOpenApi.builder()
-                .group("회원관련 API")
+                .group("회원 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();
@@ -59,7 +59,7 @@ public class SwaggerConfig {
         String path = "/Movie/**";
 
         return GroupedOpenApi.builder()
-                .group("영화관련 API")
+                .group("영화 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();
@@ -88,4 +88,77 @@ public class SwaggerConfig {
                 .addOperationCustomizer(operationCustomizer)
                 .build();
     }
+
+    @Bean
+    // 마이페이지와 관련된 Api
+    public GroupedOpenApi MyPageMovieAPi(OperationCustomizer operationCustomizer) {
+        String path = "/MyPageMovie/**";
+
+        return GroupedOpenApi.builder()
+                .group("마이페이지 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 결제와 관련된 Api
+    public GroupedOpenApi PaymentAPi(OperationCustomizer operationCustomizer) {
+        String path = "/Payment/**";
+
+        return GroupedOpenApi.builder()
+                .group("결제 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 좌석과 관련된 Api
+    public GroupedOpenApi SeatAPi(OperationCustomizer operationCustomizer) {
+        String path = "/Seat/**";
+
+        return GroupedOpenApi.builder()
+                .group("좌석 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 극장과 관련된 Api
+    public GroupedOpenApi TheaterAPi(OperationCustomizer operationCustomizer) {
+        String path = "/Theater/**";
+
+        return GroupedOpenApi.builder()
+                .group("극장 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 게시판과 관련된 Api
+    public GroupedOpenApi BoardAPi(OperationCustomizer operationCustomizer) {
+        String path = "/Board/**";
+
+        return GroupedOpenApi.builder()
+                .group("게시판 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 관리자와 관련된 Api
+    public GroupedOpenApi ManagerAPi(OperationCustomizer operationCustomizer) {
+        String path = "/Manager/**";
+
+        return GroupedOpenApi.builder()
+                .group("관리자 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
 }
+

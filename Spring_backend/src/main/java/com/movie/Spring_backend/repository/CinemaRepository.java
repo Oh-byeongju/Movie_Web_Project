@@ -23,6 +23,9 @@ public interface CinemaRepository extends JpaRepository<CinemaEntity, Long> {
             "(SELECT t FROM TheaterEntity as t WHERE (:tid is null or t.tid = :tid) AND (:tarea is null or t.tarea = :tarea))")
     List<CinemaEntity> findByTidAndTarea(@Param("tid") Long tid, @Param("tarea") String tarea);
 
+    // 극장 ID를 이용해서 상영관을 검색하는 메소드
+    List<CinemaEntity> findByTheater(TheaterEntity theater);
+
     // 상영관 수정하는 메소드
     @Modifying
     @Query("UPDATE CinemaEntity as c " +

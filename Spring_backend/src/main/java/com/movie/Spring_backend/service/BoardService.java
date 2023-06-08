@@ -246,9 +246,13 @@ public class BoardService {
         String detail = requestMap.get("detail").trim();
         String category = requestMap.get("category").trim();
 
-        // 게시물 존재여부 확인
-        if (!boardRepository.existsById(bid)) {
-            throw new BoardNotFoundException("게시물이 존재하지 않습니다.");
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // 게시물 수정전 예외처리
+        BoardEntity board = boardRepository.findById(bid).orElseThrow(()-> new BoardNotFoundException("게시물이 존재하지 않습니다."));
+        if (!currentMemberId.equals(board.getMember().getUid())) {
+            throw new BoardNotFoundException("본인이 작성한 게시물이 아닙니다.");
         }
 
         // 썸네일 정보 가공
@@ -271,6 +275,15 @@ public class BoardService {
     public void BoardDelete(HttpServletRequest request, Long bid){
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // 게시물 삭제전 예외처리
+        BoardEntity board = boardRepository.findById(bid).orElseThrow(()-> new BoardNotFoundException("게시물이 존재하지 않습니다."));
+        if (!currentMemberId.equals(board.getMember().getUid())) {
+            throw new BoardNotFoundException("본인이 작성한 게시물이 아닙니다.");
+        }
 
         // 게시물 삭제
         boardRepository.deleteById(bid);

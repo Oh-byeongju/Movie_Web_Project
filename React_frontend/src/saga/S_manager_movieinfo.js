@@ -112,7 +112,7 @@ function* MovieInfoSearch(action) {
 
 // 상영정보 조회 백엔드 호출
 async function callMovieInfoSearch(data) {
-  return await http.get("/Manager/auth/getMovieInfo", {
+  return await http.get("/Manager/auth/allMovieInfo", {
     params: {
       mid: data.mid,
       tarea: data.tarea,

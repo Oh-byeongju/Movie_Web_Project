@@ -9,8 +9,6 @@ import com.movie.Spring_backend.dto.CommentInfoDto;
 import com.movie.Spring_backend.dto.MovieDto;
 import com.movie.Spring_backend.dto.ReservationDto;
 import com.movie.Spring_backend.entity.*;
-import com.movie.Spring_backend.error.exception.BusinessException;
-import com.movie.Spring_backend.error.exception.ErrorCode;
 import com.movie.Spring_backend.exceptionlist.MovieNotFoundException;
 import com.movie.Spring_backend.exceptionlist.ReserveNotFoundException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
@@ -266,53 +264,6 @@ public class MyPageMovieService {
 
         return Movies.stream().map(Movie ->
                 movieMapper.toDtoMyPage(Movie, MovieIDCheck.contains(Movie.getMid()), Cnt)).collect(Collectors.toList());
-    }
-
-    // 사용자가 마이페이지에서 관람평을 작성할 경우 실행되는 메소드
-    @Transactional
-    public void MovieCommentWrite(Map<String, String> requestMap, HttpServletRequest request) {
-        // Access Token에 대한 유효성 검사
-        jwtValidCheck.JwtCheck(request, "ATK");
-
-        // authentication 객체에서 아이디 확보
-        String currentMemberId = SecurityUtil.getCurrentMemberId();
-
-        // requestMap 안에 정보를 추출
-        String Movie_id = requestMap.get("mid");
-        String Movie_comment = requestMap.get("mcomment");
-        String Movie_score = requestMap.get("mscore");
-
-        // JPA를 사용하기 위해 현재 아이디와 Movie_id를 entity형으로 변환
-        MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
-        MovieEntity movie = MovieEntity.builder().mid(Long.valueOf(Movie_id)).build();
-
-        // MovieMember table에 튜플의 존재 여부를 먼저 파악
-        MovieMemberEntity MovieMember = movieMemberRepository.findByMovieAndMember(movie, member).orElse(null);
-
-        // MovieMember table에 이미 작성한 관람평이 존재할 경우 예외처리
-        if (MovieMember != null && MovieMember.getUmcomment() != null) {
-            throw new BusinessException("작성된 관람평이 존재합니다.", ErrorCode.COMMENT_IS_EXIST);
-        }
-
-        // 현재 시간을 sql에 사용할 수 있게 매핑
-        String day = DateUtil.getNow();
-
-        // 관람평을 쓰는 사용자가 영화에 대한 좋아요 기록이 있을 경우
-        if (MovieMember != null && MovieMember.getUmlike() != null) {
-            // MovieMember 테이블의 내용을 update
-            movieMemberRepository.MovieCommentUpdate(Integer.parseInt(Movie_score), Movie_comment, member, movie);
-        }
-        // 관람평을 쓰는 사용자가 영화에 대한 좋아요 기록이 없을 경우
-        else {
-            // 튜플 생성 후 삽입
-            MovieMember = MovieMemberEntity.builder()
-                    .umcomment(Movie_comment)
-                    .umscore(Integer.valueOf(Movie_score))
-                    .umcommenttime(day)
-                    .movie(movie)
-                    .member(member).build();
-            movieMemberRepository.save(MovieMember);
-        }
     }
 
     // 마이페이지에서 작성한 관람평을 조회하는 메소드

@@ -159,6 +159,17 @@ public class PaymentService {
         ReservationEntity Reservation = reservationRepository.findById(rid).orElseThrow(
                 () -> new ReserveNotFoundException("예매 기록이 존재하지 않습니다."));
 
+        // 사용자의 예매가 아닌경우 예외처리
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+        if (!currentMemberId.equals(Reservation.getMember().getUid())) {
+            throw new ReserveNotFoundException("다른 사용자의 예매 기록입니다.");
+        }
+
+        // 이미 취소된 예매인경우 예외처리
+        if (!Reservation.getRstate()) {
+            throw new ReserveNotFoundException("이미 취소된 예매입니다.");
+        }
+
         // 임의의 데이터가 아닌경우에만 결제취소 진행
         if (!Reservation.getRpayid().equals("temporary_value")) {
             // 결제 취소 실행

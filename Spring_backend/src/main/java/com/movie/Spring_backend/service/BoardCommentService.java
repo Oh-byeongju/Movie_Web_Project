@@ -157,6 +157,19 @@ public class BoardCommentService {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // 댓글 삭제전 예외처리
+        BoardCommentEntity boardComment = boardCommentRepository.findById(bcid).orElseThrow(()-> new BoardCommentNotFoundException("댓글이 존재하지 않습니다."));
+        if (boardComment.getBcroot() != null) {
+            throw new BoardCommentNotFoundException("댓글이 존재하지 않습니다.");
+        }
+
+        if (!currentMemberId.equals(boardComment.getMember().getUid())) {
+            throw new BoardCommentNotFoundException("본인이 작성한 댓글이 아닙니다.");
+        }
+
         // 댓글 및 답글 모두 제거
         boardCommentRepository.deleteByBcroot(bcid);
         boardCommentRepository.deleteById(bcid);
@@ -181,6 +194,11 @@ public class BoardCommentService {
         BoardEntity board = boardRepository.findById(bid).orElseThrow(() -> new BoardNotFoundException("게시물이 존재하지 않습니다."));
         BoardCommentEntity boardComment = boardCommentRepository.findById(bcid)
                 .orElseThrow(() -> new BoardCommentNotFoundException("댓글이 존재하지 않습니다."));
+
+        // 좋아요 전 예외처리
+        if (!board.getBid().equals(boardComment.getBoard().getBid())) {
+            throw new BoardCommentNotFoundException("댓글이 존재하지 않습니다.");
+        }
 
         // 사용자 좋아요, 싫어요 정보 조회 및 가공
         BoardLikeEntity checkLike = boardLikeRepository
@@ -315,6 +333,19 @@ public class BoardCommentService {
     public void ReplyDelete(HttpServletRequest request, Long bcid){
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
+
+        // authentication 객체에서 아이디 확보
+        String currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // 답글 삭제전 예외처리
+        BoardCommentEntity boardComment = boardCommentRepository.findById(bcid).orElseThrow(()-> new BoardCommentNotFoundException("답글이 존재하지 않습니다."));
+        if (boardComment.getBcroot() == null) {
+            throw new BoardCommentNotFoundException("답글이 존재하지 않습니다.");
+        }
+
+        if (!currentMemberId.equals(boardComment.getMember().getUid())) {
+            throw new BoardCommentNotFoundException("본인이 작성한 답글이 아닙니다.");
+        }
 
         // 현재 답글과 관련된 모든 답글들을 제거하기위해 List선언 및 현재답글의 id값 삽입
         List<Long> delList = new ArrayList<>();

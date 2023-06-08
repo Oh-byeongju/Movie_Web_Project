@@ -121,7 +121,7 @@ function* AllBoardComment(action) {
 
 // 게시물 댓글 조회 백엔드 호출
 async function callAllBoardComment(data) {
-	return await http.get("/Manager/auth/allComment", {
+	return await http.get("/Manager/auth/allBoardComment", {
     params: {
 			bid: data.bid,
       sort: data.sort

@@ -140,8 +140,8 @@ public class ManagerTwoService {
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
-        // 영화 테이블에 존재하는 모든 영화 검색(개봉일순으로 오름차순)
-        List<MovieEntity> Movies = movieRepository.findAllByOrderByMdateAsc();
+        // 영화 테이블에 존재하는 모든 영화 검색
+        List<MovieEntity> Movies = movieRepository.findAll();
 
         // 영화 테이블에서 현재 예매가 가능한 영화들 조회
         List<MovieEntity> MoviePossible = movieRepository.findShowMoviesReserve();

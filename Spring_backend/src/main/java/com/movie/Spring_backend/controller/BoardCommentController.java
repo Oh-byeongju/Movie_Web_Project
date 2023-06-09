@@ -24,7 +24,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/Board")
-@Tag(name = "BoardCommentController", description = "게시물 댓글 관련 컨트롤러")
+@Tag(name = "2. BoardCommentController", description = "게시물 댓글 관련 컨트롤러")
 public class BoardCommentController {
     private final BoardCommentService boardCommentService;
 
@@ -34,7 +34,7 @@ public class BoardCommentController {
             "  \"bid\": \"1\",\n" +
             "  \"sort\": \"like\",\n" +
             "  \"uid\": \"temp1\"\n" +
-            "}", tags = { "BoardCommentController" })
+            "}", tags = { "2. BoardCommentController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 댓글 조회 완료"),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
@@ -49,7 +49,7 @@ public class BoardCommentController {
             "Body값 예시 : {\n" +
             "  \"comment\": \"임시 댓글\",\n" +
             "  \"bid\": \"1\"\n" +
-            "}", tags = { "BoardCommentController" })
+            "}", tags = { "2. BoardCommentController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 댓글 저장 완료"),
             @ApiResponse(responseCode = "400", description = "게시물이 존재하지 않는 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -63,7 +63,7 @@ public class BoardCommentController {
     }
 
     // 댓글을 삭제하는 컨트롤러
-    @Operation(summary = "게시물 댓글 삭제 요청", description = "서버에게 게시물 댓글 삭제를 요청합니다.", tags = { "BoardCommentController" })
+    @Operation(summary = "게시물 댓글 삭제 요청", description = "서버에게 게시물 댓글 삭제를 요청합니다.", tags = { "2. BoardCommentController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 댓글 삭제 완료"),
             @ApiResponse(responseCode = "400", description = "게시물 댓글이 존재하지 않거나 다른 사람의 댓글인 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -82,7 +82,7 @@ public class BoardCommentController {
             "  \"bid\": \"1\",\n" +
             "  \"bcid\": \"1\",\n" +
             "  \"state\": \"like\"\n" +
-            "}", tags = { "BoardCommentController" })
+            "}", tags = { "2. BoardCommentController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 댓글 좋아요 완료"),
             @ApiResponse(responseCode = "400", description = "게시물 또는 댓글이 존재하지 않는 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -101,7 +101,7 @@ public class BoardCommentController {
             "  \"bid\": \"게시물 번호\",\n" +
             "  \"bcroot\": \"최상위 부모 댓글 번호\",\n" +
             "  \"bcparent\": \"부모 댓글 번호\"\n" +
-            "}", tags = { "BoardCommentController" })
+            "}", tags = { "2. BoardCommentController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 답글 저장 완료"),
             @ApiResponse(responseCode = "400", description = "게시물 또는 댓글이 존재하지 않는 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -115,7 +115,7 @@ public class BoardCommentController {
     }
 
     // 답글을 삭제하는 컨트롤러
-    @Operation(summary = "게시물 답글 삭제 요청", description = "서버에게 게시물 답글 삭제를 요청합니다.", tags = { "BoardCommentController" })
+    @Operation(summary = "게시물 답글 삭제 요청", description = "서버에게 게시물 답글 삭제를 요청합니다.", tags = { "2. BoardCommentController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 답글 삭제 완료"),
             @ApiResponse(responseCode = "400", description = "게시물 답글이 존재하지 않거나 다른 사람의 답글인 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),

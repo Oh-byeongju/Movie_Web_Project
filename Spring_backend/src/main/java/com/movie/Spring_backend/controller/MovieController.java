@@ -79,7 +79,7 @@ public class MovieController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/normal/Moviedetail/{mid}")
-    public ResponseEntity<MovieDto> MovieDetail(@Parameter(description = "영화 ID", required = true, example = "2") @PathVariable("mid") Long mid,
+    public ResponseEntity<MovieDto> MovieDetail(@Parameter(description = "영화 ID", required = true, example = "1") @PathVariable("mid") Long mid,
                                                 @Parameter(description = "회원 ID", required = true, example = "temp1") @RequestParam(value = "uid") String uid){
         return ResponseEntity.ok().body(movieService.getMovieDetail(mid, uid));
     }

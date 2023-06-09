@@ -27,13 +27,13 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/Manager")
-@Tag(name = "ManagerTwoController", description = "관리자 컨트롤러(회원 관련)")
+@Tag(name = "2. ManagerTwoController", description = "관리자 컨트롤러(회원 관련)")
 public class ManagerTwoController {
 
     private final ManagerTwoService managerTwoService;
 
     // 사용자 조회 컨트롤러
-    @Operation(summary = "회원 목록 요청", description = "관리자 페이지에서 모든 회원 목록을 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "회원 목록 요청", description = "관리자 페이지에서 모든 회원 목록을 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원 조회 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -50,7 +50,7 @@ public class ManagerTwoController {
             "파라미터 예시 : {\n" +
             "  \"search\": \"temp1\",\n" +
             "  \"sort\": \"id\"\n" +
-            "}", tags = { "ManagerTwoController" })
+            "}", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원 검색 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -63,7 +63,7 @@ public class ManagerTwoController {
     }
 
     // 특정 사용자 추방하는 컨트롤러
-    @Operation(summary = "회원 추방 요청", description = "관리자 페이지에서 특정 회원 추방을 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "회원 추방 요청", description = "관리자 페이지에서 특정 회원 추방을 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "회원 추방 완료"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 회원일경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -78,7 +78,7 @@ public class ManagerTwoController {
     }
 
     // 예매기록 페이지에서 전체 영화 불러오는 컨트롤러
-    @Operation(summary = "영화 목록 요청(예매기록)", description = "관리자 페이지에서 전체 영화 목록을 요청합니다. (예매기록 조회에 사용)", tags = { "ManagerTwoController" })
+    @Operation(summary = "영화 목록 요청(예매기록)", description = "관리자 페이지에서 전체 영화 목록을 요청합니다. (예매기록 조회에 사용)", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "영화 조회 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -91,7 +91,7 @@ public class ManagerTwoController {
     }
 
     // 예매기록 조회 컨트롤러(영화 선택)
-    @Operation(summary = "예매기록 요청(영화 선택)", description = "관리자 페이지에서 특정 영화의 예매기록을 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "예매기록 요청(영화 선택)", description = "관리자 페이지에서 특정 영화의 예매기록을 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "예매기록 조회 완료"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 영화일경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -100,12 +100,12 @@ public class ManagerTwoController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/auth/allMovieReserve")
-    public ResponseEntity<ManagerReservationDto> MovieReserve(HttpServletRequest request, @Parameter(description = "영화 ID", required = true, example = "2") @RequestParam("mid") Long mid) {
+    public ResponseEntity<ManagerReservationDto> MovieReserve(HttpServletRequest request, @Parameter(description = "영화 ID", required = true, example = "1") @RequestParam("mid") Long mid) {
         return ResponseEntity.ok().body(managerTwoService.MovieReserveSearch(request, mid));
     }
 
     // 예매기록 조회 컨트롤러(극장 선택)
-    @Operation(summary = "예매기록 요청(극장 선택)", description = "관리자 페이지에서 특정 극장의 예매기록을 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "예매기록 요청(극장 선택)", description = "관리자 페이지에서 특정 극장의 예매기록을 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "예매기록 조회 완료"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 극장일경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -119,7 +119,7 @@ public class ManagerTwoController {
     }
 
     // 관람평 조회 컨트롤러
-    @Operation(summary = "관람평 목록 요청", description = "관리자 페이지에서 특정 영화의 관람평 목록을 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "관람평 목록 요청", description = "관리자 페이지에서 특정 영화의 관람평 목록을 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "관람평 조회 완료"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 영화일경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -128,12 +128,12 @@ public class ManagerTwoController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/auth/allMovieComment")
-    public ResponseEntity<List<CommentInfoDto>> MovieComment(HttpServletRequest request, @Parameter(description = "영화 ID", required = true, example = "2") @RequestParam("mid") Long mid) {
+    public ResponseEntity<List<CommentInfoDto>> MovieComment(HttpServletRequest request, @Parameter(description = "영화 ID", required = true, example = "1") @RequestParam("mid") Long mid) {
         return ResponseEntity.ok().body(managerTwoService.MovieCommentSearch(request, mid));
     }
 
     // 관람평 삭제 컨트롤러
-    @Operation(summary = "관람평 삭제 요청", description = "관리자 페이지에서 특정 관람평의 삭제를 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "관람평 삭제 요청", description = "관리자 페이지에서 특정 관람평의 삭제를 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "관람평 삭제 완료"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 관람평일경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -148,7 +148,7 @@ public class ManagerTwoController {
     }
 
     // 게시물 조회 컨트롤러
-    @Operation(summary = "게시물 목록 요청", description = "관리자 페이지에서 모든 게시물 목록을 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "게시물 목록 요청", description = "관리자 페이지에서 모든 게시물 목록을 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 조회 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -165,7 +165,7 @@ public class ManagerTwoController {
             "파라미터 예시 : {\n" +
             "  \"category\": \"title\",\n" +
             "  \"title\": \"\"\n" +
-            "}", tags = { "ManagerTwoController" })
+            "}", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 검색 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -178,7 +178,7 @@ public class ManagerTwoController {
     }
 
     // 게시물 삭제 컨트롤러
-    @Operation(summary = "게시물 삭제 요청", description = "관리자 페이지에서 특정 게시물의 삭제를 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "게시물 삭제 요청", description = "관리자 페이지에서 특정 게시물의 삭제를 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 삭제 완료"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시물일경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -197,7 +197,7 @@ public class ManagerTwoController {
             "파라미터 예시 : {\n" +
             "  \"bid\": \"1\",\n" +
             "  \"sort\": \"like\"\n" +
-            "}", tags = { "ManagerTwoController" })
+            "}", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 조회 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -211,7 +211,7 @@ public class ManagerTwoController {
 
     // 댓글 삭제 컨트롤러
     @DeleteMapping("/auth/commentDelete")
-    @Operation(summary = "게시물 댓글 삭제 요청", description = "관리자 페이지에서 특정 게시물의 댓글 삭제를 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "게시물 댓글 삭제 요청", description = "관리자 페이지에서 특정 게시물의 댓글 삭제를 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 댓글 삭제 완료"),
             @ApiResponse(responseCode = "400", description = "게시물 댓글이 존재하지 않는 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -226,7 +226,7 @@ public class ManagerTwoController {
 
     // 답글 삭제 컨트롤러
     @DeleteMapping("/auth/replyDelete")
-    @Operation(summary = "게시물 답글 삭제 요청", description = "관리자 페이지에서 특정 게시물의 답글 삭제를 요청합니다.", tags = { "ManagerTwoController" })
+    @Operation(summary = "게시물 답글 삭제 요청", description = "관리자 페이지에서 특정 게시물의 답글 삭제를 요청합니다.", tags = { "2. ManagerTwoController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 답글 삭제 완료"),
             @ApiResponse(responseCode = "400", description = "게시물 답글이 존재하지 않는 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),

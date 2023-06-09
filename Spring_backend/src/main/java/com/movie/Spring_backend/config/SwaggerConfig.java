@@ -19,8 +19,8 @@ import org.springframework.web.method.HandlerMethod;
         info = @Info(title = "영화 웹페이지 API 명세서",
                 description = "Spring boot와 React를 이용한 영화 웹페이지 API 명세서\n\n" +
                         "① URL 가운데에 auth가 붙으면 accessToken이 필요해서 로그인 이후 사용가능합니다.\n\n" +
-                        "② 쿠키를 기반으로 검증하기 때문에 /Member/normal/login 요청이후 헤더에 토큰값을 추가할 필요가 없습니다.\n\n" +
-                        "③ accessToken의 만료 시간은 30분이라서 만료 이후에는 재 로그인을 하거나 /Member/normal/reissue 요청을 하면 토큰이 갱신 됩니다.\n\n" +
+                        "② 쿠키를 기반으로 검증하기 때문에 회원 관련 API에 있는 /Member/normal/login 요청 이후 헤더에 토큰값을 추가할 필요가 없습니다.\n\n" +
+                        "③ accessToken의 만료 시간은 30분이라서 만료 이후에는 재 로그인을 하거나 회원 관련 API에 있는 /Member/normal/reissue 요청을 하면 토큰이 갱신 됩니다.\n\n" +
                         "(몇몇 기능들은 특정 파라미터를 사용하므로 작동이 안될 수 있습니다. 자세한 기능은 배포된 웹페이지를 이용해 주십시오.)",
                 version = "v1"))
 
@@ -47,7 +47,7 @@ public class SwaggerConfig {
         String path = "/Member/**";
 
         return GroupedOpenApi.builder()
-                .group("회원 관련 API")
+                .group("① 회원 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();
@@ -59,7 +59,7 @@ public class SwaggerConfig {
         String path = "/Movie/**";
 
         return GroupedOpenApi.builder()
-                .group("영화 관련 API")
+                .group("② 영화 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();
@@ -71,55 +71,7 @@ public class SwaggerConfig {
         String path = "/MovieInfo/**";
 
         return GroupedOpenApi.builder()
-                .group("상영정보 관련 API")
-                .pathsToMatch(path)
-                .addOperationCustomizer(operationCustomizer)
-                .build();
-    }
-
-    @Bean
-    // 회원의 영화 평가와 관련된 Api
-    public GroupedOpenApi MovieMemberAPi(OperationCustomizer operationCustomizer) {
-        String path = "/MovieMember/**";
-
-        return GroupedOpenApi.builder()
-                .group("회원 영화평가 관련 API")
-                .pathsToMatch(path)
-                .addOperationCustomizer(operationCustomizer)
-                .build();
-    }
-
-    @Bean
-    // 마이페이지와 관련된 Api
-    public GroupedOpenApi MyPageMovieAPi(OperationCustomizer operationCustomizer) {
-        String path = "/MyPageMovie/**";
-
-        return GroupedOpenApi.builder()
-                .group("마이페이지 관련 API")
-                .pathsToMatch(path)
-                .addOperationCustomizer(operationCustomizer)
-                .build();
-    }
-
-    @Bean
-    // 결제와 관련된 Api
-    public GroupedOpenApi PaymentAPi(OperationCustomizer operationCustomizer) {
-        String path = "/Payment/**";
-
-        return GroupedOpenApi.builder()
-                .group("결제 관련 API")
-                .pathsToMatch(path)
-                .addOperationCustomizer(operationCustomizer)
-                .build();
-    }
-
-    @Bean
-    // 좌석과 관련된 Api
-    public GroupedOpenApi SeatAPi(OperationCustomizer operationCustomizer) {
-        String path = "/Seat/**";
-
-        return GroupedOpenApi.builder()
-                .group("좌석 관련 API")
+                .group("③ 상영정보 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();
@@ -131,7 +83,55 @@ public class SwaggerConfig {
         String path = "/Theater/**";
 
         return GroupedOpenApi.builder()
-                .group("극장 관련 API")
+                .group("④ 극장 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 좌석과 관련된 Api
+    public GroupedOpenApi SeatAPi(OperationCustomizer operationCustomizer) {
+        String path = "/Seat/**";
+
+        return GroupedOpenApi.builder()
+                .group("⑤ 좌석 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 결제와 관련된 Api
+    public GroupedOpenApi PaymentAPi(OperationCustomizer operationCustomizer) {
+        String path = "/Payment/**";
+
+        return GroupedOpenApi.builder()
+                .group("⑥ 결제 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 회원의 영화 평가와 관련된 Api
+    public GroupedOpenApi MovieMemberAPi(OperationCustomizer operationCustomizer) {
+        String path = "/MovieMember/**";
+
+        return GroupedOpenApi.builder()
+                .group("⑦ 회원 영화평가 관련 API")
+                .pathsToMatch(path)
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    // 마이페이지와 관련된 Api
+    public GroupedOpenApi MyPageMovieAPi(OperationCustomizer operationCustomizer) {
+        String path = "/MyPageMovie/**";
+
+        return GroupedOpenApi.builder()
+                .group("⑧ 마이페이지 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();
@@ -143,7 +143,7 @@ public class SwaggerConfig {
         String path = "/Board/**";
 
         return GroupedOpenApi.builder()
-                .group("게시판 관련 API")
+                .group("⑨ 게시판 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();
@@ -155,7 +155,7 @@ public class SwaggerConfig {
         String path = "/Manager/**";
 
         return GroupedOpenApi.builder()
-                .group("관리자 관련 API")
+                .group("⑩ 관리자 관련 API")
                 .pathsToMatch(path)
                 .addOperationCustomizer(operationCustomizer)
                 .build();

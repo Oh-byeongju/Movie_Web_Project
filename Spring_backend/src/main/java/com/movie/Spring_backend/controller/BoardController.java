@@ -25,7 +25,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/Board")
-@Tag(name = "BoardController", description = "게시물 관련 컨트롤러")
+@Tag(name = "1. BoardController", description = "게시물 관련 컨트롤러")
 public class BoardController {
     private final BoardService boardService;
 
@@ -36,7 +36,7 @@ public class BoardController {
             "  \"sort\": \"all\",\n" +
             "  \"uid\": \"temp1\",\n" +
             "  \"page\": \"0\"\n" +
-            "}", tags = { "BoardController" })
+            "}", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 조회 완료"),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
@@ -52,7 +52,7 @@ public class BoardController {
             "  \"category\": \"title\",\n" +
             "  \"title\": \"\",\n" +
             "  \"page\": \"0\"\n" +
-            "}", tags = { "BoardController" })
+            "}", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 검색 완료"),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
@@ -67,7 +67,7 @@ public class BoardController {
             "파라미터 예시 : {\n" +
             "  \"bid\": \"1\",\n" +
             "  \"uid\": \"temp1\"\n" +
-            "}", tags = { "BoardController" })
+            "}", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 상세조회 완료"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시물인 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -80,7 +80,7 @@ public class BoardController {
 
     // 이미지를 저장하는 컨트롤러
     @Operation(summary = "게시물 작성시 이미지 저장 요청", description = "게시물 작성 페이지에서 이미지 첨부시 서버에게 이미지 저장을 요청합니다.\n\n" +
-            "(MultipartFile 형태로 이미지를 보내야 하며 저장 성공시 이미지의 경로를 리턴합니다.)", tags = { "BoardController" })
+            "(MultipartFile 형태로 이미지를 보내야 하며 저장 성공시 이미지의 경로를 리턴합니다.)", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "이미지 저장 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -97,7 +97,7 @@ public class BoardController {
             "  \"title\": \"임시 게시물\",\n" +
             "  \"detail\": \"임시 게시물\",\n" +
             "  \"category\": \"자유 게시판\"\n" +
-            "}", tags = { "BoardController" })
+            "}", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 저장 완료"),
             @ApiResponse(responseCode = "401", description = "로그인 Token이 전달되지 않았거나 유효하지 않은 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -116,7 +116,7 @@ public class BoardController {
             "  \"title\": \"수정 내용\",\n" +
             "  \"detail\": \"수정 내용\",\n" +
             "  \"category\": \"수정할 카테고리\"\n" +
-            "}", tags = { "BoardController" })
+            "}", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 수정 완료"),
             @ApiResponse(responseCode = "400", description = "게시물이 존재하지 않거나 다른 사람의 게시물인 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -130,7 +130,7 @@ public class BoardController {
     }
 
     // 게시물 삭제 컨트롤러
-    @Operation(summary = "게시물 삭제 요청", description = "서버에게 게시물 삭제를 요청합니다.", tags = { "BoardController" })
+    @Operation(summary = "게시물 삭제 요청", description = "서버에게 게시물 삭제를 요청합니다.", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시물 삭제 완료"),
             @ApiResponse(responseCode = "400", description = "게시물이 존재하지 않거나 다른 사람의 게시물인 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -148,7 +148,7 @@ public class BoardController {
             "Body값 예시 : {\n" +
             "  \"bid\": \"1\",\n" +
             "  \"state\": \"like\"\n" +
-            "}", tags = { "BoardController" })
+            "}", tags = { "1. BoardController" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 좋아요 완료"),
             @ApiResponse(responseCode = "400", description = "게시물이 존재하지 않는 경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),

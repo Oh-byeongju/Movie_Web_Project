@@ -453,7 +453,8 @@ public class ManagerOneService {
         jwtValidCheck.JwtCheck(request, "ATK");
 
         // 상영관 삭제에 필요한 정보 Entity로 변환
-        CinemaEntity cinema = CinemaEntity.builder().cid(cid).build();
+        CinemaEntity cinema = cinemaRepository.findById(cid)
+                .orElseThrow(()-> new CinemaNotFoundException("상영관이 존재하지 않습니다."));
 
         // 상영관 삭제전 상영관이 사용된 상영정보 조회
         List<MovieInfoEntity> movieInfos = movieInfoRepository.findByCinema(cinema);
@@ -475,7 +476,7 @@ public class ManagerOneService {
 
         // 상영관 수정에 필요한 정보 Entity로 변환
         CinemaEntity cinema = cinemaRepository.findById(requestDto.getCid())
-                .orElseThrow(() -> new EntityNotFoundException("상영관이 존재하지 않습니다.", ErrorCode.CINEMA_IS_NONE));
+                .orElseThrow(() -> new CinemaNotFoundException("상영관이 존재하지 않습니다."));
         TheaterEntity theater = TheaterEntity.builder().tid(requestDto.getTid()).build();
 
         // 상영관 수정전 상영관이 사용된 상영정보 조회
@@ -626,14 +627,15 @@ public class ManagerOneService {
         jwtValidCheck.JwtCheck(request, "ATK");
 
         // JPA 사용을 위한 형 변환
-        MovieInfoEntity movieInfo = MovieInfoEntity.builder().miid(miid).build();
+        MovieInfoEntity movieInfo = movieInfoRepository.findById(miid)
+                .orElseThrow(()-> new MovieInfoNotFoundException("상영정보가 존재하지 않습니다."));
 
         // 상영정보 삭제전 상영정보에 대한 예매기록 조회
         List<ReservationEntity> reservation = reservationRepository.findByMovieInfo(movieInfo);
 
         // 예매기록이 존재할경우 예외처리
-        if(!reservation.isEmpty()) {
-            throw new MovieInfoExistException("상영정보에 예매 기록이 존재합니다.");
+        if (!reservation.isEmpty()) {
+            throw new ReserveExistException("상영정보에 예매 기록이 존재합니다.");
         }
 
         // 상영정보 삭제
@@ -656,7 +658,8 @@ public class ManagerOneService {
         // 상영정보 수정에 필요한 정보 Entity로 변환
         MovieEntity movie = MovieEntity.builder().mid(mid).build();
         CinemaEntity cinema = CinemaEntity.builder().cid(cid).build();
-        MovieInfoEntity movieInfo = MovieInfoEntity.builder().miid(miid).build();
+        MovieInfoEntity movieInfo = movieInfoRepository.findById(miid)
+                .orElseThrow(()-> new MovieInfoNotFoundException("상영정보가 존재하지 않습니다."));
 
         // 상영정보간 시간 확인
         String CheckStart = DateUtil.ChangeDate(updateStartDay+":00", -1799);
@@ -674,8 +677,8 @@ public class ManagerOneService {
         List<ReservationEntity> reservation = reservationRepository.findByMovieInfo(movieInfo);
 
         // 예매기록이 존재할경우 예외처리
-        if(!reservation.isEmpty()) {
-            throw new MovieInfoExistException("상영정보에 예매 기록이 존재합니다.");
+        if (!reservation.isEmpty()) {
+            throw new ReserveExistException("상영정보에 예매 기록이 존재합니다.");
         }
 
         // 상영정보 수정

@@ -37,7 +37,6 @@ payment:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-    groups-order: ASC
     operationsSorter: method
     disable-swagger-default-url: true
     display-request-duration: true

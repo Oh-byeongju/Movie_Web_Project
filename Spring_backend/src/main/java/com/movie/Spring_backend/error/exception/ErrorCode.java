@@ -35,7 +35,9 @@ public enum ErrorCode {
     COMMENT_IS_EXIST(400, "MC002", "작성된 관람평이 존재합니다."),
     WATCHING_IS_NONE(400, "MC003", "영화 관람기록이 없습니다."),
     RESERVE_IS_NONE(400, "MR001", "영화 예매기록이 없습니다."),
-    MOVIEINFO_IS_EXIST(400, "MI001", "수정이 불가능한 상영정보입니다."),
+    RESERVE_IS_EXIST(400, "MR002", "영화 예매기록이 존재합니다."),
+    MOVIEINFO_IS_NONE(400, "MI001", "상영정보가 존재하지 않습니다."),
+    MOVIEINFO_IS_EXIST(400, "MI002", "상영정보가 존재합니다."),
     ACTOR_IS_NONE(400, "MA001", "배우가 존재하지 않습니다."),
 
     // Theater

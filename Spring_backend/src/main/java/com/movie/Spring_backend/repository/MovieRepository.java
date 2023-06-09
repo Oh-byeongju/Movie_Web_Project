@@ -122,9 +122,6 @@ public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
             "ORDER BY mm.umliketime DESC")
     List<MovieEntity> findMemberLikeMovieDESC(@Param("member") MemberEntity member);
 
-    // 모든 영화 조회 (개봉일순으로 내림차순)
-    List<MovieEntity> findAllByOrderByMdateAsc();
-
     // 영화 수정하는 메소드
     @Modifying
     @Query("UPDATE MovieEntity as m " +

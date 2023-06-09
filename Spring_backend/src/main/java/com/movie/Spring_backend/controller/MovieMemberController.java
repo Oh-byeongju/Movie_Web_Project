@@ -45,7 +45,7 @@ public class MovieMemberController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/normal/comment/Moviedetail/{mid}")
-    public ResponseEntity<List<CommentInfoDto>> MovieDetailComment(@Parameter(description = "영화 ID", required = true, example = "2") @PathVariable("mid") Long mid, @RequestParam Map<String, String> requestMap) {
+    public ResponseEntity<List<CommentInfoDto>> MovieDetailComment(@Parameter(description = "영화 ID", required = true, example = "1") @PathVariable("mid") Long mid, @RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(movieMemberService.getMovieDetailComment(mid, requestMap));
     }
 
@@ -66,7 +66,7 @@ public class MovieMemberController {
     // 관람평 작성을 위한 컨트롤러, 작성에 성공할 경우 noContent 리턴
     @Operation(summary = "영화 관람평 작성 요청", description = "영화에 대한 관람평 작성을 요청합니다.\n\n" +
             "Body값 예시 : {\n" +
-            "  \"mid\": \"2\",\n" +
+            "  \"mid\": \"1\",\n" +
             "  \"mcomment\": \"관람평 내용\",\n" +
             "  \"mscore\": \"9\"\n" +
             "}", tags = { "MovieMemberController" })

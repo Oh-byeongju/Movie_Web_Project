@@ -44,7 +44,7 @@ public class MovieInfoController {
     @Operation(summary = "상영정보 요청(예매 페이지)", description = "예매 페이지에서 영화, 극장, 날짜에 따른 상영정보를 요청합니다.\n\n" +
             "파라미터 예시 : {\n" +
             "  \"miday\": \"내일 날짜입력(YYYY-MM-DD에 맞춰서)\",\n" +
-            "  \"mid\": \"2\",\n" +
+            "  \"mid\": \"1\",\n" +
             "  \"tid\": \"1\",\n" +
             "  \"uid\": \"temp1\"\n" +
             "}", tags = { "MovieInfoController" })
@@ -60,7 +60,7 @@ public class MovieInfoController {
     // 조건에 맞는 상영정보의 상영날짜를 구하는 컨트롤러(상영시간표 페이지)
     @Operation(summary = "조건에 맞는 상영날짜 요청(상영시간표 페이지)", description = "상영시간표 페이지에서 영화, 극장, 지역에 따른 상영날짜를 요청합니다.\n\n" +
             "파라미터 예시 : {\n" +
-            "  \"mid\": \"2\",\n" +
+            "  \"mid\": \"1\",\n" +
             "  \"tarea\": \"서울\"\n" +
             "}", tags = { "MovieInfoController" })
     @GetMapping("/normal/findDay")
@@ -75,7 +75,7 @@ public class MovieInfoController {
     // 영화, 상영날짜, 지역을 이용하여 상영정보를 검색하는 컨트롤러(상영시간표 페이지)
     @Operation(summary = "영화에 따른 상영정보 요청(상영시간표 페이지)", description = "상영시간표 페이지에서 영화, 날짜, 지역에 따른 상영정보를 요청합니다.\n\n" +
             "파라미터 예시 : {\n" +
-            "  \"mid\": \"2\",\n" +
+            "  \"mid\": \"1\",\n" +
             "  \"miday\": \"내일 날짜입력(YYYY-MM-DD에 맞춰서)\",\n" +
             "  \"tarea\": \"서울\",\n" +
             "  \"uid\": \"temp1\"\n" +

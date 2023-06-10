@@ -179,10 +179,8 @@ public class MemberService {
             // maxAge를 7일로 지정
             ResponseCookie accessCookie = ResponseCookie.from("ATK", "Bearer" + tokenDto.getAccessToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
                     .maxAge( 60 * 60 * 24 * 7)
-                    .sameSite("None")
                     .build();
 
             // XSS를 방지하기 위해 httpOnly 기능을 활성화
@@ -190,10 +188,8 @@ public class MemberService {
             // maxAge를 7일로 지정
             ResponseCookie refreshCookie = ResponseCookie.from("RTK", tokenDto.getRefreshToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
                     .maxAge( 60 * 60 * 24 * 7)
-                    .sameSite("None")
                     .build();
 
             // 응답 헤더에 두 가지 토큰을 쿠키에 할당
@@ -215,9 +211,7 @@ public class MemberService {
             // maxAge는 지정 안할경우 브라우저 기준으로 session
             ResponseCookie accessCookie = ResponseCookie.from("ATK", "Bearer" + tokenDto.getAccessToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
-                    .sameSite("None")
                     .build();
 
             // XSS를 방지하기 위해 httpOnly 기능을 활성화
@@ -225,9 +219,7 @@ public class MemberService {
             // maxAge는 지정 안할경우 브라우저 기준으로 session
             ResponseCookie refreshCookie = ResponseCookie.from("RTK", tokenDto.getRefreshToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
-                    .sameSite("None")
                     .build();
 
             // 응답 헤더에 두 가지 토큰을 쿠키에 할당
@@ -309,10 +301,8 @@ public class MemberService {
             // maxAge를 7일로 지정
             ResponseCookie accessCookie = ResponseCookie.from("ATK", "Bearer" + tokenDto.getAccessToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
                     .maxAge( 60 * 60 * 24 * 7)
-                    .sameSite("None")
                     .build();
 
             // XSS를 방지하기 위해 httpOnly 기능을 활성화
@@ -320,10 +310,8 @@ public class MemberService {
             // maxAge를 7일로 지정
             ResponseCookie refreshCookie = ResponseCookie.from("RTK", tokenDto.getRefreshToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
                     .maxAge( 60 * 60 * 24 * 7)
-                    .sameSite("None")
                     .build();
 
             // 응답 헤더에 두 가지 토큰을 쿠키에 할당
@@ -345,9 +333,7 @@ public class MemberService {
             // maxAge는 지정 안할경우 브라우저 기준으로 session
             ResponseCookie accessCookie = ResponseCookie.from("ATK", "Bearer" + tokenDto.getAccessToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
-                    .sameSite("None")
                     .build();
 
             // XSS를 방지하기 위해 httpOnly 기능을 활성화
@@ -355,9 +341,7 @@ public class MemberService {
             // maxAge는 지정 안할경우 브라우저 기준으로 session
             ResponseCookie refreshCookie = ResponseCookie.from("RTK", tokenDto.getRefreshToken())
                     .httpOnly(true)
-                    .secure(true)
                     .path("/")
-                    .sameSite("None")
                     .build();
 
             // 응답 헤더에 두 가지 토큰을 쿠키에 할당
@@ -382,18 +366,14 @@ public class MemberService {
         // 새로 생성된 쿠키들은 브라우저에 있는 기존의 쿠키들을 덮어쓴 후 사라짐
         ResponseCookie accessCookie = ResponseCookie.from("ATK", "")
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
                 .maxAge( 0)
-                .sameSite("None")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("RTK", "")
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("None")
                 .build();
 
         // 응답 헤더에 두 가지 쿠기를 할당
@@ -474,18 +454,14 @@ public class MemberService {
         // 새로 생성된 쿠키들은 브라우저에 있는 기존의 쿠키들을 덮어쓴 후 사라짐
         ResponseCookie accessCookie = ResponseCookie.from("ATK", "")
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
                 .maxAge( 0)
-                .sameSite("None")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("RTK", "")
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("None")
                 .build();
 
         // 응답 헤더에 두 가지 쿠기를 할당

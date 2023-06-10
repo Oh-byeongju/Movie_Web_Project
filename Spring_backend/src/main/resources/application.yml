@@ -1,14 +1,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/movie?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-    username: Movie_Manager
-    password: 1234
+    url: jdbc:mysql://web-database.c4e9ujqrk1xx.ap-northeast-2.rds.amazonaws.com:3306/movie?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: Manager
+    password: 123456
   redis:
     host: localhost
     port: 6379
-  cors:
-    origins: http://localhost:3000
 
   jpa:
     open-in-view: false

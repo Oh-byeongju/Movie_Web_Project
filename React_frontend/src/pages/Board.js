@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import SideBar from "../components/board/SideBar"
+import SideBar from "../components/Board/SideBar"
 import { Outlet } from "react-router-dom";
 
 const Board = () => {

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import ContentPost from "../components/board/ContentPost";
-import ContentComment from "../components/board/ContentComment";
+import ContentPost from "../components/Board/ContentPost";
+import ContentComment from "../components/Board/ContentComment";
 import { useDispatch, useSelector, shallowEqual } from "react-redux"
 import { useParams } from "react-router-dom";
 import { InfoCircleOutlined } from "@ant-design/icons";

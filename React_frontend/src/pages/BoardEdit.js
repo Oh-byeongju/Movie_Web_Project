@@ -1,5 +1,5 @@
 import React from "react";
-import ContentEdit from "../components/board/ContentEdit";
+import ContentEdit from "../components/Board/ContentEdit";
 
 const BoardEdit = () => {
 	return (

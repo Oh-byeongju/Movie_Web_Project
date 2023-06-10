@@ -1,5 +1,5 @@
 import React from "react";
-import ContentWriting from "../components/board/ContentWriting";
+import ContentWriting from "../components/Board/ContentWriting";
 
 const BoardWrite = () => {
 	return (

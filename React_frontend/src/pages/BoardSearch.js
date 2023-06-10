@@ -1,5 +1,5 @@
 import React from "react";
-import ContentSearchList from "../components/board/ContentSearchList";
+import ContentSearchList from "../components/Board/ContentSearchList";
 
 const BoardSearch = () => {
 	return (

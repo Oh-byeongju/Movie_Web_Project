@@ -1,5 +1,5 @@
 import React from "react";
-import Scheduler from "../components/timetable/Scheduler";
+import Scheduler from "../components/Timetable/Scheduler";
 
 const TimeTable = () => {
 	return (

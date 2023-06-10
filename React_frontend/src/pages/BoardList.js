@@ -1,6 +1,6 @@
 import React from "react";
-import ContentListHeader from "../components/Board/ContentListHeader";
-import ContentList from "../components/Board/ContentList";
+import ContentListHeader from "../components/board/ContentListHeader";
+import ContentList from "../components/board/ContentList";
 
 const BoardList = () => {
 	return (

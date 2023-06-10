@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { PicCenterOutlined, BankOutlined } from "@ant-design/icons";
 import { TIMETABLE_MOVIE_LIST_REQUEST, TIMETABLE_MOVIE_SELECT, TIMETABLE_AREA_SELECT, TIMETABLE_THEATER_AREA_SELECT, TIMETABLE_SORT_SELECT, 
-	TIMETABLE_KEY_SELECT,	TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_timeTable";
+	TIMETABLE_KEY_SELECT,	TIMETABLE_THEATER_LIST_REQUEST, TIMETABLE_THEATER_SELECT } from "../../reducer/R_timetable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useLocation } from "react-router-dom";
 import TimeTableLoading from "./TimeTableLoading";
@@ -18,16 +18,16 @@ const Scheduler = () => {
 	const { MOVIE_LIST_loading, MOVIE_LIST, MOVIE, AREA, THEATER_AREA, THEATER_LIST, THEATER, 
 		TIMETABLE_KEY, MOVIE_BUTTON, THEATER_BUTTON } = useSelector(
 		state => ({
-			MOVIE_LIST_loading: state.R_timeTable.MOVIE_LIST_loading,
-			MOVIE_LIST: state.R_timeTable.MOVIE_LIST,
-			MOVIE: state.R_timeTable.MOVIE,
-			AREA: state.R_timeTable.AREA,
-			THEATER_AREA: state.R_timeTable.THEATER_AREA,
-			THEATER_LIST: state.R_timeTable.THEATER_LIST,
-			THEATER: state.R_timeTable.THEATER,
-			TIMETABLE_KEY: state.R_timeTable.TIMETABLE_KEY,
-			MOVIE_BUTTON: state.R_timeTable.MOVIE_BUTTON,
-			THEATER_BUTTON: state.R_timeTable.THEATER_BUTTON,
+			MOVIE_LIST_loading: state.R_timetable.MOVIE_LIST_loading,
+			MOVIE_LIST: state.R_timetable.MOVIE_LIST,
+			MOVIE: state.R_timetable.MOVIE,
+			AREA: state.R_timetable.AREA,
+			THEATER_AREA: state.R_timetable.THEATER_AREA,
+			THEATER_LIST: state.R_timetable.THEATER_LIST,
+			THEATER: state.R_timetable.THEATER,
+			TIMETABLE_KEY: state.R_timetable.TIMETABLE_KEY,
+			MOVIE_BUTTON: state.R_timetable.MOVIE_BUTTON,
+			THEATER_BUTTON: state.R_timetable.THEATER_BUTTON,
 		}),
 		shallowEqual
 	);

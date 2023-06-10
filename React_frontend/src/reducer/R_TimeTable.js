@@ -72,7 +72,7 @@ const initalState = {
 	MOVIEINFO_LIST_THEATER: []
 };
 
-const R_timeTable = (state = initalState, action) => {
+const R_timetable = (state = initalState, action) => {
 	switch (action.type) {
 		// 영화 조회 케이스들
     case TIMETABLE_MOVIE_LIST_REQUEST:
@@ -239,5 +239,5 @@ const R_timeTable = (state = initalState, action) => {
 	}
 };
 
-export default R_timeTable;
+export default R_timetable;
   

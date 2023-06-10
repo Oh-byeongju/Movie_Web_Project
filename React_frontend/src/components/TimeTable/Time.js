@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/ko";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_SELECT } from "../../reducer/R_timeTable";
+import { TIMETABLE_DAY_LIST_REQUEST, TIMETABLE_DAY_SELECT } from "../../reducer/R_timetable";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 // 날짜 css에 쓰일 변수들
@@ -33,15 +33,15 @@ const Time = () => {
 	// 필요한 리덕스 상태들
 	const { MOVIE, AREA, THEATER, DAY_LIST, DAY, TIMETABLE_KEY, MOVIE_BUTTON, THEATER_BUTTON, CHANGE_STATE } = useSelector(
 		state => ({
-			MOVIE: state.R_timeTable.MOVIE,
-			AREA: state.R_timeTable.AREA,
-			THEATER: state.R_timeTable.THEATER,
-			DAY_LIST: state.R_timeTable.DAY_LIST,
-			DAY: state.R_timeTable.DAY,
-			TIMETABLE_KEY: state.R_timeTable.TIMETABLE_KEY,
-			MOVIE_BUTTON: state.R_timeTable.MOVIE_BUTTON,
-			THEATER_BUTTON: state.R_timeTable.THEATER_BUTTON,
-			CHANGE_STATE: state.R_timeTable.CHANGE_STATE
+			MOVIE: state.R_timetable.MOVIE,
+			AREA: state.R_timetable.AREA,
+			THEATER: state.R_timetable.THEATER,
+			DAY_LIST: state.R_timetable.DAY_LIST,
+			DAY: state.R_timetable.DAY,
+			TIMETABLE_KEY: state.R_timetable.TIMETABLE_KEY,
+			MOVIE_BUTTON: state.R_timetable.MOVIE_BUTTON,
+			THEATER_BUTTON: state.R_timetable.THEATER_BUTTON,
+			CHANGE_STATE: state.R_timetable.CHANGE_STATE
 		}),
 		shallowEqual
 	);

@@ -5,7 +5,7 @@ import R_user_login from "./R_user_login";
 import R_user_movie from "./R_user_movie";
 import R_movie from "./R_movie";
 import R_seat from "./R_seat";
-import R_timeTable from "./R_timeTable";
+import R_timetable from "./R_timetable";
 import R_mypage_movie from "./R_mypage_movie";
 import R_board from "./R_board";
 import R_mypage_reserve from "./R_mypage_reserve";
@@ -23,7 +23,7 @@ const rootReducer = combineReducers({
   R_user_movie,
   R_movie,
   R_seat,
-  R_timeTable,
+  R_timetable,
   R_mypage_movie,
   R_board,
   R_mypage_reserve,

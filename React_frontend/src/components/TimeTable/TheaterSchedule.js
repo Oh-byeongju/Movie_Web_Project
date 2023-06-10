@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React, { useEffect, useCallback } from "react";
-import { TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST } from "../../reducer/R_timeTable";
+import { TIMETABLE_MOVIEINFO_LIST_THEATER_REQUEST } from "../../reducer/R_timetable";
 import { TICKET_PAGE_SETTING } from "../../reducer/R_ticket";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -12,10 +12,10 @@ const TheaterSchedule = () => {
 	// 필요한 리덕스 상태들
 	const { THEATER, DAY, DAY_LIST_loading, MOVIEINFO_LIST_THEATER, LOGIN_data } = useSelector(
 		state => ({
-			THEATER: state.R_timeTable.THEATER,
-			DAY: state.R_timeTable.DAY,
-			DAY_LIST_loading: state.R_timeTable.DAY_LIST_loading,
-			MOVIEINFO_LIST_THEATER: state.R_timeTable.MOVIEINFO_LIST_THEATER,
+			THEATER: state.R_timetable.THEATER,
+			DAY: state.R_timetable.DAY,
+			DAY_LIST_loading: state.R_timetable.DAY_LIST_loading,
+			MOVIEINFO_LIST_THEATER: state.R_timetable.MOVIEINFO_LIST_THEATER,
 			LOGIN_data: state.R_user_login.LOGIN_data
 		}),
 		shallowEqual

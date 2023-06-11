@@ -53,7 +53,6 @@ public class MemberService {
     // 아이디 중복을 확인하기 위한 메소드
     @Transactional
     public void existsId(String id) {
-        System.out.println(id);
         // 아이디 중복을 확인하고 중복일 경우 예외를 던져줌
         if (memberRepository.existsById(id.trim())) {
             throw new IdDuplicateException("중복된 아이디입니다.");
@@ -397,7 +396,6 @@ public class MemberService {
 
         // CharSequence로 형변환
         CharSequence password = Pw;
-        System.out.println(Pw);
 
         // 프론트단에서 입력한 패스워드와 DB에 저장되어있는 패스워드를 비교
         if (!passwordEncoder.matches(password, member.getUpw())) {

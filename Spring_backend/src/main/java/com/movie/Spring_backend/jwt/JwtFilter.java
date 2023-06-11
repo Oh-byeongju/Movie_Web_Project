@@ -32,9 +32,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // URL 찍어둠
-        System.out.println(request.getRequestURL());
-
         // axios 요청이 POST, DELETE, PUT, PATCH인 경우 Double submit cookie 메소드 실행(csrf 공격 방지)
         // Header에 TestID가 존재하면 검사X (Swagger에서 요청한 방식)
         // 현재 프로젝트는 포트폴리오를 위한 프로젝트라 Rest Api 명세서를 공개하므로 실제 배포와 달리 예외사항을 처리한 것

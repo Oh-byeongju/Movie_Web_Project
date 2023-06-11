@@ -42,6 +42,7 @@ public class MemberController {
     })
     @GetMapping("/normal/id")
     public ResponseEntity<String> existsId(@Parameter(description = "회원 ID", required = true, example = "sample1") @RequestParam("uid") String id) {
+        System.out.println(id);
         memberService.existsId(id);
         return ResponseEntity.noContent().build();
     }
@@ -181,6 +182,7 @@ public class MemberController {
     })
     @GetMapping("/auth/checkPw")
     public ResponseEntity<String> checkPw(HttpServletRequest request, @Parameter(description = "회원 비밀번호", required = true, example = "password") @RequestParam("upw") String pw) {
+        System.out.println(pw);
         memberService.CheckPw(request, pw);
         return ResponseEntity.noContent().build();
     }

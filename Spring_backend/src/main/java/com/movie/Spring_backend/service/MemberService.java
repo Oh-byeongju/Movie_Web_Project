@@ -53,6 +53,7 @@ public class MemberService {
     // 아이디 중복을 확인하기 위한 메소드
     @Transactional
     public void existsId(String id) {
+        System.out.println(id);
         // 아이디 중복을 확인하고 중복일 경우 예외를 던져줌
         if (memberRepository.existsById(id.trim())) {
             throw new IdDuplicateException("중복된 아이디입니다.");

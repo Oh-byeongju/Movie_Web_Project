@@ -249,7 +249,7 @@ public class ManagerOneService {
         // 저장될 포스터명
         String newFilename = System.currentTimeMillis() + originFileName;
         // 포스터 파일 저장할 경로
-        String POSTER_PATH = "/var/www/html/Movie_Project/React_frontend/build/img/ranking/";
+        String POSTER_PATH = "/home/ubuntu/Movie_Project/React_frontend/build/img/ranking";
 
         try {
             // 포스터를 저장

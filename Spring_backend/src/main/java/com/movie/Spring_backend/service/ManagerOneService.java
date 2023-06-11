@@ -249,7 +249,7 @@ public class ManagerOneService {
         // 저장될 포스터명
         String newFilename = System.currentTimeMillis() + originFileName;
         // 포스터 파일 저장할 경로
-        String POSTER_PATH = "/var/www/html/Movie_Project/React_frontend/build/img/ranking";
+        String POSTER_PATH = "/var/www/html/Movie_Project/React_frontend/build/img/ranking/";
 
         try {
             // 포스터를 저장
@@ -260,7 +260,7 @@ public class ManagerOneService {
             throw new RuntimeException("포스터 저장 실패");
         }
         // 저장된 파일 경로를 return
-        return POSTER_PATH + "/" + newFilename;
+        return POSTER_PATH + newFilename;
     }
 
     // 전체 배우 불러오는 메소드

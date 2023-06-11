@@ -396,6 +396,7 @@ public class MemberService {
 
         // CharSequence로 형변환
         CharSequence password = Pw;
+        System.out.println(Pw);
 
         // 프론트단에서 입력한 패스워드와 DB에 저장되어있는 패스워드를 비교
         if (!passwordEncoder.matches(password, member.getUpw())) {

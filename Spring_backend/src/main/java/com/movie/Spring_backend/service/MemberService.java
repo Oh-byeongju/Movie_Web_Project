@@ -394,8 +394,11 @@ public class MemberService {
         MemberEntity member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
 
+        // CharSequence로 형변환
+        CharSequence password = Pw;
+
         // 프론트단에서 입력한 패스워드와 DB에 저장되어있는 패스워드를 비교
-        if (!passwordEncoder.matches(Pw, member.getUpw())) {
+        if (!passwordEncoder.matches(password, member.getUpw())) {
             throw new PwNotCorrectException("비밀번호가 일치하지 않습니다.");
         }
     }
@@ -410,8 +413,11 @@ public class MemberService {
         MemberEntity member = memberRepository.findById(requestDto.getUid())
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
 
+        // CharSequence로 형변환
+        CharSequence password = requestDto.getUpw();
+
         // 프론트단에서 입력한 현재 비밀번호와 DB에 저장되어있는 비밀번호를 비교
-        if (!passwordEncoder.matches(requestDto.getUpw(), member.getUpw())) {
+        if (!passwordEncoder.matches(password, member.getUpw())) {
             throw new PwNotCorrectException("비밀번호가 일치하지 않습니다.");
         }
 

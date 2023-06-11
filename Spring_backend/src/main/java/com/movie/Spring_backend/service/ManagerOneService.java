@@ -148,7 +148,7 @@ public class ManagerOneService {
         movieRepository.deleteById(mid);
 
         // 저장된 포스터 삭제
-        File file = new File("C:/Users/OBJ/PROJECT/Movie_Project_final/React_frontend/public/" + movie.getMimagepath());
+        File file = new File("/var/www/html/Movie_Project/React_frontend/build/" + movie.getMimagepath());
         boolean delete = file.delete();
     }
 
@@ -237,7 +237,7 @@ public class ManagerOneService {
 
         // 포스터를 교체했다면 기존에 있던 포스터 파일 삭제(모든 쿼리 실행후)
         if (multipartFiles != null) {
-            File file = new File("C:/Users/OBJ/PROJECT/Movie_Project_final/React_frontend/public/" + movie.getMimagepath());
+            File file = new File("/var/www/html/Movie_Project/React_frontend/build/" + movie.getMimagepath());
             boolean delete = file.delete();
         }
     }
@@ -249,7 +249,7 @@ public class ManagerOneService {
         // 저장될 포스터명
         String newFilename = System.currentTimeMillis() + originFileName;
         // 포스터 파일 저장할 경로
-        String POSTER_PATH = "C:/Users/OBJ/PROJECT/Movie_Project_final/React_frontend/public/img/ranking";
+        String POSTER_PATH = "/var/www/html/Movie_Project/React_frontend/build/img/ranking";
 
         try {
             // 포스터를 저장

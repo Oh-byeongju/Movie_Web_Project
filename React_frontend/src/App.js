@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
@@ -35,6 +36,13 @@ import NotFound from "./pages/NotFound";
 
 // TopButton과 Footer가 있어야 하는 페이지이면 Layout 사이에 넣고 아니면 따로 빼기
 function App() {
+	// 새로고침시 ScrollTop
+	useEffect(() => {
+		window.onbeforeunload = function pushRefresh() {
+			window.scrollTo(0, 0);
+		};
+	}, []);
+
   return (
     <Routes>
       <Route exact={true} element={<Layout />}>

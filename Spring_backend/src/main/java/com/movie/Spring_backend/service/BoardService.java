@@ -179,7 +179,7 @@ public class BoardService {
         // 저장될 이미지명
         String newFilename = System.currentTimeMillis() + originFileName;
         // 이미지 파일 저장할 경로
-        String IMAGE_PATH = "/home/ubuntu/Movie_Project/React_frontend/public/img/board";
+        String IMAGE_PATH = "/home/ubuntu/Movie_Project/React_frontend/build/img/board";
 
         try {
             // 이미지를 저장

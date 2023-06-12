@@ -179,7 +179,7 @@ public class BoardService {
         // 저장될 이미지명
         String newFilename = System.currentTimeMillis() + originFileName;
         // 이미지 파일 저장할 경로
-        String IMAGE_PATH = "C:/Users/OBJ/PROJECT/Movie_Project_final/React_frontend/public/img/board";
+        String IMAGE_PATH = "/home/ubuntu/Movie_Project/React_frontend/public/img/board";
 
         try {
             // 이미지를 저장
@@ -191,7 +191,7 @@ public class BoardService {
         }
 
         // 저장된 이미지 경로를 return
-        return BoardDto.builder().image("http://localhost:3000/img/board/" + newFilename).build();
+        return BoardDto.builder().image("https://www.moviebnb.com/img/board/" + newFilename).build();
     }
 
     // 게시물 작성 메소드
@@ -212,7 +212,7 @@ public class BoardService {
         MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
 
         // 썸네일 정보 가공
-        String imgTag = "<img src=\"http://localhost:3000/img/board/post_hidden.jpg\">";
+        String imgTag = "<img src=\"https://www.moviebnb.com/img/board/post_hidden.jpg\">";
         Pattern pattern = Pattern.compile("<img[^>]*src=[\"']?([^>\"']+)[\"']?[^>]*>");
         Matcher match = pattern.matcher(detail);
 
@@ -256,7 +256,7 @@ public class BoardService {
         }
 
         // 썸네일 정보 가공
-        String imgTag = "<img src=\"http://localhost:3000/img/board/post_hidden.jpg\">";
+        String imgTag = "<img src=\"https://www.moviebnb.com/img/board/post_hidden.jpg\">";
         Pattern pattern = Pattern.compile("<img[^>]*src=[\"']?([^>\"']+)[\"']?[^>]*>");
         Matcher match = pattern.matcher(detail);
 

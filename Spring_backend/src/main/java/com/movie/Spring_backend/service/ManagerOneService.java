@@ -148,7 +148,7 @@ public class ManagerOneService {
         movieRepository.deleteById(mid);
 
         // 저장된 포스터 삭제
-        File file = new File("/var/www/html/Movie_Project/React_frontend/build/" + movie.getMimagepath());
+        File file = new File("/home/ubuntu/Movie_Project/React_frontend/build/" + movie.getMimagepath());
         boolean delete = file.delete();
     }
 
@@ -237,7 +237,7 @@ public class ManagerOneService {
 
         // 포스터를 교체했다면 기존에 있던 포스터 파일 삭제(모든 쿼리 실행후)
         if (multipartFiles != null) {
-            File file = new File("/var/www/html/Movie_Project/React_frontend/build/" + movie.getMimagepath());
+            File file = new File("/home/ubuntu/Movie_Project/React_frontend/build/" + movie.getMimagepath());
             boolean delete = file.delete();
         }
     }
@@ -260,7 +260,7 @@ public class ManagerOneService {
             throw new RuntimeException("포스터 저장 실패");
         }
         // 저장된 파일 경로를 return
-        return POSTER_PATH + newFilename;
+        return POSTER_PATH + "/" + newFilename;
     }
 
     // 전체 배우 불러오는 메소드

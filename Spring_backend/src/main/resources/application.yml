@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://web-database.c4e9ujqrk1xx.ap-northeast-2.rds.amazonaws.com:3306/movie?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://web-database.c4e9ujqrk1xx.ap-northeast-2.rds.amazonaws.com:3306/movie?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false
     username: Manager
     password: 123456
   redis:

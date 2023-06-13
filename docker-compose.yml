@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  springboot:
+    build:
+      context: ./Spring_backend
+      environment: TZ:Asia/Seoul
+  nginx:
+    build:
+      context: ./Docker_nginx
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - springboot
+  

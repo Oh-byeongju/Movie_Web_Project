@@ -22,7 +22,7 @@ import org.springframework.web.method.HandlerMethod;
         servers = {@Server(url = "https://www.moviebnb.com/APICALL", description = "Backend Server url")},
         info = @Info(title = "영화 웹페이지 API 명세서",
                 contact = @Contact(name="웹페이지 링크", url="https://www.moviebnb.com/"),
-                description = "Spring boot와 React를 이용한 영화 웹페이지 API 명세서\n\n" +
+                description = "Spring boot와 React를 이용한 영화 웹페이지 API 명세서입니다.\n\n" +
                         "① URL 가운데에 auth가 붙으면 accessToken이 필요해서 로그인 이후 사용가능합니다.\n\n" +
                         "② 쿠키를 기반으로 검증하기 때문에 회원 관련 API에 있는 /Member/normal/login 요청 이후 헤더에 토큰값을 추가할 필요가 없습니다.\n\n" +
                         "③ accessToken의 만료 시간은 30분이라서 만료 이후에는 재 로그인을 하거나 회원 관련 API에 있는 /Member/normal/reissue 요청을 하면 토큰이 갱신 됩니다.\n\n" +

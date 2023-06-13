@@ -5,6 +5,8 @@ package com.movie.Spring_backend.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.extensions.Extensions;
+import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Operation;
@@ -19,6 +21,7 @@ import org.springframework.web.method.HandlerMethod;
 @OpenAPIDefinition(
         servers = {@Server(url = "https://www.moviebnb.com/APICALL", description = "Backend Server url")},
         info = @Info(title = "영화 웹페이지 API 명세서",
+                contact = @Contact(name="웹페이지 링크", url="https://www.moviebnb.com/"),
                 description = "Spring boot와 React를 이용한 영화 웹페이지 API 명세서\n\n" +
                         "① URL 가운데에 auth가 붙으면 accessToken이 필요해서 로그인 이후 사용가능합니다.\n\n" +
                         "② 쿠키를 기반으로 검증하기 때문에 회원 관련 API에 있는 /Member/normal/login 요청 이후 헤더에 토큰값을 추가할 필요가 없습니다.\n\n" +

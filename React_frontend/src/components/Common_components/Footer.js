@@ -21,6 +21,15 @@ const Footer = () => {
                   프로젝트 소개
                 </a>
               </FooterLinkListItemHide>
+							<FooterLinkListItem>
+                <a
+                  href="https://www.moviebnb.com/APICALL/swagger-ui/index.html"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  API 명세서
+                </a>
+              </FooterLinkListItem>
               <FooterLinkListItem>
                 <Link to="/Allmovie">
                   영화조회

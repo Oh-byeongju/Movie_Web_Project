@@ -1,3 +1,4 @@
+# Spring-boot 빌드 후 실행
 FROM adoptopenjdk/openjdk11 AS builder
 COPY gradlew .
 COPY gradle gradle

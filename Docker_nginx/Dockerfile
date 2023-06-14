@@ -1,3 +1,4 @@
+# nginx 초기설정 파일 적용
 FROM nginx
  
 # 기존 설정파일 삭제

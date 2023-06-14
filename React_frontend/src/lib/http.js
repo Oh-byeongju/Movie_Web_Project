@@ -6,8 +6,13 @@ import axios from 'axios';
 
 // axios instance 생성
 export const http = axios.create({
+	headers: {
+		'Cache-Control': 'no-cache',
+		'Pragma': 'no-cache',
+		'Expires': '0'
+	},
   baseURL: "https://www.moviebnb.com/APICALL", // 백엔드 주소
-	withCredentials: true,
+	withCredentials: true
 });
 
 // axios 요청시 resquest에 대한 처리

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TomcatWebCustomConfig implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
-
     @Override
     // Rest Api GET 요청시 특수문자를 사용하기 위한 Custom
     public void customize(TomcatServletWebServerFactory factory) {

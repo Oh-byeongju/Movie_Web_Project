@@ -7,6 +7,7 @@
 - 📝 [프로젝트 개요](#-프로젝트-개요)
 - 🛠 [기술 및 도구](#-기술-및-도구)
 - 📦 [ERD 설계](#-ERD-설계)
+- 📌 [프로젝트 수행 과정](#📌-프로젝트-수행-과정)
 - 🔎 [주요 기능 소개](#-주요-기능-소개)
 
 </b>
@@ -53,17 +54,18 @@
 <img width="100%" alt="ERD" src="https://user-images.githubusercontent.com/96694919/246102323-3dbcef99-3e0a-47cc-8fa5-55926d9d65f8.png"/>
 
 ## 📌 프로젝트 수행 과정
-### `시스템 구성도`
-<img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246201058-5596e21a-7147-49d0-b5ce-1716ae945711.jpg"/>
+### `* 시스템 구성도`
+<img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246202776-83847a3b-d272-4157-b927-f175c96f8f70.jpg"/>
 
 > 프로젝트의 전체적인 시스템 구성도입니다. <br/>
 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달되며 NGINX는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소는 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달하고, 동적요소는 Spring-Boot 서버에게 요청을 전달한 뒤 Spring-Boot 서버가 RDS에 접근하여 가져온 데이터를 사용자에게 전달합니다.
 
-
+### `* Nginx 요청에 따른 DB 접근 순서도`
 
 
 
 <!-- ## 데이터베이스 접근 순서도를 만들면 될듯 -->
+<!-- 개발하면서 아쉬웠던점(기억나는거 다적기) -> jwt필터단에서  access토큰 유효성 검사를 하지 못하고 service단에서 실행한것 (이유는 axios interceptor를 쓰려고 하는데 jwt필터단에서 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 불일치, 형식오류등 각종 상황에 따른 다른 예외처리가 불가능하여서 service단에서 처리 ) -->
 ## 🔎 주요 기능 소개 여기 아래는 wiki로 다날려도 될듯
 ### `로그인관련`
 - 회원가입

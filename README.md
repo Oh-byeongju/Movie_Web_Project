@@ -12,14 +12,14 @@
 </b>
 
 ## **📝 프로젝트 개요**
-#### `프로젝트 소개`<br/>
+#### `1. 프로젝트 소개`
 - Spring-Boot와 React를 이용하여 개발한 영화 웹페이지 입니다.
 
-#### `제작 기간`<br/>
-- Demo-Version : 2023.01.08 ~ 2023.04.05<br/>
-- Refactoring : 2023.04.10 ~ 2023.05.30<br/>
+#### `2. 개발 기간`
+- Demo-Version : 2023.01.08 ~ 2023.04.05
+- Refactoring : 2023.04.10 ~ 2023.05.30
 
-#### `개발 인원`<br/>
+#### `3. 개발 인원`
 - 오병주 : Demo-Version 프로젝트 개발, 코드 리팩토링 및 배포
 - 강경목 : Demo-Version 프로젝트 개발
 
@@ -38,7 +38,7 @@
 - MySQL
 - Redis
 #### `DevOps`	
-- AWS(EC2, RDS)
+- AWS (EC2, RDS)
 - Nginx
 - Gradle
 - Docker
@@ -47,13 +47,24 @@
 - JWT
 - HTTPS
 #### `API`
-- Swagger(Springdoc)
+- Swagger (Springdoc)
 
 ## 📦 ERD 설계
-<img width="100%" alt="ERD" src="https://user-images.githubusercontent.com/96694919/246102323-3dbcef99-3e0a-47cc-8fa5-55926d9d65f8.png" />
+<img width="100%" alt="ERD" src="https://user-images.githubusercontent.com/96694919/246102323-3dbcef99-3e0a-47cc-8fa5-55926d9d65f8.png"/>
 
-## 🔎 주요 기능 소개
-#### `로그인관련`
+## 📌 프로젝트 수행 과정
+### `시스템 구성도`
+<img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246191985-14217756-f63a-4fbf-a79f-257f444568eb.png"/>
+
+> 프로젝트의 전체적인 시스템 구성도입니다. 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달되며 NGINX는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소는 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달하고, 동적요소는 Spring-Boot 서버에게 요청을 전달한 뒤 Spring-Boot 서버가 RDS에 접근하여 가져온 데이터를 사용자에게 전달합니다.
+
+
+
+
+
+<!-- ## 데이터베이스 접근 순서도를 만들면 될듯
+## 🔎 주요 기능 소개 여기 아래는 wiki로 다날려도 될듯 -->
+### `로그인관련`
 - 회원가입
 - JWT를 이용한 로그인 (로그인 유지하기 포함)
 - 아이디 / 비밀번호 찾기

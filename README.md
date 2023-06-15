@@ -54,16 +54,17 @@
 
 ## 📌 프로젝트 수행 과정
 ### `시스템 구성도`
-<img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246191985-14217756-f63a-4fbf-a79f-257f444568eb.png"/>
+<img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246201058-5596e21a-7147-49d0-b5ce-1716ae945711.jpg"/>
 
-> 프로젝트의 전체적인 시스템 구성도입니다. 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달되며 NGINX는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소는 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달하고, 동적요소는 Spring-Boot 서버에게 요청을 전달한 뒤 Spring-Boot 서버가 RDS에 접근하여 가져온 데이터를 사용자에게 전달합니다.
-
-
-
+> 프로젝트의 전체적인 시스템 구성도입니다. <br/>
+사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달되며 NGINX는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소는 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달하고, 동적요소는 Spring-Boot 서버에게 요청을 전달한 뒤 Spring-Boot 서버가 RDS에 접근하여 가져온 데이터를 사용자에게 전달합니다.
 
 
-<!-- ## 데이터베이스 접근 순서도를 만들면 될듯
-## 🔎 주요 기능 소개 여기 아래는 wiki로 다날려도 될듯 -->
+
+
+
+<!-- ## 데이터베이스 접근 순서도를 만들면 될듯 -->
+## 🔎 주요 기능 소개 여기 아래는 wiki로 다날려도 될듯
 ### `로그인관련`
 - 회원가입
 - JWT를 이용한 로그인 (로그인 유지하기 포함)

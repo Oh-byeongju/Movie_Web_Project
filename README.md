@@ -7,8 +7,9 @@
 - 📝 [프로젝트 개요](#-프로젝트-개요)
 - 🛠 [기술 및 도구](#-기술-및-도구)
 - 📦 [ERD 설계](#-ERD-설계)
-- 📌 [프로젝트 수행 과정](#-프로젝트-수행-과정)
-- 🔎 [주요 기능 소개](#-주요-기능-소개)
+- 💻 [프로젝트 수행 과정](#-프로젝트-수행-과정)
+- 🔎 [기능 소개 Wiki](#-기능-소개-Wiki)
+- 📰 [API 명세서](#-API-명세서)
 
 </b>
 
@@ -53,7 +54,7 @@
 ## **📦 ERD 설계**
 <img width="100%" alt="ERD" src="https://user-images.githubusercontent.com/96694919/246102323-3dbcef99-3e0a-47cc-8fa5-55926d9d65f8.png"/>
 
-## **📌 프로젝트 수행 과정**
+## **💻 프로젝트 수행 과정**
 ### * 시스템 구성도
 <img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246202776-83847a3b-d272-4157-b927-f175c96f8f70.jpg"/>
 
@@ -88,7 +89,7 @@
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246411239-2f83e6ce-83c5-4104-834d-ced93f0d64f7.jpg"/>
 
 - **요청 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L43)
-	- Controller 계층에서는 NGINX에서 넘어온 요청을 받고, Service 계층에 데이터 처리를 위임합니다.
+	- Controller 계층에서는 NGINX 서버에서 넘어온 요청을 받고, Service 계층에 데이터 처리를 위임합니다.
 	- 로그인이 필요한 요청인 경우 Cookie 형태로 저장된 Token이 존재하는 HttpServletRequest 객체를 Service 계층에 전달합니다.
 - **결과 응답** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L44)
 	- Service 계층에서 전달받은 로직 처리 결과를 ResponseEntity 객체에 담아 NGINX 서버로 전달합니다.
@@ -110,52 +111,42 @@
 	- Entity에 의해 생성된 DB에 접근하는 메소드들을 사용하기 위한 계층으로써 JpaRepository를 상속받아 사용합니다.
 	- JPA가 제공하는 쿼리 메소드를 이용하거나 @Query 어노테이션을 활용하여 JPQL 쿼리를 직접 작성한 뒤 쿼리를 수행합니다.
 
-
-
-
-<!-- ## 데이터베이스 접근 순서도를 만들면 될듯 -->
-<!-- 개발하면서 아쉬웠던점(기억나는거 다적기) -> jwt필터단에서  access토큰 유효성 검사를 하지 못하고 service단에서 실행한것 (이유는 axios interceptor를 쓰려고 하는데 jwt필터단에서 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 불일치, 형식오류등 각종 상황에 따른 다른 예외처리가 불가능하여서 service단에서 처리 ) -->
-<!-- 
-cors 이슈 -> 리액트와 스프링부트를 이용해서 개발은 진행하다보니 서로의 서버간 port번호가 달라 cors 이슈가 있었다. 그치만 이걸 spring-boot의 전역설정으로 해결하였고 Cookie까지 받아오려고 widhtㄱ크래셜?? 그거까지 설정했다.
-
-from dis cash 이슈 -> 배포 과정에서 발견한 트러블이슈인데 설명좀 추가해서 적고 ~~~ 일이 있었다. 그래서 프론트단에서 백엔드를 요청할때 axios 헤더에 무슨무슨 값을 설정해서 해결했다. -->
-
-## **🔎 주요 기능 소개 여기 아래는 wiki로 다날려도 될듯**
-### `로그인관련`
+## **🔎기능 소개 Wiki**
+### 로그인관련 - <a href="https://github.com/Oh-byeongju/Movie_Project/issues/3">상세보기</a>
 - 회원가입
 - JWT를 이용한 로그인 (로그인 유지하기 포함)
 - 아이디 / 비밀번호 찾기
 
-#### `영화관련`
+### 영화관련
 - 분류별 영화 조회
 - 영화 상세내용 조회
 - 버튼 클릭시 빠른 예매 기능
 - 영화 공감 및 관람평 작성 기능
 
-#### `상영시간표 관련`
+### 상영시간표 관련
 - 영화를 중심으로 상영정보 조회
 - 극장을 중심으로 상영정보 조회
 - 버튼 클릭시 빠른 예매 기능
 
-#### `영화예매 관련`
+### 영화예매 관련
 - 예매가 가능한 영화, 극장, 날짜 조회
 - 조건에 맞는 상영정보 조회
 - 좌석조회 및 선택
 - 결제기능
 
-#### `게시판 관련`
+### 게시판 관련
 - 게시물 조회, 작성, 수정, 삭제 기능
 - 댓글 및 답글 작성, 삭제 기능
 - 게시물 및 댓글 공감 기능
 
-#### `마이페이지 관련`
+### 마이페이지 관련
 - 예매내역, 예매 취소내역, 지난 관람내역 목록 조회
 - 예매내역, 예매 취소내역, 지난 관람내역 상세 조회
 - 사용자가 공감한 영화 조회
 - 관람평 작성이 가능한 영화 및 작성한 관람평 조회
 - 회원정보 수정 및 탈퇴
 
-#### `관리자 관련`
+### 관리자 관련
 - 영화 및 배우 조회, 작성, 수정, 삭제 기능
 - 상영정보 조회, 작성, 수정, 삭제 기능
 - 극장 및 상영관 조회, 작성, 수정, 삭제 기능
@@ -163,3 +154,15 @@ from dis cash 이슈 -> 배포 과정에서 발견한 트러블이슈인데 설�
 - 영화 또는 극장에 따른 예매내역 조회 기능
 - 관람평 및 게시물 조회, 삭제 기능
 
+## **📰 API 명세서**
+- API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
+	- REST API 자동 문서화를 위한 Springdoc-openapi-ui를 사용한 Swagger
+	- 프로젝트 개발 및 유지보수에 활용
+
+
+
+<!-- 개발하면서 아쉬웠던점(기억나는거 다적기) -> jwt필터단에서  access토큰 유효성 검사를 하지 못하고 service단에서 실행한것 (이유는 axios interceptor를 쓰려고 하는데 jwt필터단에서 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 불일치, 형식오류등 각종 상황에 따른 다른 예외처리가 불가능하여서 service단에서 처리 ) -->
+<!-- 
+cors 이슈 -> 리액트와 스프링부트를 이용해서 개발은 진행하다보니 서로의 서버간 port번호가 달라 cors 이슈가 있었다. 그치만 이걸 spring-boot의 전역설정으로 해결하였고 Cookie까지 받아오려고 widhtㄱ크래셜?? 그거까지 설정했다.
+
+from dis cash 이슈 -> 배포 과정에서 발견한 트러블이슈인데 설명좀 추가해서 적고 ~~~ 일이 있었다. 그래서 프론트단에서 백엔드를 요청할때 axios 헤더에 무슨무슨 값을 설정해서 해결했다. -->

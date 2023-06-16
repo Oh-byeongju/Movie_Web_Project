@@ -149,7 +149,6 @@ public class MemberService {
     // 로그인 메소드
     @Transactional
     public MemberDto login(MemberDto requestDto, HttpServletResponse response) {
-
         // 로그인 한 유저의 정보 추출
         MemberEntity Member = memberRepository.findById(requestDto.getUid())
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
@@ -277,7 +276,7 @@ public class MemberService {
         RefreshTokenEntity refreshToken = refreshTokenRepository.findById(authentication.getName())
                 .orElseThrow(() -> new MemberNotFoundException(authentication.getName()));
 
-        // 헤더의 Refresh Token과 Redis의 Refresh Token이 일치하는지 검사
+        // 쿠키의 Refresh Token과 Redis의 Refresh Token이 일치하는지 검사
         if (!refreshToken.getRefreshToken().equals(jwtValidCheck.resolveRefreshToken(request))) {
             request.setAttribute("exception", ErrorCode.INVALID_TOKEN.getCode());
             throw new JwtException("토큰의 유저 정보가 일치하지 않습니다.");

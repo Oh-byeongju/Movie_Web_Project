@@ -27,7 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String uid) {
-
         // DB에 회원정보 존재 유무를 판단하고 존재하면 메소드 실행, 없을 경우에는 예외처리
         return memberRepository.findById(uid)
                 .map(this::createUserDetails)
@@ -36,7 +35,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     // DB에 회원정보가 존재한다면 회원정보를 UserDetails 객체로 만들어서 리턴
     private UserDetails createUserDetails(MemberEntity member) {
-
         // 회원정보에 있는 권한값을 SimpleGrantedAuthority 클래스를 통해 권한 객체로 생성
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getUauthority().toString());
 

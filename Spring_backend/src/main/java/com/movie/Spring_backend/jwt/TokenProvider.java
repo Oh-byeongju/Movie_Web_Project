@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class TokenProvider {
-
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
     // access 토큰의 만료시간(30분)
@@ -112,7 +111,6 @@ public class TokenProvider {
 
     // Jwts 모듈을 통해 토큰을 검증하기 위한 메소드
     public void validateToken(String token, String name) {
-
         // 토큰의 정보가 검증 되었을 경우 true를 리턴
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

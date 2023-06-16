@@ -113,9 +113,9 @@
 
 ## **🔎기능 소개 Wiki**
 ### 로그인관련 - <a href="https://github.com/Oh-byeongju/Movie_Project/issues/3">상세보기</a>
-- 회원가입
-- JWT를 이용한 로그인 (로그인 유지하기 포함)
-- 아이디 / 비밀번호 찾기
+	- 회원가입
+	- JWT를 이용한 로그인 (로그인 유지하기 포함)
+	- 아이디 / 비밀번호 찾기
 
 ### 영화관련
 - 분류별 영화 조회
@@ -155,7 +155,7 @@
 - 관람평 및 게시물 조회, 삭제 기능
 
 ## **📰 API 명세서**
-- API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
+### API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
 	- REST API 자동 문서화를 위한 Springdoc-openapi-ui를 사용한 Swagger
 	- 프로젝트 개발 및 유지보수에 활용
 

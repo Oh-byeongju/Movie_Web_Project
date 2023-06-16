@@ -60,14 +60,13 @@
 > 프로젝트의 전체적인 시스템 구성도입니다. <br/>
 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달되며 NGINX는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소는 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달하고, 동적요소는 Spring-Boot 서버에게 요청을 전달한 뒤 Spring-Boot 서버가 RDS에 접근하여 가져온 데이터를 사용자에게 전달합니다.
 
-<br/>
 
-### * 사용자 요청에 따른 DB 접근 순서도
+### * 사용자 요청에 따른 NGINX의 DB 접근 순서도
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246356899-7e0a539f-69f8-4cb4-914e-5061c5bc34af.jpg"/>
 <br />
 
 ### 1️⃣ NGINX
-<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246373014-b5eb9d6d-b12d-4785-929b-9d89b320bf68.jpg"/>
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246387496-6f800393-9336-44e1-aa94-8e7a642a06c9.jpg"/>
 
 - **URL Rewrite 처리**
 	- 사용자가 요청한 URL에서 DB요청에 필요없는 ~/APICALL/ 부분을 NGINX 내부에서 제거한 뒤 URL을 재정의합니다.

@@ -68,9 +68,9 @@
 ### 1️⃣ NGINX
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246402430-297d2b2b-9c88-449a-b313-80adad1f546c.jpg"/>
 
-- **URL Rewrite 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Docker_nginx/conf.d/default.conf#L36)
+- **URL Rewrite 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L36)
 	- 사용자가 요청한 URL에서 백엔드 요청에 필요없는 ~/APICALL/ 부분을 NGINX 내부에서 제거한 뒤 URL을 재정의합니다.
-- **Reverse Proxy 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Docker_nginx/conf.d/default.conf#L37)
+- **Reverse Proxy 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L37)
 	- 사용자의 요청을 백엔드 서버에게 전달합니다. Reverse Proxy 덕분에 사용자는 DB의 데이터가 필요할 때 프록시 서버 URL로만 접근할 수 있으며 백엔드 서버에 직접적으로 접근이 불가능하게 됩니다.
 
 ### 2️⃣ jwtFilter

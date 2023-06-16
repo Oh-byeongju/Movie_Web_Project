@@ -107,7 +107,8 @@
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246445292-7ecf64a4-3971-4848-a9de-eca1071cf8e7.jpg"/>
 
 - **쿼리 수행** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/repository/ReservationRepository.java#L23)
-	- Entity에 의해 생성된 DB에 접근하는 메소드들을 사용하기 위한 계층으로써 JpaRepository를 상속하여 JPA가 제공하는 쿼리 메소드 또는 직접 JPQL 쿼리를 작성한 뒤 쿼리 로직을 수행합니다.
+	- Entity에 의해 생성된 DB에 접근하는 메소드들을 사용하기 위한 계층으로써 JpaRepository를 상속받아 사용합니다.
+	- JPA가 제공하는 쿼리 메소드를 이용하거나 @Query 어노테이션을 활용하여 JPQL 쿼리를 직접 작성한 뒤 쿼리를 수행합니다.
 
 
 

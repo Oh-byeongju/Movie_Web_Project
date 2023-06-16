@@ -63,14 +63,17 @@
 <br/>
 
 ### * 사용자 요청에 따른 DB 접근 순서도
-<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246355728-4af39734-fbf3-4770-b161-7f1937f56c0d.jpg"/>
-<br />
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246356899-7e0a539f-69f8-4cb4-914e-5061c5bc34af.jpg"/>
 <br />
 
-1️⃣ NGINX
+### 1️⃣ NGINX
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246373014-b5eb9d6d-b12d-4785-929b-9d89b320bf68.jpg"/>
-- **Preflight Request 처리**
-  - 브라우저는 요청을 보내기 전 Preflight Request를 우선적으로 보내기 때문에 Interceptor에서 토큰을 검사하기 위해 Preflight Request를 가장 먼저 선별, 처리해줘야 한다.
+
+- **URL Rewrite 처리**
+	- 사용자가 요청한 URL에서 DB요청에 필요없는 ~/APICALL/ 부분을 NGINX 내부에서 제거한 뒤 URL을 재정의합니다.
+- **Reverse Proxy 처리**
+	- 사용자의 요청을 Spring-Boot 서버에게 전달합니다. Reverse Proxy 덕분에 사용자는 DB 값을 요청할 때 프록시 서버 URL로만 접근할 수 있으며 Spring-Boot 서버에 직접적으로 접근이 불가능하게 됩니다.
+	
 
 
 <!-- ## 데이터베이스 접근 순서도를 만들면 될듯 -->

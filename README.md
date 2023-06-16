@@ -62,8 +62,8 @@
 
 
 ### * NGINX의 백엔드 요청과 DB 접근 순서도
+### 0️⃣ 전체흐름
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246448896-f923d5de-9b31-4a23-9485-08d234e0a5a5.jpg"/>
-<br />
 
 ### 1️⃣ NGINX
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246402430-297d2b2b-9c88-449a-b313-80adad1f546c.jpg"/>

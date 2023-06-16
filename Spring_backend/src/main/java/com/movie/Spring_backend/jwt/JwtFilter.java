@@ -27,11 +27,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
 
     // 실제 필터링 로직이 수행되는 메소드
-    // 모든 Request 요청은 이 필터를 거치기 때문에 토큰 정보가 유효하지 않으면 정상적으로 수행되지 않음(/**/normal/** uri 제외)
+    // 모든 Request 요청은 이 필터를 거치기 때문에 토큰 정보가 유효하지 않으면 정상적으로 수행되지 않음(/**/normal/** url 제외)
     // 반대로 Request가 정상적으로 Controller까지 도착했으면 SecurityContext에 Member ID가 존재한다는 것이 보장함
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         // axios 요청이 POST, DELETE, PUT, PATCH인 경우 Double submit cookie 메소드 실행(csrf 공격 방지)
         // Header에 TestID가 존재하면 검사X (Swagger에서 요청한 방식)
         // 현재 프로젝트는 포트폴리오를 위한 프로젝트라 Rest Api 명세서를 공개하므로 실제 배포와 달리 예외사항을 처리한 것

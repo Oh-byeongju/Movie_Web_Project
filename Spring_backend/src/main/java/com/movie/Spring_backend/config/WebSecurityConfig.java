@@ -51,11 +51,11 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
 
-                // 모든 Requests에서 /**/normal/**를 제외한 모든 uri의 request는 로그인 토큰이 필요
+                // 모든 request에서 /**/normal/**를 제외한 모든 url의 request는 로그인 토큰이 필요
                 .and()
                 .authorizeRequests()
                 .antMatchers("/**/normal/**").permitAll()
-                .antMatchers("/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/favicon.ico").permitAll() // 스웨거 관련
+                .antMatchers("/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/favicon.ico").permitAll() // 스웨거 관련 예외처리
                 .antMatchers("/Manager/**").hasRole("ADMIN") // ADMIN 권한을 가진 사용자만 접근 허용(관리자)
                 .anyRequest().authenticated()
 

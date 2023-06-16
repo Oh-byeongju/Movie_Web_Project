@@ -68,15 +68,28 @@
 ### 1️⃣ NGINX
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246387496-6f800393-9336-44e1-aa94-8e7a642a06c9.jpg"/>
 
-- **URL Rewrite 처리**
+- **URL Rewrite 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Docker_nginx/conf.d/default.conf#L36)
 	- 사용자가 요청한 URL에서 DB요청에 필요없는 ~/APICALL/ 부분을 NGINX 내부에서 제거한 뒤 URL을 재정의합니다.
-- **Reverse Proxy 처리**
+- **Reverse Proxy 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Docker_nginx/conf.d/default.conf#L37)
 	- 사용자의 요청을 Spring-Boot 서버에게 전달합니다. Reverse Proxy 덕분에 사용자는 DB 값을 요청할 때 프록시 서버 URL로만 접근할 수 있으며 Spring-Boot 서버에 직접적으로 접근이 불가능하게 됩니다.
-	
+
+### 2️⃣ jwtFilter
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246399743-f2dc2997-acea-4e27-bb60-f303bcb95c95.jpg"/>
+
+- **토큰 존재 여부 파악** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/JwtFilter.java#L51)
+	- REST API 요청에서 AcessToken이 필요한 요청인 경우 AceesToken의 존재 여부를 파악합니다. (토큰에 대한 검증은 Service단에서 실행)
+
+- **CSRF 공격 방지** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/util/CsrfCheckUtil.java#L38)
+	- REST API 요청이 POST, DELETE, PUT, PATCH인 경우 CSRF 공격을 방지하기 위하여 Double submit cookie를 통한 검사를 실행합니다.
 
 
 <!-- ## 데이터베이스 접근 순서도를 만들면 될듯 -->
 <!-- 개발하면서 아쉬웠던점(기억나는거 다적기) -> jwt필터단에서  access토큰 유효성 검사를 하지 못하고 service단에서 실행한것 (이유는 axios interceptor를 쓰려고 하는데 jwt필터단에서 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 불일치, 형식오류등 각종 상황에 따른 다른 예외처리가 불가능하여서 service단에서 처리 ) -->
+<!-- 
+cors 이슈 -> 리액트와 스프링부트를 이용해서 개발은 진행하다보니 서로의 서버간 port번호가 달라 cors 이슈가 있었다. 그치만 이걸 spring-boot의 전역설정으로 해결하였고 Cookie까지 받아오려고 widhtㄱ크래셜?? 그거까지 설정했다.
+
+from dis cash 이슈 -> 배포 과정에서 발견한 트러블이슈인데 설명좀 추가해서 적고 ~~~ 일이 있었다. 그래서 프론트단에서 백엔드를 요청할때 axios 헤더에 무슨무슨 값을 설정해서 해결했다. -->
+
 ## **🔎 주요 기능 소개 여기 아래는 wiki로 다날려도 될듯**
 ### `로그인관련`
 - 회원가입

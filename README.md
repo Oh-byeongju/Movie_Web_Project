@@ -54,14 +54,23 @@
 <img width="100%" alt="ERD" src="https://user-images.githubusercontent.com/96694919/246102323-3dbcef99-3e0a-47cc-8fa5-55926d9d65f8.png"/>
 
 ## **📌 프로젝트 수행 과정**
-### `* 시스템 구성도`
+### * 시스템 구성도
 <img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246202776-83847a3b-d272-4157-b927-f175c96f8f70.jpg"/>
 
 > 프로젝트의 전체적인 시스템 구성도입니다. <br/>
 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달되며 NGINX는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소는 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달하고, 동적요소는 Spring-Boot 서버에게 요청을 전달한 뒤 Spring-Boot 서버가 RDS에 접근하여 가져온 데이터를 사용자에게 전달합니다.
 
-### `* 사용자 요청에 따른 DB 접근 순서도`
+<br/>
+
+### * 사용자 요청에 따른 DB 접근 순서도
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246355728-4af39734-fbf3-4770-b161-7f1937f56c0d.jpg"/>
+<br />
+<br />
+
+1️⃣ NGINX
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246373014-b5eb9d6d-b12d-4785-929b-9d89b320bf68.jpg"/>
+- **Preflight Request 처리**
+  - 브라우저는 요청을 보내기 전 Preflight Request를 우선적으로 보내기 때문에 Interceptor에서 토큰을 검사하기 위해 Preflight Request를 가장 먼저 선별, 처리해줘야 한다.
 
 
 <!-- ## 데이터베이스 접근 순서도를 만들면 될듯 -->

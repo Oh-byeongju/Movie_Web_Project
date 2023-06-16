@@ -82,6 +82,18 @@
 - **CSRF 공격 방지** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/util/CsrfCheckUtil.java#L38)
 	- REST API 요청이 POST, DELETE, PUT, PATCH인 경우 CSRF 공격을 방지하기 위하여 Double submit cookie를 통한 검사를 실행합니다.
 
+### 3️⃣ Controller
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246411239-2f83e6ce-83c5-4104-834d-ced93f0d64f7.jpg"/>
+
+- **요청 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L43)
+	- Controller 계층에서는 NGINX에서 넘어온 요청을 받고, Service 계층에 데이터 처리를 위임합니다.
+	- 로그인이 필요한 서비스의 경우 jwtFilter에서 토큰 존재 유무 검사후, Cookie 형태로 저장된 Token이 존재하는 HttpServletRequest 객체를 받습니다.
+
+- **결과 응답** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L44)
+	- Service 계층에서 전달받은 로직 처리 결과를 ResponseEntity 객체에 담아 NGINX 서버로 전달해줍니다.
+
+
+
 
 <!-- ## 데이터베이스 접근 순서도를 만들면 될듯 -->
 <!-- 개발하면서 아쉬웠던점(기억나는거 다적기) -> jwt필터단에서  access토큰 유효성 검사를 하지 못하고 service단에서 실행한것 (이유는 axios interceptor를 쓰려고 하는데 jwt필터단에서 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 불일치, 형식오류등 각종 상황에 따른 다른 예외처리가 불가능하여서 service단에서 처리 ) -->

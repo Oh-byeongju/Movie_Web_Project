@@ -61,8 +61,8 @@
 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달되며 NGINX는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소는 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달하고, 동적요소는 Spring-Boot 서버에게 요청을 전달한 뒤 Spring-Boot 서버가 RDS에 접근하여 가져온 데이터를 사용자에게 전달합니다.
 
 
-### * 사용자 요청에 따른 NGINX의 DB 접근 순서도
-<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246356899-7e0a539f-69f8-4cb4-914e-5061c5bc34af.jpg"/>
+### * NGINX의 백엔드 요청과 DB 접근 순서도
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246448896-f923d5de-9b31-4a23-9485-08d234e0a5a5.jpg"/>
 <br />
 
 ### 1️⃣ NGINX
@@ -72,13 +72,15 @@
 	- 사용자가 요청한 URL에서 백엔드 요청에 필요없는 ~/APICALL/ 부분을 NGINX 내부에서 제거한 뒤 URL을 재정의합니다.
 - **Reverse Proxy 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L37)
 	- 사용자의 요청을 백엔드 서버에게 전달합니다. Reverse Proxy 덕분에 사용자는 DB의 데이터가 필요할 때 프록시 서버 URL로만 접근할 수 있으며 백엔드 서버에 직접적으로 접근이 불가능하게 됩니다.
+- **결과 응답** 
+	- 백엔드 서버에서 전달받은 데이터를 사용자에게 전달합니다.
+	
 
 ### 2️⃣ jwtFilter
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246399743-f2dc2997-acea-4e27-bb60-f303bcb95c95.jpg"/>
 
 - **토큰 존재 여부 파악** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/JwtFilter.java#L51)
 	- REST API 요청에서 AcessToken이 필요한 요청인 경우 AceesToken의 존재 여부를 파악합니다. (토큰에 대한 검증은 Service단에서 실행)
-
 - **CSRF 공격 방지** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/util/CsrfCheckUtil.java#L38)
 	- REST API 요청이 POST, DELETE, PUT, PATCH인 경우 CSRF 공격을 방지하기 위하여 Double submit cookie를 통한 검사를 실행합니다.
 
@@ -87,10 +89,25 @@
 
 - **요청 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L43)
 	- Controller 계층에서는 NGINX에서 넘어온 요청을 받고, Service 계층에 데이터 처리를 위임합니다.
-	- 로그인이 필요한 서비스의 경우 jwtFilter에서 토큰 존재 유무 검사후, Cookie 형태로 저장된 Token이 존재하는 HttpServletRequest 객체를 받습니다.
-
+	- 로그인이 필요한 요청인 경우 Cookie 형태로 저장된 Token이 존재하는 HttpServletRequest 객체를 Service 계층에 전달합니다.
 - **결과 응답** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L44)
-	- Service 계층에서 전달받은 로직 처리 결과를 ResponseEntity 객체에 담아 NGINX 서버로 전달해줍니다.
+	- Service 계층에서 전달받은 로직 처리 결과를 ResponseEntity 객체에 담아 NGINX 서버로 전달합니다.
+
+### 4️⃣ Service
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246419708-ca4f187c-d865-4d7e-8201-e6af540f2899.jpg"/>
+
+- **토큰 검증** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/TokenProvider.java#L114)
+	- HttpServletRequest 객체를 전달 받았을경우 토큰 검증을 진행하고 토큰이 올바르지 않을경우에는 예외처리를 합니다.
+- **데이터 요청** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L61)
+	- 현재 메소드에서 필요한 데이터 정보를 Repository 계층에게 전달하여 Entity형 데이터를 요청합니다.
+- **데이터 가공 및 반환** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L64)
+	- Entity형의 데이터와 이외에 필요한 정보들을 Dto형태의 데이터로 가공한 뒤 Controller 계층에게 전달합니다.
+
+### 5️⃣ Repository
+<img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246445292-7ecf64a4-3971-4848-a9de-eca1071cf8e7.jpg"/>
+
+- **쿼리 수행** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/repository/ReservationRepository.java#L23)
+	- Entity에 의해 생성된 DB에 접근하는 메소드들을 사용하기 위한 계층으로써 JpaRepository를 상속하여 JPA가 제공하는 쿼리 메소드 또는 직접 JPQL 쿼리를 작성한 뒤 쿼리 로직을 수행합니다.
 
 
 

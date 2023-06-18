@@ -84,6 +84,17 @@ public class MovieController {
         return ResponseEntity.ok().body(movieService.getMovieDetail(mid, uid));
     }
 
+    // 현재 예매가 가능한 영화를 가져오는 컨트롤러(예매율 순으로 내림차순)
+    @Operation(summary = "예매 가능한 영화 요청", description = "현재 예매가 가능한 영화를 요청합니다. (예매율 순으로 내림차순)", tags = { "MovieController" })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "영화 조회 완료"),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/normal/ReservePossibleDESC")
+    public ResponseEntity<List<MovieDto>> PossibleDESCMovie() {
+        return ResponseEntity.ok().body(movieService.getPossibleDESCMovie());
+    }
+
     // 예매 페이지에서 조건에 맞는 영화를 가져오는 컨트롤러
     @Operation(summary = "예매 페이지 영화 요청", description = "예매 페이지에서 조건에 맞는 영화를 요청합니다.\n\n" +
             "파라미터 예시 : {\n" +
@@ -97,16 +108,5 @@ public class MovieController {
     @GetMapping("/normal/Ticket")
     public ResponseEntity<List<MovieDto>> TicketMovie(@RequestParam Map<String, String> requestMap) {
         return ResponseEntity.ok().body(movieService.getTicketMovie(requestMap));
-    }
-
-    // 현재 예매가 가능한 영화를 가져오는 컨트롤러(예매율 순으로 내림차순)
-    @Operation(summary = "예매 가능한 영화 요청", description = "현재 예매가 가능한 영화를 요청합니다. (예매율 순으로 내림차순)", tags = { "MovieController" })
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "영화 조회 완료"),
-            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    @GetMapping("/normal/ReservePossibleDESC")
-    public ResponseEntity<List<MovieDto>> PossibleDESCMovie() {
-        return ResponseEntity.ok().body(movieService.getPossibleDESCMovie());
     }
 }

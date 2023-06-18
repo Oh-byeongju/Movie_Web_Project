@@ -249,6 +249,20 @@ public class MovieService {
         }
     }
 
+    // 현재 예매가 가능한 영화 조회 메소드
+    public List<MovieDto> getPossibleDESCMovie() {
+        // 영화 테이블에서 현재 예매가 가능한 영화들 조회(예매율 순으로 내림차순)
+        List<MovieEntity> Movies = movieRepository.findShowMoviesReserveDESC("");
+
+        // 검색한 영화목록 리턴
+        return Movies.stream().map(movie -> MovieDto.builder()
+                .mid(movie.getMid())
+                .mtitle(movie.getMtitle())
+                .mgenre(movie.getMgenre())
+                .mrating(movie.getMrating())
+                .mimagepath(movie.getMimagepath()).build()).collect(Collectors.toList());
+    }
+
     // 예매 페이지에서 조건에 맞는 영화를 가져오는 메소드
     public List<MovieDto> getTicketMovie(Map<String, String> requestMap) {
         // requestMap 안에 정보를 추출
@@ -291,20 +305,6 @@ public class MovieService {
 
         // 검색한 영화목록 리턴
         return movieMapper.toDtoTicketMovie(conditionMovie, allMovie);
-    }
-
-    // 현재 예매가 가능한 영화 조회 메소드
-    public List<MovieDto> getPossibleDESCMovie() {
-        // 영화 테이블에서 현재 예매가 가능한 영화들 조회(예매율 순으로 내림차순)
-        List<MovieEntity> Movies = movieRepository.findShowMoviesReserveDESC("");
-
-        // 검색한 영화목록 리턴
-        return Movies.stream().map(movie -> MovieDto.builder()
-                .mid(movie.getMid())
-                .mtitle(movie.getMtitle())
-                .mgenre(movie.getMgenre())
-                .mrating(movie.getMrating())
-                .mimagepath(movie.getMimagepath()).build()).collect(Collectors.toList());
     }
 }
 

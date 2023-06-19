@@ -60,10 +60,13 @@
 
 #### * 프로젝트의 전체적인 시스템 구성도입니다.
 1. 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달됩니다.
+   
 2. NGINX 서버는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소에 대한 요청인 경우 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달합니다.
+   
 3. 사용자가 동적요소에 대한 요청을 보냈을 경우 NGINX 서버는 Spring-Boot 서버에게 요청을 전달합니다.
+ 
 4. Spring-Boot 서버는 요청에 알맞는 데이터를 RDS에 접근하여 가져온 뒤 NGINX 서버에게 전달합니다. 그리고 NGINX 서버는 사용자에게 데이터를 전달합니다.
-<br/>
+   
 
 ### * NGINX의 백엔드 요청과 DB 접근 순서도
 ### 0️⃣ 전체흐름
@@ -102,8 +105,10 @@
 
 - **토큰 검증** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/TokenProvider.java#L114)
 	- HttpServletRequest 객체를 전달 받았을경우 토큰 검증을 진행하고 토큰이 올바르지 않을경우에는 예외처리를 합니다.
+
 - **데이터 요청** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L61)
 	- 현재 메소드에서 필요한 데이터 정보를 Repository 계층에게 전달하여 Entity형 데이터를 요청합니다.
+
 - **데이터 가공 및 반환** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L64)
 	- Entity형의 데이터와 이외에 필요한 정보들을 Dto형태의 데이터로 가공한 뒤 Controller 계층에게 전달합니다.
 

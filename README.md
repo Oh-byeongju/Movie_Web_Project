@@ -115,34 +115,34 @@
 	- JPA가 제공하는 쿼리 메소드를 이용하거나 @Query 어노테이션을 활용하여 JPQL 쿼리를 직접 작성한 뒤 쿼리를 수행합니다.
 
 ## **🔎기능 소개 Wiki**
-### 로그인 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 1️⃣ 로그인 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 회원가입
 	- JWT를 이용한 로그인 (로그인 유지하기 포함)
 	- 아이디 / 비밀번호 찾기
 
-### 영화 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 2️⃣ 영화 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 분류별 영화 목록 조회
 	- 영화 상세내용 조회
 	- 버튼 클릭시 빠른 예매 기능
 	- 영화 공감 및 관람평 작성 기능
 
-### 상영시간표 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 3️⃣ 상영시간표 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 영화를 중심으로 상영정보 목록 조회
 	- 극장을 중심으로 상영정보 목록 조회
 	- 버튼 클릭시 빠른 예매 기능
 
-### 영화예매 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 4️⃣ 영화예매 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 예매가 가능한 영화, 극장, 날짜 조회
 	- 조건에 맞는 상영정보 목록 조회
 	- 좌석조회 및 선택 기능
 	- 결제 기능
 
-### 게시판 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 5️⃣ 게시판 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 게시물 조회, 작성, 수정, 삭제 기능
 	- 댓글 및 답글 작성, 삭제 기능
 	- 게시물 및 댓글 공감 기능
 
-### 마이페이지 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 6️⃣ 마이페이지 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 예매내역, 예매 취소내역, 지난 관람내역 목록 조회
 	- 예매내역, 예매 취소내역, 지난 관람내역 상세조회
 	- 예매내역 취소 기능
@@ -150,7 +150,7 @@
 	- 관람평 작성이 가능한 영화 및 작성한 관람평 목록 조회
 	- 회원정보 수정 및 회원 탈퇴
 
-### 관리자 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 7️⃣ 관리자 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 영화 및 배우 목록 조회, 추가, 수정, 삭제 기능
 	- 상영정보 목록 조회, 추가, 수정, 삭제 기능
 	- 극장 및 상영관 목록 조회, 추가, 수정, 삭제 기능

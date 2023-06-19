@@ -84,7 +84,7 @@
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246399743-f2dc2997-acea-4e27-bb60-f303bcb95c95.jpg"/>
 
 - **토큰 존재 여부 파악** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/JwtFilter.java#L51)
-	- REST API 요청에서 AcessToken이 필요한 요청인 경우 AceesToken의 존재 여부를 파악합니다. (토큰에 대한 검증은 Service단에서 실행)
+	- REST API 요청에서 AcessToken이 필요한 요청인 경우 AceesToken의 존재 여부를 파악합니다. (토큰에 대한 검증은 Service 계층에서 실행)
 - **CSRF 공격 방지** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/util/CsrfCheckUtil.java#L38)
 	- REST API 요청이 POST, DELETE, PUT, PATCH인 경우 CSRF 공격을 방지하기 위하여 Double submit cookie를 통한 검사를 실행합니다.
 

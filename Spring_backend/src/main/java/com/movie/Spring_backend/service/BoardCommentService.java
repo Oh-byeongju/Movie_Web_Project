@@ -138,7 +138,8 @@ public class BoardCommentService {
         long bid = Long.parseLong(requestMap.get("bid"));
 
         // 댓글 삽입에 필요한 정보 Entity로 변환
-        BoardEntity board = boardRepository.findById(bid).orElseThrow(()-> new BoardNotFoundException("게시물이 존재하지 않습니다."));
+        BoardEntity board = boardRepository.findById(bid)
+                .orElseThrow(()-> new BoardNotFoundException("게시물이 존재하지 않습니다."));
         MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
 
         // 댓글 저장
@@ -161,7 +162,8 @@ public class BoardCommentService {
         String currentMemberId = SecurityUtil.getCurrentMemberId();
 
         // 댓글 삭제전 예외처리
-        BoardCommentEntity boardComment = boardCommentRepository.findById(bcid).orElseThrow(()-> new BoardCommentNotFoundException("댓글이 존재하지 않습니다."));
+        BoardCommentEntity boardComment = boardCommentRepository
+                .findById(bcid).orElseThrow(()-> new BoardCommentNotFoundException("댓글이 존재하지 않습니다."));
         if (boardComment.getBcroot() != null) {
             throw new BoardCommentNotFoundException("댓글이 존재하지 않습니다.");
         }
@@ -191,7 +193,8 @@ public class BoardCommentService {
 
         // 좋아요에 필요한 정보 Entity로 변환
         MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
-        BoardEntity board = boardRepository.findById(bid).orElseThrow(() -> new BoardNotFoundException("게시물이 존재하지 않습니다."));
+        BoardEntity board = boardRepository.findById(bid)
+                .orElseThrow(() -> new BoardNotFoundException("게시물이 존재하지 않습니다."));
         BoardCommentEntity boardComment = boardCommentRepository.findById(bcid)
                 .orElseThrow(() -> new BoardCommentNotFoundException("댓글이 존재하지 않습니다."));
 
@@ -310,7 +313,8 @@ public class BoardCommentService {
         long bcparent = Long.parseLong(requestMap.get("bcparent"));
 
         // 답글 삽입에 필요한 정보 Entity로 변환
-        BoardEntity board = boardRepository.findById(bid).orElseThrow(()-> new BoardNotFoundException("게시물이 존재하지 않습니다."));
+        BoardEntity board = boardRepository.findById(bid)
+                .orElseThrow(()-> new BoardNotFoundException("게시물이 존재하지 않습니다."));
         MemberEntity member = MemberEntity.builder().uid(currentMemberId).build();
 
         // 답글 삽입전 최상위 부모 댓글 및 부모 댓글의 존재유무 확인
@@ -338,7 +342,8 @@ public class BoardCommentService {
         String currentMemberId = SecurityUtil.getCurrentMemberId();
 
         // 답글 삭제전 예외처리
-        BoardCommentEntity boardComment = boardCommentRepository.findById(bcid).orElseThrow(()-> new BoardCommentNotFoundException("답글이 존재하지 않습니다."));
+        BoardCommentEntity boardComment = boardCommentRepository.findById(bcid)
+                .orElseThrow(()-> new BoardCommentNotFoundException("답글이 존재하지 않습니다."));
         if (boardComment.getBcroot() == null) {
             throw new BoardCommentNotFoundException("답글이 존재하지 않습니다.");
         }

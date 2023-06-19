@@ -44,7 +44,6 @@ public class MyPageMovieService {
     // 사용자가 현재 예매한 영화 내역 불러오는 메소드
     @Transactional
     public List<ReservationDto> MovieReserveSearch(HttpServletRequest request) {
-
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
@@ -67,7 +66,6 @@ public class MyPageMovieService {
     // 사용자가 현재 예매취소한 영화 내역 불러오는 메소드
     @Transactional
     public List<ReservationDto> MovieReserveCancelSearch(HttpServletRequest request) {
-
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
@@ -100,7 +98,6 @@ public class MyPageMovieService {
     // 사용자가 예매한 지난 관람내역 불러오는 메소드
     @Transactional
     public List<ReservationDto> MovieReserveFinishSearch(HttpServletRequest request) {
-
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 
@@ -123,7 +120,6 @@ public class MyPageMovieService {
     // 사용자가 예매한 영화의 세부 내역 불러오는 메소드
     @Transactional
     public ReservationDto MovieReserveDetailSearch(Long rid, HttpServletRequest request) {
-
         // Access Token에 대한 유효성 검사
         jwtValidCheck.JwtCheck(request, "ATK");
 

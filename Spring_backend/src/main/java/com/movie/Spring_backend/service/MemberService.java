@@ -10,6 +10,7 @@ package com.movie.Spring_backend.service;
 import com.movie.Spring_backend.dto.MemberDto;
 import com.movie.Spring_backend.dto.TokenDto;
 import com.movie.Spring_backend.entity.Authority;
+import com.movie.Spring_backend.entity.BoardCommentEntity;
 import com.movie.Spring_backend.entity.MemberEntity;
 import com.movie.Spring_backend.entity.RefreshTokenEntity;
 import com.movie.Spring_backend.error.exception.ErrorCode;
@@ -19,6 +20,7 @@ import com.movie.Spring_backend.exceptionlist.MemberNotFoundException;
 import com.movie.Spring_backend.exceptionlist.PwNotCorrectException;
 import com.movie.Spring_backend.jwt.JwtValidCheck;
 import com.movie.Spring_backend.jwt.TokenProvider;
+import com.movie.Spring_backend.repository.BoardCommentRepository;
 import com.movie.Spring_backend.repository.MemberRepository;
 import com.movie.Spring_backend.repository.RefreshTokenRepository;
 import com.movie.Spring_backend.util.SecurityUtil;
@@ -36,7 +38,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -49,6 +53,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder managerBuilder;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtValidCheck jwtValidCheck;
+    private final BoardCommentRepository boardCommentRepository;
 
     // 아이디 중복을 확인하기 위한 메소드
     @Transactional
@@ -472,6 +477,37 @@ public class MemberService {
         // 응답 헤더에 두 가지 쿠기를 할당
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        // JPA 사용을 위한 형 변환
+        MemberEntity member = memberRepository.findById(currentMemberId).
+                orElseThrow(()-> new MemberNotFoundException("사용자가 없습니다."));
+
+        // 사용자 계정 탈퇴전 사용자가 작성한 게시물의 댓글과 관련된 모든 댓글, 답글을 제거하기 위한 작업
+        List<BoardCommentEntity> boardComments = boardCommentRepository.findByMember(member);
+
+        // List선언 및 댓글들의 id값 삽입
+        List<Long> delList = new ArrayList<>();
+        for (BoardCommentEntity BC : boardComments) {
+            delList.add(BC.getBcid());
+        }
+
+        // List가 비어 있을때 까지 반복
+        while (!delList.isEmpty()) {
+            // List의 제일 앞 인덱스 값 추출 후 자식 답글들 검색
+            long delNum = delList.get(0);
+            boardComments = boardCommentRepository.findByBcparent(delNum);
+
+            // 자식들의 id값 리스트에 삽입
+            for (BoardCommentEntity BC : boardComments) {
+                if (!delList.contains(BC.getBcid())) {
+                    delList.add(BC.getBcid());
+                }
+            }
+
+            // 제일 앞 인덱스 값 댓글 삭제 및 List에서 제거
+            boardCommentRepository.deleteById(delNum);
+            delList.remove(0);
+        }
 
         // 사용자 테이블에서 사용자 제거(연관된 DB 내용은 CascadeType.REMOVE 때문에 연쇄 삭제)
         memberRepository.deleteById(currentMemberId);

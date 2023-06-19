@@ -95,7 +95,7 @@ public class Payment {
         return iamportDto;
     }
 
-    // 주문 취소 메소드
+    // 예매 취소 메소드
     public void paymentCancel(String imp_uid, int amount, String reason) throws IOException  {
         // URL 객체 생성 및 access 토큰생성
         URL url = new URL("https://api.iamport.kr/payments/cancel");

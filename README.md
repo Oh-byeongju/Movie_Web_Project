@@ -4,14 +4,26 @@
 
 <b>
 
+- 🔗 [링크](#-링크)
 - 📝 [프로젝트 개요](#-프로젝트-개요)
 - 🛠 [기술 및 도구](#-기술-및-도구)
 - 📦 [ERD 설계](#-ERD-설계)
 - 💻 [프로젝트 수행 과정](#-프로젝트-수행-과정)
 - 🔎 [기능 소개 Wiki](#기능-소개-Wiki)
-- 📰 [API 명세서](#-API-명세서)
+- 🌟 [트러블 슈팅](#-트러블-슈팅)
 
 </b>
+
+## **🔗 링크**
+### 웹 페이지 - [**바로가기**](https://www.moviebnb.com/)
+- 배포된 웹 페이지
+
+### API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
+- REST API 자동 문서화를 위한 Springdoc-openapi-ui를 사용한 Swagger
+- 프로젝트 개발 및 유지보수에 활용
+
+### Demo-Version 기록 - [**바로가기**](https://github.com/Oh-byeongju/Movie_Project_demo)
+- 리팩토링 이전의 웹 페이지 기록
 
 ## **📝 프로젝트 개요**
 #### `1. 프로젝트 소개`
@@ -160,11 +172,6 @@
 	- 회원 목록 조회, 삭제 기능
 	- 영화 또는 극장에 따른 예매기록 조회 기능
 	- 관람평 및 게시물 목록 조회, 삭제 기능
-
-## **📰 API 명세서**
-### API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
-	- REST API 자동 문서화를 위한 Springdoc-openapi-ui를 사용한 Swagger
-	- 프로젝트 개발 및 유지보수에 활용
 
 ## 🌟 트러블 슈팅
 <details>

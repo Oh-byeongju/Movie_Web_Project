@@ -173,14 +173,13 @@
 	- 관람평 및 게시물 목록 조회, 삭제 기능
 
 ## 🌟 트러블 슈팅
-<details>
-<summary>프로젝트에 적용한 MVC패턴의 모호함</summary>
 
-- 프로젝트 설계 단계에서 프로젝트에 디자인 패턴으로 적용할 MVC패턴의 구성요소에 대한 모호함이 언급됐고, 팀원과 협의를 거쳐 각 구성요소에 대한 정의를 하였습니다.
-- **Model** : Spring-Boot에 존재하는 비즈니스 로직(Service, Repository, Entity, Dto 계층)을 Model에 대한 구성요소로 정의했습니다.
-- **View** : Spring-Boot에서 사용되는 View Template Engine(Thymeleaf, Groovy) 등을 사용하지 않고 React 라이브러리를 이용하여 프론트엔드쪽을 개발하였기 때문에 View에 대한 구성요소는 React 라이브러리로 정의했습니다.
-- **Controller** : Spring-Boot에 존재하는 Controller 계층을 그대로 Controller에 대한 구성요소로 정의했습니다.
-</details>
+- 프로젝트에 적용한 MVC패턴의 모호함
+	- 프로젝트 설계 단계에서 프로젝트에 디자인 패턴으로 적용할 MVC패턴의 구성요소에 대한 모호함이 언급됐고, 팀원과 협의를 거쳐 각 구성요소에 대한 정의를 하였습니다.
+	- **Model** : Spring-Boot에 존재하는 비즈니스 로직(Service, Repository, Entity, Dto 계층)을 Model에 대한 구성요소로 정의했습니다.
+	- **View** : Spring-Boot에서 사용되는 View Template Engine(Thymeleaf, Groovy) 등을 사용하지 않고 React 라이브러리를 이용하여 프론트엔드쪽을 개발하였기 때문에 View에 대한 구성요소는 React 라이브러리로 정의했습니다.
+	- **Controller** : Spring-Boot에 존재하는 Controller 계층을 그대로 Controller에 대한 구성요소로 정의했습니다.
+
 
 <details>
 <summary>Entity 매핑 시 생성자 사용에 따른 불편함</summary>

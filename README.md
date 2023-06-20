@@ -1,4 +1,4 @@
-# 📽 영화 웹페이지 프로젝트
+# 📽 영화 웹 페이지 프로젝트
 
 ## **📗 목차**
 
@@ -15,15 +15,14 @@
 </b>
 
 ## **🔗 링크**
-### 웹 페이지 - [**바로가기**](https://www.moviebnb.com/)
-- 배포된 웹 페이지
+### 📌 웹 페이지 - [**바로가기**](https://www.moviebnb.com/)
+- 개발 완료 후 배포된 웹 페이지의 링크입니다.
 
-### API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
-- REST API 자동 문서화를 위한 Springdoc-openapi-ui를 사용한 Swagger
-- 프로젝트 개발 및 유지보수에 활용
+### 📌 API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
+- Springdoc-openapi-ui를 사용한 Swagger 기반의 REST API 명세서입니다.
 
-### Demo-Version 기록 - [**바로가기**](https://github.com/Oh-byeongju/Movie_Project_demo)
-- 리팩토링 이전의 웹 페이지 기록
+### 📌 Demo-Version 기록 - [**바로가기**](https://github.com/Oh-byeongju/Movie_Project_demo)
+- 리팩토링 이전의 웹 페이지 개발에 대한 기록입니다.
 
 ## **📝 프로젝트 개요**
 #### `1. 프로젝트 소개`

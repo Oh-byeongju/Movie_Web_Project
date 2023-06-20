@@ -116,8 +116,10 @@
 
 - **토큰 검증** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/TokenProvider.java#L114)
 	- HttpServletRequest 객체를 전달 받았을경우 토큰 검증을 진행하고 토큰이 올바르지 않을경우에는 예외처리를 합니다.
+	
 - **데이터 요청** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L61)
 	- 현재 메소드에서 필요한 데이터 정보를 Repository 계층에게 전달하여 Entity형 데이터를 요청합니다.
+
 - **데이터 가공 및 반환** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L64)
 	- Entity형의 데이터와 이외에 필요한 정보들을 Dto형태의 데이터로 가공한 뒤 Controller 계층에게 전달합니다.
 
@@ -177,8 +179,11 @@
 <summary>프로젝트에 적용한 MVC패턴의 모호함</summary>
 
 - 프로젝트 설계 단계에서 프로젝트에 디자인 패턴으로 적용할 MVC패턴의 구성요소에 대한 모호함이 언급됐고, 팀원과 협의를 거쳐 각 구성요소에 대한 정의를 하였습니다.
+
 - `Model` : Spring-Boot에 존재하는 비즈니스 로직(Service, Repository, Entity, Dto 계층)을 Model에 대한 구성요소로 정의했습니다.
+
 - `View` : Spring-Boot에서 사용되는 View Template Engine(Thymeleaf, Groovy) 등을 사용하지 않고 React 라이브러리를 이용하여 프론트엔드쪽을 개발하였기 때문에 View에 대한 구성요소는 React 라이브러리로 정의했습니다.
+
 - `Controller` : Spring-Boot에 존재하는 Controller 계층을 그대로 Controller에 대한 구성요소로 정의했습니다.
 </details>
 
@@ -186,6 +191,7 @@
 <summary>Entity 매핑 시 생성자 사용에 따른 불편함</summary>
 
 - 데이터베이스의 필요한 정보가 많아져 테이블 내부의 컬럼수가 증가하였고, 그에 따른Spring-Boot Entity 객체 내부의 변수 개수도 증가하였습니다.
+
 - Spring-Boot에서 생성자를 이용한 Entity 매핑도 가능했지만, Entity 객체의 규모에 따라 파라미터가 많아질수록 가독성도 떨어지고 필요한 데이터만 설정할 수 있는 기능이 필요했기에 `빌더 패턴(Builder Pattern)`을 사용했습니다.
 </details>
 
@@ -193,7 +199,9 @@
 <summary>Spring-Boot 예외처리 핸들링</summary>
 
 - 개발 초기 수많은 예외처리가 발생했고, 예외처리에 대한 일관성이 없어 프론트엔드 로직 구성에 어려움이 존재했습니다.
+
 - Spring-Boot에서 일관성 있는 코드 스타일로 예외처리를 하기 위해 `@ControllerAdvice`와 `@ExceptionHandler` 어노테이션을 활용하여 예외처리 핸들링을 적용했습니다.
+
 - 또한, 통일된 `Error Response 객체`를 만들었으며 예외처리의 종류에 따라 객체의 구성을 바꿔 예외처리를 하도록 구현하였습니다.
 </details>
 
@@ -201,6 +209,7 @@
 <summary>프론트엔드에서의 백엔드 요청 규칙</summary>
 
 - 프론트엔드에서 백엔드에 요청을 보낼 때 각각의 컴포넌트에서 요청을 보낼 경우 관리에 대한 어려움이 존재했고, 백엔드에서 전달받은 데이터를 컴포넌트 간 전역적으로 사용이 불가능한 문제가 있었습니다.
+
 - 이를 해결하기 위해 상태관리 라이브러리 `Redux`를 사용하였고, 비동기 작업(백엔드 요청)의 효율성을 높이기 위해 `Redux-Saga`도 같이 사용하였습니다.
 </details>
 
@@ -208,8 +217,11 @@
 <summary>CORS 정책</summary>
 
 - 현재 프로젝트는 Spring-Boot와 React를 이용하여 개발하였기 때문에 개발단계에서 사용되는 React의 Devserver와 Spring-Boot의 서버 Port가 달라 CORS 이슈가 발생하였습니다.
+
 - 해결방안으로 처음에는 `@CrossOrigin` 어노테이션을 이용하여 모든 컨트롤러에 적용시켰으나, 반복되는 작업이 많고 수정에 어려움이 존재 했습니다.
+
 - 그래서 CORS 정책에 대한 전역 설정을 위해 `config 파일`을 생성하였고 `Spring-Security filter`에 적용시켜 CORS 이슈를 조금 더 효율적으로 해결하였습니다.
+
 - 더불어 검증에 사용되는 JWT를 `HttpOnly`가 적용된 쿠키로 저장하기 위해 setAllowCredentials 옵션도 적용시켰습니다.
 </details>
 
@@ -217,7 +229,9 @@
 <summary>AccessToken 유효성 검사 위치</summary>
 
 - 현재 프로젝트는 Spring-Boot 서버에서 사용자에 대한 검증이 필요할 때 `AccessToken`에 대한 유효성 검사를 `jwtFilter 계층`에서 실시하지 않고 `Service 계층`에서 실시하는 아쉬움이 존재하고 있습니다.
+
 - 이렇게 되면 `Service 계층`은 유효성 검사를 진행하는 `TokenProvider`에게 의존적이게 되지만, 프론트엔드에서 사용하는 `Axios interceptor` 기능에서 토큰이 만료됐을 경우의 예외 처리를 인식할 수 있게 됩니다. (토큰 재발급 요청에 용이)
+
 - `jwtFilter 계층`에서도 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 토큰 불일치, 토큰 형식 오류 등 각종 상황에 따른 예외처리가 불가능하여 위와 같이 적용하였고 이점은 현재 프로젝트의 매우 아쉬운 점으로 생각하고 있습니다.
 </details>
 
@@ -225,7 +239,9 @@
 <summary>MYSQL 트리거 사용</summary>
 
 - 현재 프로젝트에서 특정 Entity의 전체 개수가 필요한 경우 `@Formula` 어노테이션을 이용하여 `Count Query`를 진행합니다.
+
 - Query의 조건문이 간단할 경우 효율적이지만 조금이라도 복잡해질 경우 성능이 떨어지는 문제가 있었습니다. 
+
 - 그래서 예매율 계산에 필요한 `Count Query`는 `@Formula` 어노테이션을 이용하지 않고 영화 테이블에 컬럼을 생성하여 트리거를 이용한 조작 방법을 선택했습니다.
 </details>
 
@@ -233,7 +249,9 @@
 <summary>Redis 사용</summary>
 
 - `RefreshToken, 점유 좌석 정보` 등 특정 시간이 지날 경우 삭제해야 하는 데이터를 MYSQL에서 관리할 경우 정확하지 않고 관리가 어려운 문제점이 존재했습니다.
+
 - 두 가지 정보는 오류가 있을 경우 문제점이 생길수도 있기 때문에 정확한 `TTL(Time To Live)` 기능을 제공하는 NoSQL 저장소 `Redis`를 사용했습니다.
+
 - `Redis`는 인 메모리 기반의 시스템이므로 재부팅 시 데이터가 소멸한다는 문제점이 있었지만 빠른 속도와 정확성이 있었기 때문에 프로젝트에 적합하다고 판단되어 적용시키게 되었습니다.
 </details>
 
@@ -241,7 +259,9 @@
 <summary>EC2 메모리 부족으로 인한 빌드 실패</summary>
 
 - 현재 프로젝트의 배포 환경은 `AWS 프리 티어`에서 제공하는 클라우드 컴퓨팅 서비스인 `EC2`를 사용하고 있는데 결제를 하지 않고 사용하는 것이라 저장 공간 및 메모리가 넉넉하지 않게 할당되어 있습니다.
+
 - 그래서 개발이 완료된 코드를 `Github`에 업로드한 뒤 클라우드 컴퓨팅 환경에서 빌드를 실행할 경우 `Spring-Boot`는 빌드를 성공적으로 마치지만 `React` 같은 경우는 `JavaScript heap out of memory`의 오류가 발생하면서 빌드를 실패합니다.
+
 - 이 문제를 해결하기 위해선 메모리를 늘려줘야 하지만 결제 없이는 방법이 없었기 때문에 대체 방안으로 `Github`에 빌드된 `React` 파일을 올려서 프로젝트 배포를 진행하였습니다.
 </details>
 
@@ -259,7 +279,9 @@
 <summary>HTTP 요청 응답 from disk cache 이슈</summary>
 
 - 배포를 마치고 테스트를 하는 도중 `GET 요청`에 대한 `HTTP Response`가 서버로부터 오는 것이 아니라 이전의 데이터를 반복해서 가져오는 문제가 발생하였습니다.
+
 - 문제의 원인은 인터넷 브라우저에서 `GET 요청`을 했을 때 동일한 요청이면 브라우저 자체에서 캐시 처리가 되어 `실제 서버를 호출하지 않는 문제` 때문이었고, 새로운 응답을 서버로부터 받아와야 하는데 크롬 브라우저 자체의 캐시로 요청을 처리한 것이었습니다.
+
 - 문제 해결을 위해서 `Axios`를 이용하여 백엔드를 요청할 때 `Header` 값에 캐시에 대한 설정을 했으며, 수정 이후 요청에는 `from disk cache 이슈`가 생기지 않았습니다.
 </details>
 

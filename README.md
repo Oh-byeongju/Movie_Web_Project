@@ -193,32 +193,32 @@
 <summary>Spring-Boot 예외처리 핸들링</summary>
 
 - 개발 초기 수많은 예외처리가 발생했고, 예외처리에 대한 일관성이 없어 프론트엔드 로직 구성에 어려움이 존재했습니다.
-- Spring-Boot에서 일관성 있는 코드 스타일로 예외처리를 하기 위해 @ControllerAdvice와 @ExceptionHandler 어노테이션을 활용하여 예외처리 핸들링을 적용했습니다.
-- 또한, 통일된 Error Response 객체를 만들었으며 예외처리의 종류에 따라 객체의 구성을 바꿔 예외처리를 하도록 구현하였습니다.
+- Spring-Boot에서 일관성 있는 코드 스타일로 예외처리를 하기 위해 `@ControllerAdvice`와 `@ExceptionHandler` 어노테이션을 활용하여 예외처리 핸들링을 적용했습니다.
+- 또한, 통일된 `Error Response 객체`를 만들었으며 예외처리의 종류에 따라 객체의 구성을 바꿔 예외처리를 하도록 구현하였습니다.
 </details>
 
 <details>
 <summary>프론트엔드에서의 백엔드 요청 규칙</summary>
 
 - 프론트엔드에서 백엔드에 요청을 보낼 때 각각의 컴포넌트에서 요청을 보낼 경우 관리에 대한 어려움이 존재했고, 백엔드에서 전달받은 데이터를 컴포넌트 간 전역적으로 사용이 불가능한 문제가 있었습니다.
-- 이를 해결하기 위해 상태관리 라이브러리 Redux를 사용하였고, 비동기 작업(백엔드 요청)의 효율성을 높이기 위해 Redux-Saga도 같이 사용하였습니다.
+- 이를 해결하기 위해 상태관리 라이브러리 `Redux`를 사용하였고, 비동기 작업(백엔드 요청)의 효율성을 높이기 위해 `Redux-Saga`도 같이 사용하였습니다.
 </details>
 
 <details>
 <summary>CORS 정책</summary>
 
 - 현재 프로젝트는 Spring-Boot와 React를 이용하여 개발하였기 때문에 개발단계에서 사용되는 React의 Devserver와 Spring-Boot의 서버 Port가 달라 CORS 이슈가 발생하였습니다.
-- 해결방안으로 처음에는 @CrossOrigin 어노테이션을 이용하여 모든 컨트롤러에 적용시켰으나, 반복되는 작업이 많고 수정에 어려움이 존재 했습니다.
-- 그래서 CORS 정책에 대한 전역 설정을 위해 config 파일을 생성하였고 Spring-Security filter에 적용시켜 CORS 이슈를 조금 더 효율적으로 해결하였습니다.
-- 더불어 검증에 사용되는 JWT를 HttpOnly가 적용된 쿠키로 저장하기 위해 setAllowCredentials 옵션도 적용시켰습니다.
+- 해결방안으로 처음에는 `@CrossOrigin` 어노테이션을 이용하여 모든 컨트롤러에 적용시켰으나, 반복되는 작업이 많고 수정에 어려움이 존재 했습니다.
+- 그래서 CORS 정책에 대한 전역 설정을 위해 `config 파일`을 생성하였고 `Spring-Security filter`에 적용시켜 CORS 이슈를 조금 더 효율적으로 해결하였습니다.
+- 더불어 검증에 사용되는 JWT를 `HttpOnly`가 적용된 쿠키로 저장하기 위해 setAllowCredentials 옵션도 적용시켰습니다.
 </details>
 
 <details>
 <summary>AccessToken 유효성 검사 위치</summary>
 
-- 현재 프로젝트는 Spring-Boot 서버에서 사용자에 대한 검증이 필요할 때 AccessToken에 대한 유효성 검사를 jwtFilter 계층에서 실시하지 않고 Service 계층에서 실시하는 아쉬움이 존재하고 있습니다.
-- 이렇게 되면 Service 계층은 유효성 검사를 진행하는 TokenProvider에게 의존적이게 되지만, 프론트엔드에서 사용하는 Axios interceptor 기능에서 토큰이 만료됐을 경우의 예외 처리를 인식할 수 있게 됩니다. (토큰 재발급 요청에 용이)
-- jwtFilter에서도 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 토큰 불일치, 토큰 형식 오류 등 각종 상황에 따른 예외처리가 불가능하여 위와 같이 적용하였고 이점은 현재 프로젝트의 매우 아쉬운 점으로 생각하고 있습니다.
+- 현재 프로젝트는 Spring-Boot 서버에서 사용자에 대한 검증이 필요할 때 `AccessToken`에 대한 유효성 검사를 `jwtFilter 계층`에서 실시하지 않고 `Service 계층`에서 실시하는 아쉬움이 존재하고 있습니다.
+- 이렇게 되면 `Service 계층`은 유효성 검사를 진행하는 `TokenProvider`에게 의존적이게 되지만, 프론트엔드에서 사용하는 `Axios interceptor` 기능에서 토큰이 만료됐을 경우의 예외 처리를 인식할 수 있게 됩니다. (토큰 재발급 요청에 용이)
+- `jwtFilter 계층`에서도 Custom 예외처리를 적용시킬 수 있었으나 토큰 만료, 토큰 불일치, 토큰 형식 오류 등 각종 상황에 따른 예외처리가 불가능하여 위와 같이 적용하였고 이점은 현재 프로젝트의 매우 아쉬운 점으로 생각하고 있습니다.
 </details>
 
 <details>
@@ -264,7 +264,7 @@
 
 <!-- 
 
-
+추후 Next.js 사용 및 ~~~
 
 
 배포 홈페이지 올리고, 이전에 했던 데모보전 링크도 올리고 (데모버전 md 대충 말적어두기)

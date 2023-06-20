@@ -185,8 +185,8 @@
 <details>
 <summary>Entity 매핑 시 생성자 사용에 따른 불편함</summary>
 
-- 데이터베이스의 필요한 정보가 많아져 테이블 내부의 컬럼수가 증가하였고, 그에 따른 Spring-Boot Entity 객체 내부의 변수 개수도 증가하였습니다.
-- Spring-Boot에서 생성자를 이용한 Entity 매핑도 가능했지만, Entity 객체의 규모에 따라 파라미터가 많아질수록 가독성도 떨어지고 필요한 데이터만 설정할 수 있는 기능이 필요했기에 빌더 패턴(Builder Pattern)을 사용했습니다.
+- 데이터베이스의 필요한 정보가 많아져 테이블 내부의 컬럼수가 증가하였고, 그에 따른Spring-Boot Entity 객체 내부의 변수 개수도 증가하였습니다.
+- Spring-Boot에서 생성자를 이용한 Entity 매핑도 가능했지만, Entity 객체의 규모에 따라 파라미터가 많아질수록 가독성도 떨어지고 필요한 데이터만 설정할 수 있는 기능이 필요했기에 `빌더 패턴(Builder Pattern)`을 사용했습니다.
 </details>
 
 <details>

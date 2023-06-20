@@ -1,4 +1,4 @@
-# 📽 영화 웹 페이지 프로젝트
+# 📽 영화 웹페이지 프로젝트
 
 ## **📗 목차**
 
@@ -15,14 +15,14 @@
 </b>
 
 ## **🔗 링크**
-### 📌 웹 페이지 - [**바로가기**](https://www.moviebnb.com/)
-- 개발 완료 후 배포된 웹 페이지의 링크입니다.
+### 📌 웹페이지 - [**바로가기**](https://www.moviebnb.com/)
+- 개발 완료 후 배포된 웹페이지의 링크입니다.
 
 ### 📌 API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
 - Springdoc-openapi-ui를 사용한 Swagger 기반의 REST API 명세서입니다.
 
 ### 📌 Demo-Version 기록 - [**바로가기**](https://github.com/Oh-byeongju/Movie_Project_demo)
-- 리팩토링 이전의 웹 페이지 개발에 대한 기록입니다.
+- 리팩토링 이전의 웹페이지 개발에 대한 기록입니다.
 
 ## **📝 프로젝트 개요**
 #### `1. 프로젝트 소개`
@@ -66,10 +66,10 @@
 <img width="100%" alt="ERD" src="https://user-images.githubusercontent.com/96694919/246102323-3dbcef99-3e0a-47cc-8fa5-55926d9d65f8.png"/>
 
 ## **💻 프로젝트 수행 과정**
-### * 시스템 구성도
+### 💿 시스템 구성도
 <img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246202776-83847a3b-d272-4157-b927-f175c96f8f70.jpg"/>
 
-#### * 프로젝트의 전체적인 시스템 구성도입니다.
+#### 💡 프로젝트의 전체적인 시스템 구성도입니다.
 1. 사용자가 웹페이지의 URL을 요청하면 ec2 인스턴스를 거쳐 Docker 컨테이너 환경에 존재하는 NGINX(Web Server)로 요청이 전달됩니다.
    
 2. NGINX 서버는 요청들을 https 요청으로 리다이렉트함과 동시에 정적요소에 대한 요청인 경우 빌드된 index.html 파일로부터 데이터를 가져와 사용자에게 전달합니다.
@@ -79,7 +79,7 @@
 4. Spring-Boot 서버는 요청에 알맞는 데이터를 RDS에 접근하여 가져온 뒤 NGINX 서버에게 전달합니다. 그리고 NGINX 서버는 사용자에게 데이터를 전달합니다.
 <br/>
 
-### * NGINX의 백엔드 요청과 DB 접근 순서도
+### 💿 NGINX의 백엔드 요청과 DB 접근 순서도
 ### 0️⃣ 전체흐름
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246448896-f923d5de-9b31-4a23-9485-08d234e0a5a5.jpg"/>
 
@@ -248,8 +248,8 @@
 <details>
 <summary>Web Server(NGINX)의 사용</summary>
 
-- Demo Version 테스트 배포 환경에서는 Web Server를 따로 사용하지 않고 Spring-Boot를 실행시켰을 때 작동되는 Apache Tomcat(WAS)만을 이용해 웹 페이지를 배포하였습니다.
-- 하지만 프로젝트에 사용한 React 라이브러리는 SPA(Single Page Application)으로 분류되어 있고 SPA는 기존의 MPA 방식과는 달리 페이지 갱신에 필요한 데이터만을 전달받아 페이지를 갱신하기 때문에 웹 페이지에 필요한 정적 데이터와 페이지 갱신에 필요한 동적 데이터를 처리하는 서버의 분리가 필요했습니다.
+- Demo Version 테스트 배포 환경에서는 Web Server를 따로 사용하지 않고 Spring-Boot를 실행시켰을 때 작동되는 Apache Tomcat(WAS)만을 이용해 웹페이지를 배포하였습니다.
+- 하지만 프로젝트에 사용한 React 라이브러리는 SPA(Single Page Application)으로 분류되어 있고 SPA는 기존의 MPA 방식과는 달리 페이지 갱신에 필요한 데이터만을 전달받아 페이지를 갱신하기 때문에 웹페이지에 필요한 정적 데이터와 페이지 갱신에 필요한 동적 데이터를 처리하는 서버의 분리가 필요했습니다.
 - 그래서 정적 데이터를 처리하는 Web Server(NGINX)를 배포 환경에서 사용하였고 클라이언트가 HTML, CSS와 같은 정적 데이터를 요청하면 NGINX 서버에서 클라이언트에게 데이터를 제공하고, 동적 데이터(DB 데이터)를 요청할 경우 클라이언트의 요청을 WAS에 전달하고 WAS가 처리한 데이터를 클라이언트에게 제공하도록 하였습니다.
 </details>
 

@@ -88,8 +88,10 @@
 
 - **URL Rewrite 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L36)
 	- 사용자가 요청한 URL에서 백엔드 요청에 필요없는 ~/APICALL/ 부분을 NGINX 내부에서 제거한 뒤 URL을 재정의합니다.
+
 - **Reverse Proxy 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L37)
 	- 사용자의 요청을 백엔드 서버에게 전달합니다. Reverse Proxy 덕분에 사용자는 DB의 데이터가 필요할 때 프록시 서버 URL로만 접근할 수 있으며 백엔드 서버에 직접적으로 접근이 불가능하게 됩니다.
+
 - **결과 응답** 
 	- 백엔드 서버에서 전달받은 데이터를 사용자에게 전달합니다.
 	
@@ -99,6 +101,7 @@
 
 - **토큰 존재 여부 파악** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/JwtFilter.java#L51)
 	- REST API 요청에서 AccessToken이 필요한 요청인 경우 AccessToken의 존재 여부를 파악합니다. (토큰에 대한 검증은 Service 계층에서 실행)
+
 - **CSRF 공격 방지** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/util/CsrfCheckUtil.java#L38)
 	- REST API 요청이 POST, DELETE, PUT, PATCH인 경우 CSRF 공격을 방지하기 위하여 Double submit cookie를 통한 검사를 실행합니다.
 
@@ -108,6 +111,7 @@
 - **요청 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L43)
 	- Controller 계층에서는 NGINX 서버에서 넘어온 요청을 받고, Service 계층에 데이터 처리를 위임합니다.
 	- 로그인이 필요한 요청인 경우 Cookie 형태로 저장된 Token이 존재하는 HttpServletRequest 객체를 Service 계층에 전달합니다.
+
 - **결과 응답** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L44)
 	- Service 계층에서 전달받은 로직 처리 결과를 ResponseEntity 객체에 담아 NGINX 서버로 전달합니다.
 
@@ -116,7 +120,7 @@
 
 - **토큰 검증** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/TokenProvider.java#L114)
 	- HttpServletRequest 객체를 전달 받았을경우 토큰 검증을 진행하고 토큰이 올바르지 않을경우에는 예외처리를 합니다.
-	
+
 - **데이터 요청** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L61)
 	- 현재 메소드에서 필요한 데이터 정보를 Repository 계층에게 전달하여 Entity형 데이터를 요청합니다.
 

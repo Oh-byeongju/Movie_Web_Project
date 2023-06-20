@@ -66,7 +66,7 @@
 <img width="100%" alt="ERD" src="https://user-images.githubusercontent.com/96694919/246102323-3dbcef99-3e0a-47cc-8fa5-55926d9d65f8.png"/>
 
 ## **💻 프로젝트 수행 과정**
-### 🎇 시스템 구성도
+### 📣 시스템 구성도
 <img width="100%" alt="Sys" src="https://user-images.githubusercontent.com/96694919/246202776-83847a3b-d272-4157-b927-f175c96f8f70.jpg"/>
 
 #### 💡 프로젝트의 전체적인 시스템 구성도입니다.
@@ -79,7 +79,7 @@
 4. Spring-Boot 서버는 요청에 알맞는 데이터를 RDS에 접근하여 가져온 뒤 NGINX 서버에게 전달합니다. 그리고 NGINX 서버는 사용자에게 데이터를 전달합니다.
 <br/>
 
-### 🎇 NGINX의 백엔드 요청과 DB 접근 순서도
+### 📣 NGINX의 백엔드 요청과 DB 접근 순서도
 ### 0️⃣ 전체흐름
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246448896-f923d5de-9b31-4a23-9485-08d234e0a5a5.jpg"/>
 

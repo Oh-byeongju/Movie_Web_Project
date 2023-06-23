@@ -241,7 +241,7 @@
 </details>
 
 <details>
-<summary>MYSQL 트리거 사용</summary>
+<summary>MySQL 트리거 사용</summary>
 
 - 현재 프로젝트에서 특정 Entity의 전체 개수가 필요한 경우 `@Formula` 어노테이션을 이용하여 `Count Query`를 진행합니다.
 
@@ -253,7 +253,7 @@
 <details>
 <summary>Redis 사용</summary>
 
-- `RefreshToken, 점유 좌석 정보` 등 특정 시간이 지날 경우 삭제해야 하는 데이터를 MYSQL에서 관리할 경우 정확하지 않고 관리가 어려운 문제점이 존재했습니다.
+- `RefreshToken, 점유 좌석 정보` 등 특정 시간이 지날 경우 삭제해야 하는 데이터를 MySQL에서 관리할 경우 정확하지 않고 관리가 어려운 문제점이 존재했습니다.
 
 - 두 가지 정보는 오류가 있을 경우 문제점이 생길수도 있기 때문에 정확한 `TTL(Time To Live)` 기능을 제공하는 NoSQL 저장소 `Redis`를 사용했습니다.
 

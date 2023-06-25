@@ -22,7 +22,7 @@
 ### 📌 API 명세서 - [**바로가기**](https://www.moviebnb.com/APICALL/swagger-ui/index.html)
 - Springdoc-openapi-ui를 사용한 Swagger 기반의 REST API 명세서입니다.
 
-### 📌 Demo-Version 기록 - [**바로가기**](https://github.com/Oh-byeongju/Movie_Project_Demo)
+### 📌 Demo-Version 기록 - [**바로가기**](https://github.com/Oh-byeongju/Movie_Web_Project_Demo)
 - 리팩토링 이전의 웹페이지 개발에 대한 기록입니다.
 
 ## **📝 프로젝트 개요**

@@ -14,7 +14,7 @@ const Footer = () => {
             <FooterLinkList>
               <FooterLinkListItemHide>
                 <a
-                  href="https://github.com/Oh-byeongju/Movie_Project"
+                  href="https://github.com/Oh-byeongju/Movie_Web_Project"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -55,7 +55,9 @@ const Footer = () => {
           <Content>
             <CorpInfo style={{ fontSize: "15px" }}>
               <CorpLogo>
-                <h1 style={{ fontSize: "36px" }}>MOVIE_PROJECT</h1>
+                <h1 style={{ fontSize: "36px" }}>
+									MOVIE_WEB_PROJECT
+								</h1>
               </CorpLogo>
               오병주 (프로젝트 제작)
               <br></br>
@@ -87,7 +89,7 @@ const Footer = () => {
                 </CorpSnsListItem>
                 <CorpSnsListItem>
                   <a
-                    href="https://github.com/Oh-byeongju/Movie_Project"
+                    href="https://github.com/Oh-byeongju"
                     target="_blank"
                     rel="noreferrer"
                   >

@@ -87,10 +87,10 @@
 ### 1️⃣ NGINX
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246402430-297d2b2b-9c88-449a-b313-80adad1f546c.jpg"/>
 
-- **URL Rewrite 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L36)
+- **URL Rewrite 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L36)
 	- 사용자가 요청한 URL에서 백엔드 요청에 필요없는 ~/APICALL/ 부분을 NGINX 내부에서 제거한 뒤 URL을 재정의합니다.
 
-- **Reverse Proxy 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L37)
+- **Reverse Proxy 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/d7b4b0869aa213ec557497b573ad51bcfb3cf0ba/Docker_nginx/conf.d/default.conf#L37)
 	- 사용자의 요청을 백엔드 서버에게 전달합니다. Reverse Proxy 덕분에 사용자는 DB의 데이터가 필요할 때 프록시 서버 URL로만 접근할 수 있으며 백엔드 서버에 직접적으로 접근이 불가능하게 됩니다.
 
 - **결과 응답** 
@@ -100,70 +100,70 @@
 ### 2️⃣ jwtFilter
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246399743-f2dc2997-acea-4e27-bb60-f303bcb95c95.jpg"/>
 
-- **토큰 존재 여부 파악** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/JwtFilter.java#L51)
+- **토큰 존재 여부 파악** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/JwtFilter.java#L51)
 	- REST API 요청에서 AccessToken이 필요한 요청인 경우 AccessToken의 존재 여부를 파악합니다. (토큰에 대한 검증은 Service 계층에서 실행)
 
-- **CSRF 공격 방지** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/util/CsrfCheckUtil.java#L38)
+- **CSRF 공격 방지** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/5ff68aa372daa08db4a777cf06da9cac3f9a310f/Spring_backend/src/main/java/com/movie/Spring_backend/util/CsrfCheckUtil.java#L38)
 	- REST API 요청이 POST, DELETE, PUT, PATCH인 경우 CSRF 공격을 방지하기 위하여 Double submit cookie를 통한 검사를 실행합니다.
 
 ### 3️⃣ Controller
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246411239-2f83e6ce-83c5-4104-834d-ced93f0d64f7.jpg"/>
 
-- **요청 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L43)
+- **요청 처리** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L43)
 	- Controller 계층에서는 NGINX 서버에서 넘어온 요청을 받고, Service 계층에 데이터 처리를 위임합니다.
 	- 로그인이 필요한 요청인 경우 Cookie 형태로 저장된 Token이 존재하는 HttpServletRequest 객체를 Service 계층에 전달합니다.
 
-- **결과 응답** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L44)
+- **결과 응답** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/0a289c2b34760287beb0476d494fd245c33ccd77/Spring_backend/src/main/java/com/movie/Spring_backend/controller/MyPageMovieController.java#L44)
 	- Service 계층에서 전달받은 로직 처리 결과를 ResponseEntity 객체에 담아 NGINX 서버로 전달합니다.
 
 ### 4️⃣ Service
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246419708-ca4f187c-d865-4d7e-8201-e6af540f2899.jpg"/>
 
-- **토큰 검증** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/TokenProvider.java#L114)
+- **토큰 검증** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/jwt/TokenProvider.java#L114)
 	- HttpServletRequest 객체를 전달 받았을경우 토큰 검증을 진행하고 토큰이 올바르지 않을경우에는 예외처리를 합니다.
 
-- **데이터 요청** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L61)
+- **데이터 요청** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L61)
 	- 현재 메소드에서 필요한 데이터 정보를 Repository 계층에게 전달하여 Entity형 데이터를 요청합니다.
 
-- **데이터 가공 및 반환** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L64)
+- **데이터 가공 및 반환** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/d781e9638e74169fef05e131c2d28401f62c1daa/Spring_backend/src/main/java/com/movie/Spring_backend/service/MyPageMovieService.java#L64)
 	- Entity형의 데이터와 이외에 필요한 정보들을 Dto형태의 데이터로 가공한 뒤 Controller 계층에게 전달합니다.
 
 ### 5️⃣ Repository
 <img width="100%" alt="Flow" src="https://user-images.githubusercontent.com/96694919/246445292-7ecf64a4-3971-4848-a9de-eca1071cf8e7.jpg"/>
 
-- **쿼리 수행** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/repository/ReservationRepository.java#L23)
+- **쿼리 수행** 📌 [코드 확인](https://github.com/Oh-byeongju/Movie_Web_Project/blob/master/Spring_backend/src/main/java/com/movie/Spring_backend/repository/ReservationRepository.java#L23)
 	- Entity에 의해 생성된 DB에 접근하는 메소드들을 사용하기 위한 계층으로써 JpaRepository를 상속받아 사용합니다.
 	- JPA가 제공하는 쿼리 메소드를 이용하거나 @Query 어노테이션을 활용하여 JPQL 쿼리를 직접 작성한 뒤 쿼리를 수행합니다.
 
 ## 🔎 기능 소개 Wiki
-### 1️⃣ 로그인 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 1️⃣ 로그인 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Web_Project/wiki/%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 회원가입
 	- JWT를 이용한 로그인 (로그인 유지하기 포함)
 	- 아이디 / 비밀번호 찾기
 
-### 2️⃣ 영화 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 2️⃣ 영화 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Web_Project/wiki/%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 분류별 영화 목록 조회
 	- 영화 상세내용 조회
 	- 버튼 클릭시 빠른 예매 기능
 	- 영화 공감 및 관람평 작성 기능
 
-### 3️⃣ 상영시간표 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 3️⃣ 상영시간표 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Web_Project/wiki/%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%83%81%EC%98%81%EC%8B%9C%EA%B0%84%ED%91%9C-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 영화를 중심으로 상영정보 목록 조회
 	- 극장을 중심으로 상영정보 목록 조회
 	- 버튼 클릭시 빠른 예매 기능
 
-### 4️⃣ 영화예매 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 4️⃣ 영화예매 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Web_Project/wiki/%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EC%98%81%ED%99%94%EC%98%88%EB%A7%A4-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 예매가 가능한 영화, 극장, 날짜 조회
 	- 조건에 맞는 상영정보 목록 조회
 	- 좌석조회 및 선택 기능
 	- 결제 기능
 
-### 5️⃣ 게시판 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 5️⃣ 게시판 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Web_Project/wiki/%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B2%8C%EC%8B%9C%ED%8C%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 게시물 조회, 작성, 수정, 삭제 기능
 	- 댓글 및 답글 작성, 삭제 기능
 	- 게시물 및 댓글 공감 기능
 
-### 6️⃣ 마이페이지 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 6️⃣ 마이페이지 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Web_Project/wiki/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 예매내역, 예매 취소내역, 지난 관람내역 목록 조회
 	- 예매내역, 예매 취소내역, 지난 관람내역 상세조회
 	- 예매내역 취소 기능
@@ -171,7 +171,7 @@
 	- 관람평 작성이 가능한 영화 및 작성한 관람평 목록 조회
 	- 회원정보 수정 및 회원 탈퇴
 
-### 7️⃣ 관리자 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Project/wiki/%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
+### 7️⃣ 관리자 관련 - [**상세보기**](https://github.com/Oh-byeongju/Movie_Web_Project/wiki/%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5#-%EA%B4%80%EB%A6%AC%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5)
 	- 영화 및 배우 목록 조회, 추가, 수정, 삭제 기능
 	- 상영정보 목록 조회, 추가, 수정, 삭제 기능
 	- 극장 및 상영관 목록 조회, 추가, 수정, 삭제 기능
